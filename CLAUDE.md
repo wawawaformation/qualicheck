@@ -86,6 +86,7 @@ Le risque à surveiller : le **spec drift** (le code qui s'éloigne de la spec a
 
 - **Validation à chaque étape** : contrairement au défaut plus autonome de `~/.claude/CLAUDE.md`, sur QualiCheck on s'arrête et on fait valider chaque étape avant de continuer — même quand ce n'est pas strictement bloquant. Priorité sur le défaut général pour ce projet.
 - **Pédagogie ciblée** : expliciter le raisonnement sur les outils/concepts découverts via ce projet (Alembic, pgvector/HNSW, RAG, `uv`, agents LLM...) — pas seulement sur ce qui relève de PHP/ligne de commande, déjà maîtrisés.
+- **Pas de commit ni de push sans validation explicite** : préparer les fichiers, annoncer ce qui sera committé/pushé, et attendre la confirmation de l'utilisateur avant d'exécuter.
 
 ## Principes généraux (tout le projet)
 
