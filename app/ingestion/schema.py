@@ -1,7 +1,7 @@
 """
-Schéma de données pour l'acquisition des règles depuis l'API Opquast. et le scraping du site Opquast.
-Utilise Pydantic pour la validation des données et la documentation.
-Détail : conception/2_ingestion/ingestion.md
+Schéma de données pour l'acquisition des règles (API + scraping Opquast).
+
+Utilise Pydantic pour la validation. Détail : conception/2_ingestion/ingestion.md
 """
 
 from pydantic import BaseModel, Field

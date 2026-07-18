@@ -6,7 +6,6 @@ réutilisable par tous les scripts et modules.
 """
 
 import logging
-import os
 from pathlib import Path
 
 

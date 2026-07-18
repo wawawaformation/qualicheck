@@ -9,11 +9,13 @@ Détail : conception/2_ingestion/ingestion.md
 
 import logging
 import os
+
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from .schema import RuleAcquisition
+
 from ..logging_config import setup_logging
+from .schema import RuleAcquisition
 
 logger = logging.getLogger(__name__)
 

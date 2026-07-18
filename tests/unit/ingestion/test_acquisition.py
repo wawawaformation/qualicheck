@@ -5,8 +5,8 @@ Teste la construction d'URLs de scraping et l'interfaçage avec l'API Opquast.
 Utilise des mocks pour éviter les appels réseau réels.
 """
 
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 from app.ingestion.acquisition import build_rule_url, fetch_api, scrape_rule
 
 
@@ -74,12 +74,10 @@ class TestScrapeRule:
         mock_response = MagicMock()
         mock_response.text = """
         <html>
-            <div class="solution">
-                <p>Mettre en place un flux RSS pour les nouveaux contenus</p>
-            </div>
-            <div class="controle">
-                <p>Vérifier la présence d'un flux RSS valide</p>
-            </div>
+            <h2>Solution technique</h2>
+            <p>Mettre en place un flux RSS pour les nouveaux contenus</p>
+            <h2>Moyen de contrôle</h2>
+            <p>Vérifier la présence d'un flux RSS valide</p>
         </html>
         """
         mock_get.return_value = mock_response

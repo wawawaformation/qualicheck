@@ -4,7 +4,6 @@ Configuration pytest partagée — fixtures, mocks, setup.
 Chargée automatiquement par pytest avant tous les tests.
 """
 
-import os
 import pytest
 
 
