@@ -23,5 +23,6 @@ Format d'entrée, une ligne par réalisation :
 - Ajout du `README.md` — voir `README.md`
 - Ajout des fichiers de conception dans la branche feature (docs, annexes, maquettes, CLAUDE.md) — voir `conception/`, `app/CLAUDE.md`, `scripts/CLAUDE.md`
 - Exclusion des fichiers de backup draw.io du versionnement — voir `.gitignore`
+- Ajout de la règle "CHANGELOG mis à jour à chaque commit" dans `CLAUDE.md` — voir `CLAUDE.md`
 
 ---

@@ -23,6 +23,8 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+**Règle : le CHANGELOG est mis à jour à chaque commit**, pas en fin de session. Chaque commit doit être précédé d'une mise à jour du CHANGELOG couvrant exactement ce qui est committé.
+
 Avant de commencer une tâche d'implémentation, lire `CHANGELOG.md` pour savoir où en est le projet, en complément (pas en remplacement) des documents de `conception/`.
 
 ## Stack
