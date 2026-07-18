@@ -1,0 +1,178 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- TITRE -->
+    <mxCell id="titre" value="Pipeline d'audit — US1" style="text;html=0;align=center;fontSize=16;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#2F5597;" vertex="1" parent="1">
+      <mxGeometry x="160" y="20" width="820" height="36" as="geometry" />
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════
+         PHASE 1 — GÉNÉRATION DES CONSTATS
+    ══════════════════════════════════════════ -->
+    <mxCell id="ph1_bg" value="Phase 1 — Initialisation et génération des constats (gpt-5.4)" style="swimlane;startSize=30;fillColor=#EEF3FB;strokeColor=#2F5597;fontColor=#2F5597;fontStyle=1;fontSize=12;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="70" width="1080" height="420" as="geometry" />
+    </mxCell>
+
+    <!-- Saisie URL -->
+    <mxCell id="url" value="Auditeur saisit l'URL&#xa;confirmation des droits d'audit" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="390" y="50" width="300" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Crawl -->
+    <mxCell id="crawl" value="Crawl léger premier niveau&#xa;détection des pages du site" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="390" y="130" width="300" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Sélection pages + règles (côte à côte) -->
+    <mxCell id="sel_pages" value="Sélection des pages&#xa;3 à 10 pages" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="200" y="218" width="220" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="sel_regles" value="Sélection des règles&#xa;parmi les 245 disponibles" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="660" y="218" width="220" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- SQL déterministe -->
+    <mxCell id="sql" value="Récupération SQL déterministe&#xa;intitulé + guide_analyse + strategie_analyse" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="340" y="310" width="400" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Routing -->
+    <mxCell id="routing" value="Agent routing&#xa;selon strategie_analyse" style="rhombus;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="440" y="380" width="200" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- Branches routing -->
+    <mxCell id="statique" value="Parsing statique&#xa;BeautifulSoup" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="100" y="400" width="180" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="playwright" value="Playwright&#xa;rendu JavaScript" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="800" y="400" width="180" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="manuel" value="Vérification manuelle&#xa;signalé à l'auditeur" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;dashed=1;html=0;" vertex="1" parent="ph1_bg">
+      <mxGeometry x="450" y="490" width="180" height="36" as="geometry" />
+    </mxCell>
+
+    <!-- Flèches phase 1 -->
+    <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="url" target="crawl" parent="ph1_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="crawl" target="sel_pages" parent="ph1_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="crawl" target="sel_regles" parent="ph1_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="sel_pages" target="sql" parent="ph1_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="sel_regles" target="sql" parent="ph1_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="sql" target="routing" parent="ph1_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e7" value="statique" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;fontSize=10;" edge="1" source="routing" target="statique" parent="ph1_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="440"/><mxPoint x="190" y="440"/></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="e8" value="playwright" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;fontSize=10;" edge="1" source="routing" target="playwright" parent="ph1_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="600" y="440"/><mxPoint x="890" y="440"/></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="e9" value="manuel" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;fontSize=10;dashed=1;" edge="1" source="routing" target="manuel" parent="ph1_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- Flèche vers agent (hors swimlane) -->
+    <mxCell id="e_ph1_agent" value="données extraites" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;fontSize=10;" edge="1" source="statique" target="agent" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e_ph1_agent2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="playwright" target="agent" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- ══════════════════════════════════════════
+         AGENT D'AUDIT (intermédiaire)
+    ══════════════════════════════════════════ -->
+    <mxCell id="agent" value="Agent d'audit (gpt-5.4)&#xa;génère les constats à partir du guide_analyse" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="1">
+      <mxGeometry x="340" y="540" width="460" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Stockage -->
+    <mxCell id="stockage" value="Stockage PostgreSQL&#xa;audit · pages · constats" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="1">
+      <mxGeometry x="390" y="630" width="360" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="e_agent_stock" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;" edge="1" source="agent" target="stockage" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ══════════════════════════════════════════
+         PHASE 2 — DIALOGUE ET VALIDATION
+    ══════════════════════════════════════════ -->
+    <mxCell id="ph2_bg" value="Phase 2 — Dialogue et validation (gpt-5.4-mini)" style="swimlane;startSize=30;fillColor=#E8F5E9;strokeColor=#2E7D32;fontColor=#2E7D32;fontStyle=1;fontSize=12;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="720" width="1080" height="420" as="geometry" />
+    </mxCell>
+
+    <!-- Consultation constats -->
+    <mxCell id="consult" value="Auditeur consulte les constats&#xa;proposés par l'agent" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="390" y="50" width="300" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Dialogue -->
+    <mxCell id="dialogue" value="Dialogue avec l'agent (gpt-5.4-mini)&#xa;injection SQL du contexte exact de la règle" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="340" y="140" width="400" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Décision auditeur -->
+    <mxCell id="decision" value="Décision de l'auditeur&#xa;validation_humaine" style="rhombus;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="440" y="230" width="200" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- 3 branches -->
+    <mxCell id="valide" value="Accepte&#xa;constat validé" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="80" y="250" width="160" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="modifie" value="Modifie&#xa;reformulation" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="460" y="340" width="160" height="44" as="geometry" />
+    </mxCell>
+    <mxCell id="rejette" value="Rejette&#xa;constat écarté" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="840" y="250" width="160" height="44" as="geometry" />
+    </mxCell>
+
+    <!-- Feedback -->
+    <mxCell id="feedback" value="feedback_auditeur (optionnel)&#xa;commentaire qualitatif sur le constat" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="340" y="250" width="80" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- strategie_score -->
+    <mxCell id="score" value="Mise à jour strategie_score&#xa;taux de validation par règle" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="340" y="350" width="80" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Rapport -->
+    <mxCell id="rapport" value="Génération du rapport final&#xa;constats validés + recommandations" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="ph2_bg">
+      <mxGeometry x="390" y="340" width="300" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Flèches phase 2 -->
+    <mxCell id="f1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2E7D32;" edge="1" source="consult" target="dialogue" parent="ph2_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="f2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2E7D32;" edge="1" source="dialogue" target="decision" parent="ph2_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="f3" value="accepte" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;fontSize=10;" edge="1" source="decision" target="valide" parent="ph2_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="280"/><mxPoint x="160" y="280"/></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="f4" value="rejette" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;fontSize=10;" edge="1" source="decision" target="rejette" parent="ph2_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="600" y="280"/><mxPoint x="920" y="280"/></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="f5" value="modifie" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;fontSize=10;dashed=1;" edge="1" source="decision" target="modifie" parent="ph2_bg"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <!-- Boucle modifie → dialogue -->
+    <mxCell id="f6" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;dashed=1;" edge="1" source="modifie" target="dialogue" parent="ph2_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="540" y="390"/><mxPoint x="200" y="390"/><mxPoint x="200" y="165"/><mxPoint x="540" y="165"/></Array></mxGeometry>
+    </mxCell>
+    <!-- feedback et score depuis valide/rejette -->
+    <mxCell id="f7" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;dashed=1;" edge="1" source="valide" target="score" parent="ph2_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="160" y="375"/><mxPoint x="340" y="375"/></Array></mxGeometry>
+    </mxCell>
+    <mxCell id="f8" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;dashed=1;" edge="1" source="rejette" target="score" parent="ph2_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="920" y="375"/><mxPoint x="420" y="375"/></Array></mxGeometry>
+    </mxCell>
+    <!-- rapport -->
+    <mxCell id="f9" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2E7D32;" edge="1" source="valide" target="rapport" parent="ph2_bg">
+      <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="160" y="340"/><mxPoint x="540" y="340"/></Array></mxGeometry>
+    </mxCell>
+
+    <!-- Flèche stockage → consultation (entre les deux zones) -->
+    <mxCell id="e_stock_ph2" value="audit prêt pour dialogue" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;fontSize=10;" edge="1" source="stockage" target="consult" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- NOTE RÈGLE FONDAMENTALE -->
+    <mxCell id="regle_fond" value="Règle fondamentale : l'IA ne valide jamais seule. La décision finale appartient toujours à l'auditeur." style="text;html=0;fontSize=11;fontStyle=3;fontColor=#2F5597;fillColor=none;strokeColor=none;align=center;" vertex="1" parent="1">
+      <mxGeometry x="200" y="1160" width="760" height="24" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

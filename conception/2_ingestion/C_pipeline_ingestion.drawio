@@ -1,0 +1,115 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- BLOC 1 : ACQUISITION -->
+    <mxCell id="b1" value="1 — Acquisition" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="40" width="1000" height="130" as="geometry" />
+    </mxCell>
+    <mxCell id="api" value="API REST Opquast&#xa;intitulé, objectifs, tags, phases" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b1">
+      <mxGeometry x="80" y="40" width="260" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="scraping" value="Scraping Opquast&#xa;solution, contrôle" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b1">
+      <mxGeometry x="660" y="40" width="260" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- BLOC 2 : AGREGATION -->
+    <mxCell id="b2" value="2 — Agrégation" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="200" width="1000" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="fusion" value="Fusion des données&#xa;1 objet par règle Opquast" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b2">
+      <mxGeometry x="370" y="25" width="260" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- BLOC 3 : ENRICHISSEMENT -->
+    <mxCell id="b3" value="3 — Enrichissement (Kimi K2.6)" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="320" width="1000" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="agent" value="Agent enrichissement&#xa;stratégie + justification + guide_analyse" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b3">
+      <mxGeometry x="270" y="22" width="460" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- BLOC 4 : STOCKAGE -->
+    <mxCell id="b4" value="4 — Stockage PostgreSQL" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="440" width="1000" height="120" as="geometry" />
+    </mxCell>
+    <mxCell id="regle" value="regle&#xa;champs Opquast + champs IA" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
+      <mxGeometry x="370" y="28" width="260" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="theme" value="theme" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
+      <mxGeometry x="46" y="35" width="110" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="objectif" value="objectif" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
+      <mxGeometry x="166" y="35" width="110" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="phase" value="phase" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
+      <mxGeometry x="724" y="35" width="110" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="tag" value="tag" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
+      <mxGeometry x="844" y="35" width="110" height="36" as="geometry" />
+    </mxCell>
+
+    <!-- Liaisons tables associées -->
+    <mxCell id="l1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="theme" target="regle" parent="b4">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="objectif" target="regle" parent="b4">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="phase" target="regle" parent="b4">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="tag" target="regle" parent="b4">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- BLOC 5 : CHUNKING -->
+    <mxCell id="b5" value="5 — Chunking (1 chunk = 1 règle)" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="590" width="1000" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="chunk" value="Construction du chunk&#xa;intitulé + solution + contrôle + guide_analyse + tags + phases" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b5">
+      <mxGeometry x="100" y="22" width="800" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- BLOC 6 : EMBEDDING -->
+    <mxCell id="b6" value="6 — Embedding (Infomaniak — gratuit)" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="710" width="1000" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="embed" value="All MiniLM L12 v2&#xa;384 dimensions — sans appel GPU" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b6">
+      <mxGeometry x="250" y="22" width="500" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- BLOC 7 : INDEXATION -->
+    <mxCell id="b7" value="7 — Indexation pgvector" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="830" width="1000" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="pgvec" value="colonne embedding sur regle&#xa;UPDATE regle SET embedding = [...] WHERE id = x" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b7">
+      <mxGeometry x="200" y="22" width="600" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- FLECHES PRINCIPALES -->
+    <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="api" target="fusion" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="scraping" target="fusion" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="fusion" target="agent" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="agent" target="regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="regle" target="chunk" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="chunk" target="embed" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="embed" target="pgvec" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

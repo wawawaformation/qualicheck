@@ -1,0 +1,258 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ═══════════════════════════════════
+         LÉGENDE
+    ═══════════════════════════════════ -->
+    <mxCell id="leg_title" value="Légende" style="text;html=0;fontSize=11;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="40" y="40" width="80" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_opquast" value="Référentiel Opquast" style="rounded=1;fillColor=#FFE680;strokeColor=#666666;fontSize=10;html=0;" vertex="1" parent="1">
+      <mxGeometry x="40" y="65" width="160" height="28" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_metier" value="Cœur métier QualiCheck" style="rounded=1;fillColor=#00CC66;strokeColor=#007733;fontSize=10;fontColor=#ffffff;html=0;" vertex="1" parent="1">
+      <mxGeometry x="210" y="65" width="180" height="28" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_assoc" value="Association / Entité-relation" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;" vertex="1" parent="1">
+      <mxGeometry x="400" y="65" width="180" height="28" as="geometry" />
+    </mxCell>
+    <mxCell id="leg_ia" value="Champs générés par QualiCheck IA" style="rounded=1;fillColor=#FFE6CC;strokeColor=#d79b00;fontSize=10;html=0;" vertex="1" parent="1">
+      <mxGeometry x="590" y="65" width="220" height="28" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════
+         RÉFÉRENTIEL OPQUAST (gauche)
+    ═══════════════════════════════════ -->
+
+    <!-- THEME -->
+    <mxCell id="theme" value="theme&#xa;&#xa;id   COUNTER&#xa;theme   VARCHAR(64)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="80" y="200" width="200" height="90" as="geometry" />
+    </mxCell>
+
+    <!-- DF theme-regle -->
+    <mxCell id="df_theme" value="DF" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="258" y="320" width="44" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- REGLE -->
+    <mxCell id="regle" value="regle&#xa;&#xa;id   COUNTER&#xa;numero   INT&#xa;intitule   VARCHAR(512)&#xa;solution   VARCHAR(512)&#xa;controle   VARCHAR(512)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="200" y="370" width="220" height="140" as="geometry" />
+    </mxCell>
+
+    <!-- CHAMPS IA sur regle -->
+    <mxCell id="regle_ia" value="— champs générés par QualiCheck —&#xa;&#xa;strategie_analyse   VARCHAR(20)&#xa;strategie_justification   TEXT&#xa;strategie_source   VARCHAR(20)&#xa;strategie_score   DECIMAL(3,2)&#xa;guide_analyse   TEXT&#xa;llm_provider   VARCHAR(20)&#xa;embedding   vector(384)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE6CC;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=8;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="200" y="520" width="220" height="150" as="geometry" />
+    </mxCell>
+
+    <!-- OBJECTIF -->
+    <mxCell id="objectif" value="objectif&#xa;&#xa;id   COUNTER&#xa;objectif   VARCHAR(256)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="40" y="390" width="140" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- PHASE -->
+    <mxCell id="phase" value="phase&#xa;&#xa;id   COUNTER&#xa;phase   VARCHAR(64)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="40" y="560" width="140" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- TAG -->
+    <mxCell id="tag" value="tag&#xa;&#xa;id   COUNTER&#xa;tag   VARCHAR(50)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="200" y="700" width="140" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- Associations référentiel -->
+    <mxCell id="objectif_regle" value="objectif_regle" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;" vertex="1" parent="1">
+      <mxGeometry x="130" y="430" width="120" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="phase_regle" value="phase_regle" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;" vertex="1" parent="1">
+      <mxGeometry x="130" y="580" width="120" height="36" as="geometry" />
+    </mxCell>
+    <mxCell id="regle_tag" value="regle_tag" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;" vertex="1" parent="1">
+      <mxGeometry x="280" y="700" width="100" height="36" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════
+         COEUR MÉTIER QUALICHECK (droite)
+    ═══════════════════════════════════ -->
+
+    <!-- UTILISATEUR -->
+    <mxCell id="utilisateur" value="utilisateur&#xa;&#xa;id   COUNTER&#xa;nom   VARCHAR(64)&#xa;prenom   VARCHAR(64)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#00CC66;strokeColor=#007733;fontSize=11;fontStyle=1;fontColor=#ffffff;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="1200" y="200" width="200" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- AUDIT -->
+    <mxCell id="audit" value="audit&#xa;&#xa;id   COUNTER&#xa;url_depart   VARCHAR(512)&#xa;statut   VARCHAR(50)&#xa;date_creation   DATETIME&#xa;date_modification   DATETIME" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#00CC66;strokeColor=#007733;fontSize=11;fontStyle=1;fontColor=#ffffff;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="940" y="200" width="220" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- DF utilisateur-audit -->
+    <mxCell id="df_user" value="DF" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="1168" y="248" width="44" height="30" as="geometry" />
+    </mxCell>
+
+    <!-- AUDIT_REGLE -->
+    <mxCell id="audit_regle" value="audit_regle" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;" vertex="1" parent="1">
+      <mxGeometry x="700" y="248" width="120" height="36" as="geometry" />
+    </mxCell>
+
+    <!-- PAGE -->
+    <mxCell id="page" value="page&#xa;&#xa;id   COUNTER&#xa;url   VARCHAR(512)&#xa;titre   VARCHAR(255)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#00CC66;strokeColor=#007733;fontSize=11;fontStyle=1;fontColor=#ffffff;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="1200" y="480" width="200" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- AUDIT_PAGE -->
+    <mxCell id="audit_page" value="audit_page&#xa;&#xa;statut_http   VARCHAR(10)&#xa;est_selectionnee   LOGICAL&#xa;date_crawl   DATETIME" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="940" y="480" width="220" height="100" as="geometry" />
+    </mxCell>
+
+    <!-- CONSTAT -->
+    <mxCell id="constat" value="constat&#xa;&#xa;statut   VARCHAR(32)&#xa;commentaire   VARCHAR(512)&#xa;recommandation   VARCHAR(512)&#xa;preuve   VARCHAR(512)&#xa;validation_humaine   LOGICAL&#xa;feedback_auditeur   TEXT" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+      <mxGeometry x="940" y="650" width="220" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- Unicité constat -->
+    <mxCell id="unicite" value="unicité" style="rounded=1;fillColor=#FFFACD;strokeColor=#999900;fontSize=10;html=0;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1000" y="820" width="80" height="24" as="geometry" />
+    </mxCell>
+
+    <!-- ═══════════════════════════════════
+         LIAISONS
+    ═══════════════════════════════════ -->
+
+    <!-- theme → DF → regle -->
+    <mxCell id="l_theme_df" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="theme" target="df_theme" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l_df_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" source="df_theme" target="regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l_theme_card" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="228" y="295" width="30" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="l_regle_card1" value="1,1" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="260" y="355" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- regle_ia lié à regle (annotation) -->
+    <mxCell id="l_regle_ia" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;dashed=1;strokeWidth=2;" edge="1" source="regle" target="regle_ia" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <!-- objectif ↔ objectif_regle ↔ regle -->
+    <mxCell id="l_obj_assoc" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="objectif" target="objectif_regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l_assoc_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="objectif_regle" target="regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_obj1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="72" y="433" width="30" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="c_obj2" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="198" y="433" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- phase ↔ phase_regle ↔ regle -->
+    <mxCell id="l_phase_assoc" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="phase" target="phase_regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l_passoc_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="phase_regle" target="regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_ph1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="72" y="583" width="30" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="c_ph2" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="198" y="583" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- tag ↔ regle_tag ↔ regle -->
+    <mxCell id="l_tag_assoc" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="tag" target="regle_tag" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l_rassoc_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="regle_tag" target="regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_tag1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="210" y="722" width="30" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="c_tag2" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="325" y="700" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- utilisateur → DF → audit -->
+    <mxCell id="l_user_df" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;" edge="1" source="utilisateur" target="df_user" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l_df_audit" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;" edge="1" source="df_user" target="audit" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_user1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1195" y="248" width="30" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="c_user2" value="1,1" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1165" y="265" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- regle ↔ audit_regle ↔ audit -->
+    <mxCell id="l_regle_ar" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="regle" target="audit_regle" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="l_ar_audit" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="audit_regle" target="audit" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_ar1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="470" y="250" width="30" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="c_ar2" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="828" y="250" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- audit ↔ audit_page -->
+    <mxCell id="l_audit_ap" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;" edge="1" source="audit" target="audit_page" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_ap1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="950" y="345" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- page ↔ audit_page -->
+    <mxCell id="l_page_ap" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;" edge="1" source="page" target="audit_page" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_ap2" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1175" y="510" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- audit_page ↔ constat -->
+    <mxCell id="l_ap_constat" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="audit_page" target="constat" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="c_c1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="950" y="595" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- regle ↔ constat -->
+    <mxCell id="l_regle_constat" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;" edge="1" source="regle" target="constat" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="310" y="730" />
+          <mxPoint x="1050" y="730" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c_rc1" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="420" y="712" width="30" height="20" as="geometry" />
+    </mxCell>
+    <mxCell id="c_rc2" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="958" y="712" width="30" height="20" as="geometry" />
+    </mxCell>
+
+    <!-- unicite → constat -->
+    <mxCell id="l_unicite" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#999900;dashed=1;" edge="1" source="unicite" target="constat" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>

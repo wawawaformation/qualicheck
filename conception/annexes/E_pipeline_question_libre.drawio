@@ -1,0 +1,105 @@
+<mxfile host="Electron">
+  <diagram id="xsi3Zv8GAEfho0hVjrkg" name="Page-1">
+    <mxGraphModel dx="2822" dy="880" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titre" parent="1" style="text;html=0;align=center;fontSize=16;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#2F5597;" value="Pipeline US2 — Question libre" vertex="1">
+          <mxGeometry height="36" width="820" x="160" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="1 — Soumission" vertex="1">
+          <mxGeometry height="90" width="1080" x="40" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="url" parent="b1" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" value="Auditeur soumet une URL ou une capture d&#39;écran&#xa;+ pose une question en langage naturel" vertex="1">
+          <mxGeometry height="50" width="500" x="290" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" parent="1" style="swimlane;startSize=25;fillColor=#FFF8EE;strokeColor=#d79b00;fontColor=#d79b00;fontStyle=1;fontSize=11;html=0;" value="2 — Guardrails (cf. section dédiée)" vertex="1">
+          <mxGeometry height="90" width="1080" x="40" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="guard" parent="b2" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;dashed=1;html=0;" value="Vérification périmètre Opquast&#xa;refus si hors sujet" vertex="1">
+          <mxGeometry height="50" width="500" x="290" y="34" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" parent="1" style="swimlane;startSize=25;fillColor=#EEF3FB;strokeColor=#2F5597;fontColor=#2F5597;fontStyle=1;fontSize=11;html=0;" value="3 — RAG sémantique pur (All MiniLM L12 v2 + pgvector)" vertex="1">
+          <mxGeometry height="110" width="1080" x="40" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="vect" parent="b3" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" value="Vectorisation&#xa;de la question" vertex="1">
+          <mxGeometry height="50" width="200" x="100" y="43" as="geometry" />
+        </mxCell>
+        <mxCell id="search" parent="b3" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" value="Recherche sémantique&#xa;dans les 245 règles" vertex="1">
+          <mxGeometry height="50" width="200" x="440" y="43" as="geometry" />
+        </mxCell>
+        <mxCell id="regles" parent="b3" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" value="Règles pertinentes&#xa;+ guide_analyse" vertex="1">
+          <mxGeometry height="50" width="200" x="780" y="43" as="geometry" />
+        </mxCell>
+        <mxCell id="er1" edge="1" parent="b3" source="vect" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;" target="search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="er2" edge="1" parent="b3" source="search" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#6c8ebf;" target="regles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" parent="1" style="swimlane;startSize=25;fillColor=#FFF8EE;strokeColor=#d79b00;fontColor=#d79b00;fontStyle=1;fontSize=11;html=0;" value="4 — Agent gpt-5.4 + mémoire de session (cf. section dédiée)" vertex="1">
+          <mxGeometry height="90" width="1080" x="40" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="agent" parent="b4" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;dashed=1;html=0;" value="Réponse basée sur les règles RAG&#xa;contexte de la page maintenu en mémoire" vertex="1">
+          <mxGeometry height="50" width="500" x="290" y="36" as="geometry" />
+        </mxCell>
+        <mxCell id="b5" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="5 — Suite ou fin de session" vertex="1">
+          <mxGeometry height="180" width="1080" x="40" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="nouvelle_q" parent="b5" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" value="Nouvelle question&#xa;→ retour bloc 2" vertex="1">
+          <mxGeometry height="50" width="220" x="160" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback" parent="b5" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;dashed=1;html=0;" value="Feedback optionnel&#xa;alimente strategie_score" vertex="1">
+          <mxGeometry height="50" width="220" x="430" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="fin" parent="b5" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" value="Fin de session&#xa;éphémère ou sauvegardée" vertex="1">
+          <mxGeometry height="50" width="220" x="700" y="116" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="url" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="guard">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="guard" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;fontSize=10;" target="vect" value="dans le périmètre">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="290" />
+              <mxPoint x="240" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="regles" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="nouvelle_q">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="feedback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="fin">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="nouvelle_q" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9673a6;fontSize=10;dashed=1;" target="guard" value="nouvelle question">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="30" y="615" />
+              <mxPoint x="30" y="235" />
+              <mxPoint x="540" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="leg1" parent="1" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;dashed=1;html=0;" value="Boîte noire — détaillée dans sa section dédiée" vertex="1">
+          <mxGeometry height="28" width="300" x="40" y="766" as="geometry" />
+        </mxCell>
+        <mxCell id="leg2" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;html=0;" value="RAG sémantique" vertex="1">
+          <mxGeometry height="28" width="160" x="350" y="766" as="geometry" />
+        </mxCell>
+        <mxCell id="leg3" parent="1" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;html=0;" value="Auditeur / interface" vertex="1">
+          <mxGeometry height="28" width="160" x="520" y="766" as="geometry" />
+        </mxCell>
+        <mxCell id="leg4" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;dashed=1;html=0;" value="Optionnel / post-MVP" vertex="1">
+          <mxGeometry height="28" width="160" x="690" y="766" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
