@@ -9,6 +9,22 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-18 — Claude Code
+
+- **Étape 1 — Acquisition (pipeline d'ingestion)** — voir `app/ingestion/acquisition.py`, `tests/unit/ingestion/test_acquisition.py`
+  - `build_rule_url(slug)` : construction URL scraping
+  - `fetch_api()` : récupération API Opquast (245 règles)
+  - `scrape_rule(slug)` : scraping BeautifulSoup (solution + controle)
+  - `acquire_rules()` : orchestration fetch + scrape par règle
+  - Exceptions levées si données manquantes (fail-fast)
+  - Logging centralisé dans `app/logging_config.py` (fichier uniquement)
+  - Tests unitaires avec mocks (`@patch` requests.get)
+  - Dépendance `beautifulsoup4` ajoutée à `pyproject.toml`
+  - Variables `.env` : `OPQUAST_API_BASE_URL`, `OPQUAST_SITE_BASE_URL` — voir `.env.example`, `conception/2_ingestion/ingestion.md`
+- Création de `app/ingestion/schema.py` : modèle Pydantic `RuleAcquisition` (id, number, intitule, objectifs, tags, phases, slug, solution, controle)
+- Structure de tests : `tests/unit/ingestion/`, `tests/integration/ingestion/`, `tests/migration/` — voir `tests/conftest.py` pour fixtures partagées
+- TODO : `TODO_PIPELINE_INGESTION.md` pour tracker les étapes restantes (agrégation, enrichissement, stockage, chunking, embedding, indexation, orchestration)
+
 ---
 
 ## 2026-07-18 — OpenCode

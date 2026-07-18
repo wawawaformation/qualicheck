@@ -56,6 +56,44 @@ Deux sources, non équivalentes :
 
 Cette dépendance au scraping est documentée comme un compromis temporaire : si l'API Opquast venait à exposer ces champs, le scraping pourrait être retiré sans impact sur le reste du pipeline.
 
+### Configuration des endpoints
+
+**Endpoint API (sans authentification):**
+
+```
+https://api.opquast.com/checklist/public/
+```
+
+Retourne la liste des 245 règles au format JSON. Chaque règle contient :
+
+- `id` : identifiant numérique unique
+- `intitule` : titre de la règle
+- `objectifs[]` : liste des objectifs qualité associés
+- `tags[]` : tags thématiques
+- `phases[]` : phases du projet concernées
+
+**URLs de scraping (une par règle):**
+
+```
+https://checklists.opquast.com/fr/qualite-numerique/{rule_id}
+```
+
+Où `{rule_id}` est l'identifiant numérique retourné par l'API. Opquast redirige automatiquement vers l'URL canonique avec slug (ex. `https://checklists.opquast.com/fr/qualite-numerique/regle-avec-des-tirets`).
+
+Le scraping extrait de la page :
+
+- `solution` : recommandation de mise en œuvre
+- `controle` : méthode de vérification de la conformité
+
+**Stockage en `.env`:**
+
+```bash
+OPQUAST_API_BASE_URL=https://api.opquast.com/checklist/public/
+OPQUAST_SITE_BASE_URL=https://checklists.opquast.com/fr/qualite-numerique/
+```
+
+Ces deux variables ne sont jamais versionnées (voir section Infrastructure ci-après).
+
 ## Étape 2 — Agrégation
 
 Chaque règle acquise devient un objet `Regle`, complété puis enrichi individuellement (étapes 2 et 3). L'ensemble des 245 `Regle` forme l'objet composite **`Regles`** — c'est cette collection, et non une règle isolée, qui doit être **complète et intégralement enrichie** avant de passer à l'étape 4 : le stockage ne porte jamais sur une règle seule mais sur `Regles` au complet.
@@ -137,8 +175,9 @@ Structure conceptuelle des fichiers nécessaires — rôle de chacun, pas leur c
 
 ### Infrastructure
 
-- **`.env`** : deux catégories de variables, jamais versionnées.
+- **`.env`** : trois catégories de variables, jamais versionnées.
   - **Connexion BDD** : host, port, utilisateur, mot de passe, nom de la base — la base elle-même (service PostgreSQL + pgvector, via `docker-compose.yml`) est un prérequis fourni par `1_BDD/`, pas créée ici.
+  - **Endpoints Opquast** : `OPQUAST_API_BASE_URL` (API REST, sans authentification) et `OPQUAST_SITE_BASE_URL` (base pour le scraping). Voir section "Configuration des endpoints" ci-avant.
   - **Accès LLM** : endpoint Azure AI Foundry, clé d'API, noms des déploiements utilisés en développement (Kimi K2.6 pour l'enrichissement).
 
 ### Point d'entrée et modules

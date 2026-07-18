@@ -23,9 +23,28 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
-**Règle : le CHANGELOG est mis à jour à chaque commit**, pas en fin de session. Chaque commit doit être précédé d'une mise à jour du CHANGELOG couvrant exactement ce qui est committé.
-
 Avant de commencer une tâche d'implémentation, lire `CHANGELOG.md` pour savoir où en est le projet, en complément (pas en remplacement) des documents de `conception/`.
+
+## Makefile
+
+Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure du projet, pas figé. Cibles actuelles :
+
+| Cible | Rôle |
+|---|---|
+| `make up` | Démarre les conteneurs Docker (build si nécessaire) |
+| `make down` | Éteint les conteneurs |
+| `make migration` | Applique les migrations Alembic (crée le schéma BDD) |
+| `make downgrade` | Annule les migrations (`alembic downgrade base`) — permet de retester une migration from scratch |
+| `make test` | Lance les tests (`pytest tests/`) — nécessite les conteneurs démarrés et les migrations appliquées |
+
+À jour ici pour référence rapide, mais le `Makefile` lui-même reste la source de vérité — le relire directement en cas de doute plutôt que de se fier uniquement à ce tableau.
+
+## CI (GitHub Actions)
+
+`.github/workflows/ci.yml` — déclenché sur push sur toute branche sauf `main`. Étapes : `uv sync` → `ruff check` → `scripts/migration.py` (contre un service `pgvector/pgvector:pg17` éphémère) → `pytest tests/`.
+
+- **Secrets BDD** (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`) gérés via **GitHub Secrets**, pas via `.env` — le `.env` reste strictement local, jamais commité ; les secrets CI sont une configuration séparée côté GitHub.
+- Le CI n'exécute **pas** `scripts/ingestion.py` (évite de vrais appels LLM facturés à chaque push) — les tests couvrent la BDD et les migrations, pas le pipeline d'ingestion lui-même à ce stade.
 
 ## Stack
 
@@ -52,6 +71,7 @@ Un seul fichier, à la racine, jamais versionné : connexion BDD + accès LLM (e
 ## Structure du repo
 
 ```
+.github/workflows/ci.yml   # lint + migrations + tests sur push (hors main)
 conception/          # documents de conception, non exécutés — source de vérité fonctionnelle
   conception.md       # dossier de conception complet (US0/US1/US2, flux, MCD, choix techniques...) — document central
   1_BDD/bdd.md
@@ -69,9 +89,11 @@ app/                  # domaine métier + modules de support — voir app/CLAUDE
   migration/
   ingestion/
 logs/                # logs d'exécution des scripts (une ligne par règle × étape pour l'ingestion) — distinct du CHANGELOG.md
+tests/               # tests exécutés par le CI (pytest)
 docker-compose.yml
 .env
 CHANGELOG.md         # historique des réalisations (implémentation), mis à jour par tout outil agentique utilisé
+Makefile             # commandes courantes (up, down, migration, downgrade, test...) — voir section dédiée
 ```
 
 ## Méthodologie : spec-driven, par incrément
@@ -86,7 +108,6 @@ Le risque à surveiller : le **spec drift** (le code qui s'éloigne de la spec a
 
 - **Validation à chaque étape** : contrairement au défaut plus autonome de `~/.claude/CLAUDE.md`, sur QualiCheck on s'arrête et on fait valider chaque étape avant de continuer — même quand ce n'est pas strictement bloquant. Priorité sur le défaut général pour ce projet.
 - **Pédagogie ciblée** : expliciter le raisonnement sur les outils/concepts découverts via ce projet (Alembic, pgvector/HNSW, RAG, `uv`, agents LLM...) — pas seulement sur ce qui relève de PHP/ligne de commande, déjà maîtrisés.
-- **Pas de commit ni de push sans validation explicite** : préparer les fichiers, annoncer ce qui sera committé/pushé, et attendre la confirmation de l'utilisateur avant d'exécuter.
 
 ## Principes généraux (tout le projet)
 
