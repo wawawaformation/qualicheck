@@ -26,4 +26,18 @@ Format d'entrée, une ligne par réalisation :
 - Ajout de la règle "CHANGELOG mis à jour à chaque commit" dans `CLAUDE.md` — voir `CLAUDE.md`
 - Ajout de la règle "pas de commit/push sans validation explicite" dans `CLAUDE.md` — voir `CLAUDE.md`
 
+## 2026-07-18 — OpenCode
+
+- Ajout des dépendances Python (sqlalchemy, alembic, psycopg2-binary, pgvector, python-dotenv, pytest, ruff) — voir `pyproject.toml`, `uv.lock`
+- Création des modèles SQLAlchemy : `app/models/base.py`, `app/models/referentiel.py`, `app/models/metier.py`
+- Configuration Alembic : `app/migration/alembic.ini`, `app/migration/env.py`
+- Première migration Alembic (schéma complet + extension pgvector + index HNSW) — voir `app/migration/versions/0001_schema_initial.py`
+- Point d'entrée CLI pour les migrations — voir `scripts/migration.py`
+- Tests d'intégration de la migration (10 tests) — voir `tests/test_migration.py`
+- Makefile : cibles `up`, `down`, `migration`, `downgrade`, `test` — voir `Makefile`
+- Diagramme de flux de la migration — voir `docs/schemas/migration_flux.drawio`
+- Specs et plan de la brique migration — voir `docs/superpowers/specs/2026-07-18-migration-design.md`, `docs/superpowers/plans/2026-07-18-migration.md`
+- CI GitHub Actions : lint ruff + migration + tests sur push (hors main) — voir `.github/workflows/ci.yml`
+- Configuration Ruff dans `pyproject.toml` (exclusion `conception/`)
+
 ---
