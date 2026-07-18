@@ -1,0 +1,17 @@
+# Secrets — jamais versionnés
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Logs d'exécution des scripts
+logs/*.log
+
+# Éditeurs
+.idea/
+.vscode/
+*.swp
+*.swo
