@@ -83,6 +83,15 @@ def main():
         aggregated = aggregate_rules(acquired_rules)
         progress_logger.info(f"Étape 2 — Agrégation : {len(aggregated.regles)} règles validées")
 
+        # Dump de validation manuelle avant tout appel LLM (chantier 1)
+        import json
+        project_root = os.path.dirname(os.path.dirname(__file__))
+        os.makedirs(os.path.join(project_root, "tmp"), exist_ok=True)
+        dump_path = os.path.join(project_root, "tmp", "rules_acquises.json")
+        with open(dump_path, "w", encoding="utf-8") as f:
+            json.dump([r.model_dump() for r in aggregated.regles], f, ensure_ascii=False, indent=2)
+        progress_logger.info(f"Dump de validation écrit : {dump_path}")
+
         # Étape 3 — Enrichissement avec bouchons (pas de LLM)
         logger.info("Étape 3 — Enrichissement (BOUCHONS) : démarrage")
         enriched_list = []
