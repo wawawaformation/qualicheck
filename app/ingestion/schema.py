@@ -47,4 +47,21 @@ class RuleAggregation(BaseModel):
         if not v or not v.strip():
             raise ValueError("La chaîne ne peut pas être vide")
         return v
-    
+
+
+class EnrichedRule(RuleAggregation):
+    """Règle complètement enrichie par l'agent LLM."""
+
+    strategie_analyse: str
+    strategie_justification: str
+    guide_analyse: str
+    strategie_source: str = "ia_import"
+    llm_provider: str = "kimi-k2.6"
+
+    @field_validator("strategie_analyse", "strategie_justification", "guide_analyse")
+    @classmethod
+    def non_empty_enrichment_strings(cls, v):
+        if not v or not v.strip():
+            raise ValueError("La chaîne ne peut pas être vide")
+        return v
+
