@@ -7,7 +7,7 @@ puis composition d'une collection Rules complètement validée.
 
 import logging
 
-from .schema import RuleAggregation
+from .schema import EnrichedRule, RuleAggregation
 
 logger = logging.getLogger(__name__)
 
@@ -57,3 +57,17 @@ def aggregate_rules(acquired_rules: list[dict]) -> Rules:
     rules = Rules(validated_rules)
     logger.info(f"Agrégation : {len(validated_rules)} règles validées")
     return rules
+
+
+class EnrichedRules:
+    """Collection de règles complètement enrichies (non-vide)."""
+
+    def __init__(self, enriched_rules: list[EnrichedRule]):
+        if not enriched_rules:
+            raise ValueError("Collection de règles enrichies ne peut pas être vide")
+        self.enriched_rules = enriched_rules
+
+    @property
+    def regles(self):
+        """Rétrocompatibilité : alias français pour accès à la liste."""
+        return self.enriched_rules
