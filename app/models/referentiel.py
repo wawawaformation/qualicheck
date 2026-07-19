@@ -17,12 +17,12 @@ class Regle(Base):
     id = Column(Integer, primary_key=True)
     theme_id = Column(Integer, ForeignKey("theme.id"), nullable=False)
     numero = Column(Integer, nullable=False, unique=True)
-    intitule = Column(String(512), nullable=False, unique=True)
-    solution = Column(String(512), nullable=False)
-    controle = Column(String(512), nullable=False)
-    strategie_analyse = Column(String(20), nullable=False)
+    intitule = Column(String(255), nullable=False, unique=True)
+    solution = Column(String(1024), nullable=False)
+    controle = Column(String(1024), nullable=False)
+    strategie_analyse = Column(String(32), nullable=False)
     strategie_justification = Column(Text)
-    strategie_source = Column(String(20), nullable=False)
+    strategie_source = Column(String(32), nullable=False)
     strategie_score = Column(Numeric(3, 2))
     guide_analyse = Column(Text, nullable=False)
     llm_provider = Column(String(20))
@@ -33,7 +33,7 @@ class Objectif(Base):
     __tablename__ = "objectif"
 
     id = Column(Integer, primary_key=True)
-    objectif = Column(String(256), nullable=False)
+    objectif = Column(String(512), nullable=False)
 
 
 class Phase(Base):

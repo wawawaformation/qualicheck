@@ -9,6 +9,24 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-19 — Claude Code (Part 5)
+
+- **Schéma BDD — Calibrage des colonnes textuelles (VARCHAR vs TEXT)** — voir `app/models/referentiel.py`, `app/migration/versions/0002-0005`, `scripts/ingestion_test.py`, `docs/problemes_rencontres/schema_text_columns.md`
+  - **Problème identifié** : première ingestion complète échoue à règle 154 → `objectif` dépasse `VARCHAR(256)`, puis à règle 166 → `solution` dépasse `VARCHAR(512)`
+  - **Root cause** : colonnes `solution` et `controle` scrappées depuis le site Opquast (contenu HTML brut) peuvent dépasser les limites estimées ; `objectif` vient de l'API mais bien plus long que prévu
+  - **Stratégie** : conversion temporaire en `TEXT` (migrations 0002-0004), puis script de test `ingestion_test.py` (bouchons LLM, pas d'appels coûteux) peuple la BD avec 245 règles réelles et révèle les max
+  - **Mesure des données réelles** : `intitule` MAX 167 / `solution` MAX 569 / `controle` MAX 573 / `objectif` MAX 359
+  - **Recalibrage final** (migration 0005) :
+    - `intitule` : `VARCHAR(255)` (marge 88 chars)
+    - `solution` : `VARCHAR(1024)` (marge 455 chars)
+    - `controle` : `VARCHAR(1024)` (marge 451 chars)
+    - `objectif` : `VARCHAR(512)` (marge 153 chars)
+    - `strategie_analyse`, `strategie_source` : `VARCHAR(32)` (énumérées, court)
+    - Conservé en `TEXT` : `strategie_justification`, `guide_analyse` (enrichissement LLM, imprévisible)
+  - **Validation** : 245 règles stockées sans erreur avec le schéma final
+  - **Documentation** : document `schema_text_columns.md` trace la démarche (observation → hypothèse → test → mesure → décision) pour valeur pédagogique auprès du jury
+  - **Économie** : script de test évite ~240 appels LLM supplémentaires (coûteux en tokens)
+
 ## 2026-07-19 — Claude Code (Part 4)
 
 - **Correctif — Restauration de `theme` + `tags` optionnels (pipeline d'ingestion)** — voir `app/ingestion/schema.py`, `app/ingestion/acquisition.py`, `app/migration/versions/0001_schema_initial.py`, `app/models/referentiel.py`, `app/ingestion/stockage.py`, `app/ingestion/llm_client.py`, et fichiers de tests associés
