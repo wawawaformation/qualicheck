@@ -130,6 +130,23 @@ def test_colonnes_not_null_audit(conn):
     assert not nullable, f"Colonnes audit incorrectement nullable : {nullable}"
 
 
+# -- Contraintes UNIQUE -------------------------------------------------------
+
+def test_contrainte_unique_intitule_regle(conn):
+    """La colonne regle.intitule doit avoir une contrainte UNIQUE."""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT COUNT(*) FROM information_schema.table_constraints tc
+            JOIN information_schema.constraint_column_usage ccu
+                ON tc.constraint_name = ccu.constraint_name
+            WHERE tc.table_name = 'regle'
+            AND tc.constraint_type = 'UNIQUE'
+            AND ccu.column_name = 'intitule';
+        """)
+        count = cur.fetchone()[0]
+    assert count == 1, "Contrainte UNIQUE absente sur regle.intitule"
+
+
 # -- Clés primaires composites -----------------------------------------------
 
 def test_pk_composite_constat(conn):

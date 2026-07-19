@@ -48,7 +48,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("theme_id", sa.Integer, sa.ForeignKey("theme.id"), nullable=False),
         sa.Column("numero", sa.Integer, nullable=False, unique=True),
-        sa.Column("intitule", sa.String(512), nullable=False),
+        sa.Column("intitule", sa.String(512), nullable=False, unique=True),
         sa.Column("solution", sa.String(512), nullable=False),
         sa.Column("controle", sa.String(512), nullable=False),
         sa.Column("strategie_analyse", sa.String(20), nullable=False),
