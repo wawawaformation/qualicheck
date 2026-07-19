@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -34,11 +34,10 @@ class LLMClient:
 
     def __init__(self):
         """Initialise le client Azure OpenAI et le parser JSON."""
-        self.llm = AzureChatOpenAI(
-            azure_endpoint=os.getenv("AZURE_AI_ENDPOINT"),
+        self.llm = ChatOpenAI(
+            base_url=os.getenv("AZURE_AI_ENDPOINT"),
             api_key=os.getenv("AZURE_AI_API_KEY"),
-            deployment_name=os.getenv("AZURE_DEPLOYMENT_INGESTION"),
-            model_name="kimi-k2.6",
+            model=os.getenv("AZURE_DEPLOYMENT_INGESTION"),
         )
         self.parser = JsonOutputParser(pydantic_object=EnrichmentOutput)
 

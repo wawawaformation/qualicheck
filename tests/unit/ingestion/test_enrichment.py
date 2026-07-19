@@ -16,7 +16,7 @@ from app.ingestion.schema import RuleAggregation as Rule
 class TestLLMClient:
     """Tests du client LangChain + Azure."""
 
-    @patch("app.ingestion.llm_client.AzureChatOpenAI")
+    @patch("app.ingestion.llm_client.ChatOpenAI")
     def test_enrich_single_rule_success(self, mock_azure_llm):
         """Enrichit une règle avec succès."""
         mock_llm_instance = MagicMock()
@@ -53,7 +53,7 @@ class TestLLMClient:
         assert enriched.llm_provider == "kimi-k2.6"
 
     @patch("tenacity.nap.time.sleep")
-    @patch("app.ingestion.llm_client.AzureChatOpenAI")
+    @patch("app.ingestion.llm_client.ChatOpenAI")
     def test_enrich_single_rule_retry_on_timeout(self, mock_azure_llm, mock_sleep):
         """Réessaie après timeout, puis réussit."""
         mock_llm_instance = MagicMock()
@@ -94,7 +94,7 @@ class TestLLMClient:
         assert enriched.strategie_analyse == "statique"
 
     @patch("tenacity.nap.time.sleep")
-    @patch("app.ingestion.llm_client.AzureChatOpenAI")
+    @patch("app.ingestion.llm_client.ChatOpenAI")
     def test_enrich_single_rule_fails_after_three_timeouts(self, mock_azure_llm, mock_sleep):
         """Lève une exception après 3 tentatives en échec."""
         mock_llm_instance = MagicMock()
