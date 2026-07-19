@@ -96,6 +96,7 @@ class LLMClient:
             id=rule.id,
             number=rule.number,
             intitule=rule.intitule,
+            theme=rule.theme,
             solution=rule.solution,
             controle=rule.controle,
             objectifs=rule.objectifs,
