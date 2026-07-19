@@ -18,7 +18,15 @@ from .schema import RuleAggregation as Rule
 
 logger = logging.getLogger(__name__)
 
-PROMPT_PLACEHOLDERS = ["intitule", "solution", "controle", "objectifs", "tags", "phases"]
+PROMPT_PLACEHOLDERS = [
+    "intitule",
+    "contexte",
+    "solution",
+    "controle",
+    "objectifs",
+    "tags",
+    "phases",
+]
 
 
 class EnrichmentOutput(BaseModel):
@@ -57,6 +65,7 @@ class LLMClient:
 
         values = {
             "intitule": rule.intitule,
+            "contexte": rule.contexte or "(non disponible)",
             "solution": rule.solution,
             "controle": rule.controle,
             "objectifs": ", ".join(rule.objectifs),

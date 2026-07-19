@@ -38,6 +38,7 @@ Réponds **uniquement** avec un objet JSON valide, sans texte supplémentaire :
 ## Contexte de la règle
 
 - **Intitulé** : {intitule}
+- **Texte explicatif** : {contexte}
 - **Solution** : {solution}
 - **Contrôle** : {controle}
 - **Objectifs** : {objectifs}

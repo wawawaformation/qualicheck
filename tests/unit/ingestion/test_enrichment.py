@@ -313,3 +313,48 @@ class TestEnrichRules:
         assert "Enrichissement" in call_args
         assert "2" in call_args
         assert "règles enrichies" in call_args
+
+
+class TestLoadPromptContexte:
+    """Vérifie que load_prompt injecte le champ contexte."""
+
+    def test_load_prompt_includes_contexte_when_present(self, monkeypatch):
+        monkeypatch.setenv("AZURE_AI_ENDPOINT", "http://test")
+        monkeypatch.setenv("AZURE_AI_API_KEY", "test-key")
+        monkeypatch.setenv("AZURE_DEPLOYMENT_INGESTION", "test-model")
+
+        from app.ingestion.llm_client import LLMClient
+        from app.ingestion.schema import RuleAggregation
+
+        client = LLMClient()
+        rule = RuleAggregation(
+            id=1, number=1, intitule="Règle test", theme="Thème",
+            objectifs=["Obj"], tags=["Tag"], phases=["Phase"],
+            slug="regle-test", solution="Solution", controle="Contrôle",
+            contexte="Texte explicatif de la règle",
+        )
+
+        prompt = client.load_prompt(rule)
+
+        assert "Texte explicatif de la règle" in prompt
+        assert "{contexte}" not in prompt
+
+    def test_load_prompt_handles_missing_contexte(self, monkeypatch):
+        monkeypatch.setenv("AZURE_AI_ENDPOINT", "http://test")
+        monkeypatch.setenv("AZURE_AI_API_KEY", "test-key")
+        monkeypatch.setenv("AZURE_DEPLOYMENT_INGESTION", "test-model")
+
+        from app.ingestion.llm_client import LLMClient
+        from app.ingestion.schema import RuleAggregation
+
+        client = LLMClient()
+        rule = RuleAggregation(
+            id=1, number=1, intitule="Règle test", theme="Thème",
+            objectifs=["Obj"], tags=["Tag"], phases=["Phase"],
+            slug="regle-test", solution="Solution", controle="Contrôle",
+        )
+
+        prompt = client.load_prompt(rule)
+
+        assert "(non disponible)" in prompt
+        assert "{contexte}" not in prompt
