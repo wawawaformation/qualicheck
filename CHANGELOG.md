@@ -18,6 +18,7 @@ Format d'entrée, une ligne par réalisation :
   - **Nouveau champ `contexte`** (texte explicatif, `c-rule-hero__subtitle`) : traverse tout le pipeline — scraping → schémas Pydantic (`RuleAcquisition`, `RuleAggregation`, hérité par `EnrichedRule`) → prompt d'enrichissement LLM (`{contexte}`, fallback `"(non disponible)"` si absent) → colonne BDD (`TEXT NULL`, migration 0006) → stockage (`upsert_rule`, `load_enriched_rules_from_db`)
   - **Recalibrage `solution`/`controle`** (migration 0007) : `VARCHAR(1024)` → `VARCHAR(2048)`. Le scraping corrigé capture désormais le contenu complet (non tronqué) ; les vraies données dépassent l'ancienne limite calibrée sur des données elles-mêmes tronquées par les bugs (max observé sur 245 règles réelles : solution 1880, controle 1156)
   - **Validation pré-LLM** : dump JSON des 245 règles acquises dans `tmp/rules_acquises.json` (scraping + stockage réels, enrichissement bouchonné) — scraping et stockage complets validés sans coût LLM avant de poursuivre vers la ré-ingestion réelle
+  - **Revue finale whole-branch** (10 commits) : aucun Critical/Important, 2 findings mineurs corrigés (incohérence des numéros de règles cités en exemple dans une docstring ; `solution`/`controle` passés de `VARCHAR(2048)` à `TEXT`, migration 0008, pour aligner sur `contexte` et éviter un 3e recalibrage si Opquast allonge son contenu — Postgres stocke `TEXT`/`VARCHAR(n)` de façon identique, la limite n'apportait aucun gain)
 
 ## 2026-07-19 — Claude Code (Part 6)
 
