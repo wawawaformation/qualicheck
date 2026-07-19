@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-19 — Claude Code (Part 4)
+
+- **Correctif — Restauration de `theme` + `tags` optionnels (pipeline d'ingestion)** — voir `app/ingestion/schema.py`, `app/ingestion/acquisition.py`, `app/migration/versions/0001_schema_initial.py`, `app/models/referentiel.py`, `app/ingestion/stockage.py`, `app/ingestion/llm_client.py`, et fichiers de tests associés
+  - Corrige la suppression erronée de `theme`/`theme_id` faite en Part 3 (le MCD prévoyait bien une relation 1-N via `regle.theme_id`, pas une relation many-to-many comme supposé à tort) — confirmé par les données réelles de l'API Opquast : les 245 règles ont chacune exactement une valeur `Thématiques`
+  - Table `theme` + FK `regle.theme_id` (NOT NULL) restaurées dans la migration 0001 et dans `app/models/referentiel.py`
+  - `RuleAcquisition`/`RuleAggregation` (Pydantic) : ajout du champ `theme: str` (non-vide), mappé depuis `metadata.Thématiques[0]` en acquisition
+  - `tags` rendu optionnel (liste vide acceptée) côté validation Pydantic — confirmé par les données réelles : 64 des 245 règles Opquast n'ont aucun tag
+  - `upsert_rule()` (stockage) résout `theme` via `get_or_create()` et assigne `regle.theme_id` directement (FK scalaire, pas de table d'association)
+  - Tests unitaires mis à jour (fixtures acquisition/aggregation/enrichment avec `theme=...`) + nouveaux tests (tags vides acceptés, validation theme) ; tests de migration mis à jour (14 tables attendues)
+  - Vérification finale : 25 tests unitaires + 10 tests migration, tous verts ; `ruff check` clean sur `app/`, `tests/`, `scripts/`
+
 ## 2026-07-19 — Claude Code (Part 3)
 
 - **Étape 4 — Stockage (pipeline d'ingestion)** — voir `app/ingestion/stockage.py`, `scripts/ingestion.py`
