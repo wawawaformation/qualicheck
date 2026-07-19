@@ -8,6 +8,7 @@ sur une étape arrête immédiatement le script avec un code de sortie non-nul.
 seront ajoutées à ce même script dans une session future.
 """
 
+import argparse
 import logging
 import os
 import sys
@@ -38,7 +39,20 @@ def get_engine():
     return create_engine(url)
 
 
+def parse_args() -> argparse.Namespace:
+    """Parse les arguments CLI du script."""
+    parser = argparse.ArgumentParser(description="Pipeline d'ingestion QualiCheck")
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Ne traite que les N premières règles (défaut : toutes)",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
     setup_logging()
     load_dotenv()
 
@@ -46,7 +60,7 @@ def main() -> None:
 
     try:
         logger.info("Étape 1 — Acquisition : démarrage")
-        acquired = acquire_rules()
+        acquired = acquire_rules(limit=args.limit)
         logger.info("Étape 1 — Acquisition : terminée (%d règles)", len(acquired))
     except Exception as e:
         logger.error("Étape 1 — Acquisition : ÉCHEC (%s)", e)

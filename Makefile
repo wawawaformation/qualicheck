@@ -17,8 +17,9 @@ downgrade:
 	cd app/migration && uv run alembic downgrade base
 
 ## Lance le script d'ingestion des règles Opquast dans la base de données
+## LIMIT=n pour ne traiter que les n premières règles (ex: make ingestion LIMIT=5)
 ingestion:
-	uv run python scripts/ingestion.py
+	uv run python scripts/ingestion.py $(if $(LIMIT),--limit $(LIMIT),)
 
 
 ## Vide les tables Opquast de la base de données (utile pour retester une ingestion)

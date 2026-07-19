@@ -122,17 +122,23 @@ def scrape_rule(slug: str) -> dict[str, str]:
 
 
 
-def acquire_rules() -> list[dict]:
+def acquire_rules(limit: int | None = None) -> list[dict]:
     """
     Acquiert les règles Opquast via l'API et complète les champs manquants par scraping.
+
+    Args:
+        limit: Si renseigné, ne traite que les `limit` premières règles
+            retournées par l'API (utile pour tester sans scraper/enrichir
+            les 245 règles). None = toutes les règles.
 
     Returns:
         Liste de dictionnaires représentant les règles Opquast avec tous les champs remplis
     """
-    
-    
     rules = fetch_api()
-    
+
+    if limit is not None:
+        rules = rules[:limit]
+
     for rule in rules:
         scraped_data = scrape_rule(rule["slug"])
         rule.update(scraped_data)
