@@ -18,6 +18,7 @@ Format d'entrée, une ligne par réalisation :
   - `tags` rendu optionnel (liste vide acceptée) côté validation Pydantic — confirmé par les données réelles : 64 des 245 règles Opquast n'ont aucun tag
   - `upsert_rule()` (stockage) résout `theme` via `get_or_create()` et assigne `regle.theme_id` directement (FK scalaire, pas de table d'association)
   - Tests unitaires mis à jour (fixtures acquisition/aggregation/enrichment avec `theme=...`) + nouveaux tests (tags vides acceptés, validation theme) ; tests de migration mis à jour (14 tables attendues)
+  - Correctif production dans `llm_client.py` : `enrich_single_rule()` ne passait pas `theme` à `EnrichedRule` — aurait levé une `ValidationError` en production, découvert en mettant à jour les tests d'enrichissement
   - Vérification finale : 25 tests unitaires + 10 tests migration, tous verts ; `ruff check` clean sur `app/`, `tests/`, `scripts/`
 
 ## 2026-07-19 — Claude Code (Part 3)

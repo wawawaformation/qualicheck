@@ -64,6 +64,10 @@ def upsert_rule(session: Session, enriched_rule: EnrichedRule) -> Regle:
         Instance Regle persistée (pas de commit ici)
     """
     regle = session.query(Regle).filter_by(numero=enriched_rule.number).first()
+    # Theme résolu avant la création de Regle : get_or_create() interroge la
+    # session, ce qui déclenche un autoflush — s'il survenait après
+    # session.add(regle), Regle serait flushée avec theme_id encore NULL et
+    # violerait la contrainte NOT NULL.
     theme = get_or_create(session, Theme, theme=enriched_rule.theme)
 
     if regle is None:
