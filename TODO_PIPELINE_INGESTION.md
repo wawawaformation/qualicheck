@@ -23,12 +23,17 @@ Référence : `conception/2_ingestion/ingestion.md`
   - [x] Tests unitaires (13 tests)
   - Tests passants ✅
 
-- [ ] **Étape 3 — Enrichissement**
-  - [ ] `app/ingestion/enrichment.py`
-  - [ ] Appel LLM Kimi K2.6 (Azure)
-  - [ ] Génération `strategie_analyse`, `strategie_justification`, `guide_analyse`
-  - [ ] Retry logic (3 tentatives, backoff croissant)
-  - [ ] Tests unitaires avec mocks
+- [x] **Étape 3 — Enrichissement**
+  - [x] `app/ingestion/enrichment.py`
+  - [x] Classe `EnrichedRule` (Pydantic) : extension RuleAggregation
+  - [x] Classe `EnrichedRules` (collection non-vide)
+  - [x] Fonction `enrich_rules()` : Rules → EnrichedRules
+  - [x] `LLMClient` avec LangChain (langchain_core) + Azure Kimi K2.6
+  - [x] Retry logic (3 tentatives, backoff 2s/4s via tenacity)
+  - [x] Logging : erreur critique, synthèse succès
+  - [x] Few-shot prompt dans `prompts/enrich_rule.md`
+  - [x] Tests unitaires (6 tests)
+  - Tests passants ✅
 
 - [ ] **Étape 4 — Stockage**
   - [ ] `app/ingestion/stockage.py`

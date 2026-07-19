@@ -9,6 +9,23 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-19 — Claude Code (Part 2)
+
+- **Étape 3 — Enrichissement (pipeline d'ingestion)** — voir `app/ingestion/enrichment.py`, `app/ingestion/llm_client.py`, `tests/unit/ingestion/test_enrichment.py`
+  - Classe Pydantic `EnrichedRule` (schema.py) : extension de `RuleAggregation` avec champs enrichissement
+  - Classe `EnrichedRules` (aggregation.py) : collection non-vide d'`EnrichedRule`
+  - Classe `LLMClient` : client LangChain + Azure Kimi K2.6
+    - Chargement prompt depuis `prompts/enrich_rule.md` (few-shot), remplacement manuel de placeholders (pas de `PromptTemplate.format()` — le prompt contient des accolades JSON littérales dans les exemples)
+    - Retry logic : 3 tentatives, backoff exponentiel 2s/4s via `tenacity` (`wait_exponential(multiplier=2, min=2, max=8)`)
+    - `JsonOutputParser` (langchain_core) pour parsing réponse LLM stricte
+  - Fonction `enrich_rules()` : orchestration Rules → EnrichedRules
+  - Logging : erreur critique (3 timeouts), synthèse succès
+  - Tests unitaires : 6 tests (réussite, retry, échec après 3 tentatives, transformation collection, logging erreur/succès)
+  - Dépendances : langchain>=0.1.0 (résolu 1.3.14), langchain-openai>=0.1.0, tenacity>=8.2.0
+  - Convention : code anglais, docs/comments français
+  - Renommage `agregation.py` → `aggregation.py` (noms de fichiers en anglais, cohérent avec le code)
+  - Total : 22 tests unitaires ingestion passants (3 acquisition + 13 aggregation + 6 enrichment)
+
 ## 2026-07-19 — Claude Code
 
 - **Étape 2 — Agrégation (pipeline d'ingestion)** — voir `app/ingestion/aggregation.py`, `tests/unit/ingestion/test_aggregation.py`
