@@ -59,6 +59,7 @@ def fetch_api() -> list[dict]:
             id=rule["id"],
             number=rule["number"],
             intitule=rule["description"]["fr"],
+            theme=rule["metadata"]["Thématiques"][0],
             objectifs=rule["goal"]["fr"],
             tags=rule["metadata"]["Tags"],
             phases=rule["metadata"]["Phases projet"],

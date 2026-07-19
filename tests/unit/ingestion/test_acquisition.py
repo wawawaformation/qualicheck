@@ -38,6 +38,7 @@ class TestFetchApi:
                 "goal": {"fr": ["Accessibilité"]},
                 "metadata": {
                     "Tags": ["HTML"],
+                    "Thématiques": ["Contenus"],
                     "Phases projet": ["Intégration"],
                 },
                 "slug": {"fr": "regle-1"},
@@ -49,6 +50,7 @@ class TestFetchApi:
                 "goal": {"fr": ["Performance"]},
                 "metadata": {
                     "Tags": ["CSS"],
+                    "Thématiques": ["Navigation"],
                     "Phases projet": ["Design"],
                 },
                 "slug": {"fr": "regle-2"},
@@ -62,7 +64,33 @@ class TestFetchApi:
         assert len(rules) == 2
         assert rules[0]["id"] == 1
         assert rules[0]["intitule"] == "Règle 1"
+        assert rules[0]["theme"] == "Contenus"
         assert rules[1]["id"] == 2
+        assert rules[1]["theme"] == "Navigation"
+
+    @patch("app.ingestion.acquisition.requests.get")
+    def test_fetch_api_accepts_empty_tags(self, mock_get):
+        """Vérifie que fetch_api accepte une liste Tags vide."""
+        mock_response = MagicMock()
+        mock_response.json.return_value = [
+            {
+                "id": 3,
+                "number": 3,
+                "description": {"fr": "Règle 3"},
+                "goal": {"fr": ["Sécurité"]},
+                "metadata": {
+                    "Tags": [],
+                    "Thématiques": ["Sécurité"],
+                    "Phases projet": ["Développement"],
+                },
+                "slug": {"fr": "regle-3"},
+            },
+        ]
+        mock_get.return_value = mock_response
+
+        rules = fetch_api()
+
+        assert rules[0]["tags"] == []
 
 
 class TestScrapeRule:
