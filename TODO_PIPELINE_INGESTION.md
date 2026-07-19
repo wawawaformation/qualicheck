@@ -35,11 +35,13 @@ Référence : `conception/2_ingestion/ingestion.md`
   - [x] Tests unitaires (6 tests)
   - Tests passants ✅
 
-- [ ] **Étape 4 — Stockage**
-  - [ ] `app/ingestion/stockage.py`
-  - [ ] Upsert PostgreSQL via `numero` (idempotence)
-  - [ ] Tables de référence (`theme`, `objectif`, `phase`, `tag`)
-  - [ ] Tests d'intégration BDD
+- [x] **Étape 4 — Stockage**
+  - [x] `app/ingestion/stockage.py`
+  - [x] `get_or_create()` : générique, idempotent (Objectif/Phase/Tag)
+  - [x] `upsert_rule()` : upsert via numero, sync associations
+  - [x] `store_rules()` : transaction globale, fail-fast, logging
+  - [x] `scripts/ingestion.py` : orchestrateur partiel (Étapes 1-4)
+  - Validation par exécution réelle (3 règles, LLM réel) + inspection BDD + test d'idempotence — pas de suite pytest ✅
 
 - [ ] **Étape 5 — Chunking**
   - [ ] `app/ingestion/chunking.py`
@@ -58,11 +60,11 @@ Référence : `conception/2_ingestion/ingestion.md`
   - [ ] Écriture colonne `embedding`
   - [ ] Index HNSW (créé par migration BDD)
 
-- [ ] **Orchestration**
-  - [ ] `scripts/ingestion.py`
-  - [ ] Chaîne les 7 étapes en séquence
-  - [ ] Fail-fast + logs structurés
-  - [ ] Code de sortie approprié
+- [ ] **Orchestration** (partiellement fait, voir Étape 4)
+  - [x] `scripts/ingestion.py` créé, chaîne les Étapes 1-4
+  - [ ] Étendre aux Étapes 5-7 (chunking, embedding, indexation)
+  - [x] Fail-fast + logs structurés (Étapes 1-4)
+  - [x] Code de sortie approprié (Étapes 1-4)
 
 ## Notes
 

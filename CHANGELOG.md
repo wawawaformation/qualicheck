@@ -9,6 +9,18 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-19 — Claude Code (Part 3)
+
+- **Étape 4 — Stockage (pipeline d'ingestion)** — voir `app/ingestion/stockage.py`, `scripts/ingestion.py`
+  - `get_or_create()` : fonction générique idempotente pour Objectif/Phase/Tag
+  - `upsert_rule()` : upsert Regle via numero (UPDATE complet si présent, INSERT sinon), synchronise les associations many-to-many (delete + recrée)
+  - `store_rules()` : orchestration de toute la collection EnrichedRules dans une transaction unique, fail-fast avec rollback complet
+  - `embedding` reste NULL à cette étape (écrit plus tard, Étape 7)
+  - `scripts/ingestion.py` : première version, orchestre Étapes 1-4, fail-fast avec log explicite par étape et code de sortie non-nul
+  - Pas de suite pytest pour cette étape — validation par exécution réelle du script (3 règles Opquast réelles, appels LLM réels) + inspection directe des tables PostgreSQL, y compris test d'idempotence (ré-exécution → pas de doublons)
+  - Correctif préalable : suppression de `theme`/`theme_id` du MCD (erreur de conception, relation déjà couverte par `tag`) — migration 0001 corrigée directement (jamais mergée dans `main`)
+  - Bug corrigé en cours de validation : `LLMClient` utilisait `AzureChatOpenAI` (exige `api_version`, format d'URL Azure classique incompatible avec l'endpoint `/openai/v1` unifié) — remplacé par `ChatOpenAI` (client OpenAI standard, conforme à l'exemple du portail Azure AI Foundry)
+
 ## 2026-07-19 — Claude Code (Part 2)
 
 - **Étape 3 — Enrichissement (pipeline d'ingestion)** — voir `app/ingestion/enrichment.py`, `app/ingestion/llm_client.py`, `tests/unit/ingestion/test_enrichment.py`
