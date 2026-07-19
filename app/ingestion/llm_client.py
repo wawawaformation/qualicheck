@@ -11,6 +11,7 @@ from pathlib import Path
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import AzureChatOpenAI
 from pydantic import BaseModel
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from .schema import EnrichedRule
 from .schema import RuleAggregation as Rule
@@ -66,15 +67,26 @@ class LLMClient:
 
         return prompt_text
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=2, min=2, max=8),
+        reraise=True,
+    )
     def enrich_single_rule(self, rule: Rule) -> EnrichedRule:
         """
-        Enrichit une règle via LLM.
+        Enrichit une règle via LLM avec retry logic.
+
+        Retente automatiquement jusqu'à 3 fois en cas d'erreur (timeout ou
+        autre), avec backoff exponentiel (2s, 4s, 8s).
 
         Args:
             rule: Rule à enrichir
 
         Returns:
             EnrichedRule avec champs d'enrichissement
+
+        Raises:
+            TimeoutError: Si les 3 tentatives échouent (dernière exception relevée)
         """
         formatted_prompt = self.load_prompt(rule)
 
