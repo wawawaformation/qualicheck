@@ -1,20 +1,50 @@
 """
-Schéma de données pour l'acquisition des règles (API + scraping Opquast).
+Schémas Pydantic pour le pipeline d'ingestion.
 
-Utilise Pydantic pour la validation. Détail : conception/2_ingestion/ingestion.md
+Détail : conception/2_ingestion/ingestion.md
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class RuleAcquisition(BaseModel):
+    """Données brutes acquises pour une règle (API + scraping)."""
+
     id: int
     number: int
-    intitule: str  # vient de description.fr
-    objectifs: list[str]  # vient de goal.fr
-    tags: list[str]  # vient de metadata.Tags
-    phases: list[str]  # vient de metadata["Phases projet"]
-    slug: str  # vient de slug.fr
-    solution: str | None = Field(default=None)  # extrait du scraping
-    controle: str | None = Field(default=None)  # extrait du scraping
+    intitule: str
+    objectifs: list[str]
+    tags: list[str]
+    phases: list[str]
+    slug: str
+    solution: str | None = Field(default=None)
+    controle: str | None = Field(default=None)
+
+
+class RuleAggregation(BaseModel):
+    """Règle complètement validée après agrégation (données requises non-vides)."""
+
+    id: int
+    number: int
+    intitule: str
+    objectifs: list[str]
+    tags: list[str]
+    phases: list[str]
+    slug: str
+    solution: str
+    controle: str
+
+    @field_validator("objectifs", "tags", "phases")
+    @classmethod
+    def non_empty_list(cls, v):
+        if not v:
+            raise ValueError("La liste ne peut pas être vide")
+        return v
+
+    @field_validator("intitule", "solution", "controle")
+    @classmethod
+    def non_empty_string(cls, v):
+        if not v or not v.strip():
+            raise ValueError("La chaîne ne peut pas être vide")
+        return v
     
