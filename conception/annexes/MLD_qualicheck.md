@@ -24,21 +24,11 @@ numbersections: true
 
 ## Référentiel Opquast
 
-### theme
-
-```
-theme (
-  id        SERIAL        PK, NN
-  theme     VARCHAR(64)   NN, U
-)
-```
-
 ### regle
 
 ```
 regle (
   id                      SERIAL          PK, NN
-  theme_id                INT             FK → theme.id, NN
   numero                  INT             NN, U
   intitule                VARCHAR(512)    NN
   solution                VARCHAR(512)    NN
@@ -218,7 +208,6 @@ CREATE INDEX ON audit_regle (audit_id);
 
 | Table | Champ | Référence |
 |---|---|---|
-| regle | theme_id | theme.id |
 | objectif_regle | objectif_id | objectif.id |
 | objectif_regle | regle_id | regle.id |
 | phase_regle | phase_id | phase.id |

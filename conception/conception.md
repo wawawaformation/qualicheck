@@ -323,7 +323,7 @@ Les flux fonctionnels décrits ci-dessus s'appuient sur une modélisation des do
 
 Le MCD est réalisé selon la méthode Merise. Il distingue deux ensembles :
 
-**Référentiel Opquast** (données importées à l'ingestion) : `theme`, `regle`, `objectif`, `phase`, `tag` et leurs associations.
+**Référentiel Opquast** (données importées à l'ingestion) : `regle`, `objectif`, `phase`, `tag` et leurs associations.
 
 **Cœur métier QualiCheck** (données produites lors des audits) : `utilisateur`, `audit`, `page`, `audit_page`, `audit_regle`, `constat`.
 

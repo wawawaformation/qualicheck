@@ -43,13 +43,13 @@ def test_extension_vector_activee(conn):
 # -- Tables ------------------------------------------------------------------
 
 TABLES_ATTENDUES = [
-    "theme", "regle", "objectif", "phase", "tag",
+    "regle", "objectif", "phase", "tag",
     "objectif_regle", "phase_regle", "regle_tag",
     "utilisateur", "audit", "page", "audit_page", "audit_regle", "constat",
 ]
 
 def test_toutes_les_tables_existent(conn):
-    """Les 14 tables du MLD doivent toutes exister."""
+    """Les 13 tables du MLD doivent toutes exister."""
     with conn.cursor() as cur:
         cur.execute("""
             SELECT tablename FROM pg_tables
