@@ -10,6 +10,7 @@ from .aggregation import EnrichedRules, Rules
 from .llm_client import LLMClient
 
 logger = logging.getLogger(__name__)
+progress_logger = logging.getLogger("progress")
 
 
 def enrich_rules(rules: Rules) -> EnrichedRules:
@@ -36,6 +37,7 @@ def enrich_rules(rules: Rules) -> EnrichedRules:
         try:
             enriched = llm_client.enrich_single_rule(rule)
             enriched_list.append(enriched)
+            progress_logger.info(f"Règle {rule.number} — enrichissement : OK")
         except TimeoutError as e:
             logger.error(f"Règle {rule.number} — enrichissement : KO (3 timeouts)")
             raise ValueError(f"Enrichissement échoué pour règle {rule.number}") from e
