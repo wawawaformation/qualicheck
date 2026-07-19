@@ -76,7 +76,9 @@ def extract_content_after(heading) -> str:
     Collecte le contenu (texte) des frères d'un heading jusqu'au <h2> suivant.
 
     Chaque <p> devient un bloc de texte ; chaque <ul> devient un bloc où
-    chaque <li> est rendu sur sa propre ligne préfixée par "- ".
+    chaque <li> est rendu sur sa propre ligne préfixée par "- ". Un nœud
+    texte directement enfant du conteneur (sans <p> englobant — cas observé
+    sur certaines règles Opquast, ex. règle 14) est traité comme un bloc.
     Les blocs sont joints par un saut de ligne.
 
     Args:
@@ -86,8 +88,8 @@ def extract_content_after(heading) -> str:
         Texte extrait (chaîne vide si aucun contenu trouvé)
     """
     blocks = []
-    for sibling in heading.find_next_siblings():
-        if sibling.name == "h2":
+    for sibling in heading.next_siblings:
+        if getattr(sibling, "name", None) == "h2":
             break
         if sibling.name == "p":
             text = sibling.get_text(strip=True)
@@ -97,6 +99,10 @@ def extract_content_after(heading) -> str:
             items = [li.get_text(strip=True) for li in sibling.find_all("li")]
             if items:
                 blocks.append("\n".join(f"- {item}" for item in items))
+        elif sibling.name is None:
+            text = str(sibling).strip()
+            if text:
+                blocks.append(text)
 
     return "\n".join(blocks)
 

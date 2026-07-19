@@ -151,6 +151,19 @@ class TestScrapeRule:
     <html><body><p>Page inattendue</p></body></html>
     """
 
+    HTML_TEXT_NODE = """
+    <html>
+        <body>
+            <div class="c-rule-content">
+                <h2 class="c-emoji-tools">Solution technique</h2>
+                Utiliser les fonctions natives des éditeurs de contenus.
+                <h2 class="c-emoji-check">Moyen de contrôle</h2>
+                Vérifier que les contenus ne contiennent pas de caractères détournés.
+            </div>
+        </body>
+    </html>
+    """
+
     @patch("app.ingestion.acquisition.requests.get")
     def test_scrape_rule_extracts_solution_and_controle(self, mock_get):
         """Vérifie l'extraction simple solution + controle + contexte."""
@@ -213,3 +226,18 @@ class TestScrapeRule:
 
         with pytest.raises(ValueError, match="c-rule-content"):
             scrape_rule("regle-exemple")
+
+    @patch("app.ingestion.acquisition.requests.get")
+    def test_scrape_rule_captures_direct_text_node_without_p(self, mock_get):
+        """Vérifie la capture d'un texte directement enfant, sans <p> englobant
+        (structure réelle observée sur la règle 14 Opquast)."""
+        mock_response = MagicMock()
+        mock_response.text = self.HTML_TEXT_NODE
+        mock_get.return_value = mock_response
+
+        result = scrape_rule("regle-exemple")
+
+        assert result["solution"] == "Utiliser les fonctions natives des éditeurs de contenus."
+        assert result["controle"] == (
+            "Vérifier que les contenus ne contiennent pas de caractères détournés."
+        )
