@@ -18,6 +18,7 @@ class Regle(Base):
     theme_id = Column(Integer, ForeignKey("theme.id"), nullable=False)
     numero = Column(Integer, nullable=False, unique=True)
     intitule = Column(String(255), nullable=False, unique=True)
+    contexte = Column(Text, nullable=True)
     solution = Column(String(1024), nullable=False)
     controle = Column(String(1024), nullable=False)
     strategie_analyse = Column(String(32), nullable=False)

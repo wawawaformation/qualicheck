@@ -97,6 +97,7 @@ def load_enriched_rules_from_db(session: Session) -> EnrichedRules:
             id=regle.id,
             number=regle.numero,
             intitule=regle.intitule,
+            contexte=regle.contexte,
             theme=theme,
             solution=regle.solution,
             controle=regle.controle,
@@ -181,6 +182,7 @@ def upsert_rule(session: Session, enriched_rule: EnrichedRule) -> Regle:
     regle.theme_id = theme.id
 
     regle.intitule = enriched_rule.intitule
+    regle.contexte = enriched_rule.contexte
     regle.solution = enriched_rule.solution
     regle.controle = enriched_rule.controle
     regle.strategie_analyse = enriched_rule.strategie_analyse
