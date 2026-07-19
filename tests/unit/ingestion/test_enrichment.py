@@ -1,11 +1,13 @@
 """
-Tests unitaires pour app/ingestion/enrichissement.py et app/ingestion/llm_client.py
+Tests unitaires pour app/ingestion/enrichment.py et app/ingestion/llm_client.py
 
 Teste l'enrichissement LLM de règles avec retry logic et parsing JSON.
 """
 
 from unittest.mock import MagicMock, patch
 
+from app.ingestion.aggregation import EnrichedRules, Rules
+from app.ingestion.enrichment import enrich_rules
 from app.ingestion.llm_client import LLMClient
 from app.ingestion.schema import EnrichedRule
 from app.ingestion.schema import RuleAggregation as Rule
@@ -120,3 +122,74 @@ class TestLLMClient:
             pass
 
         assert mock_llm_instance.invoke.call_count == 3
+
+
+class TestEnrichRules:
+    """Tests de la fonction orchestration enrich_rules()."""
+
+    @patch("app.ingestion.enrichment.LLMClient")
+    def test_enrich_rules_transforms_collection(self, mock_llm_client_class):
+        """Transforme une collection Rules en EnrichedRules."""
+        rule1 = Rule(
+            id=1,
+            number=1,
+            intitule="Rule 1",
+            solution="Sol 1",
+            controle="Ctrl 1",
+            objectifs=["Obj1"],
+            tags=["Tag1"],
+            phases=["Phase1"],
+            slug="rule-1",
+        )
+        rule2 = Rule(
+            id=2,
+            number=2,
+            intitule="Rule 2",
+            solution="Sol 2",
+            controle="Ctrl 2",
+            objectifs=["Obj2"],
+            tags=["Tag2"],
+            phases=["Phase2"],
+            slug="rule-2",
+        )
+        rules = Rules([rule1, rule2])
+
+        mock_llm_instance = MagicMock()
+        mock_llm_client_class.return_value = mock_llm_instance
+
+        enriched1 = EnrichedRule(
+            id=1,
+            number=1,
+            intitule="Rule 1",
+            solution="Sol 1",
+            controle="Ctrl 1",
+            objectifs=["Obj1"],
+            tags=["Tag1"],
+            phases=["Phase1"],
+            slug="rule-1",
+            strategie_analyse="statique",
+            strategie_justification="Expl 1",
+            guide_analyse="Guide 1",
+        )
+        enriched2 = EnrichedRule(
+            id=2,
+            number=2,
+            intitule="Rule 2",
+            solution="Sol 2",
+            controle="Ctrl 2",
+            objectifs=["Obj2"],
+            tags=["Tag2"],
+            phases=["Phase2"],
+            slug="rule-2",
+            strategie_analyse="playwright",
+            strategie_justification="Expl 2",
+            guide_analyse="Guide 2",
+        )
+        mock_llm_instance.enrich_single_rule.side_effect = [enriched1, enriched2]
+
+        enriched_rules = enrich_rules(rules)
+
+        assert isinstance(enriched_rules, EnrichedRules)
+        assert len(enriched_rules.enriched_rules) == 2
+        assert enriched_rules.enriched_rules[0].strategie_analyse == "statique"
+        assert enriched_rules.enriched_rules[1].strategie_analyse == "playwright"

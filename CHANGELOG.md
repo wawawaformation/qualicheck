@@ -11,7 +11,7 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-07-19 — Claude Code
 
-- **Étape 2 — Agrégation (pipeline d'ingestion)** — voir `app/ingestion/agregation.py`, `tests/unit/ingestion/test_agregation.py`
+- **Étape 2 — Agrégation (pipeline d'ingestion)** — voir `app/ingestion/aggregation.py`, `tests/unit/ingestion/test_aggregation.py`
   - Classe Pydantic `RuleAggregation` (schema.py) : validation stricte (strings/listes non-vides)
   - Classe `Rules` : collection non-vide de règles agrégées
   - Fonction `aggregate_rules()` : transforme dicts acquis en Rules validée

@@ -1,11 +1,11 @@
 """
-Tests unitaires pour app/ingestion/agregation.py
+Tests unitaires pour app/ingestion/aggregation.py
 
 Teste la fusion de données acquises (API + scraping) en objets Rule validés,
 et la composition d'une collection Rules complètement validée.
 """
 
-from app.ingestion.agregation import Rule, Rules, aggregate_rules
+from app.ingestion.aggregation import Rule, Rules, aggregate_rules
 
 
 class TestRule:

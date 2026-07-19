@@ -14,7 +14,7 @@ Référence : `conception/2_ingestion/ingestion.md`
   - Tests passants ✅
 
 - [x] **Étape 2 — Agrégation**
-  - [x] `app/ingestion/agregation.py`
+  - [x] `app/ingestion/aggregation.py`
   - [x] Classe `RuleAggregation` (Pydantic) : validation stricte
   - [x] Alias `Rule = RuleAggregation`
   - [x] Classe `Rules` (collection non-vide)
@@ -24,7 +24,7 @@ Référence : `conception/2_ingestion/ingestion.md`
   - Tests passants ✅
 
 - [ ] **Étape 3 — Enrichissement**
-  - [ ] `app/ingestion/enrichissement.py`
+  - [ ] `app/ingestion/enrichment.py`
   - [ ] Appel LLM Kimi K2.6 (Azure)
   - [ ] Génération `strategie_analyse`, `strategie_justification`, `guide_analyse`
   - [ ] Retry logic (3 tentatives, backoff croissant)
