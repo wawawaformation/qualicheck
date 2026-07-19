@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-19 — Claude Code (Part 6)
+
+- **Ingestion complète des 245 règles + analyse de la classification LLM** — voir `docs/problemes_rencontres/recommandations_v4.md`, `scripts/ingestion.py`, `app/ingestion/stockage.py`, `docs/schemas/ingestion_activite.drawio`, `conception/2_ingestion/C_pipeline_ingestion.drawio`
+  - Ingestion réelle des 245 règles Opquast menée à terme (enrichissement Kimi K2.6, prompt V3) : ~1,2 M tokens, coût ~3 €. Distribution `strategie_analyse` : statique 46 %, playwright 42 %, vision 8 %, manuel 4 %
+  - **Hook `--resume`** ajouté à `scripts/ingestion.py` + `load_enriched_rules_from_db()` dans `app/ingestion/stockage.py` : permet de reprendre le pipeline depuis les règles déjà enrichies en BDD (saute étapes 1-4, évite de refaire les appels LLM coûteux) — schémas d'activité mis à jour en conséquence
+  - **Revue manuelle règle par règle** de la classification (démarche buffer `ob_start`/`ob_get_clean`) → document `docs/problemes_rencontres/recommandations_v4.md` (feuille de recommandations priorisées pour la V4)
+  - **2 bugs de scraping critiques identifiés** (`scrape_rule()`) affectant > 60 règles (> 25 %) : (1) footer légal Opquast capturé à la place de solution/controle sur 43 règles ; (2) contenu en `<ul>` ignoré (seul le `<p>` d'intro pris) sur ~34 règles. Cause commune : `find_next("p")` non borné. Solution identifiée : cibler `<div class="c-rule-content">` + classes `c-emoji-tools`/`c-emoji-check` + capturer p+ul. Correction et ré-ingestion à venir
+  - Pistes prompt V4 : stratégies composites (`vision+statique`, `playwright+vision`), critère « observation hors page web = manuel », factuel > spéculatif, acquisition du texte explicatif (`c-rule-hero__subtitle`) pour améliorer le contexte LLM
+  - Déplacement `conception/3_enrichissement/prompt_engineering.md` → `docs/problemes_rencontres/prompt_engineering.md` (regroupement des docs de problèmes rencontrés)
+  - `.gitignore` : ajout de `tmp/` (matériel de travail) et `.*.drawio.dtmp` (fichiers temporaires draw.io)
+
 ## 2026-07-19 — Claude Code (Part 5)
 
 - **Schéma BDD — Calibrage des colonnes textuelles (VARCHAR vs TEXT)** — voir `app/models/referentiel.py`, `app/migration/versions/0002-0005`, `scripts/ingestion_test.py`, `docs/problemes_rencontres/schema_text_columns.md`

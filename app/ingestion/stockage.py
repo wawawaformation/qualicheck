@@ -43,6 +43,80 @@ def count_rules(session: Session) -> int:
     return session.query(Regle).count()
 
 
+def load_enriched_rules_from_db(session: Session) -> EnrichedRules:
+    """
+    Charge toutes les règles enrichies depuis la BDD.
+
+    Utile pour reprendre l'ingestion depuis une étape intermédiaire sans
+    refaire les étapes 1-4 (acquisition, agrégation, enrichissement LLM, stockage).
+
+    Args:
+        session: Session SQLAlchemy active
+
+    Returns:
+        Collection EnrichedRules hydratée depuis la BDD
+
+    Raises:
+        ValueError: Si la BDD est vide ou incomplète
+    """
+    regles = session.query(Regle).order_by(Regle.numero).all()
+
+    if not regles:
+        raise ValueError("Aucune règle trouvée en BDD — exécuter d'abord une ingestion complète")
+
+    enriched_list = []
+    for regle in regles:
+        # Récupère les associations many-to-many
+        objectifs = (
+            session.query(Objectif.objectif)
+            .join(ObjectifRegle)
+            .filter(ObjectifRegle.regle_id == regle.id)
+            .all()
+        )
+        objectifs_list = [obj[0] for obj in objectifs]
+
+        phases = (
+            session.query(Phase.phase)
+            .join(PhaseRegle)
+            .filter(PhaseRegle.regle_id == regle.id)
+            .all()
+        )
+        phases_list = [phase[0] for phase in phases]
+
+        tags = (
+            session.query(Tag.tag)
+            .join(RegleTag)
+            .filter(RegleTag.regle_id == regle.id)
+            .all()
+        )
+        tags_list = [tag[0] for tag in tags]
+
+        theme = session.query(Theme.theme).filter(Theme.id == regle.theme_id).scalar()
+
+        enriched = EnrichedRule(
+            id=regle.id,
+            number=regle.numero,
+            intitule=regle.intitule,
+            theme=theme,
+            solution=regle.solution,
+            controle=regle.controle,
+            objectifs=objectifs_list,
+            tags=tags_list,
+            phases=phases_list,
+            slug="",  # Pas stocké en BDD, laissé vide
+            strategie_analyse=regle.strategie_analyse,
+            strategie_justification=regle.strategie_justification,
+            guide_analyse=regle.guide_analyse,
+            strategie_source=regle.strategie_source,
+            llm_provider=regle.llm_provider,
+        )
+        enriched_list.append(enriched)
+
+    enriched_rules = EnrichedRules(enriched_list)
+    logger.info(f"Chargement : {len(enriched_list)} règles enrichies depuis la BDD")
+    return enriched_rules
+
+
 def clear_opquast_tables(session: Session) -> None:
     """
     Vide les tables du référentiel Opquast (regle, theme, objectif, phase,

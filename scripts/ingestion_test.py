@@ -8,9 +8,9 @@ coûts tokens.
 Usage: make up && make migration && uv run python scripts/ingestion_test.py
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -18,11 +18,11 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.logging_config import setup_logging
 from app.ingestion.acquisition import acquire_rules
 from app.ingestion.aggregation import aggregate_rules
-from app.ingestion.stockage import store_rules, clear_opquast_tables
 from app.ingestion.schema import EnrichedRule
+from app.ingestion.stockage import clear_opquast_tables, store_rules
+from app.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
@@ -59,7 +59,7 @@ def create_enriched_rule_stub(aggregated_rule):
         phases=aggregated_rule.phases,
         slug=aggregated_rule.slug,
         strategie_analyse="test",
-        strategie_justification="Test justification — enrichissement bypassed pour validation schéma",
+        strategie_justification="Test justification — enrichissement bypassé (validation schéma)",
         guide_analyse="Test guide — voir scripts/ingestion_test.py pour détails",
         strategie_source="ia_import",
         llm_provider="test",

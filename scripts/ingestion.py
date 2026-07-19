@@ -23,7 +23,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.ingestion.acquisition import acquire_rules  # noqa: E402
 from app.ingestion.aggregation import aggregate_rules  # noqa: E402
 from app.ingestion.enrichment import enrich_rules  # noqa: E402
-from app.ingestion.stockage import clear_opquast_tables, count_rules, store_rules  # noqa: E402
+from app.ingestion.stockage import (  # noqa: E402
+    clear_opquast_tables,
+    count_rules,
+    load_enriched_rules_from_db,
+    store_rules,
+)
 from app.logging_config import setup_logging  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -48,6 +53,11 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=None,
         help="Ne traite que les N premières règles (défaut : toutes)",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Reprend l'ingestion depuis les règles enrichies en BDD (saute étapes 1-4)",
     )
     return parser.parse_args()
 
@@ -94,63 +104,78 @@ def main() -> None:
     load_dotenv()
 
     engine = get_engine()
-    with Session(engine) as session:
-        check_existing_data(session)
 
-    logger.info("=== Pipeline d'ingestion : démarrage ===")
-    progress_logger.info("=== Pipeline d'ingestion : démarrage ===")
-
-    try:
-        logger.info("Étape 1 — Acquisition : démarrage")
-        progress_logger.info("Étape 1 — Acquisition : démarrage")
-        acquired = acquire_rules(limit=args.limit)
-        logger.info("Étape 1 — Acquisition : terminée (%d règles)", len(acquired))
-    except Exception as e:
-        logger.error("Étape 1 — Acquisition : ÉCHEC (%s)", e)
-        sys.exit(1)
-
-    try:
-        logger.info("Étape 2 — Agrégation : démarrage")
-        progress_logger.info("Étape 2 — Agrégation : démarrage")
-        rules = aggregate_rules(acquired)
-        logger.info("Étape 2 — Agrégation : terminée")
-    except Exception as e:
-        logger.error("Étape 2 — Agrégation : ÉCHEC (%s)", e)
-        sys.exit(1)
-
-    try:
-        logger.info("Étape 3 — Enrichissement : démarrage")
-        progress_logger.info("Étape 3 — Enrichissement : démarrage")
-        enriched = enrich_rules(rules)
-        logger.info("Étape 3 — Enrichissement : terminée")
-    except Exception as e:
-        logger.error("Étape 3 — Enrichissement : ÉCHEC (%s)", e)
-        sys.exit(1)
-
-    try:
-        logger.info("Étape 4 — Stockage : démarrage")
-        progress_logger.info("Étape 4 — Stockage : démarrage")
+    # Hook : reprendre depuis la BDD pour éviter de refaire l'enrichissement LLM
+    if args.resume:
+        logger.info("=== Pipeline d'ingestion : reprise depuis BDD (étapes 1-4 sautées) ===")
+        progress_logger.info("=== Pipeline d'ingestion : reprise depuis BDD ===")
+        try:
+            with Session(engine) as session:
+                enriched = load_enriched_rules_from_db(session)
+            logger.info("Étapes 1-4 — Chargement depuis BDD : terminé")
+            progress_logger.info(f"Chargement : {len(enriched.regles)} règles enrichies depuis BDD")
+        except Exception as e:
+            logger.error("Chargement depuis BDD : ÉCHEC (%s)", e)
+            sys.exit(1)
+    else:
+        # Pipeline complet : étapes 1-4
         with Session(engine) as session:
-            store_rules(session, enriched)
-        logger.info("Étape 4 — Stockage : terminée")
-    except Exception as e:
-        logger.error("Étape 4 — Stockage : ÉCHEC (%s)", e)
-        sys.exit(1)
+            check_existing_data(session)
 
-    price_input_per_1m = float(os.getenv("KIMI_PRICE_INPUT_PER_1M", "0"))
-    price_output_per_1m = float(os.getenv("KIMI_PRICE_OUTPUT_PER_1M", "0"))
-    cost = (
-        enriched.input_tokens * price_input_per_1m
-        + enriched.output_tokens * price_output_per_1m
-    ) / 1_000_000
+        logger.info("=== Pipeline d'ingestion : démarrage ===")
+        progress_logger.info("=== Pipeline d'ingestion : démarrage ===")
 
-    summary = (
-        f"Tokens — entrée : {enriched.input_tokens}, sortie : {enriched.output_tokens}, "
-        f"total : {enriched.input_tokens + enriched.output_tokens}, "
-        f"coût estimé : {cost:.4f} €"
-    )
-    logger.info(summary)
-    progress_logger.info(summary)
+        try:
+            logger.info("Étape 1 — Acquisition : démarrage")
+            progress_logger.info("Étape 1 — Acquisition : démarrage")
+            acquired = acquire_rules(limit=args.limit)
+            logger.info("Étape 1 — Acquisition : terminée (%d règles)", len(acquired))
+        except Exception as e:
+            logger.error("Étape 1 — Acquisition : ÉCHEC (%s)", e)
+            sys.exit(1)
+
+        try:
+            logger.info("Étape 2 — Agrégation : démarrage")
+            progress_logger.info("Étape 2 — Agrégation : démarrage")
+            rules = aggregate_rules(acquired)
+            logger.info("Étape 2 — Agrégation : terminée")
+        except Exception as e:
+            logger.error("Étape 2 — Agrégation : ÉCHEC (%s)", e)
+            sys.exit(1)
+
+        try:
+            logger.info("Étape 3 — Enrichissement : démarrage")
+            progress_logger.info("Étape 3 — Enrichissement : démarrage")
+            enriched = enrich_rules(rules)
+            logger.info("Étape 3 — Enrichissement : terminée")
+        except Exception as e:
+            logger.error("Étape 3 — Enrichissement : ÉCHEC (%s)", e)
+            sys.exit(1)
+
+        try:
+            logger.info("Étape 4 — Stockage : démarrage")
+            progress_logger.info("Étape 4 — Stockage : démarrage")
+            with Session(engine) as session:
+                store_rules(session, enriched)
+            logger.info("Étape 4 — Stockage : terminée")
+        except Exception as e:
+            logger.error("Étape 4 — Stockage : ÉCHEC (%s)", e)
+            sys.exit(1)
+
+        price_input_per_1m = float(os.getenv("KIMI_PRICE_INPUT_PER_1M", "0"))
+        price_output_per_1m = float(os.getenv("KIMI_PRICE_OUTPUT_PER_1M", "0"))
+        cost = (
+            enriched.input_tokens * price_input_per_1m
+            + enriched.output_tokens * price_output_per_1m
+        ) / 1_000_000
+
+        summary = (
+            f"Tokens — entrée : {enriched.input_tokens}, sortie : {enriched.output_tokens}, "
+            f"total : {enriched.input_tokens + enriched.output_tokens}, "
+            f"coût estimé : {cost:.4f} €"
+        )
+        logger.info(summary)
+        progress_logger.info(summary)
 
     logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")
     progress_logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")

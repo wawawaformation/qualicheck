@@ -1,115 +1,109 @@
-<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
-  <root>
-    <mxCell id="0" />
-    <mxCell id="1" parent="0" />
-
-    <!-- BLOC 1 : ACQUISITION -->
-    <mxCell id="b1" value="1 — Acquisition" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
-      <mxGeometry x="40" y="40" width="1000" height="130" as="geometry" />
-    </mxCell>
-    <mxCell id="api" value="API REST Opquast&#xa;intitulé, objectifs, tags, phases" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b1">
-      <mxGeometry x="80" y="40" width="260" height="60" as="geometry" />
-    </mxCell>
-    <mxCell id="scraping" value="Scraping Opquast&#xa;solution, contrôle" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b1">
-      <mxGeometry x="660" y="40" width="260" height="60" as="geometry" />
-    </mxCell>
-
-    <!-- BLOC 2 : AGREGATION -->
-    <mxCell id="b2" value="2 — Agrégation" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
-      <mxGeometry x="40" y="200" width="1000" height="90" as="geometry" />
-    </mxCell>
-    <mxCell id="fusion" value="Fusion des données&#xa;1 objet par règle Opquast" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b2">
-      <mxGeometry x="370" y="25" width="260" height="50" as="geometry" />
-    </mxCell>
-
-    <!-- BLOC 3 : ENRICHISSEMENT -->
-    <mxCell id="b3" value="3 — Enrichissement (Kimi K2.6)" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
-      <mxGeometry x="40" y="320" width="1000" height="90" as="geometry" />
-    </mxCell>
-    <mxCell id="agent" value="Agent enrichissement&#xa;stratégie + justification + guide_analyse" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b3">
-      <mxGeometry x="270" y="22" width="460" height="50" as="geometry" />
-    </mxCell>
-
-    <!-- BLOC 4 : STOCKAGE -->
-    <mxCell id="b4" value="4 — Stockage PostgreSQL" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
-      <mxGeometry x="40" y="440" width="1000" height="120" as="geometry" />
-    </mxCell>
-    <mxCell id="regle" value="regle&#xa;champs Opquast + champs IA" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
-      <mxGeometry x="370" y="28" width="260" height="50" as="geometry" />
-    </mxCell>
-    <mxCell id="theme" value="theme" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
-      <mxGeometry x="46" y="35" width="110" height="36" as="geometry" />
-    </mxCell>
-    <mxCell id="objectif" value="objectif" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
-      <mxGeometry x="166" y="35" width="110" height="36" as="geometry" />
-    </mxCell>
-    <mxCell id="phase" value="phase" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
-      <mxGeometry x="724" y="35" width="110" height="36" as="geometry" />
-    </mxCell>
-    <mxCell id="tag" value="tag" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b4">
-      <mxGeometry x="844" y="35" width="110" height="36" as="geometry" />
-    </mxCell>
-
-    <!-- Liaisons tables associées -->
-    <mxCell id="l1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="theme" target="regle" parent="b4">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="l2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="objectif" target="regle" parent="b4">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="l3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="phase" target="regle" parent="b4">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="l4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" edge="1" source="tag" target="regle" parent="b4">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-
-    <!-- BLOC 5 : CHUNKING -->
-    <mxCell id="b5" value="5 — Chunking (1 chunk = 1 règle)" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
-      <mxGeometry x="40" y="590" width="1000" height="90" as="geometry" />
-    </mxCell>
-    <mxCell id="chunk" value="Construction du chunk&#xa;intitulé + solution + contrôle + guide_analyse + tags + phases" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b5">
-      <mxGeometry x="100" y="22" width="800" height="50" as="geometry" />
-    </mxCell>
-
-    <!-- BLOC 6 : EMBEDDING -->
-    <mxCell id="b6" value="6 — Embedding (Infomaniak — gratuit)" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
-      <mxGeometry x="40" y="710" width="1000" height="90" as="geometry" />
-    </mxCell>
-    <mxCell id="embed" value="All MiniLM L12 v2&#xa;384 dimensions — sans appel GPU" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b6">
-      <mxGeometry x="250" y="22" width="500" height="50" as="geometry" />
-    </mxCell>
-
-    <!-- BLOC 7 : INDEXATION -->
-    <mxCell id="b7" value="7 — Indexation pgvector" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" vertex="1" parent="1">
-      <mxGeometry x="40" y="830" width="1000" height="90" as="geometry" />
-    </mxCell>
-    <mxCell id="pgvec" value="colonne embedding sur regle&#xa;UPDATE regle SET embedding = [...] WHERE id = x" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" vertex="1" parent="b7">
-      <mxGeometry x="200" y="22" width="600" height="50" as="geometry" />
-    </mxCell>
-
-    <!-- FLECHES PRINCIPALES -->
-    <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="api" target="fusion" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="scraping" target="fusion" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="fusion" target="agent" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="agent" target="regle" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="regle" target="chunk" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="chunk" target="embed" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-    <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="embed" target="pgvec" parent="1">
-      <mxGeometry relative="1" as="geometry" />
-    </mxCell>
-
-  </root>
-</mxGraphModel>
+<mxfile host="Electron">
+  <diagram id="AFSP7uc_1uHju7TL4TKc" name="Page-1">
+    <mxGraphModel dx="1740" dy="926" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="b0" parent="1" style="swimlane;startSize=25;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="0 — Hook : --resume" vertex="1">
+          <mxGeometry height="100" width="1000" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="resume_check" parent="b0" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=0;html=0;" value="--resume activé ?&#xa;Charger EnrichedRules depuis BDD&#xa;(Saute étapes 1-4, gratuit)" vertex="1">
+          <mxGeometry height="60" width="400" x="300" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="1 — Acquisition" vertex="1">
+          <mxGeometry height="130" width="1000" x="40" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="b1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" value="API REST Opquast&#xa;intitulé, objectifs, tags, phases" vertex="1">
+          <mxGeometry height="60" width="260" x="80" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="scraping" parent="b1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" value="Scraping Opquast&#xa;solution, contrôle" vertex="1">
+          <mxGeometry height="60" width="260" x="660" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="2 — Agrégation" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="fusion" parent="b2" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" value="Fusion des données&#xa;1 objet par règle Opquast" vertex="1">
+          <mxGeometry height="50" width="260" x="370" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="b3" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="3 — Enrichissement (Kimi K2.6)" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="agent" parent="b3" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" value="Agent enrichissement&#xa;stratégie + justification + guide_analyse" vertex="1">
+          <mxGeometry height="50" width="460" x="270" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="b4" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor:#333333;fontStyle=1;fontSize=11;html=0;" value="4 — Stockage PostgreSQL" vertex="1">
+          <mxGeometry height="120" width="1000" x="40" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="regle" parent="b4" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" value="regle&#xa;champs Opquast + champs IA" vertex="1">
+          <mxGeometry height="50" width="260" x="370" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="theme" parent="b4" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" value="theme" vertex="1">
+          <mxGeometry height="36" width="110" x="46" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="objectif" parent="b4" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" value="objectif" vertex="1">
+          <mxGeometry height="36" width="110" x="170" y="71" as="geometry" />
+        </mxCell>
+        <mxCell id="phase" parent="b4" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" value="phase" vertex="1">
+          <mxGeometry height="36" width="110" x="724" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="tag" parent="b4" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" value="tag" vertex="1">
+          <mxGeometry height="36" width="110" x="844" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="l1" edge="1" parent="b4" source="theme" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" target="regle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l2" edge="1" parent="b4" source="objectif" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" target="regle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l3" edge="1" parent="b4" source="phase" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" target="regle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l4" edge="1" parent="b4" source="tag" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;endArrow=none;" target="regle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b5" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor:#333333;fontStyle=1;fontSize=11;html=0;" value="5 — Chunking (1 chunk = 1 règle)" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="chunk" parent="b5" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;fontStyle=1;html=0;" value="Construction du chunk&#xa;intitulé + solution + contrôle + guide_analyse + tags + phases" vertex="1">
+          <mxGeometry height="50" width="800" x="100" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="b6" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="6 — Embedding (Infomaniak — gratuit)" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="embed" parent="b6" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" value="All MiniLM L12 v2&#xa;384 dimensions — sans appel GPU" vertex="1">
+          <mxGeometry height="50" width="500" x="250" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="b7" parent="1" style="swimlane;startSize=25;fillColor:#f5f5f5;strokeColor=#666666;fontColor:#333333;fontStyle=1;fontSize=11;html=0;" value="7 — Indexation pgvector" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="950" as="geometry" />
+        </mxCell>
+        <mxCell id="pgvec" parent="b7" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" value="colonne embedding sur regle&#xa;UPDATE regle SET embedding = [...] WHERE id = x" vertex="1">
+          <mxGeometry height="50" width="600" x="200" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" edge="1" parent="1" source="resume_check" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d6b656;dashed=1;" target="chunk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="fusion">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="scraping" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="fusion">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="fusion" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="regle">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="chunk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="chunk" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="embed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="embed" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="pgvec">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

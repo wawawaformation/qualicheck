@@ -19,3 +19,7 @@ logs/*.log
 # Fichiers de backup draw.io
 *.drawio.bkp
 .*.drawio.bkp
+.*.drawio.dtmp
+
+# Matériel de travail temporaire (brainstorm, analyses brutes)
+tmp/
