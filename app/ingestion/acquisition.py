@@ -77,9 +77,9 @@ def extract_content_after(heading) -> str:
 
     Chaque <ul> devient un bloc où chaque <li> est rendu sur sa propre ligne
     préfixée par "- ". Tout autre frère non vide (<p>, <div>, ou nœud texte
-    direct — variantes observées sur des règles Opquast réelles, ex. règles
-    14 et 166) est traité comme un simple bloc de texte. Les blocs sont
-    joints par un saut de ligne.
+    direct — variantes observées sur des règles Opquast réelles, ex. règle 14
+    pour le texte direct et règle 27 pour le <div>) est traité comme un
+    simple bloc de texte. Les blocs sont joints par un saut de ligne.
 
     Args:
         heading: Élément BeautifulSoup <h2> de départ
