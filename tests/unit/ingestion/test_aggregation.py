@@ -17,6 +17,7 @@ class TestRule:
             id=1,
             number=1,
             intitule="Titule de la règle",
+            theme="Contenus",
             solution="Mettre en place X",
             controle="Vérifier Y",
             objectifs=["Accessibilité"],
@@ -28,12 +29,30 @@ class TestRule:
         assert regle.id == 1
         assert regle.number == 1
         assert regle.intitule == "Titule de la règle"
+        assert regle.theme == "Contenus"
         assert regle.solution == "Mettre en place X"
         assert regle.controle == "Vérifier Y"
         assert regle.objectifs == ["Accessibilité"]
         assert regle.tags == ["HTML"]
         assert regle.phases == ["Intégration"]
         assert regle.slug == "regle-avec-des-tirets"
+
+    def test_regle_creation_with_empty_tags(self):
+        """Crée une Rule avec une liste tags vide (désormais accepté)."""
+        regle = Rule(
+            id=1,
+            number=1,
+            intitule="Intitulé",
+            theme="Contenus",
+            solution="Solution",
+            controle="Contrôle",
+            objectifs=["Objectif"],
+            tags=[],
+            phases=["Phase"],
+            slug="slug",
+        )
+
+        assert regle.tags == []
 
     def test_regle_fails_if_intitule_empty(self):
         """Lève une erreur si intitulé vide."""
@@ -42,6 +61,26 @@ class TestRule:
                 id=1,
                 number=1,
                 intitule="",
+                theme="Contenus",
+                solution="Solution",
+                controle="Contrôle",
+                objectifs=["Objectif"],
+                tags=["Tag"],
+                phases=["Phase"],
+                slug="slug",
+            )
+            assert False, "Should have raised an error"
+        except ValueError:
+            pass
+
+    def test_regle_fails_if_theme_empty(self):
+        """Lève une erreur si theme vide."""
+        try:
+            Rule(
+                id=1,
+                number=1,
+                intitule="Intitulé",
+                theme="",
                 solution="Solution",
                 controle="Contrôle",
                 objectifs=["Objectif"],
@@ -60,6 +99,7 @@ class TestRule:
                 id=1,
                 number=1,
                 intitule="Intitulé",
+                theme="Contenus",
                 solution="",
                 controle="Contrôle",
                 objectifs=["Objectif"],
@@ -78,6 +118,7 @@ class TestRule:
                 id=1,
                 number=1,
                 intitule="Intitulé",
+                theme="Contenus",
                 solution="Solution",
                 controle="",
                 objectifs=["Objectif"],
@@ -96,28 +137,11 @@ class TestRule:
                 id=1,
                 number=1,
                 intitule="Intitulé",
+                theme="Contenus",
                 solution="Solution",
                 controle="Contrôle",
                 objectifs=[],
                 tags=["Tag"],
-                phases=["Phase"],
-                slug="slug",
-            )
-            assert False, "Should have raised an error"
-        except ValueError:
-            pass
-
-    def test_regle_fails_if_tags_empty(self):
-        """Lève une erreur si liste de tags vide."""
-        try:
-            Rule(
-                id=1,
-                number=1,
-                intitule="Intitulé",
-                solution="Solution",
-                controle="Contrôle",
-                objectifs=["Objectif"],
-                tags=[],
                 phases=["Phase"],
                 slug="slug",
             )
@@ -132,6 +156,7 @@ class TestRule:
                 id=1,
                 number=1,
                 intitule="Intitulé",
+                theme="Contenus",
                 solution="Solution",
                 controle="Contrôle",
                 objectifs=["Objectif"],
@@ -153,6 +178,7 @@ class TestRules:
             id=1,
             number=1,
             intitule="Règle 1",
+            theme="Contenus",
             solution="Solution 1",
             controle="Contrôle 1",
             objectifs=["Objectif 1"],
@@ -164,6 +190,7 @@ class TestRules:
             id=2,
             number=2,
             intitule="Règle 2",
+            theme="Navigation",
             solution="Solution 2",
             controle="Contrôle 2",
             objectifs=["Objectif 2"],
@@ -197,6 +224,7 @@ class TestAggregateRules:
                 "id": 1,
                 "number": 1,
                 "intitule": "Règle 1",
+                "theme": "Contenus",
                 "solution": "Solution 1",
                 "controle": "Contrôle 1",
                 "objectifs": ["Accessibilité"],
@@ -208,10 +236,11 @@ class TestAggregateRules:
                 "id": 2,
                 "number": 2,
                 "intitule": "Règle 2",
+                "theme": "Navigation",
                 "solution": "Solution 2",
                 "controle": "Contrôle 2",
                 "objectifs": ["Performance"],
-                "tags": ["CSS"],
+                "tags": [],
                 "phases": ["Design"],
                 "slug": "regle-2",
             },
@@ -223,7 +252,9 @@ class TestAggregateRules:
         assert len(regles.regles) == 2
         assert regles.regles[0].number == 1
         assert regles.regles[0].intitule == "Règle 1"
+        assert regles.regles[0].theme == "Contenus"
         assert regles.regles[1].number == 2
+        assert regles.regles[1].tags == []
 
     def test_aggregate_rules_fails_if_missing_intitule(self):
         """Lève une erreur si champ 'intitule' manquant."""
@@ -232,6 +263,30 @@ class TestAggregateRules:
                 "id": 1,
                 "number": 1,
                 # intitule manquant
+                "theme": "Contenus",
+                "solution": "Solution 1",
+                "controle": "Contrôle 1",
+                "objectifs": ["Accessibilité"],
+                "tags": ["HTML"],
+                "phases": ["Intégration"],
+                "slug": "regle-1",
+            }
+        ]
+
+        try:
+            aggregate_rules(acquired_rules)
+            assert False, "Should have raised an error"
+        except (KeyError, ValueError):
+            pass
+
+    def test_aggregate_rules_fails_if_missing_theme(self):
+        """Lève une erreur si champ 'theme' manquant."""
+        acquired_rules = [
+            {
+                "id": 1,
+                "number": 1,
+                "intitule": "Règle 1",
+                # theme manquant
                 "solution": "Solution 1",
                 "controle": "Contrôle 1",
                 "objectifs": ["Accessibilité"],
@@ -254,6 +309,7 @@ class TestAggregateRules:
                 "id": 1,
                 "number": 1,
                 "intitule": "Règle 1",
+                "theme": "Contenus",
                 # solution manquante
                 "controle": "Contrôle 1",
                 "objectifs": ["Accessibilité"],
@@ -276,6 +332,7 @@ class TestAggregateRules:
                 "id": 1,
                 "number": 1,
                 "intitule": "Règle 1",
+                "theme": "Contenus",
                 "solution": "Solution 1",
                 # controle manquant
                 "objectifs": ["Accessibilité"],

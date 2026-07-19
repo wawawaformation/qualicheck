@@ -13,6 +13,7 @@ class RuleAcquisition(BaseModel):
     id: int
     number: int
     intitule: str
+    theme: str
     objectifs: list[str]
     tags: list[str]
     phases: list[str]
@@ -27,6 +28,7 @@ class RuleAggregation(BaseModel):
     id: int
     number: int
     intitule: str
+    theme: str
     objectifs: list[str]
     tags: list[str]
     phases: list[str]
@@ -34,14 +36,14 @@ class RuleAggregation(BaseModel):
     solution: str
     controle: str
 
-    @field_validator("objectifs", "tags", "phases")
+    @field_validator("objectifs", "phases")
     @classmethod
     def non_empty_list(cls, v):
         if not v:
             raise ValueError("La liste ne peut pas être vide")
         return v
 
-    @field_validator("intitule", "solution", "controle")
+    @field_validator("intitule", "theme", "solution", "controle")
     @classmethod
     def non_empty_string(cls, v):
         if not v or not v.strip():
@@ -64,4 +66,3 @@ class EnrichedRule(RuleAggregation):
         if not v or not v.strip():
             raise ValueError("La chaîne ne peut pas être vide")
         return v
-
