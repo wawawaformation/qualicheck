@@ -7,6 +7,8 @@ Utilise des mocks pour éviter les appels réseau réels.
 
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from app.ingestion.acquisition import build_rule_url, fetch_api, scrape_rule
 
 
@@ -96,25 +98,118 @@ class TestFetchApi:
 class TestScrapeRule:
     """Tests de la fonction scrape_rule."""
 
+    HTML_SIMPLE = """
+    <html>
+        <body>
+            <div class="c-rule-hero__subtitle">Texte explicatif de la règle.</div>
+            <div class="c-rule-content">
+                <h2 class="c-emoji-target">Objectif</h2>
+                <ul><li>Permettre X</li></ul>
+                <h2 class="c-emoji-tools">Solution technique</h2>
+                <p>Mettre en place un flux RSS pour les nouveaux contenus</p>
+                <h2 class="c-emoji-check">Moyen de contrôle</h2>
+                <p>Vérifier la présence d'un flux RSS valide</p>
+            </div>
+            <footer><p>SAS au capital de 1000 euros - Lucien Granet</p></footer>
+        </body>
+    </html>
+    """
+
+    HTML_MULTI_BLOCS = """
+    <html>
+        <body>
+            <div class="c-rule-content">
+                <h2 class="c-emoji-tools">Solution technique</h2>
+                <p>Ne pas utiliser d'ouverture automatique de fenêtre</p>
+                <h2 class="c-emoji-check">Moyen de contrôle</h2>
+                <p>Cette bonne pratique est à vérifier manuellement.</p>
+                <p>Dans toutes les pages internes du site :</p>
+                <ul>
+                    <li>Vérifier que la navigation ne provoque pas de popup</li>
+                    <li>Vérifier chaque lien externe</li>
+                </ul>
+            </div>
+            <footer><p>SAS au capital de 1000 euros - Lucien Granet</p></footer>
+        </body>
+    </html>
+    """
+
+    HTML_NO_SUBTITLE = """
+    <html>
+        <body>
+            <div class="c-rule-content">
+                <h2 class="c-emoji-tools">Solution technique</h2>
+                <p>Solution simple</p>
+                <h2 class="c-emoji-check">Moyen de contrôle</h2>
+                <p>Contrôle simple</p>
+            </div>
+        </body>
+    </html>
+    """
+
+    HTML_NO_CONTENT_DIV = """
+    <html><body><p>Page inattendue</p></body></html>
+    """
+
     @patch("app.ingestion.acquisition.requests.get")
     def test_scrape_rule_extracts_solution_and_controle(self, mock_get):
-        """Vérifie que scrape_rule extrait solution et controle du HTML."""
+        """Vérifie l'extraction simple solution + controle + contexte."""
         mock_response = MagicMock()
-        mock_response.text = """
-        <html>
-            <h2>Solution technique</h2>
-            <p>Mettre en place un flux RSS pour les nouveaux contenus</p>
-            <h2>Moyen de contrôle</h2>
-            <p>Vérifier la présence d'un flux RSS valide</p>
-        </html>
-        """
+        mock_response.text = self.HTML_SIMPLE
         mock_get.return_value = mock_response
 
         result = scrape_rule("regle-exemple")
 
-        assert isinstance(result, dict)
-        assert "solution" in result
-        assert "controle" in result
-        assert result["solution"] is not None
-        assert result["controle"] is not None
- 
+        assert result["solution"] == "Mettre en place un flux RSS pour les nouveaux contenus"
+        assert result["controle"] == "Vérifier la présence d'un flux RSS valide"
+        assert result["contexte"] == "Texte explicatif de la règle."
+
+    @patch("app.ingestion.acquisition.requests.get")
+    def test_scrape_rule_never_captures_footer(self, mock_get):
+        """Vérifie que le footer n'est jamais capturé (bornage c-rule-content)."""
+        mock_response = MagicMock()
+        mock_response.text = self.HTML_SIMPLE
+        mock_get.return_value = mock_response
+
+        result = scrape_rule("regle-exemple")
+
+        assert "SAS au capital" not in result["solution"]
+        assert "SAS au capital" not in result["controle"]
+
+    @patch("app.ingestion.acquisition.requests.get")
+    def test_scrape_rule_collects_multiple_blocks_and_ul(self, mock_get):
+        """Vérifie que plusieurs <p> + un <ul> sont tous capturés et concaténés (règle 154)."""
+        mock_response = MagicMock()
+        mock_response.text = self.HTML_MULTI_BLOCS
+        mock_get.return_value = mock_response
+
+        result = scrape_rule("regle-exemple")
+
+        expected_controle = (
+            "Cette bonne pratique est à vérifier manuellement.\n"
+            "Dans toutes les pages internes du site :\n"
+            "- Vérifier que la navigation ne provoque pas de popup\n"
+            "- Vérifier chaque lien externe"
+        )
+        assert result["controle"] == expected_controle
+
+    @patch("app.ingestion.acquisition.requests.get")
+    def test_scrape_rule_contexte_none_when_subtitle_absent(self, mock_get):
+        """Vérifie que contexte est None si .c-rule-hero__subtitle est absent."""
+        mock_response = MagicMock()
+        mock_response.text = self.HTML_NO_SUBTITLE
+        mock_get.return_value = mock_response
+
+        result = scrape_rule("regle-exemple")
+
+        assert result["contexte"] is None
+
+    @patch("app.ingestion.acquisition.requests.get")
+    def test_scrape_rule_raises_when_content_div_absent(self, mock_get):
+        """Vérifie le fail-fast si c-rule-content est absent (structure inattendue)."""
+        mock_response = MagicMock()
+        mock_response.text = self.HTML_NO_CONTENT_DIV
+        mock_get.return_value = mock_response
+
+        with pytest.raises(ValueError, match="c-rule-content"):
+            scrape_rule("regle-exemple")

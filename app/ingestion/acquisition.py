@@ -71,18 +71,55 @@ def fetch_api() -> list[dict]:
     return rules
 
 
-def scrape_rule(slug: str) -> dict[str, str]:
+def extract_content_after(heading) -> str:
     """
-    Scrape les informations d'une règle Opquast depuis le site web pour extraire les champs
-    `solution` et `controle`.
+    Collecte le contenu (texte) des frères d'un heading jusqu'au <h2> suivant.
+
+    Chaque <p> devient un bloc de texte ; chaque <ul> devient un bloc où
+    chaque <li> est rendu sur sa propre ligne préfixée par "- ".
+    Les blocs sont joints par un saut de ligne.
+
+    Args:
+        heading: Élément BeautifulSoup <h2> de départ
+
+    Returns:
+        Texte extrait (chaîne vide si aucun contenu trouvé)
+    """
+    blocks = []
+    for sibling in heading.find_next_siblings():
+        if sibling.name == "h2":
+            break
+        if sibling.name == "p":
+            text = sibling.get_text(strip=True)
+            if text:
+                blocks.append(text)
+        elif sibling.name == "ul":
+            items = [li.get_text(strip=True) for li in sibling.find_all("li")]
+            if items:
+                blocks.append("\n".join(f"- {item}" for item in items))
+
+    return "\n".join(blocks)
+
+
+def scrape_rule(slug: str) -> dict[str, str | None]:
+    """
+    Scrape les informations d'une règle Opquast depuis le site web pour extraire
+    les champs `solution`, `controle` et `contexte`.
+
+    L'extraction est bornée au conteneur `div.c-rule-content` : le pied de page
+    du site est structurellement hors de ce conteneur et ne peut donc jamais
+    être capturé par erreur.
 
     Args:
         slug: Slug de la règle
 
     Returns:
-        Dictionnaire contenant "solution" et "controle"
+        Dictionnaire contenant "solution", "controle" (str) et "contexte" (str | None)
+
+    Raises:
+        ValueError: Si le conteneur de contenu est introuvable, ou si
+            solution/controle sont vides après extraction
     """
-    
     logger.info("Scraping rule: %s", slug)
 
     url = build_rule_url(slug)
@@ -91,24 +128,27 @@ def scrape_rule(slug: str) -> dict[str, str]:
 
     soup = BeautifulSoup(response.text, "html.parser")
 
+    content = soup.find("div", class_="c-rule-content")
+    if content is None:
+        logger.error("c-rule-content container not found for slug: %s", slug)
+        raise ValueError(f"c-rule-content container not found for slug: {slug}")
+
+    subtitle = soup.find(class_="c-rule-hero__subtitle")
+    contexte = subtitle.get_text(strip=True) if subtitle else None
+
     solution = ""
     controle = ""
 
-    headings = soup.find_all(["h2", "h3"])
-    for heading in headings:
-        heading_text = heading.get_text(strip=True).lower()
+    for heading in content.find_all("h2"):
+        heading_classes = heading.get("class") or []
 
-        if "solution" in heading_text:
-            next_p = heading.find_next("p")
-            if next_p:
-                solution = next_p.get_text(strip=True)
-                logger.debug("Found solution for slug: %s", slug)
+        if "c-emoji-tools" in heading_classes:
+            solution = extract_content_after(heading)
+            logger.debug("Found solution for slug: %s", slug)
 
-        if "contrôle" in heading_text or "controle" in heading_text:
-            next_p = heading.find_next("p")
-            if next_p:
-                controle = next_p.get_text(strip=True)
-                logger.debug("Found controle for slug: %s", slug)
+        if "c-emoji-check" in heading_classes:
+            controle = extract_content_after(heading)
+            logger.debug("Found controle for slug: %s", slug)
 
     if not solution or not controle:
         logger.error("Solution or Controle not found for slug: %s", slug)
@@ -118,6 +158,7 @@ def scrape_rule(slug: str) -> dict[str, str]:
     return {
         "solution": solution,
         "controle": controle,
+        "contexte": contexte,
     }
 
 
