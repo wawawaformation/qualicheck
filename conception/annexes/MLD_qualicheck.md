@@ -24,11 +24,23 @@ numbersections: true
 
 ## Référentiel Opquast
 
+### theme
+
+```
+theme (
+  id        SERIAL        PK, NN
+  theme     VARCHAR(64)   NN, U
+)
+```
+
+Une règle a exactement une thématique (`metadata.Thématiques` de l'API Opquast — toujours une liste à un seul élément sur les 245 règles observées), d'où une relation 1-N simple plutôt qu'une table d'association.
+
 ### regle
 
 ```
 regle (
   id                      SERIAL          PK, NN
+  theme_id                INT             FK → theme.id, NN
   numero                  INT             NN, U
   intitule                VARCHAR(512)    NN
   solution                VARCHAR(512)    NN
@@ -104,6 +116,8 @@ regle_tag (
   PK (regle_id, tag_id)
 )
 ```
+
+`tags` est optionnel côté règle : 64 des 245 règles Opquast n'ont aucun tag (`metadata.Tags` vide), contrairement à `theme`, `objectifs` et `phases` qui sont toujours renseignés. Une règle sans tag n'a simplement aucune ligne dans `regle_tag`.
 
 ---
 
@@ -208,6 +222,7 @@ CREATE INDEX ON audit_regle (audit_id);
 
 | Table | Champ | Référence |
 |---|---|---|
+| regle | theme_id | theme.id |
 | objectif_regle | objectif_id | objectif.id |
 | objectif_regle | regle_id | regle.id |
 | phase_regle | phase_id | phase.id |

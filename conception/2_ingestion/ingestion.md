@@ -114,7 +114,7 @@ Chaque règle enrichie est aussi tracée par `strategie_source = ia_import` (ori
 
 ## Étape 4 — Stockage PostgreSQL
 
-Les données brutes et enrichies sont persistées dans la table `regle`, ainsi que dans les tables de référence associées : `objectif`, `phase`, `tag` (relations many-to-many via tables d'association).
+Les données brutes et enrichies sont persistées dans la table `regle`, ainsi que dans les tables de référence associées : `theme` (relation simple — une règle a exactement une thématique), `objectif`, `phase`, `tag` (relations many-to-many via tables d'association). `tag` est le seul champ optionnel : 64 des 245 règles Opquast n'ont aucun tag.
 
 Un point de vigilance conceptuel : l'unicité de `numero` permet de faire de l'ingestion une opération **idempotente** — une ré-exécution du pipeline sur les mêmes données peut mettre à jour les règles existantes (upsert) plutôt que créer des doublons. C'est ce mécanisme qui sera réutilisé en post-MVP pour la ré-ingestion ciblée.
 
@@ -190,7 +190,7 @@ Structure conceptuelle des fichiers nécessaires — rôle de chacun, pas leur c
 | `app/ingestion/acquisition.py` | Appel API REST Opquast + scraping complémentaire |
 | `app/ingestion/aggregation.py` | Fusion en objet `Regle`, contrôle de complétude (déclenche l'arrêt si champ manquant) |
 | `app/ingestion/enrichment.py` | Appel à l'agent LLM (Kimi K2.6), avec la logique de retry (3 tentatives, backoff) |
-| `app/ingestion/stockage.py` | Écriture PostgreSQL : upsert sur `regle` (via `numero`) et sur les tables de référence (`objectif`, `phase`, `tag`) — s'appuie sur `app/models/` |
+| `app/ingestion/stockage.py` | Écriture PostgreSQL : upsert sur `regle` (via `numero`) et sur les tables de référence (`theme`, `objectif`, `phase`, `tag`) — s'appuie sur `app/models/` |
 | `app/ingestion/chunking.py` | Construction du texte du chunk par règle (intitulé + solution + contrôle + `guide_analyse` + tags + phases) |
 | `app/ingestion/embedding.py` | Appel au modèle d'embedding (All MiniLM L12 v2 via Infomaniak) |
 

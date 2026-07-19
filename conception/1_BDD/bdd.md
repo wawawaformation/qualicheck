@@ -15,7 +15,7 @@ numbersections: true
 
 Ce document couvre l'étape désignée `1_BDD` dans le dossier de conception — **prérequis** à toute autre brique de QualiCheck, y compris l'ingestion (`2_ingestion` / `ingestion.md`). Côté code, cette étape correspond au point d'entrée `scripts/migration.py` (cf. section Organisation technique). Elle ne peuple aucune donnée : elle crée le schéma complet, vide, prêt à être rempli.
 
-Contrairement à `ingestion.md` qui ne concerne que le référentiel Opquast, ce document couvre **l'intégralité du schéma** : le référentiel Opquast (`regle`, `objectif`, `phase`, `tag` + tables d'association) et le cœur métier QualiCheck (`utilisateur`, `audit`, `page`, `audit_page`, `audit_regle`, `constat`), qui ne sera peuplé que plus tard, au fil des audits.
+Contrairement à `ingestion.md` qui ne concerne que le référentiel Opquast, ce document couvre **l'intégralité du schéma** : le référentiel Opquast (`theme`, `regle`, `objectif`, `phase`, `tag` + tables d'association) et le cœur métier QualiCheck (`utilisateur`, `audit`, `page`, `audit_page`, `audit_regle`, `constat`), qui ne sera peuplé que plus tard, au fil des audits.
 
 Ce document ne redéfinit pas le détail des champs — c'est le rôle de `MLD_qualicheck.md`, qui reste la source de vérité pour la structure des tables, contraintes et clés. Ici, on décrit **comment** ce modèle logique devient une base réelle, et avec quels outils.
 
