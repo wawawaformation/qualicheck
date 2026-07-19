@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.ingestion.acquisition import acquire_rules  # noqa: E402
 from app.ingestion.aggregation import aggregate_rules  # noqa: E402
 from app.ingestion.enrichment import enrich_rules  # noqa: E402
-from app.ingestion.stockage import store_rules  # noqa: E402
+from app.ingestion.stockage import clear_opquast_tables, count_rules, store_rules  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -52,10 +52,50 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def check_existing_data(session: Session) -> None:
+    """
+    Si des règles existent déjà, demande à l'utilisateur s'il s'agit d'une
+    nouvelle ingestion (vide les tables Opquast puis continue) ou d'une
+    mise à jour (non implémentée en MVP, arrête le script).
+
+    Args:
+        session: Session SQLAlchemy active
+    """
+    existing_count = count_rules(session)
+    if existing_count == 0:
+        return
+
+    progress_logger.info(
+        f"{existing_count} règle(s) déjà présente(s) en base."
+    )
+    choice = input("Nouvelle ingestion [n] ou mise à jour [m] ? ").strip().lower()
+
+    if choice == "m":
+        progress_logger.info("Mise à jour : pas encore implémentée (hors MVP).")
+        sys.exit(0)
+
+    if choice != "n":
+        progress_logger.info("Choix non reconnu, arrêt du script.")
+        sys.exit(0)
+
+    confirm = input(
+        f"Cela va supprimer les {existing_count} règle(s) existante(s). Confirmer ? [y/N] "
+    ).strip().lower()
+    if confirm != "y":
+        progress_logger.info("Suppression annulée, arrêt du script.")
+        sys.exit(0)
+
+    clear_opquast_tables(session)
+
+
 def main() -> None:
     args = parse_args()
     setup_logging()
     load_dotenv()
+
+    engine = get_engine()
+    with Session(engine) as session:
+        check_existing_data(session)
 
     logger.info("=== Pipeline d'ingestion : démarrage ===")
     progress_logger.info("=== Pipeline d'ingestion : démarrage ===")
@@ -90,7 +130,6 @@ def main() -> None:
     try:
         logger.info("Étape 4 — Stockage : démarrage")
         progress_logger.info("Étape 4 — Stockage : démarrage")
-        engine = get_engine()
         with Session(engine) as session:
             store_rules(session, enriched)
         logger.info("Étape 4 — Stockage : terminée")

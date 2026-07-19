@@ -6,30 +6,18 @@ Utile pour retester une ingestion sans redescendre/remonter toute la
 migration Alembic.
 """
 
-import logging
 import os
 import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from app.ingestion.stockage import clear_opquast_tables  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
-
-logger = logging.getLogger(__name__)
-
-TABLES_OPQUAST = [
-    "regle_tag",
-    "phase_regle",
-    "objectif_regle",
-    "regle",
-    "theme",
-    "objectif",
-    "phase",
-    "tag",
-]
 
 
 def get_engine():
@@ -47,12 +35,8 @@ def main() -> None:
     load_dotenv()
 
     engine = get_engine()
-    tables = ", ".join(TABLES_OPQUAST)
-
-    logger.info("Vidage des tables Opquast : %s", tables)
-    with engine.begin() as conn:
-        conn.execute(text(f"TRUNCATE TABLE {tables} RESTART IDENTITY CASCADE"))
-    logger.info("Tables Opquast vidées avec succès")
+    with Session(engine) as session:
+        clear_opquast_tables(session)
 
 
 if __name__ == "__main__":

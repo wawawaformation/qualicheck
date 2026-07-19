@@ -7,6 +7,7 @@ référence (theme, objectif, phase, tag) et leurs associations many-to-many.
 
 import logging
 
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.models.referentiel import (
@@ -24,6 +25,35 @@ from .aggregation import EnrichedRules
 from .schema import EnrichedRule
 
 logger = logging.getLogger(__name__)
+
+TABLES_OPQUAST = [
+    "regle_tag",
+    "phase_regle",
+    "objectif_regle",
+    "regle",
+    "theme",
+    "objectif",
+    "phase",
+    "tag",
+]
+
+
+def count_rules(session: Session) -> int:
+    """Retourne le nombre de règles actuellement stockées."""
+    return session.query(Regle).count()
+
+
+def clear_opquast_tables(session: Session) -> None:
+    """
+    Vide les tables du référentiel Opquast (regle, theme, objectif, phase,
+    tag et leurs tables d'association), sans toucher au cœur métier
+    QualiCheck (utilisateur, audit, page, constat).
+    """
+    tables = ", ".join(TABLES_OPQUAST)
+    logger.info(f"Vidage des tables Opquast : {tables}")
+    session.execute(text(f"TRUNCATE TABLE {tables} RESTART IDENTITY CASCADE"))
+    session.commit()
+    logger.info("Tables Opquast vidées avec succès")
 
 
 def get_or_create(session: Session, model: type, **kwargs):
