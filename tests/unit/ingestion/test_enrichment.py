@@ -193,3 +193,107 @@ class TestEnrichRules:
         assert len(enriched_rules.enriched_rules) == 2
         assert enriched_rules.enriched_rules[0].strategie_analyse == "statique"
         assert enriched_rules.enriched_rules[1].strategie_analyse == "playwright"
+
+    @patch("app.ingestion.enrichment.logger")
+    @patch("app.ingestion.enrichment.LLMClient")
+    def test_enrich_rules_logs_on_all_timeouts(self, mock_llm_client_class, mock_logger):
+        """Logue erreur critique si les 3 tentatives timeout."""
+        rule = Rule(
+            id=42,
+            number=42,
+            intitule="Rule 42",
+            solution="Sol",
+            controle="Ctrl",
+            objectifs=["Obj"],
+            tags=["Tag"],
+            phases=["Phase"],
+            slug="rule-42",
+        )
+        rules = Rules([rule])
+
+        mock_llm_instance = MagicMock()
+        mock_llm_client_class.return_value = mock_llm_instance
+        mock_llm_instance.enrich_single_rule.side_effect = TimeoutError(
+            "All retries exhausted"
+        )
+
+        try:
+            enrich_rules(rules)
+            raise AssertionError("Should have raised ValueError")
+        except ValueError:
+            pass
+
+        mock_logger.error.assert_called()
+        call_args = str(mock_logger.error.call_args)
+        assert "42" in call_args
+        assert "enrichissement" in call_args
+        assert "KO" in call_args
+
+    @patch("app.ingestion.enrichment.logger")
+    @patch("app.ingestion.enrichment.LLMClient")
+    def test_enrich_rules_logs_success_summary(self, mock_llm_client_class, mock_logger):
+        """Logue le résumé de succès."""
+        rule1 = Rule(
+            id=1,
+            number=1,
+            intitule="R1",
+            solution="S1",
+            controle="C1",
+            objectifs=["O1"],
+            tags=["T1"],
+            phases=["P1"],
+            slug="r1",
+        )
+        rule2 = Rule(
+            id=2,
+            number=2,
+            intitule="R2",
+            solution="S2",
+            controle="C2",
+            objectifs=["O2"],
+            tags=["T2"],
+            phases=["P2"],
+            slug="r2",
+        )
+        rules = Rules([rule1, rule2])
+
+        mock_llm_instance = MagicMock()
+        mock_llm_client_class.return_value = mock_llm_instance
+
+        enriched1 = EnrichedRule(
+            id=1,
+            number=1,
+            intitule="R1",
+            solution="S1",
+            controle="C1",
+            objectifs=["O1"],
+            tags=["T1"],
+            phases=["P1"],
+            slug="r1",
+            strategie_analyse="statique",
+            strategie_justification="X",
+            guide_analyse="Y",
+        )
+        enriched2 = EnrichedRule(
+            id=2,
+            number=2,
+            intitule="R2",
+            solution="S2",
+            controle="C2",
+            objectifs=["O2"],
+            tags=["T2"],
+            phases=["P2"],
+            slug="r2",
+            strategie_analyse="playwright",
+            strategie_justification="X",
+            guide_analyse="Y",
+        )
+        mock_llm_instance.enrich_single_rule.side_effect = [enriched1, enriched2]
+
+        enrich_rules(rules)
+
+        mock_logger.info.assert_called()
+        call_args = str(mock_logger.info.call_args)
+        assert "Enrichissement" in call_args
+        assert "2" in call_args
+        assert "règles enrichies" in call_args
