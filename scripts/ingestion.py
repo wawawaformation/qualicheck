@@ -27,6 +27,7 @@ from app.ingestion.stockage import store_rules  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
 
 logger = logging.getLogger(__name__)
+progress_logger = logging.getLogger("progress")
 
 
 def get_engine():
@@ -57,9 +58,11 @@ def main() -> None:
     load_dotenv()
 
     logger.info("=== Pipeline d'ingestion : démarrage ===")
+    progress_logger.info("=== Pipeline d'ingestion : démarrage ===")
 
     try:
         logger.info("Étape 1 — Acquisition : démarrage")
+        progress_logger.info("Étape 1 — Acquisition : démarrage")
         acquired = acquire_rules(limit=args.limit)
         logger.info("Étape 1 — Acquisition : terminée (%d règles)", len(acquired))
     except Exception as e:
@@ -68,6 +71,7 @@ def main() -> None:
 
     try:
         logger.info("Étape 2 — Agrégation : démarrage")
+        progress_logger.info("Étape 2 — Agrégation : démarrage")
         rules = aggregate_rules(acquired)
         logger.info("Étape 2 — Agrégation : terminée")
     except Exception as e:
@@ -76,6 +80,7 @@ def main() -> None:
 
     try:
         logger.info("Étape 3 — Enrichissement : démarrage")
+        progress_logger.info("Étape 3 — Enrichissement : démarrage")
         enriched = enrich_rules(rules)
         logger.info("Étape 3 — Enrichissement : terminée")
     except Exception as e:
@@ -84,6 +89,7 @@ def main() -> None:
 
     try:
         logger.info("Étape 4 — Stockage : démarrage")
+        progress_logger.info("Étape 4 — Stockage : démarrage")
         engine = get_engine()
         with Session(engine) as session:
             store_rules(session, enriched)
@@ -93,6 +99,7 @@ def main() -> None:
         sys.exit(1)
 
     logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")
+    progress_logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")
 
 
 if __name__ == "__main__":
