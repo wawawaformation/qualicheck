@@ -20,6 +20,12 @@ def upgrade() -> None:
 
     # -- Référentiel Opquast -------------------------------------------------
     op.create_table(
+        "theme",
+        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("theme", sa.String(64), nullable=False, unique=True),
+    )
+
+    op.create_table(
         "objectif",
         sa.Column("id", sa.Integer, primary_key=True),
         sa.Column("objectif", sa.String(256), nullable=False),
@@ -40,6 +46,7 @@ def upgrade() -> None:
     op.create_table(
         "regle",
         sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("theme_id", sa.Integer, sa.ForeignKey("theme.id"), nullable=False),
         sa.Column("numero", sa.Integer, nullable=False, unique=True),
         sa.Column("intitule", sa.String(512), nullable=False),
         sa.Column("solution", sa.String(512), nullable=False),
@@ -158,6 +165,7 @@ def downgrade() -> None:
     op.drop_table("tag")
     op.drop_table("phase")
     op.drop_table("objectif")
+    op.drop_table("theme")
 
     # -- Extension -----------------------------------------------------------
     op.execute("DROP EXTENSION IF EXISTS vector")

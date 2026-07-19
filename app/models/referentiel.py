@@ -4,10 +4,18 @@ from sqlalchemy import Column, ForeignKey, Integer, Numeric, PrimaryKeyConstrain
 from app.models.base import Base
 
 
+class Theme(Base):
+    __tablename__ = "theme"
+
+    id = Column(Integer, primary_key=True)
+    theme = Column(String(64), nullable=False, unique=True)
+
+
 class Regle(Base):
     __tablename__ = "regle"
 
     id = Column(Integer, primary_key=True)
+    theme_id = Column(Integer, ForeignKey("theme.id"), nullable=False)
     numero = Column(Integer, nullable=False, unique=True)
     intitule = Column(String(512), nullable=False)
     solution = Column(String(512), nullable=False)
