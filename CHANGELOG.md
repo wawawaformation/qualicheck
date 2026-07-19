@@ -9,6 +9,20 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-19 — Claude Code
+
+- **Étape 2 — Agrégation (pipeline d'ingestion)** — voir `app/ingestion/agregation.py`, `tests/unit/ingestion/test_agregation.py`
+  - Classe Pydantic `RuleAggregation` (schema.py) : validation stricte (strings/listes non-vides)
+  - Classe `Rules` : collection non-vide de règles agrégées
+  - Fonction `aggregate_rules()` : transforme dicts acquis en Rules validée
+  - Fail-fast sur validation (lève ValueError + log erreur)
+  - Log synthèse : "X règles validées" si succès
+  - Convention : code anglais (Rule, Rules, RuleAggregation), docs/comments français
+  - Tests unitaires : 13 tests (Regle création, validation champs, collection, agrégation)
+  - Propriété `regles` : alias rétrocompatibilité pour accès à la liste
+
+---
+
 ## 2026-07-18 — Claude Code
 
 - **Étape 1 — Acquisition (pipeline d'ingestion)** — voir `app/ingestion/acquisition.py`, `tests/unit/ingestion/test_acquisition.py`

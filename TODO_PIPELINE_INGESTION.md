@@ -13,12 +13,15 @@ Référence : `conception/2_ingestion/ingestion.md`
   - [x] Gestion erreurs (exceptions levées si données manquantes)
   - Tests passants ✅
 
-- [ ] **Étape 2 — Agrégation**
-  - [ ] `app/ingestion/agregation.py`
-  - [ ] Fusionner données API + scraping en objet `RuleAcquisition` complet
-  - [ ] Classe `Rules` (collection de `RuleAcquisition`)
-  - [ ] Contrôle de complétude (fail-fast)
-  - [ ] Tests unitaires
+- [x] **Étape 2 — Agrégation**
+  - [x] `app/ingestion/agregation.py`
+  - [x] Classe `RuleAggregation` (Pydantic) : validation stricte
+  - [x] Alias `Rule = RuleAggregation`
+  - [x] Classe `Rules` (collection non-vide)
+  - [x] Fonction `aggregate_rules()` : dicts → Rules validée
+  - [x] Fail-fast + logging erreurs + synthèse succès
+  - [x] Tests unitaires (13 tests)
+  - Tests passants ✅
 
 - [ ] **Étape 3 — Enrichissement**
   - [ ] `app/ingestion/enrichissement.py`
