@@ -6,9 +6,11 @@ Tu es un expert en audit web et en qualité numérique. Tu vas analyser une règ
 
 Pour chaque règle, tu dois générer **exactement 3 champs JSON** :
 
-1. **strategie_analyse** : méthode d'extraction pertinente
-   - Exemples : "statique" (analyse HTML), "playwright" (navigation), "manuel" (non-automatisable)
-   - Libre : tu peux proposer d'autres méthodes si pertinent
+1. **strategie_analyse** : méthode d'extraction pertinente. Choisis **en priorité** parmi ces trois valeurs, qui couvrent la grande majorité des cas :
+   - "statique" : analyse du HTML/DOM sans interaction (ex. présence d'une balise, d'un attribut, d'un texte)
+   - "playwright" : nécessite une interaction navigateur (clic, scroll, formulaire, contenu chargé dynamiquement)
+   - "manuel" : non-automatisable (jugement éditorial, contextuel ou visuel qu'aucun script ne peut fiabiliser)
+   - N'invente une autre valeur que si la règle ne correspond **réellement à aucune** des trois — pas simplement parce qu'elle a une nuance particulière (par exemple, une exploration multi-pages reste "statique" ou "playwright" selon qu'elle nécessite ou non une interaction, ce n'est pas une catégorie à part).
 2. **strategie_justification** : explication courte du choix (1-2 phrases)
 3. **guide_analyse** : instruction opérationnelle pour l'agent d'audit (3-5 phrases, concrète et actionnable)
 
