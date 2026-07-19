@@ -6,6 +6,7 @@ et la composition d'une collection Rules complètement validée.
 """
 
 from app.ingestion.aggregation import Rule, Rules, aggregate_rules
+from app.ingestion.schema import RuleAggregation
 
 
 class TestRule:
@@ -347,3 +348,29 @@ class TestAggregateRules:
             assert False, "Should have raised an error"
         except (KeyError, ValueError):
             pass
+
+
+class TestContexteField:
+    """Vérifie que le champ contexte est optionnel et traverse RuleAggregation."""
+
+    def _base_kwargs(self):
+        return dict(
+            id=1,
+            number=1,
+            intitule="Règle test",
+            theme="Thème",
+            objectifs=["Objectif"],
+            tags=["Tag"],
+            phases=["Phase"],
+            slug="regle-test",
+            solution="Solution",
+            controle="Contrôle",
+        )
+
+    def test_contexte_defaults_to_none(self):
+        rule = RuleAggregation(**self._base_kwargs())
+        assert rule.contexte is None
+
+    def test_contexte_accepts_string(self):
+        rule = RuleAggregation(**self._base_kwargs(), contexte="Texte explicatif")
+        assert rule.contexte == "Texte explicatif"

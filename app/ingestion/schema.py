@@ -18,6 +18,7 @@ class RuleAcquisition(BaseModel):
     tags: list[str]
     phases: list[str]
     slug: str
+    contexte: str | None = None
     solution: str | None = Field(default=None)
     controle: str | None = Field(default=None)
 
@@ -33,6 +34,7 @@ class RuleAggregation(BaseModel):
     tags: list[str]
     phases: list[str]
     slug: str
+    contexte: str | None = None
     solution: str
     controle: str
 
