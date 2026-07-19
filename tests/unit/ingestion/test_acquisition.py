@@ -164,6 +164,19 @@ class TestScrapeRule:
     </html>
     """
 
+    HTML_DIV_WRAPPER = """
+    <html>
+        <body>
+            <div class="c-rule-content">
+                <h2 class="c-emoji-tools">Solution technique</h2>
+                <div>Mettre en place une procédure de création de compte.</div>
+                <h2 class="c-emoji-check">Moyen de contrôle</h2>
+                <div>Vérifier qu'il est possible de créer un compte sans service tiers.</div>
+            </div>
+        </body>
+    </html>
+    """
+
     @patch("app.ingestion.acquisition.requests.get")
     def test_scrape_rule_extracts_solution_and_controle(self, mock_get):
         """Vérifie l'extraction simple solution + controle + contexte."""
@@ -240,4 +253,19 @@ class TestScrapeRule:
         assert result["solution"] == "Utiliser les fonctions natives des éditeurs de contenus."
         assert result["controle"] == (
             "Vérifier que les contenus ne contiennent pas de caractères détournés."
+        )
+
+    @patch("app.ingestion.acquisition.requests.get")
+    def test_scrape_rule_captures_div_wrapped_content(self, mock_get):
+        """Vérifie la capture d'un contenu enveloppé dans <div> plutôt que <p>
+        (structure réelle observée sur une autre règle Opquast)."""
+        mock_response = MagicMock()
+        mock_response.text = self.HTML_DIV_WRAPPER
+        mock_get.return_value = mock_response
+
+        result = scrape_rule("regle-exemple")
+
+        assert result["solution"] == "Mettre en place une procédure de création de compte."
+        assert result["controle"] == (
+            "Vérifier qu'il est possible de créer un compte sans service tiers."
         )

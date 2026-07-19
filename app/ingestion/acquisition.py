@@ -75,11 +75,11 @@ def extract_content_after(heading) -> str:
     """
     Collecte le contenu (texte) des frères d'un heading jusqu'au <h2> suivant.
 
-    Chaque <p> devient un bloc de texte ; chaque <ul> devient un bloc où
-    chaque <li> est rendu sur sa propre ligne préfixée par "- ". Un nœud
-    texte directement enfant du conteneur (sans <p> englobant — cas observé
-    sur certaines règles Opquast, ex. règle 14) est traité comme un bloc.
-    Les blocs sont joints par un saut de ligne.
+    Chaque <ul> devient un bloc où chaque <li> est rendu sur sa propre ligne
+    préfixée par "- ". Tout autre frère non vide (<p>, <div>, ou nœud texte
+    direct — variantes observées sur des règles Opquast réelles, ex. règles
+    14 et 166) est traité comme un simple bloc de texte. Les blocs sont
+    joints par un saut de ligne.
 
     Args:
         heading: Élément BeautifulSoup <h2> de départ
@@ -91,15 +91,15 @@ def extract_content_after(heading) -> str:
     for sibling in heading.next_siblings:
         if getattr(sibling, "name", None) == "h2":
             break
-        if sibling.name == "p":
-            text = sibling.get_text(strip=True)
-            if text:
-                blocks.append(text)
-        elif sibling.name == "ul":
+        if sibling.name == "ul":
             items = [li.get_text(strip=True) for li in sibling.find_all("li")]
             if items:
                 blocks.append("\n".join(f"- {item}" for item in items))
-        elif sibling.name is None:
+        elif hasattr(sibling, "get_text"):
+            text = sibling.get_text(strip=True)
+            if text:
+                blocks.append(text)
+        else:
             text = str(sibling).strip()
             if text:
                 blocks.append(text)
