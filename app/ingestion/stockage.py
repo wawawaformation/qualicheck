@@ -2,7 +2,7 @@
 Étape 4 — Stockage du pipeline d'ingestion.
 
 Persiste chaque EnrichedRule dans PostgreSQL : table regle + tables de
-référence (objectif, phase, tag) et leurs associations many-to-many.
+référence (theme, objectif, phase, tag) et leurs associations many-to-many.
 """
 
 import logging
@@ -17,6 +17,7 @@ from app.models.referentiel import (
     Regle,
     RegleTag,
     Tag,
+    Theme,
 )
 
 from .aggregation import EnrichedRules
@@ -31,7 +32,7 @@ def get_or_create(session: Session, model: type, **kwargs):
 
     Args:
         session: Session SQLAlchemy active
-        model: Classe mappée (Objectif, Phase, ou Tag)
+        model: Classe mappée (Theme, Objectif, Phase, ou Tag)
         kwargs: Critères de recherche/création (ex. tag="HTML")
 
     Returns:
@@ -50,7 +51,7 @@ def get_or_create(session: Session, model: type, **kwargs):
 def upsert_rule(session: Session, enriched_rule: EnrichedRule) -> Regle:
     """
     Insère ou met à jour une Regle (upsert via numero), synchronise ses
-    associations (objectif_regle, phase_regle, regle_tag).
+    associations (objectif_regle, phase_regle, regle_tag) et son theme_id.
 
     Si numero existe déjà : UPDATE complet de tous les champs mutables.
     Si numero absent : INSERT.
@@ -63,10 +64,13 @@ def upsert_rule(session: Session, enriched_rule: EnrichedRule) -> Regle:
         Instance Regle persistée (pas de commit ici)
     """
     regle = session.query(Regle).filter_by(numero=enriched_rule.number).first()
+    theme = get_or_create(session, Theme, theme=enriched_rule.theme)
 
     if regle is None:
         regle = Regle(numero=enriched_rule.number)
         session.add(regle)
+
+    regle.theme_id = theme.id
 
     regle.intitule = enriched_rule.intitule
     regle.solution = enriched_rule.solution
