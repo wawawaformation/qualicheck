@@ -65,9 +65,22 @@ Un facteur supplémentaire a été identifié en parallèle : jusqu'ici, `strate
 
 **Précision sur le périmètre** : le crawler (parcours d'un échantillon de pages) et les regex (détection de patterns textuels) ne sont **pas** ajoutés comme catégories supplémentaires de `strategie_analyse`. Ce sont des détails d'implémentation qui peuvent être mentionnés dans `guide_analyse` (ex. "crawler les pages du menu principal, puis rechercher via regex..."), pas une méthode d'accès au contenu à part entière — ils s'appliquent en combinaison avec `statique`, `playwright` ou `vision`, pas en remplacement.
 
-## Prochaine validation
+## Validation — Échantillon élargi (50 règles)
 
-Après application de la Version 3, réévaluer la distribution `strategie_analyse` sur un échantillon élargi (idéalement 30-50 règles) pour confirmer que `manuel` redevient l'exception plutôt que la majorité. Si le déséquilibre persiste, réexaminer la définition de `vision` plutôt que celle de `manuel` — il est possible que le curseur doive encore bouger.
+Ingestion complète relancée sur 50 règles réelles avec le prompt Version 3. Distribution obtenue :
+
+```text
+playwright : 24
+statique   : 23
+vision     :  2
+manuel     :  1
+```
+
+**Résultat** : `manuel` redevient l'exception (1/50, soit 2 %) au lieu de la majorité (9/10 avec la Version 2). Distribution `statique`/`playwright` équilibrée, `vision` utilisée avec parcimonie sur des cas pertinents.
+
+**Vérification qualitative de l'unique règle "manuel"** — n°19, *"Un mécanisme de prévention des usurpations de compte ou d'identité est proposé."* Justification du LLM : la vérification nécessite un accès authentifié aux paramètres de sécurité ou une expertise sur des dispositifs backend invisibles (ex. envoi d'email de confirmation, détection d'IP suspecte, 2FA) — aucune observation frontale (statique, playwright ou vision) ne peut trancher, ce sont des mécanismes qui s'exécutent côté serveur, hors de portée de toute inspection de page. Classification jugée correcte : ce n'est pas un repli par prudence excessive, mais un vrai cas irréductible d'automatisation front-end.
+
+**Conclusion** : le prompt Version 3 est validé sur cet échantillon. La correction du biais identifié à l'Observation 2 (sur-représentation de `manuel`) est confirmée à plus grande échelle, pas seulement sur les 10 règles du premier test.
 
 ## Principe retenu pour la suite
 
