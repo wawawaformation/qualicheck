@@ -9,6 +9,16 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-19 — Claude Code (Part 7)
+
+- **Chantier 1 — Correction du scraping + champ `contexte`** — voir `conception/2_ingestion/D_chantier1_scraping_contexte.md`, `app/ingestion/acquisition.py`, `app/ingestion/schema.py`, `app/ingestion/llm_client.py`, `app/ingestion/prompts/enrich_rule.md`, `app/ingestion/stockage.py`, `app/models/referentiel.py`, `app/migration/versions/0006-0007`
+  - Spec validée (méthodo spec-driven, brainstorming + implementation plan via subagent-driven-development), exécutée tâche par tâche avec revue systématique
+  - **`scrape_rule()` réécrite** : extraction bornée à `div.c-rule-content` (le pied de page Opquast en est structurellement exclu → plus besoin de sentinelle mot-clé), ciblage par classes émoji stables (`c-emoji-tools`, `c-emoji-check`). Corrige les 2 bugs identifiés en Part 6 (footer parasite, `<ul>` ignoré)
+  - **2 variantes de structure supplémentaires découvertes en scrapant les 245 vraies règles** (non couvertes par les tests mockés initiaux) : contenu en nœud texte direct sans `<p>` (règle 14), contenu enveloppé dans `<div>` plutôt que `<p>` (règle 27). `extract_content_after()` généralisée pour traiter tout frère non-`<ul>`/`<h2>` comme un bloc de texte via `get_text()`
+  - **Nouveau champ `contexte`** (texte explicatif, `c-rule-hero__subtitle`) : traverse tout le pipeline — scraping → schémas Pydantic (`RuleAcquisition`, `RuleAggregation`, hérité par `EnrichedRule`) → prompt d'enrichissement LLM (`{contexte}`, fallback `"(non disponible)"` si absent) → colonne BDD (`TEXT NULL`, migration 0006) → stockage (`upsert_rule`, `load_enriched_rules_from_db`)
+  - **Recalibrage `solution`/`controle`** (migration 0007) : `VARCHAR(1024)` → `VARCHAR(2048)`. Le scraping corrigé capture désormais le contenu complet (non tronqué) ; les vraies données dépassent l'ancienne limite calibrée sur des données elles-mêmes tronquées par les bugs (max observé sur 245 règles réelles : solution 1880, controle 1156)
+  - **Validation pré-LLM** : dump JSON des 245 règles acquises dans `tmp/rules_acquises.json` (scraping + stockage réels, enrichissement bouchonné) — scraping et stockage complets validés sans coût LLM avant de poursuivre vers la ré-ingestion réelle
+
 ## 2026-07-19 — Claude Code (Part 6)
 
 - **Ingestion complète des 245 règles + analyse de la classification LLM** — voir `docs/problemes_rencontres/recommandations_v4.md`, `scripts/ingestion.py`, `app/ingestion/stockage.py`, `docs/schemas/ingestion_activite.drawio`, `conception/2_ingestion/C_pipeline_ingestion.drawio`

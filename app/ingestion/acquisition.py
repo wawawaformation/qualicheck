@@ -95,12 +95,8 @@ def extract_content_after(heading) -> str:
             items = [li.get_text(strip=True) for li in sibling.find_all("li")]
             if items:
                 blocks.append("\n".join(f"- {item}" for item in items))
-        elif hasattr(sibling, "get_text"):
-            text = sibling.get_text(strip=True)
-            if text:
-                blocks.append(text)
         else:
-            text = str(sibling).strip()
+            text = sibling.get_text(strip=True)
             if text:
                 blocks.append(text)
 
