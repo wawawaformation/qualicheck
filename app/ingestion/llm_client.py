@@ -40,6 +40,8 @@ class LLMClient:
             model=os.getenv("AZURE_DEPLOYMENT_INGESTION"),
         )
         self.parser = JsonOutputParser(pydantic_object=EnrichmentOutput)
+        self.input_tokens = 0
+        self.output_tokens = 0
 
     def load_prompt(self, rule: Rule) -> str:
         """
@@ -86,11 +88,20 @@ class LLMClient:
 
         Raises:
             TimeoutError: Si les 3 tentatives échouent (dernière exception relevée)
+
+        Note:
+            Seule la tentative réussie est comptabilisée dans les totaux de
+            tokens — les tentatives échouées avant succès ne remontent pas
+            de usage_metadata exploitable.
         """
         formatted_prompt = self.load_prompt(rule)
 
         response = self.llm.invoke(formatted_prompt)
         parsed = self.parser.parse(response.content)
+
+        usage = response.usage_metadata or {}
+        self.input_tokens += usage.get("input_tokens", 0)
+        self.output_tokens += usage.get("output_tokens", 0)
 
         return EnrichedRule(
             id=rule.id,

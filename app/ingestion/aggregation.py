@@ -66,6 +66,8 @@ class EnrichedRules:
         if not enriched_rules:
             raise ValueError("Collection de règles enrichies ne peut pas être vide")
         self.enriched_rules = enriched_rules
+        self.input_tokens = 0
+        self.output_tokens = 0
 
     @property
     def regles(self):

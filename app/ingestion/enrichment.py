@@ -46,5 +46,7 @@ def enrich_rules(rules: Rules) -> EnrichedRules:
             raise
 
     enriched_rules = EnrichedRules(enriched_list)
+    enriched_rules.input_tokens = llm_client.input_tokens
+    enriched_rules.output_tokens = llm_client.output_tokens
     logger.info(f"Enrichissement : {len(enriched_list)} règles enrichies")
     return enriched_rules

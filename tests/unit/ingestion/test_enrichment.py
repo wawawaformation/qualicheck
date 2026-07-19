@@ -28,6 +28,7 @@ class TestLLMClient:
             '"strategie_justification": "Vérification simple du DOM", '
             '"guide_analyse": "Parcourez toutes les images et vérifiez l\'attribut alt."}'
         )
+        mock_response.usage_metadata = {"input_tokens": 100, "output_tokens": 50}
         mock_llm_instance.invoke.return_value = mock_response
 
         client = LLMClient()
@@ -52,6 +53,8 @@ class TestLLMClient:
         assert enriched.guide_analyse == "Parcourez toutes les images et vérifiez l'attribut alt."
         assert enriched.strategie_source == "ia_import"
         assert enriched.llm_provider == "kimi-k2.6"
+        assert client.input_tokens == 100
+        assert client.output_tokens == 50
 
     @patch("tenacity.nap.time.sleep")
     @patch("app.ingestion.llm_client.ChatOpenAI")
@@ -66,6 +69,7 @@ class TestLLMClient:
             '"strategie_justification": "Test", '
             '"guide_analyse": "Test guide"}'
         )
+        mock_response_success.usage_metadata = {"input_tokens": 10, "output_tokens": 5}
 
         mock_llm_instance.invoke.side_effect = [
             TimeoutError("Request timed out"),

@@ -137,6 +137,21 @@ def main() -> None:
         logger.error("Étape 4 — Stockage : ÉCHEC (%s)", e)
         sys.exit(1)
 
+    price_input_per_1m = float(os.getenv("KIMI_PRICE_INPUT_PER_1M", "0"))
+    price_output_per_1m = float(os.getenv("KIMI_PRICE_OUTPUT_PER_1M", "0"))
+    cost = (
+        enriched.input_tokens * price_input_per_1m
+        + enriched.output_tokens * price_output_per_1m
+    ) / 1_000_000
+
+    summary = (
+        f"Tokens — entrée : {enriched.input_tokens}, sortie : {enriched.output_tokens}, "
+        f"total : {enriched.input_tokens + enriched.output_tokens}, "
+        f"coût estimé : {cost:.4f} €"
+    )
+    logger.info(summary)
+    progress_logger.info(summary)
+
     logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")
     progress_logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")
 
