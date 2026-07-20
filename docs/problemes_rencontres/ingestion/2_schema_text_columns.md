@@ -15,6 +15,7 @@ Fichiers concernés : `app/models/referentiel.py`, `app/migration/versions/`.
 ## Problème initial — Hypothèses incorrectes
 
 **Hypothèse de départ** : les colonnes textuelles des règles Opquast étaient dimensionnées selon une estimation "raisonnable" :
+
 - `intitule` : `VARCHAR(512)`
 - `solution` : `VARCHAR(512)`
 - `controle` : `VARCHAR(512)`
@@ -25,7 +26,8 @@ Fichiers concernés : `app/models/referentiel.py`, `app/migration/versions/`.
 **Contexte** : première tentative complète d'ingestion des 245 règles (acquisition + agrégation + enrichissement LLM + stockage).
 
 **Erreur** — Étape 4 (Stockage), règle 154 :
-```
+
+```text
 psycopg2.errors.StringDataRightTruncation: value too long for type character varying(256)
 [...objectif: "Éviter à des utilisateurs d'aides techniques d'être désorientés par l'ouverture d'une nouvelle fenêtre qui ne sera pas toujours aisément perceptible..."]
 ```
@@ -41,7 +43,8 @@ psycopg2.errors.StringDataRightTruncation: value too long for type character var
 ## Observation 2 — Deuxième erreur, chaîne plus longue
 
 **Erreur** — Étape 4 (Stockage), règle 166 :
-```
+
+```text
 psycopg2.errors.StringDataRightTruncation: value too long for type character varying(512)
 [...solution: "Recourir à des gestionnaires d'événements universels en cas d'interaction basée sur Javascript [...]"]
 ```
@@ -65,11 +68,13 @@ Plutôt que de relancer l'ingestion à l'aveugle et de découvrir d'autres dépa
 **Problème** : relancer une ingestion complète avec enrichissement LLM coûte cher (245 règles × appel Kimi K2.6 = tokens et €). On ne peut pas se permettre plusieurs essais pour tester le schéma.
 
 **Solution** : créer un **script d'ingestion parallèle avec bouchons LLM** (`scripts/test_storage.py`) qui :
+
 1. Réutilise les étapes 1-3 (acquisition + agrégation = données réelles Opquast, pas de LLM)
 2. Remplace l'étape 3 (enrichissement LLM) par un remplissage générique (ex. `strategie_analyse = "test"`, `guide_analyse = "Lorem ipsum..."`)
 3. Complète le stockage des 245 règles dans la BDD **gratuitement**
 
 Une fois la BDD peuplée :
+
 ```sql
 SELECT column_name, MAX(LENGTH(column_value)) as max_length
 FROM regle
@@ -77,6 +82,7 @@ GROUP BY column_name;
 ```
 
 On peut alors :
+
 - **Identifier les colonnes vraiment longues** (doivent rester `TEXT`)
 - **Réduire celles qui sont courtes** (ex. `strategie_analyse = 'playwright'` est toujours < 15 chars → `VARCHAR(20)` suffit)
 - **Optimiser le schéma final** en connaissance de cause, pas par conjecture
@@ -85,7 +91,7 @@ On peut alors :
 
 **Avant le full-ingestion**, un test isolé (`scripts/test_storage.py`) vérifie que `TEXT` fonctionne :
 
-```
+```text
 ✓ Test insertion réussi
   Règle 999 créée
   Intitule: 750 chars (simulé scraping long)
