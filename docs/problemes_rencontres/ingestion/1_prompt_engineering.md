@@ -40,7 +40,7 @@ Validation sur un petit échantillon (3 règles réelles, numéros 1, 3, 4). La 
 
 Validation sur un échantillon élargi (10 règles réelles, numéros 1 à 10). Distribution obtenue :
 
-```
+```text
 manuel   : 9
 statique : 1
 playwright : 0
