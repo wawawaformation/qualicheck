@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-21 — Claude Code (Part 8)
+
+- **Spec « Provenance des données et manifeste d'ingestion »** (conception seule, aucune implémentation) — voir `conception/2_ingestion/E_provenance_manifeste.md`
+  - **Problème identifié** : une ligne de `regle` ne sait pas d'où elle vient. Aucun horodatage sur la table ; version de prompt absente de la donnée *et* du fichier `enrich_rule.md` (seulement en prose dans `1_prompt_engineering.md`) ; `llm_provider` est une chaîne en dur (`llm_client.py:129-130`, dupliquée en défaut Pydantic `schema.py:62-63`) — donc une valeur **affirmée par le code**, pas observée : elle continuerait d'annoncer `kimi-k2.6` après un changement de déploiement dans `.env`
+  - **Principe directeur retenu** : une seule autorité par valeur (le code lit, ne recopie pas) et une seule responsabilité par couche — `.env` = annuaire + secrets, `manifest.yml` = décisions courantes, git = historique des décisions, colonnes de provenance = quelle décision a produit quelle ligne. Corollaire : le manifeste ne conserve **aucun** historique interne (ce serait réimplémenter git en moins bien)
+  - **Décisions** : `.env` restructuré en inventaire par modèle (`AZURE_MODEL_KIMI`) et non plus par rôle ; `app/ingestion/manifest.yml` porte l'affectation rôle → modèle avec résolution explicite (`env_var:`) ; version du prompt en frontmatter de `enrich_rule.md`, format entier simple ; 4 colonnes de provenance nullables sur `regle` (`NULL` = produit avant instrumentation, donc signal de bug après le chantier 3) ; `llm_provider` **renommée** `llm_model` (elle contenait déjà un modèle sous un nom de fournisseur) ; table `ingestion_run` écartée (coût/durée déjà en prose, script lancé de façon anecdotique)
+  - **Règle de nommage des colonnes formalisée** : métier en français, technique en anglais (*langage omniprésent* du DDD — le domaine Opquast **est** francophone). Le schéma l'appliquait déjà sans l'avoir écrite (`embedding`, `llm_provider` en anglais parmi des colonnes françaises). Explique pourquoi `audit.date_creation` et `regle.created_at` coexistent sans incohérence
+  - **Limite assumée et documentée** : `kimi-k2.6` reste une **déclaration**, pas une observation — un déploiement Azure peut être repointé depuis la console sans qu'aucun fichier versionné ne change. À vérifier à l'implémentation si la réponse de l'API expose le modèle réellement utilisé
+  - **Reste ouvert** : sort des `KIMI_PRICE_*` (relevés de tarifs Azure réels en cours de collecte)
+  - Se place **entre le chantier 1 (fait) et le chantier 2 (prompt V4)**, et doit être livrée avant le chantier 3 (ré-ingestion réelle) — sinon la provenance nécessite une migration *et* une seconde ré-ingestion facturée
+
 ## 2026-07-19 — Claude Code (Part 7)
 
 - **Chantier 1 — Correction du scraping + champ `contexte`** — voir `conception/2_ingestion/D_chantier1_scraping_contexte.md`, `app/ingestion/acquisition.py`, `app/ingestion/schema.py`, `app/ingestion/llm_client.py`, `app/ingestion/prompts/enrich_rule.md`, `app/ingestion/stockage.py`, `app/models/referentiel.py`, `app/migration/versions/0006-0007`
