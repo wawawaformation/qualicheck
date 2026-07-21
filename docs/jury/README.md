@@ -51,7 +51,7 @@ Légende : ✅ couvert · 🟡 partiel · ⬜ rien à ce stade
 
 | | Compétence | Preuves | État |
 | --- | --- | --- | --- |
-| C6 | Veille technique et réglementaire | `docs/jury/veille/` | 🟡 pratiquée hors projet, journal à démarrer ici |
+| C6 | Veille technique et réglementaire | `docs/jury/veille/README.md` → fonds dans `formation_dev_ia_agentique/veille/` | 🟡 veille collective réellement menée (thème assigné, restitution toutes les 2-3 semaines, volet réglementaire couvert) ; manquent la cadence datée, la fiabilité des sources et les outils d'agrégation |
 | C7 | Identifier des services d'IA préexistants | `conception/annexes/benchmark/` (`benchmark.py`, `analyse_models_azure.pdf`, notes Foundry), `conception/conception.md` §Choix techniques | 🟡 benchmark réellement mené (script + analyse) ; la synthèse rédigée annoncée sous `annexes/F_choix_llm.md` n'existe pas encore |
 | C8 | Paramétrer un service d'IA | `app/ingestion/llm_client.py`, `.env.example` | 🟡 service configuré et opérationnel ; monitorage à mettre en place |
 | C9 | API exposant un modèle | — | ⬜ non conçu |
@@ -80,7 +80,9 @@ blocs 2 et 3 dépendent largement d'US1 et US2, non encore conçus.
 
 Deux manques ne se rattraperont pas tout seuls :
 
-- **C6** — la veille exige une **régularité** (minimum 1h/semaine). C'est la seule
-  exigence du référentiel qu'on ne peut pas produire rétroactivement.
+- **C6** — le fonds existe et le dispositif collectif est en place. Ce qui manque est
+  la **trace datée** de la cadence : le référentiel demande un minimum d'1h/semaine,
+  et des dossiers thématiques prouvent un travail, pas une régularité. C'est le seul
+  élément qui ne se reconstitue pas après coup.
 - **C4** — le registre des traitements de données personnelles et les procédures de
   tri RGPD sont des livrables à part entière, pas une section de spec.
