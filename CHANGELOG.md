@@ -17,6 +17,10 @@ Format d'entrée, une ligne par réalisation :
   - `decisions/` : un fichier par décision, avec options écartées. Format en clair (pas d'étiquette « ADR »). Le `README.md` indexe les décisions **antérieures** vers les documents qui les justifient déjà (`conception.md`, `bdd.md`, `1_prompt_engineering.md`...) plutôt que de les réécrire — une reconstruction tardive serait moins fidèle que l'original
   - Deux décisions documentées : périmètre MLOps de l'ingestion (7 options envisagées, 6 écartées) et choix du modèle d'enrichissement
 
+- **`TODO.md` créé à la racine** — point d'entrée transverse (spec E, décisions en attente, veille C6, livrables de certification manquants). Ne duplique pas `TODO_PIPELINE_INGESTION.md`, qui reste la référence du pipeline
+
+- **`conception/annexes/F_choix_llm.md` récupéré** — benchmark Azure AI Foundry (16 820 appels), argumentation C7, référencé deux fois par `conception.md` mais absent du dépôt (il était à la corbeille). Ses renvois vers `annexes/F1`-`F4` ne correspondent pas encore à l'arborescence réelle (`annexes/benchmark/`)
+
 - **Dérive de spec détectée et corrigée dans `conception/conception.md`** — voir `conception/conception.md`, `docs/jury/decisions/2026-07-21-modele-enrichissement-latence.md`
   - Le tableau de stack annonçait `gpt-5.4-nano` pour l'enrichissement alors que le code, le `.env.example` et le `CLAUDE.md` utilisent **Kimi K2.6** — avec en plus une ligne dupliquée à l'identique, et l'exemple de configuration `ENRICHMENT_LLM = "gpt54_nano"` resté en place
   - **Origine du changement, jamais écrite jusqu'ici** : gpt-5.4-nano avait été retenu pour sa faible latence, critère sans objet sur un traitement par lot sans utilisateur en attente. Kimi K2.6 l'emporte sur la fenêtre de contexte (256K, utile à la ré-ingestion post-MVP) et la fiabilité du JSON
