@@ -1,35 +1,52 @@
 # Sources et outils de veille
 
-Sources suivies pour la veille technique et réglementaire, et justification de leur
-fiabilité. Complète le `journal.md`, qui enregistre les sessions elles-mêmes.
-
-## Critères de sélection retenus
-
-Le référentiel demande des sources « répondant aux critères de fiabilité : auteur
-identifié, compétences confirmées, contenu daté et sourcé ». Une source n'entre dans
-le tableau ci-dessous que si elle satisfait les trois :
-
-- **Auteur identifié** — on sait qui écrit, ce n'est pas une agrégation anonyme
-- **Compétences confirmées** — l'auteur ou l'organisation a une légitimité vérifiable
-  sur le sujet traité
-- **Contenu daté et sourcé** — les publications portent une date et citent leurs
-  propres références
+Complète le `journal.md`, qui enregistre les sessions, et le `README.md`, qui décrit
+le dispositif collectif.
 
 ## Outils d'agrégation
 
 | Outil | Usage | Coût |
 | --- | --- | --- |
-| *à compléter* | | |
+| **FreshRSS** auto-hébergé — `rss.david-legrand.fr` | agrégation des flux RSS, cœur du dispositif | logiciel libre, pas d'abonnement ; coût = hébergement Docker déjà en place |
+| **Discord** — canal veille du collectif | partage et discussion entre participants, restitution croisée des thèmes | gratuit |
+| **LinkedIn** | signaux faibles, publications de praticiens | gratuit |
+| **YouTube** | formats longs, conférences, analyses | gratuit |
 
-Le référentiel demande que ce choix soit « cohérent avec sources et budget » —
-autrement dit, il faut pouvoir expliquer pourquoi cet outil plutôt qu'un autre, et
-ce qu'il coûte.
+Le référentiel demande un choix « cohérent avec sources et budget ». La raison du
+choix est directement celle-là :
+
+**Les agrégateurs hébergés testés auparavant imposaient un compte premium** pour
+dépasser leurs limites — nombre de flux, de dossiers ou de fonctions de tri.
+L'instance FreshRSS auto-hébergée n'a aucune de ces restrictions, pour un coût
+d'abonnement nul, sur une infrastructure Docker déjà en place.
+
+C'est ce qui permet de **collecter largement sur l'IA**, au-delà du seul thème
+assigné pour les restitutions collectives : le fonds documentaire par thème
+(cf. `README.md`) est le produit d'une collecte plus étendue, pas son périmètre.
+
+Le canal Discord mérite d'être signalé à part : c'est lui qui porte la dimension
+**collective** exigée par C6 — le partage entre participants suivant des thèmes
+différents, entre deux restitutions.
+
+## Critères de fiabilité retenus
+
+Le référentiel demande des sources « répondant aux critères de fiabilité : auteur
+identifié, compétences confirmées, contenu daté et sourcé ». Une source n'entre dans
+le tableau ci-dessous que si elle satisfait les trois.
+
+**Une précision qui compte pour l'évaluation** : LinkedIn et YouTube sont des
+**plateformes**, pas des sources. « Je suis LinkedIn » ne satisfait aucun des trois
+critères. Ce qui les satisfait, c'est un compte ou une chaîne identifiée, dont on
+peut nommer l'auteur et justifier la compétence. Le tableau doit donc lister des
+comptes et des flux, pas des plateformes.
 
 ## Sources suivies
 
-| Source | Type | Auteur / organisation | Pourquoi fiable | Fréquence |
+| Source | Plateforme | Auteur / organisation | Pourquoi fiable | Fréquence |
 | --- | --- | --- | --- | --- |
-| *à compléter* | | | | |
+| *flux FreshRSS à détailler* | RSS | | | |
+| *comptes suivis à détailler* | LinkedIn | | | |
+| *chaînes suivies à détailler* | YouTube | | | |
 
 ## Sources écartées
 
