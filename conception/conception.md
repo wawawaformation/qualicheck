@@ -428,11 +428,9 @@ Cette architecture constitue une implémentation des pratiques MLOps attendues e
 | Backend | FastAPI (Python) | Léger, performant, documentation OpenAPI automatique |
 | Frontend | Vue.js | Réactif, adapté aux interfaces conversationnelles |
 | Base de données | PostgreSQL + pgvector | Source de vérité unique, index vectoriel intégré |
-| LLM enrichissement (dev) | gpt-5.4-nano via Azure | Taux d'erreur 2.7%, validé benchmark, JSON fiable |
-| LLM enrichissement (dev) | gpt-5.4-nano via Azure | Taux d'erreur 2.7%, validé benchmark, JSON fiable |
+| LLM enrichissement / ingestion (dev) | Kimi K2.6 via Azure | Contexte 256K pour re-ingestion, 4.0% erreur |
 | LLM audit génération (dev) | gpt-5.4 via Azure | Qualité raisonnement, 1 656 ms médiane |
 | LLM audit dialogue (dev) | gpt-5.4-mini via Azure | Fluidité, 1 046 ms médiane |
-| LLM ingestion (dev) | Kimi K2.6 via Azure | Contexte 256K pour re-ingestion, 4.0% erreur |
 | LLM fallback | gpt-oss:20b via Ollama Cloud | Gratuit, limites session/semaine |
 | LLM enrichissement (prod) | Mistral Small via Infomaniak | Souverain, économique, JSON fiable |
 | LLM audit (prod) | Apertus-70B via Infomaniak | Souverain, éthique, conforme AI Act |
@@ -477,11 +475,17 @@ QualiCheck mobilise deux agents aux besoins distincts :
 Le code permet de basculer entre modèles sans modifier l'intégration métier grâce à quatre variables de configuration indépendantes (cf. [Annexe F — Choix des modèles LLM](annexes/F_choix_llm.md) pour le détail complet).
 
 ```python
-ENRICHMENT_LLM     = "gpt54_nano"   # US0 — enrichissement ingestion
+ENRICHMENT_LLM     = "kimi_k26"     # US0 — enrichissement ingestion
 AUDIT_GENERATE_LLM = "gpt54"        # US1 — génération des constats
 AUDIT_DIALOG_LLM   = "gpt54_mini"   # US1 — dialogue interactif
 FREE_QUESTION_LLM  = "gpt54"        # US2 — question libre
 ```
+
+> Cette illustration décrit le principe (un réglage par usage, indépendant du
+> modèle). La forme concrète de la configuration est revue par
+> `2_ingestion/E_provenance_manifeste.md` : l'affectation d'un modèle à un usage
+> passe dans un manifeste versionné, le `.env` ne portant plus qu'un annuaire des
+> modèles joignables.
 
 Le champ `llm_provider` est tracé en base sur chaque règle générée — un benchmark en conditions réelles intégré au projet.
 

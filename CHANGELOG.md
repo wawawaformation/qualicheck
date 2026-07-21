@@ -9,6 +9,20 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-21 — Claude Code (Part 9)
+
+- **Dossier `docs/jury/`** — méta-documentation pour la certification — voir `docs/jury/`
+  - `README.md` : index compétences C1-C21 → preuves, avec état honnête (✅/🟡/⬜) et mention explicite de ce qui manque par ligne. Deux règles posées : on pointe vers les preuves sans les recopier, et on n'écrit ici que ce qui n'a aucun autre domicile
+  - `veille/` (`sources.md`, `journal.md`) : format posé, **aucune entrée inventée**. C6 exige une régularité (min. 1h/semaine) — seule exigence du référentiel impossible à produire rétroactivement
+  - `decisions/` : un fichier par décision, avec options écartées. Format en clair (pas d'étiquette « ADR »). Le `README.md` indexe les décisions **antérieures** vers les documents qui les justifient déjà (`conception.md`, `bdd.md`, `1_prompt_engineering.md`...) plutôt que de les réécrire — une reconstruction tardive serait moins fidèle que l'original
+  - Deux décisions documentées : périmètre MLOps de l'ingestion (7 options envisagées, 6 écartées) et choix du modèle d'enrichissement
+
+- **Dérive de spec détectée et corrigée dans `conception/conception.md`** — voir `conception/conception.md`, `docs/jury/decisions/2026-07-21-modele-enrichissement-latence.md`
+  - Le tableau de stack annonçait `gpt-5.4-nano` pour l'enrichissement alors que le code, le `.env.example` et le `CLAUDE.md` utilisent **Kimi K2.6** — avec en plus une ligne dupliquée à l'identique, et l'exemple de configuration `ENRICHMENT_LLM = "gpt54_nano"` resté en place
+  - **Origine du changement, jamais écrite jusqu'ici** : gpt-5.4-nano avait été retenu pour sa faible latence, critère sans objet sur un traitement par lot sans utilisateur en attente. Kimi K2.6 l'emporte sur la fenêtre de contexte (256K, utile à la ré-ingestion post-MVP) et la fiabilité du JSON
+  - **Détectée en construisant l'index compétences → preuves** : vérifier qu'une preuve existe réellement plutôt que la supposer a fait apparaître la contradiction. C'est le *spec drift* identifié comme risque principal dans `CLAUDE.md`, confirmé en conditions réelles sur un document central
+  - Constaté au passage : `conception.md` renvoie deux fois à `annexes/F_choix_llm.md`, absent du dépôt. Le matériau du benchmark existe (`annexes/benchmark/`), sa synthèse rédigée non — contenu exploitable pour C7 actuellement invisible dans le Git
+
 ## 2026-07-21 — Claude Code (Part 8)
 
 - **Spec « Provenance des données et manifeste d'ingestion »** (conception seule, aucune implémentation) — voir `conception/2_ingestion/E_provenance_manifeste.md`
