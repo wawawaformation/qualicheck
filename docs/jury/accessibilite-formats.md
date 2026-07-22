@@ -9,12 +9,19 @@ Le principe commun à tous les formats : **le contenu doit exister comme texte
 structuré**, pas seulement comme apparence visuelle. Un lecteur d'écran ne voit pas
 une mise en page, il lit une structure.
 
-**Format retenu pour les veilles** (`docs/jury/veille/README.md`) : un **ODP** de
-présentation avec notes, pour la restitution orale, et un **MD ou ODT** de lecture,
-autonome. Les conseils PPTX ci-dessous s'appliquent identiquement à l'ODP —
-LibreOffice Impress (`.odp`) et PowerPoint (`.pptx`) partagent le même modèle de
-diapositives, dispositions et volet d'accessibilité. Le format de lecture (MD/ODT)
-est traité dans sa propre section, plus bas.
+**Format retenu pour les veilles** (`docs/jury/veille/README.md`) : deux formats à
+rôles distincts, pas deux copies du même contenu.
+
+- l'**ODP** est un **support de présentation live** (notes du présentateur) — il
+  n'est pas le document diffusé, donc il ne porte pas seul la charge
+  d'accessibilité. Une hygiène minimale reste utile (pas de diapositive-image pure),
+  mais l'exigence complète se joue sur le second format.
+- le **MD ou ODT** est le **document de partage réel**, seul document devant
+  répondre pleinement au critère « format accessible ».
+
+Les conseils PPTX ci-dessous s'appliquent identiquement à l'ODP — LibreOffice
+Impress (`.odp`) et PowerPoint (`.pptx`) partagent le même modèle de diapositives,
+dispositions et volet d'accessibilité.
 
 ## PDF (carrousel, export de synthèse)
 

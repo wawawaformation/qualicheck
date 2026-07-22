@@ -118,23 +118,21 @@ perd — un contenu porté par une infographie est illisible pour un lecteur d'�
 
 ### Format retenu pour les prochaines restitutions
 
-Chaque veille produit désormais systématiquement **deux formats en parallèle** :
+Chaque veille produit systématiquement **deux formats, à des rôles distincts** —
+ce n'est pas une simple duplication du même contenu :
 
-- un **ODP** de présentation, avec les **notes du présentateur** intégrées, pour la
-  restitution orale au groupe
-- un **MD ou ODT** de lecture, autonome, pour qui préfère ou doit lire plutôt
-  qu'assister à l'oral
+- l'**ODP** est un **support de présentation live** — les notes qu'il porte
+  guident l'oral, il n'est pas conçu pour être diffusé ni lu de façon autonome
+- le **MD ou ODT est le document de partage réel**, structuré avec des styles
+  sémantiques rigoureux (Titre 1, Titre 2...) — c'est lui qui porte la charge
+  d'accessibilité, pas l'ODP
 
-Ce doublement répond directement au critère : le second format garantit qu'un
-lecteur d'écran (ou toute personne ne pouvant pas suivre l'oral) dispose d'une
-version texte complète, indépendante de la présentation.
-
-**Ce que le doublement ne garantit pas seul** : un ODP peut encore contenir des
-diapositives-image, du texte sans styles de titre appliqués, ou un schéma sans
-alternative textuelle — la présence des deux formats ne dispense pas de construire
-chacun correctement. L'aide-mémoire `docs/jury/accessibilite-formats.md` reste la
-checklist de construction pour l'ODP en particulier (styles de titre, ordre de
-lecture, alternatives textuelles, contraste).
+Cette discipline (styles sémantiques systématiques sur les documents partagés)
+n'est pas adoptée pour ce dossier : elle vient d'une pratique professionnelle
+antérieure — David est **expert Opquast qualité web**, l'accessibilité relève donc
+de son cœur de métier, pas d'une conformité découverte à l'occasion de la
+certification. L'aide-mémoire `docs/jury/accessibilite-formats.md` documente les
+règles pour qui les découvre ; il ne remplace pas cette pratique déjà en place.
 
 L'enjeu dépasse la seule C6 : l'exigence de documentation accessible revient sur C8,
 C11, C18, C19 et C20. Et elle se remarquerait d'autant plus sur un projet dont
