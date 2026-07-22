@@ -91,6 +91,8 @@ visuels (`.png`, `.jpg`, carrousel PDF) et de présentations `.pptx`. Ce sont
 précisément les formats où l'accessibilité se perd — un contenu porté par une
 infographie est illisible pour un lecteur d'écran.
 
+Aide-mémoire pratique pour ces deux formats : `docs/jury/accessibilite-formats.md`.
+
 L'enjeu dépasse la seule C6 : l'exigence de documentation accessible revient sur C8,
 C11, C18, C19 et C20. Et elle se remarquerait d'autant plus sur un projet dont
 l'objet même est l'audit de qualité et d'accessibilité web.
