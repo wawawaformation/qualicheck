@@ -58,10 +58,12 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   LangChain, Azure Foundry) — `D`
 - [ ] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — `D`
   - Seule exigence du référentiel qu'on ne peut pas produire rétroactivement
-- [ ] **Accessibilité des synthèses** (Valentin Haüy / AcceDe) — `D`
-  - Les supports actuels passent beaucoup par des visuels et des `.pptx` : ordre de
-    lecture, alternatives textuelles, contraste, pas de texte incrusté dans une image
-  - Aide-mémoire pratique fait : `docs/jury/accessibilite-formats.md` (PDF, PPTX)
+- [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
+  - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
+  - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
+- [ ] **Vérifier l'accessibilité des synthèses passées** (visuels `.png`/`.jpg`,
+  carrousels PDF) — hors périmètre du nouveau format, à traiter si elles sont
+  réutilisées telles quelles — `D`
   - L'exigence revient aussi sur C8, C11, C18, C19, C20
 
 ## Certification — livrables manquants
