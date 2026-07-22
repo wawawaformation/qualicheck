@@ -16,9 +16,23 @@ le dispositif collectif.
 
 Perplexity et NotebookLM sont les outils **du collectif Mini Manifest**, distincts
 du FreshRSS personnel — l'un collecte/interroge, l'autre synthétise avant
-présentation. Les autres outils mentionnés dans les consignes du collectif
-(Twitter/Medium/Reddit, plateformes e-learning Pluralsight/Dyma) ne sont pas encore
-mobilisés côté David : à ajouter au tableau `sources.md` s'ils entrent en usage.
+présentation.
+
+**Non utilisés pour l'instant, malgré leur mention dans les consignes du
+collectif** : Twitter/Medium/Reddit, plateformes e-learning (Pluralsight, Dyma).
+Écarté par choix, pas par oubli — à documenter dans « Sources écartées » ci-dessous
+si la raison se précise.
+
+**Répartition réelle des trois canaux actifs**, précisée par David :
+
+- **FreshRSS** — outil principal, à étoffer (cf. plus bas)
+- **YouTube** — usage identifié mais compte non séparé du personnel (cf. plus bas)
+- **LinkedIn** — **veille professionnelle** spécifiquement, pas une veille technique
+  généraliste. Rôle distinct du RSS, à ne pas confondre dans le tableau ci-dessous.
+
+**Piste non mise en place** : une newsletter, envisagée pour compléter le
+dispositif. À documenter ici si elle se concrétise (laquelle, fréquence, raison du
+choix).
 
 Le référentiel demande un choix « cohérent avec sources et budget ». La raison du
 choix est directement celle-là :
@@ -93,6 +107,24 @@ LangChain Blog (framework utilisé dans `app/ingestion/llm_client.py`).
   veille. Un compte dédié à la veille séparerait les deux et rendrait les chaînes
   suivies exportables/listables, comme pour le flux RSS
 
+## Contrainte structurante : niveau d'anglais
+
+**Niveau estimé B1** — écrit correct, oral difficile. Ce n'est pas une faute
+d'organisation à corriger, c'est une contrainte réelle qui **explique** la
+composition du dispositif plutôt qu'elle ne la limite :
+
+- le **RSS** (contenu écrit, au rythme de lecture de chacun) domine largement sur
+  le **YouTube** (contenu oral, souvent en anglais et à débit natif) — cohérent
+  avec les 17 flux RSS déjà listés contre un usage YouTube encore embryonnaire
+- les sources francophones (ActuIA, Korben, LinuxFr, Blog du Modérateur) et les
+  sources anglophones à forte structure écrite (Hugging Face Blog, Python Insider,
+  LangChain Blog) sont plus accessibles que des formats conversationnels
+  (podcasts, conférences filmées) même quand ceux-ci feraient autorité
+
+Un jury peut légitimement demander pourquoi YouTube — mentionné comme source dans
+les consignes du collectif — reste peu mobilisé : c'est la réponse honnête, à
+préférer à une justification a posteriori.
+
 ## Sources écartées
 
 Documenter aussi ce qu'on ne suit **pas** et pourquoi : c'est ce qui montre que la
@@ -100,4 +132,8 @@ sélection est un choix et non un défaut de connaissance.
 
 | Source | Raison de l'écarter |
 | --- | --- |
-| *à compléter* | |
+| Twitter/X | non utilisé pour l'instant, hors dispositif actuel |
+| Medium | non utilisé pour l'instant, hors dispositif actuel |
+| Reddit | non utilisé pour l'instant, hors dispositif actuel |
+| Pluralsight, Dyma (e-learning) | non utilisés pour l'instant, hors dispositif actuel |
+| Contenus vidéo/audio anglophones à débit natif | niveau d'anglais oral (B1) — préférence structurelle pour l'écrit, cf. section dédiée ci-dessus |
