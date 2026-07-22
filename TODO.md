@@ -44,10 +44,13 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 
 - [x] **17 flux RSS listés** (export OPML 2026-07-22) → `docs/jury/veille/sources.md` — `D`
 - [ ] **Fréquence de lecture** par flux ou par dossier — `D`
-- [ ] **Comptes LinkedIn précis** — l'export OPML ne couvre que le RSS ; le critère
-  de fiabilité porte sur l'auteur, pas sur la plateforme — `D`
-- [ ] **Créer un compte YouTube dédié à la veille**, séparé du personnel — condition
-  préalable pour pouvoir lister les chaînes suivies (aujourd'hui mélangées) — `D`
+- [ ] **Étoffer les flux FreshRSS** — outil principal ; RSS écrit privilégié pour
+  des raisons de niveau d'anglais (oral B1, cf. `sources.md`) — `D`
+- [ ] **Créer un compte YouTube dédié à la veille**, séparé du personnel, puis
+  étoffer les abonnements IA / dev agentique — `D`
+- [ ] **Lister les comptes LinkedIn suivis** — veille professionnelle
+  spécifiquement, distincte du RSS technique — `D`
+- [ ] **Évaluer la mise en place d'une newsletter** en complément du dispositif — `D`
 - [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que le
   thème assigné — développement durable x IA — est fortement réglementaire) —
   RGAA/accessibilité notamment absent alors que central à QualiCheck — `D`
