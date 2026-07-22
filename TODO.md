@@ -20,9 +20,10 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
-- [ ] **Tarifs `KIMI_PRICE_*`** — rester dans `.env` ou passer dans le manifeste ? — `D`
-  - En attente des relevés de coûts réels Azure (le commentaire du `.env` signale
-    lui-même que la valeur actuelle est une approximation Moonshot/OpenRouter)
+- [x] **Valeurs `KIMI_PRICE_*`** — reconstruites depuis la facture réelle du 19/07
+  (9,13 €) : 0,8008 / 3,3875 €/1M. Appliquées à `.env` + `.env.example` — `A`
+- [ ] **Emplacement `KIMI_PRICE_*`** — rester dans `.env` ou passer dans le
+  manifeste ? Toujours ouvert, indépendant des valeurs (spec E §6) — `D`
 - [ ] **`ia_souverain/synthese.md`** — copier dans `conception/annexes/` ou pointer
   vers le dossier formation ? — `D`
   - `F_choix_llm.md` la cite comme annexe (argumentation souveraineté, Bayart,
