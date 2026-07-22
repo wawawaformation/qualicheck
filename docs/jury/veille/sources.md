@@ -80,6 +80,10 @@ LangChain Blog (framework utilisé dans `app/ingestion/llm_client.py`).
   projet) : les ranger clarifierait la collecte
 - Aucun compte **LinkedIn** ni chaîne **YouTube** nommément identifié malgré leur
   mention comme sources (cf. plus haut) — à lister ici une fois précisés
+- **YouTube** : les abonnements veille et personnels sont aujourd'hui mélangés sur
+  un compte unique, ce qui empêche d'en extraire une liste de chaînes propre à la
+  veille. Un compte dédié à la veille séparerait les deux et rendrait les chaînes
+  suivies exportables/listables, comme pour le flux RSS
 
 ## Sources écartées
 

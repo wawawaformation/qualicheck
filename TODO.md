@@ -44,8 +44,10 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 
 - [x] **17 flux RSS listés** (export OPML 2026-07-22) → `docs/jury/veille/sources.md` — `D`
 - [ ] **Fréquence de lecture** par flux ou par dossier — `D`
-- [ ] **Comptes LinkedIn et chaînes YouTube précis** — l'export OPML ne couvre que le
-  RSS ; le critère de fiabilité porte sur l'auteur, pas sur la plateforme — `D`
+- [ ] **Comptes LinkedIn précis** — l'export OPML ne couvre que le RSS ; le critère
+  de fiabilité porte sur l'auteur, pas sur la plateforme — `D`
+- [ ] **Créer un compte YouTube dédié à la veille**, séparé du personnel — condition
+  préalable pour pouvoir lister les chaînes suivies (aujourd'hui mélangées) — `D`
 - [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que
   c'est le thème de veille assigné) — RGAA/accessibilité notamment absent alors que
   central à QualiCheck — `D`
