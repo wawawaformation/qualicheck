@@ -1,12 +1,18 @@
 # Veille — organisation et localisation
 
-## Dispositif
+## Dispositif — « Mini Manifest »
 
-La veille s'exerce dans un cadre **collectif**, organisé au sein de la formation :
+La veille s'exerce dans un cadre **collectif**, organisé au sein de la formation
+sous le nom **Mini Manifest**. Consignes officielles du collectif (canal Discord) :
 
-- chaque participant se voit attribuer un **thème** qu'il suit dans la durée
-- il en **présente une synthèse au groupe toutes les 2 à 3 semaines**
-- chacun bénéficie ainsi de la veille des autres sur des thèmes qu'il ne suit pas
+> **Objectif** : Apprendre, s'informer & informer ses pairs.
+>
+> **Méthodo** : creuser un article/actualité et être capable d'en restituer le
+> fonctionnement et répondre aux questions de clarification.
+>
+> **Format d'une session** : 3 présentations de 10 minutes, suivies de 20 minutes
+> de discussion. Passage désigné par une roue de la chance, avec un cooldown d'une
+> séance (qui passe ne repasse pas à la session suivante).
 
 Ce point compte pour C6, dont l'intitulé porte sur le fait d'« animer le **travail
 collectif** de sélection des sources, collecte, traitement et partage des
@@ -19,10 +25,29 @@ collectif — c'est là que vivent la plupart des restitutions, en complément d
 présentations orales. Le canal sert donc à la fois d'espace de partage entre deux
 restitutions et d'archive des synthèses produites.
 
-**Thème suivi** : écologie, éthique, économie, développement durable.
+**Outils de collecte du collectif** : Perplexity, flux RSS, Twitter/LinkedIn/
+YouTube/Medium/Reddit, plateformes e-learning (Pluralsight, Dyma). **Outil de
+synthèse** : NotebookLM.
 
-C'est ce thème qui explique la composition du fonds documentaire ci-dessous — les
-sujets n'y sont pas choisis au fil de l'actualité, mais rattachés à un axe assigné.
+**Répartition des thèmes** — chaque participant suit un axe dans la durée, ce qui
+permet à chacun de bénéficier de la veille des autres sur des sujets qu'il ne suit
+pas lui-même :
+
+| Participant | Thème |
+| --- | --- |
+| Sabine | DevSecOps x AI + Embedded AI |
+| Steeve | Systèmes multi-agents |
+| Tony | Approfondissement de la formation (technique) |
+| **David** | **Développement durable x AI** (sociétal, environnemental, économique) |
+| Alpha | Agentic systems efficiency |
+| Sofiane | Tools and technologies around Agentic AI |
+| Era | Agentic AI for personnalisation & Finance |
+| Mehdi | Business — Applied AI |
+
+**Thème suivi** : développement durable x IA — sociétal, environnemental,
+économique. C'est cet axe qui explique la composition du fonds documentaire
+ci-dessous — les sujets n'y sont pas choisis au fil de l'actualité, mais rattachés
+au thème assigné.
 
 ## Où se trouve le fonds
 

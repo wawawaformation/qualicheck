@@ -7,10 +7,18 @@ le dispositif collectif.
 
 | Outil | Usage | Coût |
 | --- | --- | --- |
-| **FreshRSS** auto-hébergé — `rss.david-legrand.fr` | agrégation des flux RSS, cœur du dispositif | logiciel libre, pas d'abonnement ; coût = hébergement Docker déjà en place |
-| **Discord** — canal veille du collectif | partage et discussion entre participants, restitution croisée des thèmes | gratuit |
+| **FreshRSS** auto-hébergé — `rss.david-legrand.fr` | agrégation des flux RSS, cœur du dispositif personnel | logiciel libre, pas d'abonnement ; coût = hébergement Docker déjà en place |
+| **Discord** — canal veille du collectif (Mini Manifest) | partage et discussion entre participants, restitution croisée des thèmes | gratuit |
 | **LinkedIn** | signaux faibles, publications de praticiens | gratuit |
 | **YouTube** | formats longs, conférences, analyses | gratuit |
+| **Perplexity** | outil de collecte retenu par le collectif (recherche augmentée) | selon usage collectif |
+| **NotebookLM** | outil de synthèse retenu par le collectif pour préparer les restitutions | gratuit |
+
+Perplexity et NotebookLM sont les outils **du collectif Mini Manifest**, distincts
+du FreshRSS personnel — l'un collecte/interroge, l'autre synthétise avant
+présentation. Les autres outils mentionnés dans les consignes du collectif
+(Twitter/Medium/Reddit, plateformes e-learning Pluralsight/Dyma) ne sont pas encore
+mobilisés côté David : à ajouter au tableau `sources.md` s'ils entrent en usage.
 
 Le référentiel demande un choix « cohérent avec sources et budget ». La raison du
 choix est directement celle-là :
