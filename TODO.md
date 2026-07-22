@@ -59,8 +59,26 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   RGAA/accessibilité notamment absent alors que central à QualiCheck — `D`
 - [ ] Ranger les 3 flux **« Sans catégorie »** (dont 2 liés directement au projet :
   LangChain, Azure Foundry) — `D`
-- [ ] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — `D`
+- [x] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — 3 entrées
+  réelles ajoutées (2026-05-13 x2, 2026-07-15), antérieures ou concomitantes à la
+  création du dossier `jury/` — `D`
   - Seule exigence du référentiel qu'on ne peut pas produire rétroactivement
+- [x] **Écart de thème du rapport cybersécurité (13 mai)** — résolu : jour de
+  lancement de Mini Manifest, antérieur à l'attribution du thème — `D`
+- [x] **Écart de date FreshRSS** — résolu, 13 mai fait foi (nom de fichier erroné) — `D`
+- [ ] **Écart de thème du PPTX métiers du web (15 juillet)** — non résolu,
+  postérieur de 2 mois au lancement de Mini Manifest ; à clarifier une fois le MD
+  généré (cf. `journal.md`) — `D`
+- [ ] **Générer le MD manquant** du PPTX `veille-metiers-web-ia-202.pptx` — `D`
+- [ ] **Archiver les 3 PDF/PPTX de veille** hors de `~/Téléchargements` (transitoire,
+  comme la corbeille) — `12_mai_article-freshrss-docker_.pdf`,
+  `veille_13_mai_David.pdf`, `veille-metiers-web-ia-202.pptx` — `D`
+- [ ] **Nettoyer le dossier de veille** (`formation_dev_ia_agentique/veille/`) —
+  constat de David, pas encore détaillé. Repéré en cours d'inventaire : fichiers
+  hors sujet égarés (`whereisbrian.jpeg`), config d'éditeur versionnée par erreur
+  (`.vscode/settings.json` dans `britanica_openAI_le_pillage_savoir/`), noms de
+  fichiers incohérents (`veille-metiers-web-ia-202.pptx` vs `-2026.pptx`), pièces
+  encore éparpillées en dehors du dossier de veille (`~/Téléchargements`) — `D`
 - [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
   - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
   - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
