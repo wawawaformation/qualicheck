@@ -58,6 +58,7 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 - [ ] **Accessibilité des synthèses** (Valentin Haüy / AcceDe) — `D`
   - Les supports actuels passent beaucoup par des visuels et des `.pptx` : ordre de
     lecture, alternatives textuelles, contraste, pas de texte incrusté dans une image
+  - Aide-mémoire pratique fait : `docs/jury/accessibilite-formats.md` (PDF, PPTX)
   - L'exigence revient aussi sur C8, C11, C18, C19, C20
 
 ## Certification — livrables manquants
