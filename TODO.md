@@ -101,7 +101,20 @@ Repérés en construisant l'index `docs/jury/README.md`.
 - [ ] **Procédures de tri RGPD** avec leur fréquence d'exécution (C4) — `D`
 - [ ] **Objectifs d'accessibilité dans les critères d'acceptation** des user stories
   (C14), appuyés sur WCAG ou RGAA — `D`
+- [ ] **Décider du statut de `benchmark-azure/`** (C8, C11, C21) — projet externe
+  (`formation_dev_ia_agentique/lab/benchmark-azure/`, dépôt git séparé) : monitorage
+  réel de déploiements Azure LLM (cron 30 min, taux d'erreur/latence par modèle,
+  rapport HTML, incident HTTP 401 identifié). Couvre C11 mieux que QualiCheck ne le
+  pourra jamais (batch anecdotique vs flux réel à surveiller) — `D`
+  - Documenter comme preuve externe renvoyée depuis `docs/jury/README.md` (comme la
+    veille), ou en dossier de certification autonome ?
+  - Si retenu : rédiger la résolution de l'incident HTTP 401 selon les critères C21
+    (cause, reproduction, solution) — actuellement seulement constaté, pas résolu
+    au sens du référentiel
+  - Aligner les liens de `conception/annexes/F_choix_llm.md` sur la vraie source
+    (`benchmark-azure/`) plutôt que sur `annexes/benchmark/`, qui n'en est qu'un
+    sous-ensemble partiel
 
 ## Divers
 
-- [ ] **Pousser la branche `feature`** — 19 commits d'avance sur `origin/feature` — `D`
+- [ ] **Pousser la branche `feature`** — 18 commits d'avance sur `origin/feature` — `D`
