@@ -52,11 +52,11 @@ Légende : ✅ couvert · 🟡 partiel · ⬜ rien à ce stade
 | | Compétence | Preuves | État |
 | --- | --- | --- | --- |
 | C6 | Veille technique et réglementaire | `docs/jury/veille/README.md` → fonds dans `formation_dev_ia_agentique/veille/` | 🟡 veille collective réellement menée (thème assigné, restitution toutes les 2-3 semaines, volet réglementaire couvert) ; manquent la cadence datée, la fiabilité des sources et les outils d'agrégation |
-| C7 | Identifier des services d'IA préexistants | `conception/annexes/benchmark/` (`benchmark.py`, `analyse_models_azure.pdf`, notes Foundry), `conception/conception.md` §Choix techniques | 🟡 benchmark réellement mené (script + analyse) ; la synthèse rédigée annoncée sous `annexes/F_choix_llm.md` n'existe pas encore |
-| C8 | Paramétrer un service d'IA | `app/ingestion/llm_client.py`, `.env.example` | 🟡 service configuré et opérationnel ; monitorage à mettre en place |
+| C7 | Identifier des services d'IA préexistants | `F_choix_llm.md` (récupéré) + source des « 16 820 appels » : projet externe `formation_dev_ia_agentique/lab/benchmark-azure/` (dépôt git séparé, spec-driven : specs + plans + `FOUNDRY_NOTES.md`/`FOUNDRY_SI_NOTES.md`) | 🟡 benchmark réel et documenté, mais hors dépôt QualiCheck — un jury lisant uniquement ce dépôt n'y a pas accès ; `annexes/benchmark/` n'en contient qu'un sous-ensemble (4 fichiers, liens de `F_choix_llm.md` non alignés) |
+| C8 | Paramétrer un service d'IA | `app/ingestion/llm_client.py`, `.env.example` + monitorage réel (voir C11) | 🟡 service configuré et opérationnel ; « monitorage disponible opérationnel » désormais couvert par un projet externe, à documenter comme preuve |
 | C9 | API exposant un modèle | — | ⬜ non conçu |
 | C10 | Intégrer l'API dans une application | — | ⬜ non conçu |
-| C11 | Monitorer un modèle | — | ⬜ relève d'US1, où les métriques existent réellement |
+| C11 | Monitorer un modèle | Projet externe `formation_dev_ia_agentique/lab/benchmark-azure/` — collecte cron (30 min), métriques (latence, disponibilité, taux d'erreur par modèle/région), rapport HTML avec graphiques (`analysis_report.html`) | 🟡 candidat fort, **hors QualiCheck** — cron 30 min, taux d'erreur/timeout/HTTP par modèle, restitution HTML en temps réel : couvre C11 mieux que rien dans QualiCheck ne pourrait (l'ingestion est un batch anecdotique, pas un flux à surveiller). Cohérent avec `CLAUDE.md` : « si une compétence s'avère trop artificielle à rattacher à QualiCheck, un brief distinct pourra être traité séparément » — reste à choisir : documenter QualiCheck y renvoyant, ou dossier de certification autonome pour ce projet |
 | C12 | Tests automatisés | `tests/`, `.github/workflows/ci.yml` | 🟡 tests unitaires et d'intégration en place ; validation des jeux de données à formaliser |
 | C13 | Chaîne de livraison continue | `.github/workflows/ci.yml` | 🟡 intégration continue en place ; livraison à construire |
 
@@ -71,7 +71,7 @@ Légende : ✅ couvert · 🟡 partiel · ⬜ rien à ce stade
 | C18 | Automatiser les tests | `.github/workflows/ci.yml` | ✅ lint, migrations et tests déclenchés à chaque push hors `main` |
 | C19 | Livraison continue de l'application | — | ⬜ |
 | C20 | Surveiller l'application | — | ⬜ relève d'US1 |
-| C21 | Résoudre les incidents | `docs/problemes_rencontres/` | 🟡 trois incidents documentés avec cause, reproduction et solution versionnée |
+| C21 | Résoudre les incidents | `docs/problemes_rencontres/` + incident d'authentification (HTTP 401, 10/07 17h31) identifié et documenté dans le projet externe `benchmark-azure/` | 🟡 trois incidents QualiCheck documentés (cause, reproduction, solution versionnée) ; l'incident du benchmark externe est factuellement constaté mais sa procédure de résolution n'est pas encore rédigée en suivant les critères C21 |
 
 ### Lecture de cet état
 
@@ -86,3 +86,13 @@ Deux manques ne se rattraperont pas tout seuls :
   élément qui ne se reconstitue pas après coup.
 - **C4** — le registre des traitements de données personnelles et les procédures de
   tri RGPD sont des livrables à part entière, pas une section de spec.
+
+**Un point structurant découvert le 2026-07-22** : le projet externe
+`formation_dev_ia_agentique/lab/benchmark-azure/` (dépôt git séparé, monitorage
+réel des déploiements Azure LLM, spec-driven) couvre C11 nettement mieux que
+QualiCheck ne pourrait le faire seul — l'ingestion y est un batch lancé 2-3 fois,
+sans rien à surveiller en continu (cf. `docs/jury/decisions/2026-07-21-perimetre-mlops-ingestion.md`,
+qui avait explicitement renvoyé C11 vers US1). Ce projet en est une preuve plus
+directe que ne le sera jamais US1. Reste à décider : le documenter comme preuve
+externe de QualiCheck (renvoi, comme pour la veille), ou en faire un dossier de
+certification autonome — cf. `TODO.md`.
