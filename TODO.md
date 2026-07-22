@@ -51,6 +51,9 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 - [ ] **Lister les comptes LinkedIn suivis** — veille professionnelle
   spécifiquement, distincte du RSS technique — `D`
 - [ ] **Évaluer la mise en place d'une newsletter** en complément du dispositif — `D`
+- [ ] **Trier `docs/jury/veille/candidats-sources.md`** — 5 flux RSS vérifiés,
+  3 chaînes YouTube, 5 newsletters (avec distinction RSS/email uniquement) sur le
+  thème développement durable x IA. Ajouter les candidats retenus à `sources.md` — `D`
 - [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que le
   thème assigné — développement durable x IA — est fortement réglementaire) —
   RGAA/accessibilité notamment absent alors que central à QualiCheck — `D`
