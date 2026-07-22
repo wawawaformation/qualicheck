@@ -13,6 +13,10 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     chantier 3** (ré-ingestion réelle) : après, il faudrait une migration *et* une
     seconde ré-ingestion facturée (~3 €)
   - Mérite une session dédiée
+  - Intègre désormais le correctif de visibilité du coût sur échec de stockage
+    (spec E §1 quatrième manque, §5.10, critère de validation #8) — gap découvert
+    le 2026-07-22 en analysant `logs/ingestion.log` : ~6 € de tokens facturés le
+    19 juillet sur des runs échoués au stockage, jamais journalisés
 
 ## Décisions en attente
 

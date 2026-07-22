@@ -29,6 +29,20 @@ Trois manques distincts :
 Le troisième point est le plus insidieux : la colonne **a l'apparence** d'une
 provenance sans en être une. C'est une décoration.
 
+**Quatrième manque, découvert en analysant `logs/ingestion.log` (2026-07-22)** :
+le coût d'un run n'est journalisé qu'après un stockage réussi
+(`scripts/ingestion.py`, calcul placé après le bloc `Étape 4 — Stockage`, qui
+`sys.exit(1)` en cas d'échec). Le 19 juillet, deux runs complets à 245 règles ont
+échoué au stockage (règles 154, 166 — dépassement `VARCHAR`, cf.
+`docs/problemes_rencontres/ingestion/2_schema_text_columns.md`) après avoir
+consommé et payé les tokens d'enrichissement, sans laisser aucune trace de coût
+dans le log. Estimation reconstituée à partir des appels HTTP journalisés :
+~9,9 € contre 9,13 € réellement facturés — écart cohérent avec l'imprécision déjà
+connue des tarifs `KIMI_PRICE_*` (§6). Même famille de problème que les trois
+manques ci-dessus : une information de provenance (ici, le coût réel d'un run)
+qui existe en théorie mais n'est pas fiable en pratique dès qu'un cas d'échec
+survient.
+
 ## 2. État actuel (vérifié)
 
 ### 2.1 Valeurs en dur, dupliquées
@@ -194,6 +208,18 @@ trois nouvelles colonnes — ce qui est la sémantique voulue.
 
 Consignation de la règle de nommage (§7) et des quatre nouvelles colonnes.
 
+### 5.10 `scripts/ingestion.py` — visibilité du coût sur échec
+
+Correctif ciblé, indépendant des colonnes de provenance mais découvert par la même
+analyse (§1, quatrième manque) : déplacer le calcul et la journalisation du coût
+(bloc `Tokens — entrée : ... coût estimé : ...`, actuellement après `Étape 4 —
+Stockage`) juste après `Étape 3 — Enrichissement : terminée`, avant le bloc
+`Étape 4`. `enriched.input_tokens`/`output_tokens` sont déjà entièrement
+disponibles à ce point — aucun nouveau calcul, un déplacement de ~14 lignes.
+
+Effet : un run qui échoue au stockage journalise désormais son coût réel, au lieu
+de le perdre silencieusement.
+
 ## 6. Point resté ouvert
 
 **Tarifs `KIMI_PRICE_*`.** Ils sont aujourd'hui dans `.env` alors qu'ils ne sont ni
@@ -253,6 +279,9 @@ est assumé et argumenté ; ce qui compte est la cohérence, pas l'autorité.
 6. Une ingestion de test (LLM bouchonné, `scripts/ingestion_test.py`) renseigne les
    quatre colonnes.
 7. `pytest` vert, `ruff` propre.
+8. Provoquer un échec de stockage (ex. réintroduire temporairement une valeur trop
+   longue) sur un run à enrichissement réel ou simulé : le coût est journalisé
+   malgré l'échec — vérifie le correctif §5.10.
 
 ### Ce qui n'est pas vérifiable ici
 
