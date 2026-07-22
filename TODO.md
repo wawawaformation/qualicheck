@@ -42,11 +42,15 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 
-- [ ] **Comptes LinkedIn, chaînes YouTube et flux RSS précis** → `docs/jury/veille/sources.md` — `D`
-  - Le critère de fiabilité porte sur l'auteur, pas sur la plateforme : il faut des
-    comptes identifiés, pas « LinkedIn ». Cinq à dix sources bien caractérisées
-    suffisent
-- [ ] **Capture d'écran de l'instance FreshRSS** comme preuve de l'outil — `D`
+- [x] **17 flux RSS listés** (export OPML 2026-07-22) → `docs/jury/veille/sources.md` — `D`
+- [ ] **Fréquence de lecture** par flux ou par dossier — `D`
+- [ ] **Comptes LinkedIn et chaînes YouTube précis** — l'export OPML ne couvre que le
+  RSS ; le critère de fiabilité porte sur l'auteur, pas sur la plateforme — `D`
+- [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que
+  c'est le thème de veille assigné) — RGAA/accessibilité notamment absent alors que
+  central à QualiCheck — `D`
+- [ ] Ranger les 3 flux **« Sans catégorie »** (dont 2 liés directement au projet :
+  LangChain, Azure Foundry) — `D`
 - [ ] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — `D`
   - Seule exigence du référentiel qu'on ne peut pas produire rétroactivement
 - [ ] **Accessibilité des synthèses** (Valentin Haüy / AcceDe) — `D`

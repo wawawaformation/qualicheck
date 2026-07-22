@@ -42,11 +42,44 @@ comptes et des flux, pas des plateformes.
 
 ## Sources suivies
 
-| Source | Plateforme | Auteur / organisation | Pourquoi fiable | Fréquence |
+Export FreshRSS du 2026-07-22 (`feeds_2026-07-22.opml.xml`), 17 flux répartis en
+8 dossiers thématiques. Les dossiers structurent la collecte : agents/workflow,
+vulgarisation IA, LLM, MLOps, Python, réglementation, tutoriels.
+
+| Source | Dossier FreshRSS | Auteur / organisation | Pourquoi fiable | Fréquence |
 | --- | --- | --- | --- | --- |
-| *flux FreshRSS à détailler* | RSS | | | |
-| *comptes suivis à détailler* | LinkedIn | | | |
-| *chaînes suivies à détailler* | YouTube | | | |
+| CrewAI Blog | Agents IA / workflow | CrewAI (éditeur du framework) | auteur = l'éditeur du framework documenté, source primaire | *à préciser* |
+| n8n Blog | Agents IA / workflow | n8n (éditeur de l'outil) | source primaire, éditeur de l'outil | *à préciser* |
+| ActuIA | IA — vulgarisation et outils | rédaction ActuIA | média spécialisé IA francophone identifié | *à préciser* |
+| Korben.info | IA — vulgarisation et outils | Manuel Dorne (Korben) | auteur identifié, actif depuis 20 ans sur la tech | *à préciser* |
+| LinuxFr — tag IA | IA — vulgarisation et outils | communauté LinuxFr, contributions modérées | plateforme communautaire francophone établie, modération par les pairs | *à préciser* |
+| Blog du Modérateur — IA | LLM | rédaction BDM | média professionnel identifié, ligne éditoriale connue | *à préciser* |
+| Hugging Face Blog | LLM | Hugging Face (acteur open source ML) | source primaire, un des principaux hébergeurs de modèles | *à préciser* |
+| MLOps Community | LMOps | communauté MLOps (podcast, événements) | praticiens identifiés, contenu régulier et daté | *à préciser* |
+| AFPy's Planet | Python | Association Francophone Python | association identifiée, agrégateur de blogs de contributeurs Python | *à préciser* |
+| LinuxFr — tag Python | Python | communauté LinuxFr | idem ci-dessus | *à préciser* |
+| Python Insider | Python | équipe cœur de développement Python | source officielle, la plus primaire possible sur le langage | *à préciser* |
+| EU AI Act (artificialintelligenceact.eu) | Réglementation | suivi indépendant du règlement européen | veille juridique dédiée, textes officiels commentés | *à préciser* |
+| CNIL — actualités | Réglementation | CNIL (autorité française) | source institutionnelle officielle | *à préciser* |
+| MachineLearningMastery.com | Tutos | Jason Brownlee | auteur identifié, praticien ML publiant depuis plusieurs années | *à préciser* |
+| LangChain Blog | Sans catégorie | LangChain (éditeur du framework) | source primaire, framework utilisé dans le projet | *à préciser* |
+| Les Numériques — IA | Sans catégorie | rédaction Les Numériques | média tech grand public identifié | *à préciser* |
+| Microsoft Foundry Blog | Sans catégorie | Microsoft (Azure AI Foundry) | source primaire, éditeur de l'infrastructure LLM du projet | *à préciser* |
+
+**Deux flux touchent directement QualiCheck**, pas seulement la veille générale :
+Microsoft Foundry Blog (Azure AI Foundry est la plateforme LLM du projet) et
+LangChain Blog (framework utilisé dans `app/ingestion/llm_client.py`).
+
+**À étoffer** — constat de David, pas un jugement porté sur ce qui existe :
+
+- **Fréquence** de lecture par flux ou par dossier, à renseigner
+- **Réglementation** : 2 flux sur 17, le plus mince des 8 dossiers alors que le
+  thème de veille assigné (écologie, éthique, économie, développement durable, cf.
+  `README.md`) est fortement réglementaire — RGAA/accessibilité notamment absent
+- **« Sans catégorie »** contient 3 flux pertinents (dont 2 directement liés au
+  projet) : les ranger clarifierait la collecte
+- Aucun compte **LinkedIn** ni chaîne **YouTube** nommément identifié malgré leur
+  mention comme sources (cf. plus haut) — à lister ici une fois précisés
 
 ## Sources écartées
 
