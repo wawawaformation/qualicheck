@@ -48,9 +48,9 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   de fiabilité porte sur l'auteur, pas sur la plateforme — `D`
 - [ ] **Créer un compte YouTube dédié à la veille**, séparé du personnel — condition
   préalable pour pouvoir lister les chaînes suivies (aujourd'hui mélangées) — `D`
-- [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que
-  c'est le thème de veille assigné) — RGAA/accessibilité notamment absent alors que
-  central à QualiCheck — `D`
+- [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que le
+  thème assigné — développement durable x IA — est fortement réglementaire) —
+  RGAA/accessibilité notamment absent alors que central à QualiCheck — `D`
 - [ ] Ranger les 3 flux **« Sans catégorie »** (dont 2 liés directement au projet :
   LangChain, Azure Foundry) — `D`
 - [ ] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — `D`
