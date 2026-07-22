@@ -220,18 +220,32 @@ disponibles à ce point — aucun nouveau calcul, un déplacement de ~14 lignes.
 Effet : un run qui échoue au stockage journalise désormais son coût réel, au lieu
 de le perdre silencieusement.
 
-## 6. Point resté ouvert
+## 6. Tarifs `KIMI_PRICE_*` — valeurs closes, emplacement encore ouvert
 
-**Tarifs `KIMI_PRICE_*`.** Ils sont aujourd'hui dans `.env` alors qu'ils ne sont ni
-des secrets ni des propriétés de la machine : ce sont des données de référence du
-projet, dont l'historique a de la valeur. Ils relèvent de la même logique que
-l'affectation des rôles, et auraient donc leur place dans le manifeste.
+**Valeurs — closes (2026-07-22).** Reconstruites à partir d'une facture Azure
+réelle (9,13 €, 19 juillet) et des tokens journalisés dans `logs/ingestion.log`
+(6 runs journalisés + 2 runs à 245 règles échoués au stockage, jamais journalisés
+— cf. §1 quatrième manque, §5.10 — dont l'entrée est estimée identique au run
+réussi, même prompt et mêmes règles). Le facteur de correction (0,9205) est
+appliqué aux deux tarifs publics Moonshot/OpenRouter en préservant leur ratio
+entrée/sortie, faute de pouvoir séparer les deux taux à partir d'une facture
+globale unique :
 
-Décision différée : des relevés de tarifs réels Azure sont en cours de collecte. Le
-commentaire actuel du `.env` indique d'ailleurs une approximation (« tarif public
-Moonshot/OpenRouter, à corriger avec le tarif réel Azure AI Foundry »). Autant
-trancher une fois les vrais chiffres connus, plutôt que de déplacer une valeur
-provisoire.
+```text
+KIMI_PRICE_INPUT_PER_1M  = 0,8008 €  (était 0,87 €)
+KIMI_PRICE_OUTPUT_PER_1M = 3,3875 €  (était 3,68 €)
+```
+
+Ce n'est pas le tarif Azure officiel — c'est la meilleure reconstruction possible
+avec une seule facture globale sans détail entrée/sortie. À corriger si un relevé
+plus détaillé devient disponible. Appliquées dans `.env` et `.env.example`.
+
+**Emplacement — reste ouvert.** L'argument de départ tient toujours : ce sont des
+données de référence du projet, pas des secrets, et leur historique a de la
+valeur (git le donnerait gratuitement si elles étaient dans le manifeste plutôt
+que dans `.env`, non versionné). Décision non prise dans cet incrément — à
+statuer, éventuellement en même temps que l'implémentation de `manifest.yml`
+(§5.2).
 
 ## 7. Règle de nommage des colonnes
 
