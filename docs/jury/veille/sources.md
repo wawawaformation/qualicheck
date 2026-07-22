@@ -7,7 +7,7 @@ le dispositif collectif.
 
 | Outil | Usage | Coût |
 | --- | --- | --- |
-| **FreshRSS** auto-hébergé — `rss.david-legrand.fr` | agrégation des flux RSS, cœur du dispositif personnel | logiciel libre, pas d'abonnement ; coût = hébergement Docker déjà en place |
+| **FreshRSS** auto-hébergé — `rss.david-legrand.fr` (Docker + Caddy) | agrégation des flux RSS, cœur du dispositif personnel | logiciel libre, pas d'abonnement ; coût = hébergement Docker déjà en place — démarche documentée dans `journal.md` (entrée 2026-05-13, article de synthèse) |
 | **Discord** — canal veille du collectif (Mini Manifest) | partage et discussion entre participants, restitution croisée des thèmes | gratuit |
 | **LinkedIn** | signaux faibles, publications de praticiens | gratuit |
 | **YouTube** | formats longs, conférences, analyses | gratuit |

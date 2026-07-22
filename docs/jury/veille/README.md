@@ -65,10 +65,10 @@ jour. Ce dossier-ci **indexe et date**, il n'héberge pas.
 
 | Dossier | Contenu | Axe du thème |
 | --- | --- | --- |
-| `IA_et_legislation/` | AI Act (niveaux de risque, application au droit français), RGPD (le RGPD, incompatibilités), DSA/DMA | éthique, réglementaire |
-| `ia_souverain/` | `synthese.md` + 3 visuels (souveraineté des données, parcours de décision cloud, Apertus-70B) | éthique, économie |
-| `dev_durable/` | veille IA & environnement, points d'appui, scripts de restitution | écologie, développement durable |
-| `britanica_openAI_le_pillage_savoir/` | analyse en 5W2H, évolution du savoir, web classique vs information prémâchée | éthique, économie |
+| `IA_et_legislation/` | AI Act (niveaux de risque, application au droit français), RGPD (le RGPD, incompatibilités), DSA/DMA, fiche `European_Digital_Shield_compressed.pdf`, visuels de synthèse (niveaux de risque, RGPD, DSA/DMA/AI), sous-dossier `1_films/` (*Nosedive*/Black Mirror, *Gattaca* — fiches + visuels) — contient aussi `whereisbrian.jpeg`, une private joke sans rapport avec la veille, exclue de l'inventaire | éthique, réglementaire |
+| `britanica_openAI_le_pillage_savoir/` | analyse en 5W2H (avec source `1_article.url` et visuel), évolution du savoir, du web classique vers l'information prémâchée, conclusion — chaque section texte a son visuel associé, référence culturelle *Le Nom de la Rose* | éthique, économie |
+| `ia_souverain/` | `synthese.md` + 3 visuels (souveraineté des données, parcours de décision cloud, Apertus-70B) — argumentation reprise dans `conception/annexes/F_choix_llm.md` | éthique, économie |
+| `dev_durable/veille_ia_environnement/` | `presentation.odp` + `script.md` (format à deux rôles déjà appliqué : support live / document de partage), `Kit-dengagement-IA-frugale-1.pdf`, dossier `sources/` dédié (`RF-PIA-1.pdf`, `youtube.link`), `demo.link` | écologie, développement durable — pièce la plus directement dans l'axe du thème assigné |
 | `LLM-Engineers-Handbook/` | référence technique | technique |
 
 Le volet **réglementaire** est couvert explicitement (AI Act, RGPD, DSA/DMA). Le
