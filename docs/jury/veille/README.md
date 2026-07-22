@@ -111,12 +111,30 @@ explicite, porter des alternatives textuelles sur les images, offrir un contrast
 suffisant, et ne pas véhiculer son contenu sous forme de texte incrusté dans une
 image.
 
-**Point de vigilance** : une partie des synthèses existantes est constituée de
-visuels (`.png`, `.jpg`, carrousel PDF) et de présentations `.pptx`. Ce sont
-précisément les formats où l'accessibilité se perd — un contenu porté par une
-infographie est illisible pour un lecteur d'écran.
+**Point de vigilance (constat sur les synthèses passées)** : une partie des
+synthèses existantes est constituée de visuels (`.png`, `.jpg`, carrousel PDF) et
+de présentations `.pptx`. Ce sont précisément les formats où l'accessibilité se
+perd — un contenu porté par une infographie est illisible pour un lecteur d'écran.
 
-Aide-mémoire pratique pour ces deux formats : `docs/jury/accessibilite-formats.md`.
+### Format retenu pour les prochaines restitutions
+
+Chaque veille produit désormais systématiquement **deux formats en parallèle** :
+
+- un **ODP** de présentation, avec les **notes du présentateur** intégrées, pour la
+  restitution orale au groupe
+- un **MD ou ODT** de lecture, autonome, pour qui préfère ou doit lire plutôt
+  qu'assister à l'oral
+
+Ce doublement répond directement au critère : le second format garantit qu'un
+lecteur d'écran (ou toute personne ne pouvant pas suivre l'oral) dispose d'une
+version texte complète, indépendante de la présentation.
+
+**Ce que le doublement ne garantit pas seul** : un ODP peut encore contenir des
+diapositives-image, du texte sans styles de titre appliqués, ou un schéma sans
+alternative textuelle — la présence des deux formats ne dispense pas de construire
+chacun correctement. L'aide-mémoire `docs/jury/accessibilite-formats.md` reste la
+checklist de construction pour l'ODP en particulier (styles de titre, ordre de
+lecture, alternatives textuelles, contraste).
 
 L'enjeu dépasse la seule C6 : l'exigence de documentation accessible revient sur C8,
 C11, C18, C19 et C20. Et elle se remarquerait d'autant plus sur un projet dont
