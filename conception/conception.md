@@ -622,7 +622,10 @@ L'organisme de formation met à disposition un accès Azure AI Foundry partagé 
 
 #### Phase finale — Infomaniak (budget personnel)
 
-Budget personnel plafonné à **20€ (~ CHF 19)**, avec 1M de tokens offerts à l'inscription.
+Budget personnel plafonné à **20€ (~ CHF 19)**. Une offre d'inscription de 1M de
+tokens gratuits existait mais a expiré avant d'être utilisée (délai non identifié
+au moment de l'inscription) — les scénarios ci-dessous ne comptent donc plus sur
+cette déduction.
 
 ### Scénario nominal — dev Azure + production Infomaniak
 
@@ -635,9 +638,7 @@ Budget personnel plafonné à **20€ (~ CHF 19)**, avec 1M de tokens offerts à
 | Dialogue US2 — entrants | 20 sessions × 10 constats × 3 échanges × 2 000 tok. | 1.2M | 0.84 |
 | Dialogue US2 — sortants (Apertus) | 20 sessions × 30 échanges × 400 tok. | 240K | 0.60 |
 | Embedding (All MiniLM L12 v2) | 68 chunks × 20 runs | — | **Gratuit** |
-| **Total brut estimé** | | | **CHF 4.74** |
-| Déduction 1M tokens offerts | | | — CHF ~1.50 |
-| **Coût réel estimé** | | | **CHF ~3.24** |
+| **Coût réel estimé** | | | **CHF ~4.74** |
 
 > La phase de développement (Azure + Ollama Cloud) est à coût nul pour le projet.
 
@@ -652,15 +653,13 @@ Budget personnel plafonné à **20€ (~ CHF 19)**, avec 1M de tokens offerts à
 | Dialogue US2 — entrants | 20 sessions × 10 constats × 3 échanges × 2 000 tok. | 1.2M | 0.84 |
 | Dialogue US2 — sortants (Apertus) | 20 sessions × 30 échanges × 400 tok. | 240K | 0.60 |
 | Embedding (All MiniLM L12 v2) | — | — | **Gratuit** |
-| **Total brut** | | | **CHF 4.74** |
-| Déduction 1M tokens offerts | | | — CHF ~1.50 |
-| **Coût réel scénario catastrophe** | | | **CHF ~3.24** |
+| **Coût réel scénario catastrophe** | | | **CHF ~4.74** |
 
 Même dans ce scénario défavorable, le coût reste sous le budget plafond de 20€.
 
 ### Budget global fixé
 
-**Budget plafond : 20€** (~ CHF 19) — facteur ×6 par rapport au coût réel estimé dans les deux scénarios.
+**Budget plafond : 20€** (~ CHF 19) — facteur ×4 par rapport au coût réel estimé dans les deux scénarios (recalculé sans la déduction de tokens offerts, expirée avant usage).
 
 ---
 
