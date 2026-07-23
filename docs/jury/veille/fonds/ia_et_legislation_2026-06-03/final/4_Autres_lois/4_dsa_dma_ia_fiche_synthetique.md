@@ -108,7 +108,7 @@ Elle peut être concernée par les algorithmes utilisés sur les places de march
 Le **DSA**, le **DMA** et l’**AI Act** sont complémentaires.
 
 | Texte | Rôle principal | Lien avec l’IA |
-|---|---|---|
+| --- | --- | --- |
 | **AI Act** | Encadre les systèmes d’intelligence artificielle | Régule les usages de l’IA selon leur niveau de risque |
 | **DSA** | Encadre les plateformes et les contenus en ligne | Régule les algorithmes de recommandation, de modération et de diffusion |
 | **DMA** | Encadre les grandes plateformes dominantes | Limite l’exploitation des données et l’auto-préférence algorithmique |

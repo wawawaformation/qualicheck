@@ -64,7 +64,7 @@ Le danger est de confondre :
 ## 5. Comparaison des deux modèles
 
 | Caractéristique | Web classique | IA agentique |
-|---|---|---|
+| --- | --- | --- |
 | Objectif | Orienter vers la source | Fournir une réponse finie |
 | Mécanisme | Liens et redirection | Substitution et synthèse |
 | Rôle de l'usager | Navigateur critique | Consommateur de sorties |

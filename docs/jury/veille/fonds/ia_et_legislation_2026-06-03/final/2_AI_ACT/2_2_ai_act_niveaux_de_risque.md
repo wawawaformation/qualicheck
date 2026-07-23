@@ -5,7 +5,7 @@ L’AI Act classe les systèmes d’IA selon une logique de risque : plus l’us
 ## Les 4 niveaux de risque dans l’AI Act
 
 | Niveau | Idée simple | Statut |
-|---|---|---|
+| --- | --- | --- |
 | Risque inacceptable | Usages jugés incompatibles avec les droits fondamentaux | Interdit |
 | Haut risque | Usages sensibles pouvant affecter fortement une personne | Autorisé mais très encadré |
 | Risque limité / transparence | IA qui doit être clairement signalée à l’utilisateur | Autorisé avec obligation d’information |

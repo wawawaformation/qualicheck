@@ -1,8 +1,8 @@
 # AI Act : application en droit français
 
-Je vais vérifier les textes officiels et les sources françaises récentes, car l’AI Act est un règlement européen : la question n’est pas exactement une “traduction” en droit français comme pour une directive.
+L’AI Act est un règlement européen : la question de son application en droit français ne se pose donc pas dans les mêmes termes que pour une directive.
 
-Oui, j’ai vérifié : l’AI Act n’a pas vraiment à être “traduit” ou “transposé” en droit français, parce que ce n’est pas une directive européenne, c’est un règlement européen.
+L’AI Act n’a pas à être « traduit » ou « transposé » en droit français, parce que ce n’est pas une directive européenne, c’est un règlement européen.
 
 La phrase importante du texte officiel est celle-ci : le règlement est “obligatoire dans tous ses éléments et directement applicable dans tout État membre”. Donc il s’applique directement en France, sans loi française de transposition.
 
@@ -36,12 +36,12 @@ Un rapport du Sénat de février 2026 indique que l’article 24 d’un projet d
 
 Lors des débats au Sénat du 17 février 2026, le Gouvernement a présenté des amendements pour adapter le droit national : coordination entre autorités, recours au PEReN et à l’ANSSI, pouvoirs de sanction, et possibilité de compléter par ordonnance dans les six mois suivant la promulgation de la loi.
 
-À la date de mes recherches, le site de la DGE indique encore que la répartition française reste “sous réserve de l’acceptation par le Parlement dans le cadre d’un projet de loi”.
+Le site de la DGE indique que la répartition française reste « sous réserve de l’acceptation par le Parlement dans le cadre d’un projet de loi ».
 
 ## Calendrier synthétique
 
 | Date | Ce qui se passe |
-|---|---|
+| --- | --- |
 | 1er août 2024 | Entrée en vigueur de l’AI Act |
 | 2 février 2025 | Interdiction des pratiques d’IA à risque inacceptable, dont notation sociale |
 | 2 août 2025 | Gouvernance, autorités nationales, règles sur les modèles d’IA à usage général |
