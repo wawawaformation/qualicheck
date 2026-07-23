@@ -70,11 +70,14 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 - [x] **`G_user_stories_qualicheck.drawio` récupéré** — source + export `.jpg`
   copiés depuis la corbeille vers `conception/annexes/`, nom déjà conforme à ce
   qu'attendait `conception.md` — `A` (2026-07-23)
-- [ ] **`H_architecture_globale.drawio`** — **différent de G** : `conception.md`
-  marque lui-même cette annexe « en cours de révision » / « à venir » (lignes 712,
-  734). Le brouillon en corbeille n'est probablement pas fini — pas récupéré comme
-  G. À trancher : le récupérer quand même comme brouillon explicitement non final,
-  ou attendre la finalisation avant de le faire entrer dans le dépôt ? — `D`
+- [x] **`H_architecture_globale.drawio` — laissé en l'état, décision prise** —
+  trop tôt pour figer cette annexe : la stack backend/frontend n'est pas encore
+  construite (US1/US2 ni conçus ni implémentés), donc tout schéma d'architecture
+  documenterait une intention non stabilisée plutôt qu'un état réel. Reste à la
+  corbeille jusqu'à ce que l'architecture soit assez avancée pour valoir la peine
+  d'être figée. Note au passage : le brouillon existant confond le modèle
+  d'enrichissement (Kimi) et le modèle d'audit dans sa case « LLM Audit » — à
+  vérifier si le brouillon est repris un jour — `D`
 - [x] **`ingestion_activite_reel.drawio` et `migration_flux_reel.drawio`
   renommés** — aucun des deux n'a de pendant cible écrit dans `conception/`
   (contrairement à `C_pipeline_ingestion`), mais tous deux documentent un
