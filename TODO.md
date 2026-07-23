@@ -135,12 +135,24 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   `docs/jury/veille/fonds/`, avec une période approximative par dossier dans
   `README.md` (basée sur les dates de modification au moment du déplacement) — `A`
   (2026-07-23)
-- [ ] **Nettoyer le fonds de veille** (`docs/jury/veille/fonds/`) — normalisation
-  volontairement pas faite lors du déplacement, David s'en charge lui-même :
-  fichiers hors sujet égarés (`whereisbrian.jpeg`), config d'éditeur versionnée
-  par erreur (`.vscode/settings.json` dans `britanica_openAI_le_pillage_savoir/`),
-  noms de fichiers incohérents (`veille-metiers-web-ia-202.pptx` vs `-2026.pptx`
-  dans la corbeille, avant conversion en `.odp`) — `D`
+- [x] **Exploration complète du fonds de veille (forme + fond)** — `A` (2026-07-23) :
+  - `whereisbrian.jpeg` : déjà disparu, résolu sans intervention
+  - `.vscode/settings.json` (`britanica_openai_le_pillage_savoir_.../final/`) : supprimé
+  - `dev_durable_2026-06-13/` : matériaux de travail déplacés de `final/` vers
+    `working/` (`.kdenlive`, `videos/`, `RF-PIA-1.txt`) ; triple redondance
+    aplatie (zip redondant supprimé, doublons stricts retirés, sous-dossier
+    `veille_ia_environnement/` remonté et supprimé — un seul exemplaire de
+    chaque fichier désormais)
+  - `2_3_ai_act_application_droit_francais.md` : reformulé en style déclaratif
+    (était à la première personne, façon sortie brute de conversation IA)
+  - `3_evolution_du_savoir.md` : accents français restaurés (texte complet, UTF-8
+    valide mais entièrement dépourvu d'accents)
+  - `2_gattaca.txt` : phrase redondante retirée
+  - 4 séparateurs de tableau compacts passés au style espacé (convention
+    `markdown-pandoc`)
+  - Note : les deux `.odp`/`.pdf` quasi-identiques de `dev_durable` n'étaient pas
+    des versions divergentes à trancher — mêmes documents, exports différents
+    (confirmé par comparaison de pages/contenu) — `D`
 - [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
   - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
   - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
