@@ -60,27 +60,37 @@ un seul exemplaire existe désormais).
 docs/jury/veille/fonds/
 ```
 
-**Normalisation volontairement non faite ici** : noms de fichiers incohérents,
-fichiers hors sujet égarés (ex. `whereisbrian.jpeg`), configs d'éditeur versionnées
-par erreur (`.vscode/`) — David les nettoiera lui-même. Cette section ne fait que
-dater et indexer l'état brut du déplacement.
+**Convention de dossier** (2026-07-23) : chaque veille est un dossier
+`nom_snake_case_AAAA-MM-JJ/`, contenant deux sous-dossiers :
+
+- `working/` — matériaux de travail, brouillons, sources brutes
+- `final/` — le livrable achevé (ce qui a été ou sera restitué)
+
+Au moment du déplacement, tout le contenu existant a été rangé dans `final/`
+(ce sont des notes déjà structurées, pas des brouillons) ; `working/` est créé
+vide, prêt à accueillir les prochaines veilles. Reste à trier (David) : fichier
+hors sujet égaré (`whereisbrian.jpeg` dans `ia_et_legislation_2026-06-03/`),
+config d'éditeur versionnée par erreur (`.vscode/` dans
+`britanica_openai_le_pillage_savoir_2026-05-20/`).
 
 ## Inventaire
 
-Période = plage de dates de dernière modification des fichiers au moment du
-déplacement (2026-07-23) — un repère approximatif, pas une date de rédaction
-certifiée.
+Date = celle retenue pour le dossier (approximative pour les veilles
+antérieures à cette convention, basée sur les dates de modification des
+fichiers au moment du déplacement).
 
-| Dossier | Période | Contenu | Axe du thème |
-| --- | --- | --- | --- |
-| `fonds/IA_et_legislation/` | 2026-06-03 | AI Act (niveaux de risque, application au droit français), RGPD (le RGPD, incompatibilités), DSA/DMA, fiche `European_Digital_Shield_compressed.pdf`, visuels de synthèse (niveaux de risque, RGPD, DSA/DMA/AI), sous-dossier `1_films/` (*Nosedive*/Black Mirror, *Gattaca* — fiches + visuels) — contient aussi `whereisbrian.jpeg`, une private joke sans rapport avec la veille, exclue de l'inventaire | éthique, réglementaire |
-| `fonds/britanica_openAI_le_pillage_savoir/` | 2026-05-20 | analyse en 5W2H (avec source `1_article.url` et visuel), évolution du savoir, du web classique vers l'information prémâchée, conclusion — chaque section texte a son visuel associé, référence culturelle *Le Nom de la Rose* | éthique, économie |
-| `fonds/ia_souverain/` | 2026-05-27 | `synthese.md` + 3 visuels (souveraineté des données, parcours de décision cloud, Apertus-70B) — argumentation reprise dans `conception/annexes/F_choix_llm.md` | éthique, économie |
-| `fonds/dev_durable/veille_ia_environnement/` | 2026-06-13 → 2026-07-01 | `presentation.odp` + `script.md` (format à deux rôles déjà appliqué : support live / document de partage), `Kit-dengagement-IA-frugale-1.pdf`, dossier `sources/` dédié (`RF-PIA-1.pdf`, `youtube.link`), `demo.link` | écologie, développement durable — pièce la plus directement dans l'axe du thème assigné |
-| `fonds/LLM-Engineers-Handbook/` | 2026-06-01 | référence technique | technique |
-| `fonds/12_mai_article-freshrss-docker_.pdf` | 2026-05-13 | mise en place de l'instance FreshRSS (Docker + Caddy) — cf. `journal.md` | outillage |
-| `fonds/veille_13_mai_David.pdf` | 2026-05-13 | rapport cybersécurité x IA — cf. `journal.md` | cybersécurité (antérieur à Mini Manifest) |
-| `fonds/veille-metiers-web-ia-202.pptx` | 2026-07-15 | métiers du web à l'ère de l'IA, MD de lecture pas encore généré — cf. `journal.md` | à clarifier (cf. écart de thème noté dans `journal.md`) |
+| Dossier | Contenu (`final/`) | Axe du thème |
+| --- | --- | --- |
+| `fonds/ia_et_legislation_2026-06-03/` | AI Act (niveaux de risque, application au droit français), RGPD (le RGPD, incompatibilités), DSA/DMA, fiche `European_Digital_Shield_compressed.pdf`, visuels de synthèse, sous-dossier `1_films/` (*Nosedive*/Black Mirror, *Gattaca* — fiches + visuels) | éthique, réglementaire |
+| `fonds/britanica_openai_le_pillage_savoir_2026-05-20/` | analyse en 5W2H (avec source `1_article.url` et visuel), évolution du savoir, du web classique vers l'information prémâchée, conclusion — chaque section texte a son visuel associé, référence culturelle *Le Nom de la Rose* | éthique, économie |
+| `fonds/ia_souverain_2026-05-27/` | `synthese.md` + 3 visuels (souveraineté des données, parcours de décision cloud, Apertus-70B) — argumentation reprise dans `conception/annexes/F_choix_llm.md` | éthique, économie |
+| `fonds/dev_durable_2026-06-13/` | `presentation.odp` + `script.md` (format à deux rôles déjà appliqué : support live / document de partage), `Kit-dengagement-IA-frugale-1.pdf`, sous-dossier `veille_ia_environnement/` (variante antérieure), `videos/` (non suivi par git, ~180 Mo) | écologie, développement durable — pièce la plus directement dans l'axe du thème assigné |
+| `fonds/freshrss_docker_2026-05-13/` | mise en place de l'instance FreshRSS (Docker + Caddy) — cf. `journal.md` | outillage |
+| `fonds/cybersecurite_ia_2026-05-13/` | rapport cybersécurité x IA — cf. `journal.md` | cybersécurité (antérieur à Mini Manifest) |
+| `fonds/metiers_web_ia_2026-07-15/` | métiers du web à l'ère de l'IA, MD de lecture pas encore généré — cf. `journal.md` | à clarifier (cf. écart de thème noté dans `journal.md`) |
+
+`LLM-Engineers-Handbook` n'est **pas** de la veille — laissé dans
+`formation_dev_ia_agentique/veille/`, hors de ce dépôt.
 
 Le volet **réglementaire** est couvert explicitement (AI Act, RGPD, DSA/DMA). Le
 référentiel l'exige au même titre que le volet technique, et c'est celui qu'on omet
@@ -88,7 +98,7 @@ le plus souvent.
 
 ## Lien avec le projet
 
-La synthèse `fonds/ia_souverain/synthese.md` et ses trois visuels alimentent
+La synthèse `fonds/ia_souverain_2026-05-27/final/synthese.md` et ses trois visuels alimentent
 directement l'argumentation de `conception/annexes/F_choix_llm.md` (choix de modèles
 souverains, Apertus-70B et Mistral Small via Infomaniak en production) ainsi que la
 section « Positionnement éthique et technique » de `conception/conception.md`.
