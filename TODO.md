@@ -38,8 +38,27 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - Les fichiers sont sous `annexes/benchmark/` sans préfixes
   - Soit renommer les fichiers, soit corriger les liens — les préfixes `F1`-`F4`
     suggèrent que le renommage était l'intention d'origine
-- [ ] **`G_user_stories.drawio`** — référencé dans la stack, absent du dépôt, présent
-  à la corbeille — `D`
+- [ ] **`C_pipeline_ingestion.drawio` divergent** — deux copies existent
+  (`conception/2_ingestion/` et `conception/annexes/`), avec un contenu
+  **différent** entre les deux (vérifié par `diff`, 2026-07-23). Même famille de
+  spec drift que `conception.md` (Kimi vs gpt-5.4-nano) et `F_choix_llm.md` (liens
+  cassés) — laquelle des deux fait foi ? — `D`
+- [ ] **`B_MCD_qualicheck.drawio` — au moins une relation porte une flèche**
+  (`endArrow=block;endFill=1`), alors que la notation Merise correcte pour un MCD
+  est un trait simple sans flèche, cardinalités des deux côtés (skill
+  `schemas-drawio` créé le 2026-07-23) — à corriger — `D`
+- [ ] **`G_user_stories.drawio` et `H_architecture_globale.drawio`** manquants dans
+  `conception/annexes/` (la série va de A à J, G et H sont absents) — les deux
+  `.drawio` correspondants sont à la corbeille
+  (`user_stories_qualicheck.drawio`, `H_architecture_globale.drawio`), jamais
+  recopiés au bon endroit — même sort que `F_choix_llm.md` avant sa récupération
+  le 2026-07-22 — `D`
+- [ ] **`docs/schemas/ingestion_activite.drawio` et `migration_flux.drawio` sans
+  suffixe `_reel`** — leur emplacement (`docs/schemas/`, distinct de
+  `conception/annexes/`) suggère qu'ils sont les pendants « réel » de schémas de
+  conception, mais le suffixe `_reel` (systématique par convention, skill
+  `schemas-drawio`) est absent du nom — à vérifier si c'est bien leur rôle avant
+  de renommer — `D`
 - [ ] Ajouter **Langfuse** au `CLAUDE.md` quand US1/US2 seront conçus — `D`
   - Décidé : monitorage sur US1/US2, pas sur l'ingestion
 
