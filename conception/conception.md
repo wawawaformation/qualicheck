@@ -37,7 +37,7 @@ Le projet bénéficie du **soutien d'Élie Sloïm**, fondateur et dirigeant d'Op
 
 ### À qui s'adresse QualiCheck ?
 
-QualiCheck cible deux profils distincts selon l'US utilisée. Les fiches persona détaillées sont disponibles en annexe (cf. [Annexe J — Personas QualiCheck](annexes/J_personas_qualicheck.jpg)).
+QualiCheck cible deux profils distincts selon l'US utilisée. Les fiches persona détaillées sont disponibles en annexe (cf. [Annexe J — Personas QualiCheck](annexes/J_personas_qualicheck.png)).
 
 **L'auditeur expert** — professionnel certifié Opquast (développeur, intégrateur, chef de projet, consultant qualité). Il maîtrise déjà les 245 règles, comprend les enjeux d'accessibilité, de performance et de SEO. Il n'a pas besoin d'être guidé sur le fond — il a besoin d'aller **vite et sans rien oublier**. QualiCheck est pour lui un **accélérateur d'audit** et un **filet de sécurité** : il automatise les vérifications mécaniques, signale les points d'attention, et lui laisse la décision finale. Il utilise **US1 et US2**.
 
@@ -285,9 +285,9 @@ Lors de la re-ingestion, le RAG joue un troisième rôle : détecter des **patte
 
 Le pipeline d'ingestion est un script autonome exécuté en dehors de l'interface web. Il prépare le référentiel Opquast pour qu'il soit exploitable par les agents IA lors des audits. Il se déroule en 7 étapes séquentielles, depuis l'acquisition des données jusqu'à l'indexation vectorielle dans PostgreSQL.
 
-![Pipeline d'ingestion QualiCheck](annexes/C_pipeline_ingestion.jpg)
+![Pipeline d'ingestion QualiCheck](annexes/C_pipeline_ingestion.png)
 
-*cf. [Annexe C — Pipeline d'ingestion](annexes/C_pipeline_ingestion.jpg)*
+*cf. [Annexe C — Pipeline d'ingestion](annexes/C_pipeline_ingestion.png)*
 
 Les données Opquast sont acquises depuis deux sources complémentaires : l'API REST publique pour les champs structurés, et un scraping des pages publiques pour les champs `solution` et `contrôle` non encore exposés par l'API. Un agent LLM enrichit chaque règle en une seule inférence, produisant la stratégie d'analyse, le score de confiance et le `guide_analyse`. Les règles sont ensuite stockées en PostgreSQL, chunkées avec tous leurs champs dénormalisés, vectorisées via All MiniLM L12 v2, et indexées dans pgvector.
 
@@ -297,9 +297,9 @@ En post-MVP, le même script pourra être lancé avec `--mode reingest` pour la 
 
 L'auditeur saisit une URL, sélectionne les pages et les règles à auditer parmi les 245 disponibles en base. Le système récupère les règles sélectionnées et les injecte dans le prompt de l'agent — en mode déterministe (SQL direct) ou en mode RAG sémantique pour mesurer l'apport de chaque approche. Un agent de routing choisit la stratégie d'extraction adaptée à chaque règle — parsing statique, rendu JavaScript via Playwright, ou signalement pour vérification manuelle. L'agent d'audit génère les constats.
 
-![Flux d'audit — US1](annexes/D_pipeline_audit.jpg)
+![Flux d'audit — US1](annexes/D_pipeline_audit.png)
 
-*cf. [Annexe D — Flux d'audit US1](annexes/D_pipeline_audit.jpg)*
+*cf. [Annexe D — Flux d'audit US1](annexes/D_pipeline_audit.png)*
 
 Le routing par stratégie est un point clé : en distinguant les règles vérifiables par parsing HTML statique de celles qui nécessitent un rendu JavaScript, on évite d'instancier Playwright systématiquement. Les règles signalées "manuel" sont présentées à l'auditeur expert comme des points d'attention à vérifier lui-même — ce sont typiquement des règles relevant du jugement éditorial qu'aucun agent ne peut trancher de façon fiable.
 
@@ -307,9 +307,9 @@ Le routing par stratégie est un point clé : en distinguant les règles vérifi
 
 L'auditeur consulte les constats et engage un dialogue avec l'agent pour les comprendre, les challenger ou les reformuler. Le contexte d'audit est connu — les règles ont été sélectionnées, les constats sont posés. Le système travaille en **SQL déterministe** : il injecte les données exactes des règles concernées dans le prompt de l'agent, sans recherche sémantique. L'agent répond avec précision sur les constats en cours. L'auditeur valide, modifie ou rejette chaque constat, et peut laisser un **feedback qualitatif** qui sera utilisé lors de la prochaine re-ingestion.
 
-![Flux de dialogue — US2](annexes/E_pipeline_dialogue.jpg)
+![Flux de dialogue — US2](annexes/E_pipeline_dialogue.png)
 
-*cf. [Annexe E — Flux de dialogue et validation US1](annexes/E_pipeline_dialogue.jpg)*
+*cf. [Annexe E — Flux de dialogue et validation US1](annexes/E_pipeline_dialogue.png)*
 
 Ce flux illustre le principe fondamental de QualiCheck : **l'IA ne valide pas, elle propose**. La boucle de dialogue permet à l'auditeur expert de comprendre le raisonnement derrière chaque constat, de le corriger si nécessaire, et de conserver la maîtrise de la décision finale. Chaque feedback contribue à améliorer la précision du pipeline pour les prochains audits — c'est la feedback loop en action.
 
@@ -330,9 +330,9 @@ Le MCD est réalisé selon la méthode Merise. Il distingue deux ensembles :
 Le champ `validation_humaine` sur `constat` est central : il rappelle que l'agent IA assiste l'auditeur mais ne prend pas la décision finale. Le champ `feedback_auditeur` sur `constat` est la matière première de la feedback loop : il stocke le commentaire qualitatif de l'auditeur sur chaque constat, qui sera agrégé et injecté dans le prompt de re-ingestion.
 
 Le MCD complet est disponible en annexe B
-(cf. [Annexe B — MCD QualiCheck](annexes/B_MCD_qualicheck.jpg)).
+(cf. [Annexe B — MCD QualiCheck](annexes/B_MCD_qualicheck.png)).
 
-![MCD QualiCheck](annexes/B_MCD_qualicheck.jpg)
+![MCD QualiCheck](annexes/B_MCD_qualicheck.png)
 
 Le dictionnaire de données complet est disponible en annexe A
 (cf. [Annexe A — Dictionnaire de données](annexes/A_dictionnaire_donnees.xlsx)).
@@ -377,9 +377,9 @@ Ces feedbacks sont stockés en base et agrégés par règle. Le `strategie_score
 
 Le diagramme ci-dessous illustre le cycle complet — MVP (collecte) et post-MVP (re-ingestion active).
 
-![Feedback loop MLOps — QualiCheck](annexes/I_feedback_loop.jpg)
+![Feedback loop MLOps — QualiCheck](annexes/I_feedback_loop.png)
 
-*cf. [Annexe I — Feedback loop MLOps](annexes/I_feedback_loop.jpg)*
+*cf. [Annexe I — Feedback loop MLOps](annexes/I_feedback_loop.png)*
 
 ### Post-MVP — Re-ingestion avec injection des feedbacks
 
@@ -675,19 +675,19 @@ cf. [Annexe A — Dictionnaire de données](annexes/A_dictionnaire_donnees.xlsx)
 
 ### Annexe B — MCD QualiCheck
 
-cf. [Annexe B — MCD QualiCheck](annexes/B_MCD_qualicheck.jpg)
+cf. [Annexe B — MCD QualiCheck](annexes/B_MCD_qualicheck.png)
 
 ### Annexe C — Pipeline d'ingestion (US0)
 
-cf. [Annexe C — Pipeline d'ingestion](annexes/C_pipeline_ingestion.jpg)
+cf. [Annexe C — Pipeline d'ingestion](annexes/C_pipeline_ingestion.png)
 
 ### Annexe D — Flux d'audit (US1)
 
-cf. [Annexe D — Flux d'audit US1](annexes/D_pipeline_audit.jpg)
+cf. [Annexe D — Flux d'audit US1](annexes/D_pipeline_audit.png)
 
 ### Annexe E — Flux de dialogue (US2)
 
-cf. [Annexe E — Flux de dialogue et validation US1](annexes/E_pipeline_dialogue.jpg)
+cf. [Annexe E — Flux de dialogue et validation US1](annexes/E_pipeline_dialogue.png)
 
 ### Annexe F — Choix des modèles LLM
 
@@ -699,13 +699,13 @@ cf. [Annexe F — Choix des modèles LLM](annexes/F_choix_llm.md)
 
 Formulation complète des trois user stories (US0, US1, US2) avec scénarios détaillés pour US1 et US2.
 
-cf. [Annexe G — User stories](annexes/G_user_stories_qualicheck.jpg)
+cf. [Annexe G — User stories](annexes/G_user_stories_qualicheck.png)
 
 ### Annexe J — Personas QualiCheck
 
 Fiches persona des trois profils utilisateurs : administrateur, auditeur expert et auditeur curieux.
 
-cf. [Annexe J — Personas QualiCheck](annexes/J_personas_qualicheck.jpg)
+cf. [Annexe J — Personas QualiCheck](annexes/J_personas_qualicheck.png)
 
 ### Annexe H — Architecture globale
 
@@ -715,19 +715,19 @@ cf. [Annexe J — Personas QualiCheck](annexes/J_personas_qualicheck.jpg)
 
 Diagramme illustrant le cycle complet de la feedback loop : collecte des feedbacks auditeurs, re-ingestion manuelle, révision des guides et re-vectorisation.
 
-cf. [Annexe I — Feedback loop MLOps](annexes/I_feedback_loop.jpg)
+cf. [Annexe I — Feedback loop MLOps](annexes/I_feedback_loop.png)
 
 ### Annexe D1 — IA souveraine et données numériques
 
-cf. [Annexe D1](annexes/D1_ia_souveraine_donnees.jpg)
+cf. [Annexe D1](annexes/D1_ia_souveraine_donnees.png)
 
 ### Annexe D2 — Parcours de décision cloud
 
-cf. [Annexe D2](annexes/D2_parcours_decision_cloud.jpg)
+cf. [Annexe D2](annexes/D2_parcours_decision_cloud.png)
 
 ### Annexe D3 — Apertus-70B, IA éthique et souveraine
 
-cf. [Annexe D3](annexes/D3_apertus_ethique_souverain.jpg)
+cf. [Annexe D3](annexes/D3_apertus_ethique_souverain.png)
 
 ---
 

@@ -49,16 +49,21 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   du MCD est sans flèche). Le doublon dans `conception/2_ingestion/` — identique
   avant correctif, aurait divergé sinon — a été supprimé, non référencé par aucun
   document — `A` (2026-07-23)
-- [ ] **10 images `annexes/*.jpg` référencées par `conception.md`, toutes
-  manquantes** — pas un cas isolé (B_MCD, C_pipeline_ingestion) : les 10 images
-  du document sont introuvables (`B_MCD_qualicheck.jpg`,
-  `C_pipeline_ingestion.jpg`, `D1/D2/D3_...jpg`, `D_pipeline_audit.jpg`,
-  `E_pipeline_dialogue.jpg`, `G_user_stories_qualicheck.jpg`,
-  `I_feedback_loop.jpg`, `J_personas_qualicheck.jpg`). L'export drawio → JPG
-  n'a jamais suivi la création des sources `.drawio` — `conception.md` ne peut
-  actuellement pas se compiler en PDF sans schémas cassés. `E_pipeline_dialogue.jpg`
-  ne correspond même pas au nom du fichier source réel
-  (`E_pipeline_question_libre.drawio`) — nom qui a aussi dérivé — `D`
+- [x] **Références `annexes/*.jpg` → `.png`** — `conception.md` et
+  `F_choix_llm.md` passés en `.png` (`sed 's/jpg/png/g'`, 2026-07-23), cohérent
+  avec `markdown-pandoc` (« format PNG ou SVG recommandé »). Doublon
+  `conception/choix_llm.md` (identique à `annexes/F_choix_llm.md`, jamais
+  référencé) supprimé au passage — `A`
+- [ ] **9 images `annexes/*.png` référencées par `conception.md`, toujours
+  manquantes** — seule `G_user_stories_qualicheck.png` existe réellement
+  (converti depuis le `.jpg` récupéré la veille, pas juste renommé). Restent :
+  `B_MCD_qualicheck.png`, `C_pipeline_ingestion.png`, `D1/D2/D3_...png`,
+  `D_pipeline_audit.png`, `E_pipeline_dialogue.png`, `I_feedback_loop.png`,
+  `J_personas_qualicheck.png`. L'export drawio → image n'a jamais suivi la
+  création des sources `.drawio` — `conception.md` ne peut toujours pas se
+  compiler en PDF sans schémas cassés. `E_pipeline_dialogue.png` ne correspond
+  même pas au nom du fichier source réel (`E_pipeline_question_libre.drawio`) —
+  nom qui a aussi dérivé — `D`
   - Nécessite l'app ou une CLI drawio pour l'export, non vérifiée disponible
     dans cet environnement
 - [x] **`G_user_stories_qualicheck.drawio` récupéré** — source + export `.jpg`

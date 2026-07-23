@@ -261,7 +261,7 @@ Le champ `llm_provider` est tracé en base sur chaque règle générée lors de 
 ## Infomaniak AI Services — phase finale et production
 
 Infomaniak est retenu pour la phase de production pour les raisons détaillées dans la veille souveraineté
-(cf. [Annexe D1](annexes/D1_ia_souveraine_donnees.jpg), [Annexe D2](annexes/D2_parcours_decision_cloud.jpg), [Annexe D3](annexes/D3_apertus_ethique_souverain.jpg)).
+(cf. [Annexe D1](annexes/D1_ia_souveraine_donnees.png), [Annexe D2](annexes/D2_parcours_decision_cloud.png), [Annexe D3](annexes/D3_apertus_ethique_souverain.png)).
 
 **Démarche éco-responsable** : Infomaniak est alimenté à **100% en énergie renouvelable**. La chaleur produite par les serveurs est revalorisée pour le chauffage des bâtiments environnants. Engagements formalisés et audités indépendamment. Aligné avec les critères C15/C17 du référentiel RNCP37827.
 
