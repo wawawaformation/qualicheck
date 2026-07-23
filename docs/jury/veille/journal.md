@@ -71,15 +71,9 @@ avec la convention à deux rôles : le support live est un PPTX (pas un ODP), et
 les légendes visuelles des grilles (couleurs) n'ont pas pu être extraites du
 texte brut.
 
-**Écart avec le thème assigné, toujours non résolu** : contrairement au rapport
-cybersécurité du 2026-05-13 (antérieur au lancement de Mini Manifest, voir plus
-bas), celui-ci est daté du **2026-07-15, deux mois après le lancement** du
-dispositif (13 mai). L'explication « avant le Mini Manifest » ne s'applique donc
-pas ici. Statut réel à clarifier avec David : hors thème assumé (veille
-personnelle plus large que la restitution collective), ou rattachement au
-développement durable x IA sous l'angle socio-économique (le contenu porte
-essentiellement sur l'impact social/économique de l'IA sur l'emploi — un
-rattachement est défendable mais reste à confirmer).
+**Thème** : couvert par l'axe assigné (développement durable x IA — volet
+sociétal/économique) — le thème est large par construction, pas besoin de
+vérifier le rattachement veille par veille.
 
 ## 2026-05-13 — cybersécurité x IA — durée non renseignée
 

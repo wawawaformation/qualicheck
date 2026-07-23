@@ -118,9 +118,9 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 - [x] **Écart de thème du rapport cybersécurité (13 mai)** — résolu : jour de
   lancement de Mini Manifest, antérieur à l'attribution du thème — `D`
 - [x] **Écart de date FreshRSS** — résolu, 13 mai fait foi (nom de fichier erroné) — `D`
-- [ ] **Écart de thème du PPTX métiers du web (15 juillet)** — non résolu,
-  postérieur de 2 mois au lancement de Mini Manifest ; à clarifier une fois le MD
-  généré (cf. `journal.md`) — `D`
+- [x] **Écart de thème du PPTX métiers du web — non pertinent** — le thème
+  assigné (développement durable x IA) est large par construction ; pas besoin
+  de vérifier le rattachement veille par veille — `D`
 - [x] **MD généré** pour `veille-metiers-web-ia-202.pptx` — reconstruit depuis
   le texte des 13 diapositives (tableaux de compétences inclus) :
   `metiers_web_ia_2026-07-15/final/script.md`. À relire — les couleurs/légendes
