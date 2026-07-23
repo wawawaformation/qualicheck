@@ -38,27 +38,44 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - Les fichiers sont sous `annexes/benchmark/` sans préfixes
   - Soit renommer les fichiers, soit corriger les liens — les préfixes `F1`-`F4`
     suggèrent que le renommage était l'intention d'origine
-- [ ] **`C_pipeline_ingestion.drawio` divergent** — deux copies existent
-  (`conception/2_ingestion/` et `conception/annexes/`), avec un contenu
-  **différent** entre les deux (vérifié par `diff`, 2026-07-23). Même famille de
-  spec drift que `conception.md` (Kimi vs gpt-5.4-nano) et `F_choix_llm.md` (liens
-  cassés) — laquelle des deux fait foi ? — `D`
-- [ ] **`B_MCD_qualicheck.drawio` — au moins une relation porte une flèche**
-  (`endArrow=block;endFill=1`), alors que la notation Merise correcte pour un MCD
-  est un trait simple sans flèche, cardinalités des deux côtés (skill
-  `schemas-drawio` créé le 2026-07-23) — à corriger — `D`
-- [ ] **`G_user_stories.drawio` et `H_architecture_globale.drawio`** manquants dans
-  `conception/annexes/` (la série va de A à J, G et H sont absents) — les deux
-  `.drawio` correspondants sont à la corbeille
-  (`user_stories_qualicheck.drawio`, `H_architecture_globale.drawio`), jamais
-  recopiés au bon endroit — même sort que `F_choix_llm.md` avant sa récupération
-  le 2026-07-22 — `D`
-- [ ] **`docs/schemas/ingestion_activite.drawio` et `migration_flux.drawio` sans
-  suffixe `_reel`** — leur emplacement (`docs/schemas/`, distinct de
-  `conception/annexes/`) suggère qu'ils sont les pendants « réel » de schémas de
-  conception, mais le suffixe `_reel` (systématique par convention, skill
-  `schemas-drawio`) est absent du nom — à vérifier si c'est bien leur rôle avant
-  de renommer — `D`
+- [x] **`C_pipeline_ingestion.drawio` divergent — résolu** — n'était pas un
+  doublon périmé mais un couple cible/réel mal rangé : la version avec le hook
+  `--resume` (découvert pratique en implémentant, non prévu en conception) a été
+  déplacée vers `docs/schemas/C_pipeline_ingestion_reel.drawio`. La version sans
+  hook reste la cible dans `conception/annexes/`. `ingestion.md` renvoie
+  désormais explicitement vers les deux — `A` (2026-07-23)
+- [x] **`B_MCD_qualicheck.drawio` — flèche incorrecte — résolue** — `endArrow=
+  block;endFill=1` retiré (seule ligne du fichier à en porter un, tout le reste
+  du MCD est sans flèche). Le doublon dans `conception/2_ingestion/` — identique
+  avant correctif, aurait divergé sinon — a été supprimé, non référencé par aucun
+  document — `A` (2026-07-23)
+- [ ] **10 images `annexes/*.jpg` référencées par `conception.md`, toutes
+  manquantes** — pas un cas isolé (B_MCD, C_pipeline_ingestion) : les 10 images
+  du document sont introuvables (`B_MCD_qualicheck.jpg`,
+  `C_pipeline_ingestion.jpg`, `D1/D2/D3_...jpg`, `D_pipeline_audit.jpg`,
+  `E_pipeline_dialogue.jpg`, `G_user_stories_qualicheck.jpg`,
+  `I_feedback_loop.jpg`, `J_personas_qualicheck.jpg`). L'export drawio → JPG
+  n'a jamais suivi la création des sources `.drawio` — `conception.md` ne peut
+  actuellement pas se compiler en PDF sans schémas cassés. `E_pipeline_dialogue.jpg`
+  ne correspond même pas au nom du fichier source réel
+  (`E_pipeline_question_libre.drawio`) — nom qui a aussi dérivé — `D`
+  - Nécessite l'app ou une CLI drawio pour l'export, non vérifiée disponible
+    dans cet environnement
+- [x] **`G_user_stories_qualicheck.drawio` récupéré** — source + export `.jpg`
+  copiés depuis la corbeille vers `conception/annexes/`, nom déjà conforme à ce
+  qu'attendait `conception.md` — `A` (2026-07-23)
+- [ ] **`H_architecture_globale.drawio`** — **différent de G** : `conception.md`
+  marque lui-même cette annexe « en cours de révision » / « à venir » (lignes 712,
+  734). Le brouillon en corbeille n'est probablement pas fini — pas récupéré comme
+  G. À trancher : le récupérer quand même comme brouillon explicitement non final,
+  ou attendre la finalisation avant de le faire entrer dans le dépôt ? — `D`
+- [x] **`ingestion_activite_reel.drawio` et `migration_flux_reel.drawio`
+  renommés** — aucun des deux n'a de pendant cible écrit dans `conception/`
+  (contrairement à `C_pipeline_ingestion`), mais tous deux documentent un
+  comportement **constaté** (déroulé réel de `make ingestion`, exécution
+  effective de `scripts/migration.py`) plutôt qu'une intention. Convention du
+  skill `schemas-drawio` précisée en conséquence : le suffixe dépend de la
+  nature du contenu, pas de l'existence d'un fichier jumeau — `A` (2026-07-23)
 - [ ] Ajouter **Langfuse** au `CLAUDE.md` quand US1/US2 seront conçus — `D`
   - Décidé : monitorage sur US1/US2, pas sur l'ingestion
 

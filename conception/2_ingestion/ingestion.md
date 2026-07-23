@@ -45,7 +45,10 @@ Le pipeline se déroule en **7 étapes séquentielles**, chacune produisant l'en
 | 6 | Embedding | Vecteur 384 dimensions |
 | 7 | Indexation pgvector | Colonne `embedding` requêtable (HNSW) |
 
-*(cf. schéma `C_pipeline_ingestion.drawio`)*
+*(cf. schéma cible `annexes/C_pipeline_ingestion.drawio`. Le hook `--resume`
+(§ci-dessous) n'était pas prévu dans la conception initiale — découvert pratique
+en implémentant ; schéma réel avec ce bloc :
+`docs/schemas/C_pipeline_ingestion_reel.drawio`.)*
 
 ## Étape 1 — Acquisition
 
