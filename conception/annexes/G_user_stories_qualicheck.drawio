@@ -1,0 +1,154 @@
+<mxfile host="Electron">
+  <diagram id="7dh2zkNSW0gtLHPDXLd9" name="Page-1">
+    <mxGraphModel dx="2828" dy="1760" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titre" parent="1" style="text;html=1;align=center;fontSize=18;fontStyle=1;fillColor=none;strokeColor=none;fontColor=#2F5597;" value="User Stories — QualiCheck MVP" vertex="1">
+          <mxGeometry height="40" width="1200" x="200" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="us0_card" parent="1" style="rounded=1;fillColor=#EEF3FB;strokeColor=#2F5597;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="200" width="660" x="72" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="us0_badge" parent="1" style="rounded=1;fillColor=#2F5597;strokeColor=none;fontColor=#ffffff;fontSize=12;fontStyle=1;" value="US0" vertex="1">
+          <mxGeometry height="28" width="50" x="87" y="119" as="geometry" />
+        </mxCell>
+        <mxCell id="us0_h" parent="1" style="text;html=1;fontSize=13;fontStyle=1;fontColor=#2F5597;fillColor=none;strokeColor=none;" value="Importer et préparer le référentiel Opquast" vertex="1">
+          <mxGeometry height="28" width="370" x="147" y="119" as="geometry" />
+        </mxCell>
+        <mxCell id="us0_as" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;En tant qu&#39;&lt;/b&gt;administrateur de QualiCheck," vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="159" as="geometry" />
+        </mxCell>
+        <mxCell id="us0_want" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;je veux&lt;/b&gt; importer et préparer le référentiel Opquast (68 règles)," vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="181" as="geometry" />
+        </mxCell>
+        <mxCell id="us0_so" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;afin que&lt;/b&gt; les règles soient disponibles et exploitables par l&#39;agent IA." vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="203" as="geometry" />
+        </mxCell>
+        <mxCell id="us0_crit" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#666666;" value="Critère d&#39;acceptation : le script s&#39;exécute sans erreur, les 68 règles sont en base, vectorisées et indexées dans pgvector." vertex="1">
+          <mxGeometry height="36" width="430" x="87" y="234" as="geometry" />
+        </mxCell>
+        <mxCell id="us1_card" parent="1" style="rounded=1;fillColor=#EEF3FB;strokeColor=#2F5597;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="200" width="660" x="72" y="424" as="geometry" />
+        </mxCell>
+        <mxCell id="us1_badge" parent="1" style="rounded=1;fillColor=#2F5597;strokeColor=none;fontColor=#ffffff;fontSize=12;fontStyle=1;" value="US1" vertex="1">
+          <mxGeometry height="28" width="50" x="87" y="439" as="geometry" />
+        </mxCell>
+        <mxCell id="us1_h" parent="1" style="text;html=1;fontSize=13;fontStyle=1;fontColor=#2F5597;fillColor=none;strokeColor=none;" value="Créer un audit" vertex="1">
+          <mxGeometry height="28" width="370" x="147" y="439" as="geometry" />
+        </mxCell>
+        <mxCell id="us1_as" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;En tant qu&#39;&lt;/b&gt;auditeur," vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="479" as="geometry" />
+        </mxCell>
+        <mxCell id="us1_want" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;je veux&lt;/b&gt; lancer un audit à partir d&#39;une URL, de pages et de règles choisies," vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="501" as="geometry" />
+        </mxCell>
+        <mxCell id="us1_so" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;afin d&#39;&lt;/b&gt;obtenir des constats exploitables pour démarrer mon analyse qualité." vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="523" as="geometry" />
+        </mxCell>
+        <mxCell id="us1_crit" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#666666;" value="Critère d&#39;acceptation : les constats sont générés, stockés et consultables pour chaque règle sélectionnée sur chaque page auditée." vertex="1">
+          <mxGeometry height="36" width="430" x="87" y="554" as="geometry" />
+        </mxCell>
+        <mxCell id="us2_card" parent="1" style="rounded=1;fillColor=#EEF3FB;strokeColor=#2F5597;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="200" width="660" x="72" y="934" as="geometry" />
+        </mxCell>
+        <mxCell id="us2_badge" parent="1" style="rounded=1;fillColor=#2F5597;strokeColor=none;fontColor=#ffffff;fontSize=12;fontStyle=1;" value="US2" vertex="1">
+          <mxGeometry height="28" width="50" x="87" y="949" as="geometry" />
+        </mxCell>
+        <mxCell id="us2_h" parent="1" style="text;html=1;fontSize=13;fontStyle=1;fontColor=#2F5597;fillColor=none;strokeColor=none;" value="Dialoguer avec l&#39;agent IA" vertex="1">
+          <mxGeometry height="28" width="370" x="147" y="949" as="geometry" />
+        </mxCell>
+        <mxCell id="us2_as" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;En tant qu&#39;&lt;/b&gt;auditeur," vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="989" as="geometry" />
+        </mxCell>
+        <mxCell id="us2_want" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;je veux&lt;/b&gt; être assisté par une IA pour comprendre, ajuster et valider les constats," vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="1011" as="geometry" />
+        </mxCell>
+        <mxCell id="us2_so" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;afin de&lt;/b&gt; produire un rapport fiable sans déléguer la décision finale à l&#39;IA." vertex="1">
+          <mxGeometry height="22" width="430" x="87" y="1033" as="geometry" />
+        </mxCell>
+        <mxCell id="us2_crit" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#666666;" value="Critère d&#39;acceptation : l&#39;auditeur peut valider, modifier ou rejeter chaque constat. &lt;br&gt;Le rapport final ne contient que des constats validés humainement." vertex="1">
+          <mxGeometry height="36" width="430" x="87" y="1064" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_bg" parent="1" style="rounded=1;fillColor=#FAFAFA;strokeColor=#2F5597;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="430" width="790" x="802" y="309" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_title" parent="1" style="text;html=1;fontSize=13;fontStyle=1;fontColor=#2F5597;fillColor=none;strokeColor=none;" value="Scénario nominal — US1" vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="319" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_1" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="1. L&#39;auditeur saisit l&#39;URL du site à auditer et confirme détenir les droits." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="357" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_2" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="2. QualiCheck crawle le premier niveau du site et propose la liste des pages détectées." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="389" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_3" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="3. L&#39;auditeur sélectionne 3 à 10 pages représentatives." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="421" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_4" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="4. L&#39;auditeur sélectionne un lot de règles Opquast (par thème ou individuellement)." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="453" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_5" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="5. Le retriever RAG récupère les règles enrichies et leur guide_analyse depuis pgvector." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="485" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_6" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="6. L&#39;agent routing choisit la stratégie d&#39;extraction pour chaque règle : parsing statique, Playwright (JS), ou signalement manuel." vertex="1">
+          <mxGeometry height="36" width="490" x="850" y="517" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_7" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="7. L&#39;agent d&#39;audit analyse chaque page selon le guide_analyse de chaque règle et génère un constat (statut, commentaire, recommandation, preuve)." vertex="1">
+          <mxGeometry height="36" width="490" x="850" y="557" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_8" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="8. Les constats sont stockés en base et l&#39;audit passe au statut « prêt pour dialogue »." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="597" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_alt" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#888888;" value="Scénario alternatif : si le crawl ne détecte aucune page, l&#39;auditeur peut saisir les URLs manuellement." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="637" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1_alt2" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#888888;" value="Scénario alternatif : les règles signalées « manuel » sont présentées à l&#39;auditeur comme points d&#39;attention sans analyse automatique." vertex="1">
+          <mxGeometry height="28" width="490" x="850" y="665" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_bg" parent="1" style="rounded=1;fillColor=#FAFAFA;strokeColor=#2F5597;strokeWidth=1.5;" value="" vertex="1">
+          <mxGeometry height="430" width="780" x="802" y="819" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_title" parent="1" style="text;html=1;fontSize=13;fontStyle=1;fontColor=#2F5597;fillColor=none;strokeColor=none;" value="Scénario nominal — US2" vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="829" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_1" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="1. L&#39;auditeur consulte la liste des constats proposés par l&#39;agent après US1." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="867" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_2" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="2. Pour chaque constat, l&#39;auditeur peut poser une question libre à l&#39;agent (explication, interprétation, reformulation)." vertex="1">
+          <mxGeometry height="36" width="460" x="849" y="899" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_3" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="3. Le RAG enrichit la réponse de l&#39;agent avec les règles Opquast pertinentes depuis pgvector." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="939" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_4" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="4. L&#39;auditeur prend sa décision : il valide, modifie ou rejette le constat." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="971" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_5" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="5. Si modification : l&#39;auditeur reformule le constat et le dialogue peut reprendre." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="1003" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_6" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="6. Chaque décision (validation / rejet) met à jour le score de qualité de la règle concernée (feedback loop MVP v1)." vertex="1">
+          <mxGeometry height="36" width="460" x="849" y="1035" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_7" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="7. Une fois tous les constats traités, l&#39;auditeur génère le rapport final." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="1075" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_8" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="8. Le rapport contient uniquement les constats validés humainement, avec recommandations." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="1107" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_alt" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#888888;" value="Scénario alternatif : l&#39;auditeur peut relancer une analyse sur une règle spécifique s&#39;il estime le constat insuffisant." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="1147" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2_inv" parent="1" style="text;html=1;fontSize=10;fontStyle=3;fillColor=none;strokeColor=none;fontColor=#2F5597;" value="Règle fondamentale : l&#39;IA ne valide jamais seule. La décision finale appartient toujours à l&#39;auditeur." vertex="1">
+          <mxGeometry height="28" width="460" x="849" y="1177" as="geometry" />
+        </mxCell>
+        <mxCell id="arr1" edge="1" parent="1" source="us1_card" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;fontSize=10;" target="sc1_bg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arr2" edge="1" parent="1" source="us2_card" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#2F5597;fontSize=10;" target="sc2_bg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

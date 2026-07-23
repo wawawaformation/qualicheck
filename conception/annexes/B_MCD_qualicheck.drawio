@@ -124,7 +124,7 @@
     <mxCell id="l_theme_df" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="theme" target="df_theme" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
-    <mxCell id="l_df_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;endArrow=block;endFill=1;" edge="1" source="df_theme" target="regle" parent="1">
+    <mxCell id="l_df_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" edge="1" source="df_theme" target="regle" parent="1">
       <mxGeometry relative="1" as="geometry" />
     </mxCell>
     <mxCell id="l_theme_card" value="0,n" style="text;html=0;fontSize=10;" vertex="1" parent="1">
