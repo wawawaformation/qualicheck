@@ -64,8 +64,9 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   compiler en PDF sans schémas cassés. `E_pipeline_dialogue.png` ne correspond
   même pas au nom du fichier source réel (`E_pipeline_question_libre.drawio`) —
   nom qui a aussi dérivé — `D`
-  - Nécessite l'app ou une CLI drawio pour l'export, non vérifiée disponible
-    dans cet environnement
+  - Export manuel, volontairement pas automatisé : David veut relire chaque
+    schéma avant de le figer en image (même logique que la flèche incorrecte
+    trouvée dans B_MCD — un export automatique aurait masqué l'erreur)
 - [x] **`G_user_stories_qualicheck.drawio` récupéré** — source + export `.jpg`
   copiés depuis la corbeille vers `conception/annexes/`, nom déjà conforme à ce
   qu'attendait `conception.md` — `A` (2026-07-23)
