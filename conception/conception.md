@@ -53,12 +53,12 @@ L'agent IA n'est pas conçu comme un système de validation automatique définit
 
 Le workflow général de l'application est le suivant :
 
-**US0 — Ingestion (script CLI)**
+#### US0 — Ingestion (script CLI)
 
 1. Import des 245 règles Opquast (API + scraping)
 2. Enrichissement par agent IA et indexation pgvector
 
-**US1 — Audit assisté (interface web)**
+#### US1 — Audit assisté (interface web)
 
 1. Saisie d'une URL et confirmation des droits
 2. Crawl léger et sélection des pages (3 à 10)
@@ -66,7 +66,7 @@ Le workflow général de l'application est le suivant :
 4. Génération des constats par l'agent IA
 5. Dialogue, validation et génération du rapport
 
-**US2 — Question libre (interface web)**
+#### US2 — Question libre (interface web)
 
 1. Soumission d'une URL ou d'une image
 2. Dialogue libre avec RAG sémantique pur sur les 245 règles
@@ -77,7 +77,7 @@ Le workflow général de l'application est le suivant :
 
 L'outil intègre un mécanisme de validation où l'utilisateur confirme explicitement qu'il détient les droits nécessaires pour effectuer l'audit de l'URL saisie. Cette mesure encadre l'usage des fonctions de crawl et d'extraction HTML.
 
-#### Conformité RGPD
+#### RGPD — aperçu
 
 Conformément aux exigences du référentiel RNCP37827, un registre des traitements de données personnelles sera mis en place. L'application appliquera des procédures strictes de tri et de suppression des données pour garantir la confidentialité et la protection des informations collectées. La section dédiée à la conformité RGPD détaille les traitements identifiés et les mesures appliquées.
 
@@ -147,21 +147,21 @@ Cette US est réalisée par un script Python autonome, exécutable en ligne de c
 
 **Couverture fonctionnelle :**
 
-*Initialisation de l'audit*
+**Initialisation de l'audit :**
 
 - Saisie de l'URL et confirmation des droits d'audit
 - Crawl léger du premier niveau
 - Sélection des pages à auditer (3 à 10 pages)
 - Sélection des règles Opquast par thème ou individuellement parmi les 245 disponibles
 
-*Génération des constats*
+**Génération des constats :**
 
 - Récupération SQL des règles sélectionnées avec leur `guide_analyse`
 - Routing de la stratégie d'extraction par règle : parsing statique, Playwright ou signalement manuel
 - Génération des constats par l'agent IA (SQL déterministe — les règles sont connues)
 - Stockage des constats en base
 
-*Dialogue et validation*
+**Dialogue et validation :**
 
 - Consultation des constats proposés
 - Dialogue libre avec l'agent sur les constats — explication, interprétation, reformulation
@@ -240,7 +240,7 @@ Cette section présente les trois flux principaux de QualiCheck sous forme de di
 Le terme **RAG** (Retrieval-Augmented Generation) recouvre dans QualiCheck trois mécanismes bien distincts. Les distinguer clairement est essentiel — autant pour comprendre l'architecture que pour la défendre devant un jury.
 
 | US | Mode | Justification |
-|---|---|---|
+| --- | --- | --- |
 | US0 | — | Script CLI, pas d'inférence au retrieval |
 | US1 (génération) | SQL déterministe + benchmark RAG | Règles connues, sélectionnées par l'auditeur |
 | US1 (dialogue) | SQL déterministe | Contexte d'audit connu, constats posés |
@@ -343,7 +343,7 @@ Le dictionnaire de données complet est disponible en annexe A
 Les champs suivants sont ajoutés sur la table `regle` pour supporter le pipeline d'ingestion intelligent et la feedback loop :
 
 | Champ | Type | Rôle |
-|---|---|---|
+| --- | --- | --- |
 | `strategie_analyse` | VARCHAR(20) | Méthode de vérification : `statique`, `playwright`, `manuel` |
 | `strategie_justification` | TEXT | Explication du choix produite par le LLM |
 | `strategie_source` | VARCHAR(20) | Origine : `ia_import`, `ia_reingest`, `admin` |
@@ -355,7 +355,7 @@ Les champs suivants sont ajoutés sur la table `regle` pour supporter le pipelin
 Et sur la table `constat` :
 
 | Champ | Type | Rôle |
-|---|---|---|
+| --- | --- | --- |
 | `feedback_auditeur` | TEXT | Commentaire qualitatif de l'auditeur sur le constat |
 | `validation_humaine` | LOGICAL | Décision finale : accepté, modifié ou rejeté |
 
@@ -398,7 +398,7 @@ Le script :
 
 **Exemple de prompt de re-ingestion :**
 
-```
+```text
 Règle 17 — Le site propose un moteur de recherche
 score : 0.31 sur 12 audits
 
@@ -423,7 +423,7 @@ Cette architecture constitue une implémentation des pratiques MLOps attendues e
 ### Vue d'ensemble de la stack
 
 | Composant | Technologie | Justification |
-|---|---|---|
+| --- | --- | --- |
 | Backend | FastAPI (Python) | Léger, performant, documentation OpenAPI automatique |
 | Frontend | Vue.js | Réactif, adapté aux interfaces conversationnelles |
 | Base de données | PostgreSQL + pgvector | Source de vérité unique, index vectoriel intégré |
@@ -504,7 +504,7 @@ L'ensemble des services (FastAPI, PostgreSQL + pgvector, Vue.js) est conteneuris
 
 Le pipeline d'ingestion est un **script Python autonome**, exécutable en ligne de commande, rejouable à tout moment. Il traite les 245 règles du référentiel Opquast en séquence et ne nécessite aucune intervention humaine pendant l'exécution.
 
-```
+```text
 Acquisition → Agrégation → Enrichissement LLM → Stockage PostgreSQL
 → Chunking → Embedding → Indexation pgvector
 ```
@@ -544,7 +544,7 @@ Insertion dans `regle` et tables associées. En mode reingest : mise à jour cib
 
 ### Étape 5 — Chunking
 
-```
+```text
 intitulé + solution + contrôle + guide_analyse + tags + phases
 ```
 
@@ -566,7 +566,7 @@ Pas de base vectorielle externe — PostgreSQL joue les deux rôles.
 
 ## Conformité RGPD
 
-### Contexte
+### Contexte du traitement des données
 
 QualiCheck traite deux catégories de données susceptibles de contenir des informations personnelles : les données des utilisateurs de l'application (MVP : utilisateur simulé, versions futures : comptes authentifiés) et les données issues du crawl et de l'analyse des sites audités (URLs, contenus de pages HTML, constats).
 
@@ -575,7 +575,7 @@ L'hébergement de production est assuré par Infomaniak (Suisse), dont la politi
 ### Traitements identifiés
 
 | Traitement | Données concernées | Base légale | Durée de conservation |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Gestion des utilisateurs | Nom, prénom (MVP : simulé) | Intérêt légitime | Durée du compte — à définir |
 | Journalisation des audits | URL auditée, pages sélectionnées | Intérêt légitime | À définir selon business plan |
 | Stockage des constats | Extraits de pages HTML, constats IA | Intérêt légitime | Liée à l'audit — à définir |
@@ -612,22 +612,22 @@ L'hébergement de production est assuré par Infomaniak (Suisse), dont la politi
 
 ### Sources de financement
 
-**Phase de développement — Azure AI Foundry (crédits école)**
+#### Phase de développement — Azure AI Foundry (crédits école)
 
 L'organisme de formation met à disposition un accès Azure AI Foundry partagé entre les apprenants et les formateurs. Le budget mensuel est d'environ **160€/mois** pour l'ensemble du groupe (estimation — à confirmer avec l'OF). L'accès couvre gpt-5.4-nano, gpt-5.4, gpt-5.4-mini et Kimi K2.6, sélectionnés suite au benchmark Azure (cf. [Annexe F — Choix LLM](annexes/F_choix_llm.md)). Ce budget est mutualisé et non dédié au projet QualiCheck seul.
 
-**Fallback — Ollama Cloud**
+#### Fallback — Ollama Cloud
 
 `gpt-oss:20b` via Ollama Cloud est disponible gratuitement, avec des limites de session (reset toutes les 5 heures) et des limites hebdomadaires.
 
-**Phase finale — Infomaniak (budget personnel)**
+#### Phase finale — Infomaniak (budget personnel)
 
 Budget personnel plafonné à **20€ (~ CHF 19)**, avec 1M de tokens offerts à l'inscription.
 
 ### Scénario nominal — dev Azure + production Infomaniak
 
 | Poste | Détail | Tokens | Coût (CHF) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Ingestion — entrants | 245 règles × 600 tok. × 20 runs | 2.94M | 2.06 |
 | Ingestion — sortants (Mistral Small) | 245 règles × 400 tok. × 20 runs | 1.96M | 0.78 |
 | Audit US1 — entrants | 20 sessions × 6 pages × 10 règles × 1 500 tok. | 1.8M | 1.26 |
@@ -644,7 +644,7 @@ Budget personnel plafonné à **20€ (~ CHF 19)**, avec 1M de tokens offerts à
 ### Scénario catastrophe — Infomaniak uniquement
 
 | Poste | Détail | Tokens | Coût (CHF) |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Ingestion — entrants | 245 règles × 600 tok. × 20 runs | 2.94M | 2.06 |
 | Ingestion — sortants (Mistral Small) | 245 règles × 400 tok. × 20 runs | 1.96M | 0.78 |
 | Audit US1 — entrants | 20 sessions × 6 pages × 10 règles × 1 500 tok. | 1.8M | 1.26 |
@@ -660,9 +660,7 @@ Même dans ce scénario défavorable, le coût reste sous le budget plafond de 2
 
 ### Budget global fixé
 
-**Budget plafond : 20€ (~ CHF 19)**
-
-Facteur ×6 par rapport au coût réel estimé dans les deux scénarios.
+**Budget plafond : 20€** (~ CHF 19) — facteur ×6 par rapport au coût réel estimé dans les deux scénarios.
 
 ---
 
