@@ -7,7 +7,7 @@ lang: fr-FR
 ---
 
 Document de lecture généré à partir du support de restitution
-(`veille-metiers-web-ia-202.pptx`) — reconstruit depuis le contenu textuel des 13
+(`veille-metiers-web-ia-202.odp`) — reconstruit depuis le contenu textuel des 13
 diapositives, tableaux de compétences inclus. Métiers couverts : développeurs,
 designers, rédacteurs, community managers, chefs de projet.
 

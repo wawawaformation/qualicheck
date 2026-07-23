@@ -44,7 +44,7 @@ Trois précisions sur le contenu :
 ## 2026-07-15 — durée non renseignée
 
 **Parcouru** : métiers du web à l'ère de l'IA — support
-`fonds/metiers_web_ia_2026-07-15/final/veille-metiers-web-ia-202.pptx` (13
+`fonds/metiers_web_ia_2026-07-15/final/veille-metiers-web-ia-202.odp` (13
 diapositives) : robots IA sur le web, ralentissement des embauches juniors
 (dev, cadres IT), grilles d'analyse REAC (DWWM, CDA, CDUI) face à l'IA,
 rédacteur web (métier le plus exposé, 57 % automatisable), community
@@ -66,10 +66,10 @@ bibliographie d'origine.
 
 **Format — résolu (2026-07-23)** : document de lecture généré
 (`fonds/metiers_web_ia_2026-07-15/final/script.md`), reconstruit depuis le texte
-des diapositives et les tableaux de compétences. Deux écarts mineurs restants
-avec la convention à deux rôles : le support live est un PPTX (pas un ODP), et
-les légendes visuelles des grilles (couleurs) n'ont pas pu être extraites du
-texte brut.
+des diapositives et les tableaux de compétences. Support live converti en
+`.odp` (LibreOffice Impress), conforme à la convention — l'original `.pptx`
+supprimé, un seul exemplaire fait foi. Reste un écart mineur : les légendes
+visuelles des grilles (couleurs) n'ont pas pu être extraites du texte brut.
 
 **Thème** : couvert par l'axe assigné (développement durable x IA — volet
 sociétal/économique) — le thème est large par construction, pas besoin de
