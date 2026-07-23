@@ -121,13 +121,15 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 - [x] **Écart de thème du PPTX métiers du web — non pertinent** — le thème
   assigné (développement durable x IA) est large par construction ; pas besoin
   de vérifier le rattachement veille par veille — `D`
-- [x] **MD généré** pour `veille-metiers-web-ia-202.pptx` — reconstruit depuis
+- [x] **MD généré** pour `veille-metiers-web-ia-202.odp` — reconstruit depuis
   le texte des 13 diapositives (tableaux de compétences inclus) :
   `metiers_web_ia_2026-07-15/final/script.md`. À relire — les couleurs/légendes
   visuelles des grilles n'ont pas pu être extraites, seul le texte des tableaux — `A`
   (2026-07-23)
-- [ ] **Deux écarts de convention sur cette veille** — format live PPTX plutôt
-  qu'ODP (mineur) ; confirmer que l'emplacement `final/` est bien définitif — `D`
+- [x] **Format live converti PPTX → ODP** — conforme à la convention, original
+  `.pptx` supprimé (un seul exemplaire) — `A` (2026-07-23)
+- [ ] Confirmer que l'emplacement `final/` pour cette veille est bien
+  définitif — `D`
 - [x] **Veille centralisée dans le dépôt** — `formation_dev_ia_agentique/veille/`
   (5 dossiers) et les 3 fichiers de `~/Téléchargements` déplacés (pas copiés) vers
   `docs/jury/veille/fonds/`, avec une période approximative par dossier dans
@@ -137,7 +139,8 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   volontairement pas faite lors du déplacement, David s'en charge lui-même :
   fichiers hors sujet égarés (`whereisbrian.jpeg`), config d'éditeur versionnée
   par erreur (`.vscode/settings.json` dans `britanica_openAI_le_pillage_savoir/`),
-  noms de fichiers incohérents (`veille-metiers-web-ia-202.pptx` vs `-2026.pptx`) — `D`
+  noms de fichiers incohérents (`veille-metiers-web-ia-202.pptx` vs `-2026.pptx`
+  dans la corbeille, avant conversion en `.odp`) — `D`
 - [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
   - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
   - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
