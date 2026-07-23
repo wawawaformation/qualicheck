@@ -43,29 +43,43 @@ Trois précisions sur le contenu :
 
 ## 2026-07-15 — durée non renseignée
 
-**Parcouru** : métiers du web à l'ère de l'IA — support `veille-metiers-web-ia-202.pptx`
-(`~/Téléchargements`, non archivé).
+**Parcouru** : métiers du web à l'ère de l'IA — support
+`fonds/metiers_web_ia_2026-07-15/final/veille-metiers-web-ia-202.pptx` (13
+diapositives) : robots IA sur le web, ralentissement des embauches juniors
+(dev, cadres IT), grilles d'analyse REAC (DWWM, CDA, CDUI) face à l'IA,
+rédacteur web (métier le plus exposé, 57 % automatisable), community
+management et gestion de projet, chiffres macro France.
 
-**Retenu** : *(à compléter — support pas encore relu en détail dans cette session)*
+**Retenu** :
 
-**À creuser** : —
+- Le bouleversement documenté n'est pas l'emploi existant mais l'**accès** au
+  métier — ralentissement des embauches juniors, pas de vague de licenciements
+- Lecture transversale des grilles REAC : plus une compétence est procédurale et
+  normée, plus elle est absorbée par l'IA ; plus elle exige un jugement
+  contextuel, plus elle résiste
+- Tension de fond : la rupture du pipeline de formation — les tâches juniors qui
+  formaient les seniors de demain sont les premières automatisées
 
-**Format** : PPTX produit, **document de lecture (MD) pas encore généré** — David
-prévoit de le rédiger. Cette entrée est donc incomplète tant que le MD n'existe
-pas : le PPTX seul ne porte pas la charge d'accessibilité du document de partage
-(cf. `README.md` — l'ODP/PPTX est un support live, le MD/ODT est le document
-réel). Contrairement aux deux entrées du 2026-05-13, celle-ci n'est pas encore un
-cas conforme au format à deux rôles retenu — snapshot d'un travail en cours, pas
-une session terminée.
+**À creuser** : recouper les sources macro (Numeum, CREDOC/Arcep, compilation
+OCDE/McKinsey/FMI) avant citation formelle — signalé comme non fait dans la
+bibliographie d'origine.
 
-**Écart avec le thème assigné, non résolu** : contrairement au rapport
-cybersécurité du 2026-05-13 (voir plus bas — antérieur au lancement de Mini
-Manifest), celui-ci est daté du **2026-07-15, deux mois après le lancement** du
+**Format — résolu (2026-07-23)** : document de lecture généré
+(`fonds/metiers_web_ia_2026-07-15/final/script.md`), reconstruit depuis le texte
+des diapositives et les tableaux de compétences. Deux écarts mineurs restants
+avec la convention à deux rôles : le support live est un PPTX (pas un ODP), et
+les légendes visuelles des grilles (couleurs) n'ont pas pu être extraites du
+texte brut.
+
+**Écart avec le thème assigné, toujours non résolu** : contrairement au rapport
+cybersécurité du 2026-05-13 (antérieur au lancement de Mini Manifest, voir plus
+bas), celui-ci est daté du **2026-07-15, deux mois après le lancement** du
 dispositif (13 mai). L'explication « avant le Mini Manifest » ne s'applique donc
-pas ici. Statut réel à clarifier avec David une fois le MD rédigé : hors thème
-assumé (veille personnelle plus large que la restitution collective), ou
-rattachement au développement durable x IA sous l'angle socio-économique que le
-titre seul ne montre pas.
+pas ici. Statut réel à clarifier avec David : hors thème assumé (veille
+personnelle plus large que la restitution collective), ou rattachement au
+développement durable x IA sous l'angle socio-économique (le contenu porte
+essentiellement sur l'impact social/économique de l'IA sur l'emploi — un
+rattachement est défendable mais reste à confirmer).
 
 ## 2026-05-13 — cybersécurité x IA — durée non renseignée
 

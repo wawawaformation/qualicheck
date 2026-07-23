@@ -121,7 +121,13 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 - [ ] **Écart de thème du PPTX métiers du web (15 juillet)** — non résolu,
   postérieur de 2 mois au lancement de Mini Manifest ; à clarifier une fois le MD
   généré (cf. `journal.md`) — `D`
-- [ ] **Générer le MD manquant** du PPTX `veille-metiers-web-ia-202.pptx` — `D`
+- [x] **MD généré** pour `veille-metiers-web-ia-202.pptx` — reconstruit depuis
+  le texte des 13 diapositives (tableaux de compétences inclus) :
+  `metiers_web_ia_2026-07-15/final/script.md`. À relire — les couleurs/légendes
+  visuelles des grilles n'ont pas pu être extraites, seul le texte des tableaux — `A`
+  (2026-07-23)
+- [ ] **Deux écarts de convention sur cette veille** — format live PPTX plutôt
+  qu'ODP (mineur) ; confirmer que l'emplacement `final/` est bien définitif — `D`
 - [x] **Veille centralisée dans le dépôt** — `formation_dev_ia_agentique/veille/`
   (5 dossiers) et les 3 fichiers de `~/Téléchargements` déplacés (pas copiés) vers
   `docs/jury/veille/fonds/`, avec une période approximative par dossier dans
