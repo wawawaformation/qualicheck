@@ -214,7 +214,6 @@ Le numérique représente une part croissante de la consommation énergétique m
 QualiCheck applique ce principe à plusieurs niveaux :
 
 - **Modèle d'embedding léger** : All MiniLM L12 v2 (33M paramètres) plutôt qu'un modèle surdimensionné — gratuit, rapide, efficace pour le volume traité
-- **Agent enrichissement compact** : gpt-5.4-nano pour une tâche de classification JSON — modèle léger sélectionné sur données benchmark réelles
 - **Infrastructure Infomaniak** : énergie 100% renouvelable, chaleur des serveurs revalorisée
 - **Pas de base vectorielle externe** : pgvector évite de déployer un service supplémentaire (Chroma, Pinecone) et réduit l'empreinte opérationnelle
 
@@ -469,7 +468,7 @@ CREATE INDEX ON regle USING hnsw (embedding vector_cosine_ops);
 
 QualiCheck mobilise deux agents aux besoins distincts :
 
-- **Agent enrichissement** (ingestion) — instruction following, sortie JSON courte, contexte limité. Priorité : fiabilité du JSON et économie de tokens.
+- **Agent enrichissement** (ingestion) — instruction following, sortie JSON courte, contexte limité. Traitement par lot sans utilisateur en attente : la latence ou la légèreté du modèle n'ont pas de valeur ici. Priorité : exactitude, précision et pertinence du résultat, fiabilité du JSON.
 - **Agent d'audit** (US1 + US2) — raisonnement sur pages HTML longues, dialogue multi-tours. Priorité : fenêtre de contexte et qualité de raisonnement.
 
 Le code permet de basculer entre modèles sans modifier l'intégration métier grâce à quatre variables de configuration indépendantes (cf. [Annexe F — Choix des modèles LLM](annexes/F_choix_llm.md) pour le détail complet).
