@@ -24,11 +24,13 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   (9,13 €) : 0,8008 / 3,3875 €/1M. Appliquées à `.env` + `.env.example` — `A`
 - [ ] **Emplacement `KIMI_PRICE_*`** — rester dans `.env` ou passer dans le
   manifeste ? Toujours ouvert, indépendant des valeurs (spec E §6) — `D`
-- [ ] **`ia_souverain/synthese.md`** — copier dans `conception/annexes/` ou pointer
-  vers le dossier formation ? — `D`
-  - `F_choix_llm.md` la cite comme annexe (argumentation souveraineté, Bayart,
-    Cloud Act). Copier rend le document autonome pour qui lit le dépôt ; pointer
-    évite une duplication qui divergera
+- [x] **`ia_souverain/synthese.md` — question résolue par la centralisation
+  de la veille** — le fichier vit désormais dans le dépôt
+  (`docs/jury/veille/fonds/ia_souverain/synthese.md`), plus besoin de choisir
+  entre copier et pointer vers l'extérieur — `A` (2026-07-23)
+  - Reste ouvert si souhaité : `F_choix_llm.md` cite ce fichier comme annexe
+    (argumentation souveraineté, Bayart, Cloud Act) — copier spécifiquement
+    dans `conception/annexes/` en plus, ou le renvoi vers `fonds/` suffit ?
 
 ## Documentation
 
@@ -120,15 +122,16 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   postérieur de 2 mois au lancement de Mini Manifest ; à clarifier une fois le MD
   généré (cf. `journal.md`) — `D`
 - [ ] **Générer le MD manquant** du PPTX `veille-metiers-web-ia-202.pptx` — `D`
-- [ ] **Archiver les 3 PDF/PPTX de veille** hors de `~/Téléchargements` (transitoire,
-  comme la corbeille) — `12_mai_article-freshrss-docker_.pdf`,
-  `veille_13_mai_David.pdf`, `veille-metiers-web-ia-202.pptx` — `D`
-- [ ] **Nettoyer le dossier de veille** (`formation_dev_ia_agentique/veille/`) —
-  constat de David, pas encore détaillé. Repéré en cours d'inventaire : fichiers
-  hors sujet égarés (`whereisbrian.jpeg`), config d'éditeur versionnée par erreur
-  (`.vscode/settings.json` dans `britanica_openAI_le_pillage_savoir/`), noms de
-  fichiers incohérents (`veille-metiers-web-ia-202.pptx` vs `-2026.pptx`), pièces
-  encore éparpillées en dehors du dossier de veille (`~/Téléchargements`) — `D`
+- [x] **Veille centralisée dans le dépôt** — `formation_dev_ia_agentique/veille/`
+  (5 dossiers) et les 3 fichiers de `~/Téléchargements` déplacés (pas copiés) vers
+  `docs/jury/veille/fonds/`, avec une période approximative par dossier dans
+  `README.md` (basée sur les dates de modification au moment du déplacement) — `A`
+  (2026-07-23)
+- [ ] **Nettoyer le fonds de veille** (`docs/jury/veille/fonds/`) — normalisation
+  volontairement pas faite lors du déplacement, David s'en charge lui-même :
+  fichiers hors sujet égarés (`whereisbrian.jpeg`), config d'éditeur versionnée
+  par erreur (`.vscode/settings.json` dans `britanica_openAI_le_pillage_savoir/`),
+  noms de fichiers incohérents (`veille-metiers-web-ia-202.pptx` vs `-2026.pptx`) — `D`
 - [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
   - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
   - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
