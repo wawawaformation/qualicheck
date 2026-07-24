@@ -102,6 +102,18 @@ Chaque brique du projet suit un cycle **spec → validation → implémentation*
 
 Le risque à surveiller : le **spec drift** (le code qui s'éloigne de la spec au fil des sessions, en particulier en alternant Claude Code et OpenCode). D'où l'importance de toujours relire la spec correspondante avant de modifier du code existant, et de tenir `CHANGELOG.md` à jour — c'est ce qui maintient le lien entre "ce qui a été décidé" et "ce qui existe réellement".
 
+## Stratégie de branches
+
+Une branche par sujet plutôt qu'un `feature` fourre-tout : `veille` (déjà créée,
+2026-07-23), `feature-ingestion`, `conception`, etc. — noms indicatifs, pas figés,
+à créer **au fil de l'eau** quand un nouveau sujet démarre, pas par anticipation.
+
+La branche `feature` existante (mélange ingestion + conception + veille avant ce
+découpage) **n'est pas splittée rétroactivement** — reconstituer l'historique par
+sujet coûterait plus cher (rebase/cherry-pick sur de l'historique déjà poussé)
+que la valeur obtenue. Le découpage par sujet s'applique au travail à venir, pas
+à l'existant.
+
 ## Mode de travail sur ce projet
 
 *(découle directement du contexte de certification ci-dessus)*
