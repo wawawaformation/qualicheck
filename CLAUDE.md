@@ -18,7 +18,7 @@ L'utilisateur alterne entre plusieurs outils agentiques (Claude Code, OpenCode..
 
 Format d'entrée, une ligne par réalisation :
 
-```
+```text
 ## [date] — [outil]
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
@@ -30,7 +30,7 @@ Avant de commencer une tâche d'implémentation, lire `CHANGELOG.md` pour savoir
 Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure du projet, pas figé. Cibles actuelles :
 
 | Cible | Rôle |
-|---|---|
+| --- | --- |
 | `make up` | Démarre les conteneurs Docker (build si nécessaire) |
 | `make down` | Éteint les conteneurs |
 | `make migration` | Applique les migrations Alembic (crée le schéma BDD) |
@@ -70,7 +70,7 @@ Un seul fichier, à la racine, jamais versionné : connexion BDD + accès LLM (e
 
 ## Structure du repo
 
-```
+```text
 .github/workflows/ci.yml   # lint + migrations + tests sur push (hors main)
 conception/          # documents de conception, non exécutés — source de vérité fonctionnelle
   conception.md       # dossier de conception complet (US0/US1/US2, flux, MCD, choix techniques...) — document central
