@@ -9,6 +9,10 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-23 — Claude Code
+
+- **`docs/jury/veille/CLAUDE.md` créé** — orientation rapide pour la prochaine session sur le dossier veille : thème large (pas de vérification par veille), convention de dossier `fonds/`, format ODP/MD à deux rôles, pièges déjà rencontrés (duplication, gitlink imbriqué, `git add -A` qui re-suit un dossier exclu) — voir `docs/jury/veille/CLAUDE.md`
+
 ## 2026-07-21 — Claude Code (Part 9)
 
 - **Dossier `docs/jury/`** — méta-documentation pour la certification — voir `docs/jury/`
