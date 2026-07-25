@@ -118,14 +118,14 @@ Expected: tous les tests PASS à nouveau (up/down/up symétrique).
 
 Dans `conception/2_ingestion/MLD_qualicheck.md`, section `### regle`, remplacer :
 
-```
+```text
   embedding *             vector(384)               -- All MiniLM L12 v2, index HNSW
 )
 ```
 
 par :
 
-```
+```text
   reviewed_at *           TIMESTAMP                 -- NULL = pas encore revue manuellement
   review_status *         VARCHAR(16)               -- valide | a_revoir | invalide
   review_note *           TEXT                      -- notes de revue, matière pour un futur script de réécriture ciblée

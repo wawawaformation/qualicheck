@@ -181,7 +181,7 @@ La valeur reste `3` (contenu actuel du prompt, pas une intention — spec §5.3)
 
 Run: `head -4 app/ingestion/prompts/enrich_rule.md`
 Expected :
-```
+```yaml
 ---
 version: 3
 ---
@@ -998,13 +998,13 @@ Provoquer un échec de stockage contrôlé : temporairement, dans un test manuel
 
 Dans `conception/2_ingestion/MLD_qualicheck.md`, section `### regle`, remplacer :
 
-```
+```text
   llm_provider *          VARCHAR(20)
 ```
 
 par :
 
-```
+```text
   llm_model *             VARCHAR(64)     -- nom logique du modèle (manifest.yml), pas un nom de déploiement
   prompt_version *        INT                       -- version du prompt (frontmatter enrich_rule.md)
   created_at *            TIMESTAMP                 -- NULL = produit avant instrumentation
