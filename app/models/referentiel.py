@@ -39,6 +39,9 @@ class Regle(Base):
     prompt_version = Column(Integer, nullable=True)
     created_at = Column(DateTime, nullable=True)
     updated_at = Column(DateTime, nullable=True)
+    reviewed_at = Column(DateTime, nullable=True)
+    review_status = Column(String(16), nullable=True)
+    review_note = Column(Text, nullable=True)
     embedding = Column(Vector(384))
 
 
