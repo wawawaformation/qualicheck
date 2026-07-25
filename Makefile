@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade ingestion clear psql test
+.PHONY: up down migration downgrade ingestion clear psql test migration-test
 
 ## Démarre tous les conteneurs Docker (construit les images si nécessaire)
 up:
@@ -30,6 +30,14 @@ clear:
 ## Ouvre une session psql interactive dans le conteneur Postgres
 psql:
 	docker exec -it qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)"
+
+## Crée (si absente) et migre la base de test dédiée aux tests d'intégration
+## destructeurs (jamais la base de dev réelle)
+migration-test:
+	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d postgres -tc \
+		"SELECT 1 FROM pg_database WHERE datname = '$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)'" | grep -q 1 || \
+		docker exec qualicheck-postgres createdb -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" "$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)"
+	POSTGRES_DB="$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)" uv run python scripts/migration.py
 
 ## Lance les tests d'intégration (nécessite qualicheck-postgres démarré et migration appliquée)
 test:
