@@ -48,6 +48,11 @@ plus tard si l'idée tient.
     futur `enrich_again` avec des retours d'expert plutôt que des observations
     de développeur) + un vrai cas d'usage pour une authentification non
     simulée, utile bien au-delà de la seule compétence C5.
+  - **Auth — pour l'instant, un token généré à la main** (pas de système de
+    comptes/OAuth) : réel plutôt que simulé, mais proportionné au besoin — un
+    seul utilisateur externe connu (Élie Sloïm), pas un public large. Cohérent
+    avec YAGNI ; un vrai système d'authentification attendrait un besoin
+    multi-utilisateurs réel (ex. plusieurs curateurs).
 
 - **Version très future — enrichir le RAG avec l'écosystème Opquast au-delà
   des 245 règles** : glossaire Opquast, référentiel VPTCS, informations
