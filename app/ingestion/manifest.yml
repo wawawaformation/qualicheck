@@ -1,0 +1,7 @@
+# Décisions courantes du pipeline d'ingestion.
+# Aucun historique ici : git s'en charge (git log manifest.yml).
+# Aucun secret ici : voir .env.
+
+enrichissement:
+  modele: kimi-k2.6
+  env_var: AZURE_MODEL_KIMI
