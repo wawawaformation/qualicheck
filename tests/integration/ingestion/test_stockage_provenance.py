@@ -12,8 +12,8 @@ from sqlalchemy.orm import sessionmaker
 
 from app.ingestion.aggregation import EnrichedRules
 from app.ingestion.schema import EnrichedRule
-from app.models.referentiel import Regle
 from app.ingestion.stockage import clear_opquast_tables, load_enriched_rules_from_db, store_rules
+from app.models.referentiel import Regle
 
 load_dotenv()
 
