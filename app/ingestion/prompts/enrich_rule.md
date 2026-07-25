@@ -1,5 +1,5 @@
 ---
-version: 3
+version: 4
 ---
 
 # Enrichissement de Règles Opquast
@@ -22,10 +22,22 @@ Pour chaque règle, tu dois générer **exactement 3 champs JSON** :
    - `"statique"` : l'information est présente dans le HTML/DOM et vérifiable sans interaction (ex. présence d'une balise, d'un attribut, d'un texte).
    - `"playwright"` : nécessite une interaction navigateur ou l'exécution de JS pour révéler l'information (clic, scroll, formulaire, contenu chargé dynamiquement).
    - `"vision"` : nécessite une appréciation visuelle qu'aucune inspection du code ne peut fiabiliser (ex. juger qu'un contenu est visuellement identifié comme publicitaire, qu'une mise en forme respecte une convention).
-   - `"manuel"` : **vraie exception**, réservée aux cas où même une analyse visuelle par LLM ne peut pas trancher de façon fiable — typiquement un jugement légal fin, éditorial, ou un contexte métier propre au site qu'aucune observation de la page ne permet de déduire.
+   - `"manuel"` : **vraie exception**, réservée aux cas où même une analyse visuelle par LLM ne peut pas trancher de façon fiable — typiquement un jugement légal fin, éditorial, ou un contexte métier propre au site qu'aucune observation de la page ne permet de déduire. Inclut aussi tout critère nécessitant d'observer quelque chose hors de la page web auditée elle-même (boîte mail, DNS, document PDF externe, SMS, second appareil...), même si une partie du parcours est automatisable sur la page.
    - N'invente une autre valeur que si la règle ne correspond **réellement à aucune** des quatre.
+
+   **Stratégies composites** : si le parcours optimal pour vérifier la règle enchaîne deux de ces méthodes, utilise une valeur composite au format `strategie1+strategie2` (toujours deux stratégies, jamais trois ; l'ordre = séquence d'exécution), même si une seule méthode suffirait à un niveau minimal. Ce n'est pas réservé aux deux familles ci-dessous — toute paire parmi `statique`/`playwright`/`vision` (jamais `manuel` en composite) reste possible si le même raisonnement s'applique, mais demeure l'exception :
+   - `vision+statique` : une vérification visuelle identifie l'élément concerné, puis une inspection du DOM confirme le balisage HTML correct.
+   - `playwright+vision` : une interaction navigateur prépare une condition de rendu (désactivation CSS, mode impression...), puis une analyse visuelle juge le résultat.
+
+   **Signal supplémentaire** : un intitulé ou un contrôle contenant « ET » reliant deux critères de nature hétérogène (visuel et textuel, code et rendu...) est un signal fort de stratégie composite.
 2. **strategie_justification** : explication courte du choix (1-2 phrases).
 3. **guide_analyse** : instruction opérationnelle pour l'agent d'audit (3-5 phrases, concrète et actionnable). Précise si besoin la technique concrète à utiliser (crawler un échantillon de pages, rechercher un pattern via regex, etc.).
+
+   Si la stratégie est composite, structure le guide en étapes numérotées et étiquetées par sous-stratégie, dans l'ordre d'exécution, en précisant ce que produit chaque étape et comment la suivante l'exploite. Format : « Étape 1 [vision] : ... Étape 2 [statique] : ... »
+
+   Ancre chaque vérification sur un critère factuel et vérifiable (présence ou absence d'un élément, d'un attribut, d'un texte) plutôt que sur une spéculation (« serait-il possible de... »).
+
+   Si la règle porte sur une cohérence à vérifier sur plusieurs pages, le guide doit explicitement demander de comparer plusieurs pages représentatives, quelle que soit la stratégie retenue.
 
 ## Format de réponse
 
@@ -116,6 +128,40 @@ Réponds **uniquement** avec un objet JSON valide, sans texte supplémentaire :
   "strategie_analyse": "manuel",
   "strategie_justification": "La conformité légale des conditions de modération dépend du secteur d'activité et du cadre réglementaire propre au site, une information absente de la page et nécessitant une expertise juridique.",
   "guide_analyse": "Identifiez le secteur d'activité et la juridiction applicable au site audité. Faites relire les conditions de modération par une personne compétente sur le cadre légal concerné. Documentez les écarts constatés entre le texte publié et les obligations réglementaires identifiées."
+}
+```
+
+### Exemple 5 : composite `vision+statique` — identification visuelle puis vérification du balisage
+
+**Règle :** Les éléments visuellement présentés sous forme de liste sont balisés de façon appropriée dans le code source.
+
+**Solution :** Utiliser les éléments HTML appropriés (ul/li, ol/li, dl/dt/dd) ou les rôles ARIA list/listitem équivalents.
+
+**Contrôle :** Pour chaque page contenant une liste visuelle (puces, tirets, énumération), vérifier que le code source utilise le balisage correspondant.
+
+**Réponse attendue :**
+```json
+{
+  "strategie_analyse": "vision+statique",
+  "strategie_justification": "Une identification visuelle repère les contenus présentés comme des listes (puces, tirets, numéros), une vérification du DOM confirme ensuite que le balisage HTML utilisé est correct.",
+  "guide_analyse": "Étape 1 [vision] : parcourez visuellement chaque page et repérez tout contenu présenté comme une liste (puces, tirets, énumération numérotée). Étape 2 [statique] : pour chaque liste repérée, inspectez le DOM et vérifiez qu'elle utilise ul/li, ol/li, dl/dt/dd, ou les rôles ARIA list/listitem. Signalez toute liste visuelle sans balisage HTML correspondant."
+}
+```
+
+### Exemple 6 : "manuel" — observation hors de la page web auditée
+
+**Règle :** Tous les mails fournissent au moins un moyen de contact.
+
+**Solution :** Dans chaque mail adressé à l'utilisateur, y compris ceux en "no-reply", indiquer au moins un moyen de contact.
+
+**Contrôle :** Vérifier pour chaque mail envoyé à l'utilisateur par le site qu'il fournit au moins un moyen de contact.
+
+**Réponse attendue :**
+```json
+{
+  "strategie_analyse": "manuel",
+  "strategie_justification": "Vérifier le contenu des emails effectivement envoyés par le site nécessite d'observer une boîte mail réelle, hors de la page web auditée — aucune méthode automatisée sur le site seul ne peut confirmer ce point.",
+  "guide_analyse": "Identifiez les déclencheurs d'envoi d'email du site (inscription, confirmation, notification, réinitialisation de mot de passe...). Déclenchez chaque scénario avec une adresse de test et consultez la boîte mail réelle. Vérifiez que chaque email reçu, y compris ceux en no-reply, mentionne au moins un moyen de contact (adresse postale, téléphone, formulaire, autre email)."
 }
 ```
 

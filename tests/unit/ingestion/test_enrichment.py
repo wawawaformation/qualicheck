@@ -53,7 +53,7 @@ class TestLLMClient:
         assert enriched.guide_analyse == "Parcourez toutes les images et vérifiez l'attribut alt."
         assert enriched.strategie_source == "ia_import"
         assert enriched.llm_model == "kimi-k2.6"
-        assert enriched.prompt_version == 3
+        assert enriched.prompt_version == 4
         assert client.input_tokens == 100
         assert client.output_tokens == 50
 
@@ -375,7 +375,7 @@ class TestManifestAndPromptVersion:
     def test_load_prompt_version_reads_frontmatter(self):
         from app.ingestion.llm_client import load_prompt_version
 
-        assert load_prompt_version() == 3
+        assert load_prompt_version() == 4
 
     def test_load_prompt_strips_frontmatter_from_llm_input(self, monkeypatch):
         monkeypatch.setenv("AZURE_AI_ENDPOINT", "http://test")
