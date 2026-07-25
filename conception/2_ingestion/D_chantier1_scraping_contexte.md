@@ -44,7 +44,7 @@ code ne prenait que le premier `p`.
 ## 3. Décisions de conception
 
 | Point | Décision |
-|---|---|
+| --- | --- |
 | Bornage extraction | Limité aux frères internes à `c-rule-content`, du heading jusqu'au `<h2>` suivant |
 | Sérialisation `<ul>` | Chaque `<li>` → `- {texte}` sur sa propre ligne (`\n`) |
 | Sentinelle footer | **Aucune** (mot-clé) — le bornage rend le débordement impossible ; pas de code défensif pour un scénario impossible |
