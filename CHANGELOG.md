@@ -19,6 +19,7 @@ Format d'entrée, une ligne par réalisation :
 - Renommage `scripts/test_storage.py` → `scripts/storage_smoke.py` (contenu inchangé) : évitait qu'un `pytest` avec chemin explicite (hors `testpaths`) ne collecte ce script de smoke-test qui écrit en base au import, sur `POSTGRES_DB`
 - Nouvelle cible `make export_sql` (`pg_dump --data-only` de la vraie base `qualicheck`, hors `alembic_version`, dans `backups/YYYYMMDD_HHMMSS.sql`, dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse, précisément le filet de sécurité qui aurait permis de récupérer les 245 règles V5 perdues — voir `Makefile`, `.gitignore`
 - Nouvelle cible `make import_sql FILE=...` (restauration d'un dump `export_sql`) : `FILE=` obligatoire, échec explicite en cas de conflit de clé primaire plutôt que de vider la base automatiquement — voir `Makefile`
+- La cible `make ingestion` chaîne désormais `make export_sql` juste après le pipeline — sauvegarde automatique des données réelles, plus besoin d'y penser manuellement — voir `Makefile`
 
 ## 2026-07-25 — Claude Code
 
