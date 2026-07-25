@@ -55,6 +55,9 @@ regle (
   prompt_version *        INT                       -- version du prompt (frontmatter enrich_rule.md)
   created_at *            TIMESTAMP                 -- NULL = produit avant instrumentation
   updated_at *            TIMESTAMP                 -- NULL = produit avant instrumentation
+  reviewed_at *           TIMESTAMP                 -- NULL = pas encore revue manuellement
+  review_status *         VARCHAR(16)               -- valide | a_revoir | invalide
+  review_note *           TEXT                      -- notes de revue, matière pour un futur script de réécriture ciblée
   embedding *             vector(384)               -- All MiniLM L12 v2, index HNSW
 )
 ```

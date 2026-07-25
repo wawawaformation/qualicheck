@@ -132,6 +132,23 @@ def test_colonnes_provenance_regle(conn):
     assert not non_nullable, f"Colonnes provenance incorrectement NOT NULL : {non_nullable}"
 
 
+def test_colonnes_revue_manuelle_regle(conn):
+    """Les 3 colonnes de revue manuelle doivent exister sur regle, toutes nullables."""
+    colonnes = ["reviewed_at", "review_status", "review_note"]
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT column_name, is_nullable
+            FROM information_schema.columns
+            WHERE table_name = 'regle'
+            AND column_name = ANY(%s);
+        """, (colonnes,))
+        rows = {row[0]: row[1] for row in cur.fetchall()}
+    manquantes = set(colonnes) - set(rows)
+    assert not manquantes, f"Colonnes revue manuelle manquantes : {manquantes}"
+    non_nullable = [col for col in colonnes if rows.get(col) != "YES"]
+    assert not non_nullable, f"Colonnes revue manuelle incorrectement NOT NULL : {non_nullable}"
+
+
 def test_colonne_llm_provider_absente(conn):
     """llm_provider doit avoir été renommée en llm_model (colonne absente)."""
     with conn.cursor() as cur:
