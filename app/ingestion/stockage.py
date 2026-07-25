@@ -6,6 +6,7 @@ référence (theme, objectif, phase, tag) et leurs associations many-to-many.
 """
 
 import logging
+from datetime import UTC, datetime
 
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -109,7 +110,8 @@ def load_enriched_rules_from_db(session: Session) -> EnrichedRules:
             strategie_justification=regle.strategie_justification,
             guide_analyse=regle.guide_analyse,
             strategie_source=regle.strategie_source,
-            llm_provider=regle.llm_provider,
+            llm_model=regle.llm_model,
+            prompt_version=regle.prompt_version,
         )
         enriched_list.append(enriched)
 
@@ -175,8 +177,10 @@ def upsert_rule(session: Session, enriched_rule: EnrichedRule) -> Regle:
     # violerait la contrainte NOT NULL.
     theme = get_or_create(session, Theme, theme=enriched_rule.theme)
 
+    now = datetime.now(UTC).replace(tzinfo=None)
+
     if regle is None:
-        regle = Regle(numero=enriched_rule.number)
+        regle = Regle(numero=enriched_rule.number, created_at=now)
         session.add(regle)
 
     regle.theme_id = theme.id
@@ -189,7 +193,9 @@ def upsert_rule(session: Session, enriched_rule: EnrichedRule) -> Regle:
     regle.strategie_justification = enriched_rule.strategie_justification
     regle.strategie_source = enriched_rule.strategie_source
     regle.guide_analyse = enriched_rule.guide_analyse
-    regle.llm_provider = enriched_rule.llm_provider
+    regle.llm_model = enriched_rule.llm_model
+    regle.prompt_version = enriched_rule.prompt_version
+    regle.updated_at = now
 
     session.flush()
 
