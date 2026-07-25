@@ -152,16 +152,6 @@ def main() -> None:
             logger.error("Étape 3 — Enrichissement : ÉCHEC (%s)", e)
             sys.exit(1)
 
-        try:
-            logger.info("Étape 4 — Stockage : démarrage")
-            progress_logger.info("Étape 4 — Stockage : démarrage")
-            with Session(engine) as session:
-                store_rules(session, enriched)
-            logger.info("Étape 4 — Stockage : terminée")
-        except Exception as e:
-            logger.error("Étape 4 — Stockage : ÉCHEC (%s)", e)
-            sys.exit(1)
-
         price_input_per_1m = float(os.getenv("KIMI_PRICE_INPUT_PER_1M", "0"))
         price_output_per_1m = float(os.getenv("KIMI_PRICE_OUTPUT_PER_1M", "0"))
         cost = (
@@ -176,6 +166,16 @@ def main() -> None:
         )
         logger.info(summary)
         progress_logger.info(summary)
+
+        try:
+            logger.info("Étape 4 — Stockage : démarrage")
+            progress_logger.info("Étape 4 — Stockage : démarrage")
+            with Session(engine) as session:
+                store_rules(session, enriched)
+            logger.info("Étape 4 — Stockage : terminée")
+        except Exception as e:
+            logger.error("Étape 4 — Stockage : ÉCHEC (%s)", e)
+            sys.exit(1)
 
     logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")
     progress_logger.info("=== Pipeline d'ingestion : succès (Étapes 1-4) ===")
