@@ -126,6 +126,7 @@ que la valeur obtenue. Le découpage par sujet s'applique au travail à venir, p
 ## Principes généraux (tout le projet)
 
 - **Retry LLM** : 3 tentatives avec backoff croissant sur tout appel LLM, avant de considérer l'appel en échec définitif.
+- **Tests d'intégration Postgres** : tout test nécessitant une vraie connexion Postgres doit utiliser `POSTGRES_TEST_DB` (base dédiée `qualicheck_test`, provisionnée via `make migration-test`), jamais `POSTGRES_DB` directement. Suite à l'incident du 2026-07-25 : un `pytest tests/` lancé juste après une ré-ingestion réelle (245 règles, 4,32 €) a effacé ces données via un test d'intégration qui vidait la vraie base de dev locale.
 
 ## Documents de référence à consulter avant toute implémentation
 
