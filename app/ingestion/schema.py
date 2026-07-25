@@ -60,7 +60,8 @@ class EnrichedRule(RuleAggregation):
     strategie_justification: str
     guide_analyse: str
     strategie_source: str = "ia_import"
-    llm_provider: str = "kimi-k2.6"
+    llm_model: str | None = None
+    prompt_version: int | None = None
 
     @field_validator("strategie_analyse", "strategie_justification", "guide_analyse")
     @classmethod
