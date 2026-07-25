@@ -37,7 +37,8 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 | `make downgrade` | Annule les migrations (`alembic downgrade base`) — permet de retester une migration from scratch |
 | `make migration-test` | Crée (si absente) et migre la base de test dédiée `qualicheck_test` (`POSTGRES_TEST_DB`), utilisée par les tests d'intégration destructeurs |
 | `make test` | Lance les tests (`pytest tests/`) — nécessite les conteneurs démarrés, les migrations appliquées, et `make migration-test` pour les tests d'intégration destructeurs |
-| `make export_sql` | Exporte les données réelles (`pg_dump --data-only`) dans `backups/YYYYMMDD_HHMMSS.sql` (dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse |
+| `make export_sql` | Exporte les données réelles (`pg_dump --data-only`, hors `alembic_version`) dans `backups/YYYYMMDD_HHMMSS.sql` (dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse |
+| `make import_sql FILE=...` | Restaure un dump `export_sql` dans la base réelle — `FILE=` obligatoire ; échoue explicitement en cas de conflit de clé primaire (ne vide rien tout seul, voir `make clear` si besoin) |
 
 À jour ici pour référence rapide, mais le `Makefile` lui-même reste la source de vérité — le relire directement en cas de doute plutôt que de se fier uniquement à ce tableau.
 

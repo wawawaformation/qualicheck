@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade ingestion clear psql test migration-test export_sql
+.PHONY: up down migration downgrade ingestion clear psql test migration-test export_sql import_sql
 
 ## Démarre tous les conteneurs Docker (construit les images si nécessaire)
 up:
@@ -49,4 +49,12 @@ test:
 ## ré-ingestion réelle coûteuse
 export_sql:
 	mkdir -p backups
-	docker exec qualicheck-postgres pg_dump -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" --data-only > backups/$$(date +%Y%m%d_%H%M%S).sql
+	docker exec qualicheck-postgres pg_dump -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" --data-only --exclude-table=alembic_version > backups/$$(date +%Y%m%d_%H%M%S).sql
+
+## Importe un dump généré par make export_sql dans la base réelle.
+## FILE=backups/xxx.sql obligatoire. Ne vide rien avant restauration : si des
+## lignes existent déjà, psql échoue sur les conflits de clé primaire — lancer
+## make clear avant si besoin.
+import_sql:
+	@test -n "$(FILE)" || (echo "Usage : make import_sql FILE=backups/xxx.sql" && exit 1)
+	docker exec -i qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" < $(FILE)
