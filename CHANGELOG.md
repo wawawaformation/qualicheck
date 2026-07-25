@@ -20,6 +20,8 @@ Format d'entrée, une ligne par réalisation :
 - Nouvelle cible `make export_sql` (`pg_dump --data-only` de la vraie base `qualicheck`, hors `alembic_version`, dans `backups/YYYYMMDD_HHMMSS.sql`, dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse, précisément le filet de sécurité qui aurait permis de récupérer les 245 règles V5 perdues — voir `Makefile`, `.gitignore`
 - Nouvelle cible `make import_sql FILE=...` (restauration d'un dump `export_sql`) : `FILE=` obligatoire, échec explicite en cas de conflit de clé primaire plutôt que de vider la base automatiquement — voir `Makefile`
 - La cible `make ingestion` chaîne désormais `make export_sql` juste après le pipeline — sauvegarde automatique des données réelles, plus besoin d'y penser manuellement — voir `Makefile`
+- `conception/annexes/B_MCD_qualicheck.drawio` : relations MCD passées en traits simples sans flèche (sauf les deux segments DF, qui gardent leur sens de lecture) ; cardinalités retirées ; positions/espacement préservés
+- Dictionnaire de données resynchronisé avec les migrations 0009/0010 (`llm_provider`→`llm_model`, ajout `prompt_version`/`created_at`/`updated_at`/`reviewed_at`/`review_status`/`review_note`) — nouvelle catégorie « Revue manuelle » (champs saisis à la main, pas par le pipeline) ajoutée à la feuille Légende — voir `conception/2_ingestion/A_dictionnaire_donnees_qualicheck.xlsx`, `conception/annexes/A_dictionnaire_donnees_qualicheck.xlsx`
 
 ## 2026-07-25 — Claude Code
 
