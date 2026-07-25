@@ -27,6 +27,14 @@ plus tard si l'idée tient.
   `PATCH /regles/{numero}/review` (soumet `review_status`/`review_note`,
   `reviewed_at` posé côté serveur). Remplace le `psql` manuel utilisé
   aujourd'hui pour la revue post-V4/V5.
+  - **Frontière API vs CLI, à ne pas mélanger** : l'API reste strictement
+    lecture + annotation (`GET`/`PATCH review`), jamais un déclencheur d'appel
+    LLM. Le futur `enrich_again` (réécriture ciblée des règles `a_revoir` via
+    le LLM, lisant les `review_*` déposés par l'API) reste un script **CLI**,
+    lancé par David avec le même garde-fou de confirmation explicite que
+    `scripts/ingestion.py` — jamais exposé en HTTP à un tiers externe. Élie
+    Sloïm alimente la donnée de revue ; le déclenchement de la réécriture
+    (coûteux, LLM) reste un acte humain délibéré côté administrateur.
   - **Frontière de service justifiée, contrairement à US1/US2** : persona
     différent (curateur de données, pas auditeur), moment différent du cycle
     de vie (post-ingestion/QA, pas audit en direct), préoccupation différente
