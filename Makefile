@@ -39,6 +39,7 @@ migration-test:
 		docker exec qualicheck-postgres createdb -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" "$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)"
 	POSTGRES_DB="$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)" uv run python scripts/migration.py
 
-## Lance les tests d'intégration (nécessite qualicheck-postgres démarré et migration appliquée)
+## Lance les tests d'intégration (nécessite qualicheck-postgres démarré, migration appliquée
+## et make migration-test pour les tests d'intégration destructeurs)
 test:
 	uv run pytest tests/ -v
