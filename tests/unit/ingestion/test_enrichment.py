@@ -52,7 +52,8 @@ class TestLLMClient:
         assert enriched.strategie_justification == "Vérification simple du DOM"
         assert enriched.guide_analyse == "Parcourez toutes les images et vérifiez l'attribut alt."
         assert enriched.strategie_source == "ia_import"
-        assert enriched.llm_provider == "kimi-k2.6"
+        assert enriched.llm_model == "kimi-k2.6"
+        assert enriched.prompt_version == 3
         assert client.input_tokens == 100
         assert client.output_tokens == 50
 
@@ -321,7 +322,7 @@ class TestLoadPromptContexte:
     def test_load_prompt_includes_contexte_when_present(self, monkeypatch):
         monkeypatch.setenv("AZURE_AI_ENDPOINT", "http://test")
         monkeypatch.setenv("AZURE_AI_API_KEY", "test-key")
-        monkeypatch.setenv("AZURE_DEPLOYMENT_INGESTION", "test-model")
+        monkeypatch.setenv("AZURE_MODEL_KIMI", "test-model")
 
         from app.ingestion.llm_client import LLMClient
         from app.ingestion.schema import RuleAggregation
@@ -342,7 +343,7 @@ class TestLoadPromptContexte:
     def test_load_prompt_handles_missing_contexte(self, monkeypatch):
         monkeypatch.setenv("AZURE_AI_ENDPOINT", "http://test")
         monkeypatch.setenv("AZURE_AI_API_KEY", "test-key")
-        monkeypatch.setenv("AZURE_DEPLOYMENT_INGESTION", "test-model")
+        monkeypatch.setenv("AZURE_MODEL_KIMI", "test-model")
 
         from app.ingestion.llm_client import LLMClient
         from app.ingestion.schema import RuleAggregation
@@ -358,3 +359,68 @@ class TestLoadPromptContexte:
 
         assert "(non disponible)" in prompt
         assert "{contexte}" not in prompt
+
+
+class TestManifestAndPromptVersion:
+    """Vérifie la lecture du manifeste et de la version de prompt."""
+
+    def test_load_manifest_reads_enrichissement_role(self):
+        from app.ingestion.llm_client import load_manifest
+
+        manifest = load_manifest()
+
+        assert manifest["enrichissement"]["modele"] == "kimi-k2.6"
+        assert manifest["enrichissement"]["env_var"] == "AZURE_MODEL_KIMI"
+
+    def test_load_prompt_version_reads_frontmatter(self):
+        from app.ingestion.llm_client import load_prompt_version
+
+        assert load_prompt_version() == 3
+
+    def test_load_prompt_strips_frontmatter_from_llm_input(self, monkeypatch):
+        monkeypatch.setenv("AZURE_AI_ENDPOINT", "http://test")
+        monkeypatch.setenv("AZURE_AI_API_KEY", "test-key")
+        monkeypatch.setenv("AZURE_MODEL_KIMI", "test-model")
+
+        from app.ingestion.llm_client import LLMClient
+        from app.ingestion.schema import RuleAggregation
+
+        client = LLMClient()
+        rule = RuleAggregation(
+            id=1, number=1, intitule="Règle test", theme="Thème",
+            objectifs=["Obj"], tags=["Tag"], phases=["Phase"],
+            slug="regle-test", solution="Solution", controle="Contrôle",
+        )
+
+        prompt = client.load_prompt(rule)
+
+        assert "version: 3" not in prompt
+        assert prompt.startswith("# Enrichissement de Règles Opquast")
+
+    @patch("app.ingestion.llm_client.ChatOpenAI")
+    def test_llm_model_provenance_independent_of_env_var(self, mock_azure_llm, monkeypatch):
+        """llm_model vient du manifeste, pas de la variable d'environnement résolue."""
+        monkeypatch.setenv("AZURE_MODEL_KIMI", "un-nom-de-deploiement-quelconque")
+
+        mock_llm_instance = MagicMock()
+        mock_azure_llm.return_value = mock_llm_instance
+        mock_response = MagicMock()
+        mock_response.content = (
+            '{"strategie_analyse": "statique", '
+            '"strategie_justification": "Test", "guide_analyse": "Test"}'
+        )
+        mock_response.usage_metadata = {"input_tokens": 1, "output_tokens": 1}
+        mock_llm_instance.invoke.return_value = mock_response
+
+        client = LLMClient()
+        rule = Rule(
+            id=1, number=1, intitule="Test", theme="Contenus",
+            solution="S", controle="C", objectifs=["O"], tags=["T"],
+            phases=["P"], slug="test",
+        )
+
+        enriched = client.enrich_single_rule(rule)
+
+        assert enriched.llm_model == "kimi-k2.6"
+        _, kwargs = mock_azure_llm.call_args
+        assert kwargs["model"] == "un-nom-de-deploiement-quelconque"
