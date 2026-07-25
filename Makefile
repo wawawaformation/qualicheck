@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade ingestion clear psql test migration-test
+.PHONY: up down migration downgrade ingestion clear psql test migration-test export_sql
 
 ## Démarre tous les conteneurs Docker (construit les images si nécessaire)
 up:
@@ -43,3 +43,10 @@ migration-test:
 ## et make migration-test pour les tests d'intégration destructeurs)
 test:
 	uv run pytest tests/ -v
+
+## Exporte les données réelles (pg_dump --data-only, sans le schéma déjà tracé
+## par Alembic) dans backups/YYYYMMDD_HHMMSS.sql — à lancer avant toute
+## ré-ingestion réelle coûteuse
+export_sql:
+	mkdir -p backups
+	docker exec qualicheck-postgres pg_dump -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" --data-only > backups/$$(date +%Y%m%d_%H%M%S).sql

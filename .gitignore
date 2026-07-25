@@ -24,3 +24,6 @@ logs/*.log
 
 # Matériel de travail temporaire (brainstorm, analyses brutes)
 tmp/
+
+# Dumps SQL (make export_sql) — grossissent et changent à chaque export
+backups/
