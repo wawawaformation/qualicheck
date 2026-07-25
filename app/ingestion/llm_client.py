@@ -8,6 +8,7 @@ import logging
 import os
 from pathlib import Path
 
+import yaml
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
@@ -29,6 +30,29 @@ PROMPT_PLACEHOLDERS = [
 ]
 
 
+def load_manifest() -> dict:
+    """Charge les décisions courantes du pipeline (app/ingestion/manifest.yml)."""
+    manifest_path = Path(__file__).parent / "manifest.yml"
+    with open(manifest_path, encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+def _read_prompt_file() -> str:
+    prompt_path = Path(__file__).parent / "prompts" / "enrich_rule.md"
+    with open(prompt_path, encoding="utf-8") as f:
+        return f.read()
+
+
+def load_prompt_version() -> int | None:
+    """Lit la version du prompt depuis le frontmatter de enrich_rule.md."""
+    text = _read_prompt_file()
+    if not text.startswith("---\n"):
+        return None
+    _, frontmatter_raw, _ = text.split("---", 2)
+    frontmatter = yaml.safe_load(frontmatter_raw) or {}
+    return frontmatter.get("version")
+
+
 class EnrichmentOutput(BaseModel):
     """Structure attendue de la réponse LLM."""
 
@@ -42,10 +66,15 @@ class LLMClient:
 
     def __init__(self):
         """Initialise le client Azure OpenAI et le parser JSON."""
+        manifest = load_manifest()
+        role = manifest["enrichissement"]
+        self.model_name = role["modele"]
+        self.prompt_version = load_prompt_version()
+
         self.llm = ChatOpenAI(
             base_url=os.getenv("AZURE_AI_ENDPOINT"),
             api_key=os.getenv("AZURE_AI_API_KEY"),
-            model=os.getenv("AZURE_DEPLOYMENT_INGESTION"),
+            model=os.getenv(role["env_var"]),
         )
         self.parser = JsonOutputParser(pydantic_object=EnrichmentOutput)
         self.input_tokens = 0
@@ -59,9 +88,10 @@ class LLMClient:
         accolades JSON littérales dans les exemples few-shot, qui entreraient
         en conflit avec la syntaxe de formatage de PromptTemplate.
         """
-        prompt_path = Path(__file__).parent / "prompts" / "enrich_rule.md"
-        with open(prompt_path, encoding="utf-8") as f:
-            prompt_text = f.read()
+        prompt_text = _read_prompt_file()
+        if prompt_text.startswith("---\n"):
+            _, _, prompt_text = prompt_text.split("---", 2)
+            prompt_text = prompt_text.lstrip("\n")
 
         values = {
             "intitule": rule.intitule,
@@ -127,5 +157,6 @@ class LLMClient:
             strategie_justification=parsed["strategie_justification"],
             guide_analyse=parsed["guide_analyse"],
             strategie_source="ia_import",
-            llm_provider="kimi-k2.6",
+            llm_model=self.model_name,
+            prompt_version=self.prompt_version,
         )
