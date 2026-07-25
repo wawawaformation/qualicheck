@@ -93,6 +93,7 @@ tests/               # tests exécutés par le CI (pytest)
 docker-compose.yml
 .env
 CHANGELOG.md         # historique des réalisations (implémentation), mis à jour par tout outil agentique utilisé
+IDEA.md               # idées en vrac, non actées — à distinguer de TODO.md (décidé) et conception/ (validé)
 Makefile             # commandes courantes (up, down, migration, downgrade, test...) — voir section dédiée
 ```
 
