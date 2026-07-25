@@ -111,7 +111,7 @@ Si une règle n'a pas pu être complètement récupérée (échec API ou échec 
 - **`strategie_justification`** : l'explication du choix ci-dessus, à des fins de traçabilité et de revue humaine.
 - **`guide_analyse`** : une instruction opérationnelle, rédigée pour être injectée telle quelle dans le prompt de l'agent d'audit — le cœur du contenu qui sera vectorisé.
 
-Chaque règle enrichie est aussi tracée par `strategie_source = ia_import` (origine : première ingestion) et `llm_provider` (modèle utilisé), ce qui permet de comparer a posteriori la qualité de différents modèles sur cette tâche.
+Chaque règle enrichie est aussi tracée par `strategie_source = ia_import` (origine : première ingestion) et `llm_model` (modèle utilisé), ce qui permet de comparer a posteriori la qualité de différents modèles sur cette tâche.
 
 **Résilience des appels LLM.** Le benchmark Azure AI Foundry mené sur le projet montre un taux d'erreur de fond de 3 à 4 % même sur les modèles sains, dominé par les timeouts — un appel LLM ne peut pas être considéré comme garanti. Chaque appel d'enrichissement est donc retenté automatiquement en cas d'échec (timeout ou erreur HTTP), avec un backoff croissant entre les tentatives (ex. 2 s, 4 s, 8 s) pour ne pas insister immédiatement sur un service en difficulté. Nombre de tentatives : **3**. Si les 3 échouent, la règle est considérée en échec d'enrichissement et déclenche l'arrêt fail-fast décrit plus bas — le retry absorbe l'instabilité ponctuelle du service, pas une indisponibilité prolongée.
 

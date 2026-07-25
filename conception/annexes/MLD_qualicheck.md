@@ -51,10 +51,18 @@ regle (
   strategie_source *      VARCHAR(20)     NN        -- ia_import | ia_reingest | admin
   strategie_score *       DECIMAL(3,2)              -- calculé depuis constat.validation_humaine
   guide_analyse *         TEXT            NN
-  llm_provider *          VARCHAR(20)
+  llm_model *             VARCHAR(64)     -- nom logique du modèle (manifest.yml), pas un nom de déploiement
+  prompt_version *        INT                       -- version du prompt (frontmatter enrich_rule.md)
+  created_at *            TIMESTAMP                 -- NULL = produit avant instrumentation
+  updated_at *            TIMESTAMP                 -- NULL = produit avant instrumentation
   embedding *             vector(384)               -- All MiniLM L12 v2, index HNSW
 )
 ```
+
+**Règle de nommage des colonnes** : le vocabulaire du domaine reste en français,
+le vocabulaire technique en anglais (principe de langage omniprésent, DDD). Test :
+un auditeur qualité prononcerait-il ce mot en parlant de son métier ? Détail :
+`conception/2_ingestion/E_provenance_manifeste.md` §7.
 
 ### objectif
 
