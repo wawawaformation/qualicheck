@@ -1,5 +1,5 @@
 ---
-version: 4
+version: 5
 ---
 
 # Enrichissement de Règles Opquast
@@ -22,14 +22,16 @@ Pour chaque règle, tu dois générer **exactement 3 champs JSON** :
    - `"statique"` : l'information est présente dans le HTML/DOM et vérifiable sans interaction (ex. présence d'une balise, d'un attribut, d'un texte).
    - `"playwright"` : nécessite une interaction navigateur ou l'exécution de JS pour révéler l'information (clic, scroll, formulaire, contenu chargé dynamiquement).
    - `"vision"` : nécessite une appréciation visuelle qu'aucune inspection du code ne peut fiabiliser (ex. juger qu'un contenu est visuellement identifié comme publicitaire, qu'une mise en forme respecte une convention).
-   - `"manuel"` : **vraie exception**, réservée aux cas où même une analyse visuelle par LLM ne peut pas trancher de façon fiable — typiquement un jugement légal fin, éditorial, ou un contexte métier propre au site qu'aucune observation de la page ne permet de déduire. Inclut aussi tout critère nécessitant d'observer quelque chose hors de la page web auditée elle-même (boîte mail, DNS, document PDF externe, SMS, second appareil...), même si une partie du parcours est automatisable sur la page.
+   - `"manuel"` : **vraie exception**, réservée aux cas où même une analyse visuelle par LLM ne peut pas trancher de façon fiable — typiquement un jugement légal, éditorial ou sémantique fin, ou un contexte métier propre au site qu'aucune observation de la page ne permet de déduire. Inclut aussi (a) tout critère nécessitant d'observer quelque chose hors de la page web auditée elle-même (boîte mail, DNS, document PDF externe, SMS, second appareil...), et (b) toute exigence de vérifier qu'un mécanisme fonctionne effectivement/réellement, au-delà de sa simple présence syntaxique, dès qu'aucune méthode automatisée ne peut observer ce résultat — même si une partie du parcours reste automatisable sur la page.
    - N'invente une autre valeur que si la règle ne correspond **réellement à aucune** des quatre.
 
-   **Stratégies composites** : si le parcours optimal pour vérifier la règle enchaîne deux de ces méthodes, utilise une valeur composite au format `strategie1+strategie2` (toujours deux stratégies, jamais trois ; l'ordre = séquence d'exécution), même si une seule méthode suffirait à un niveau minimal. Ce n'est pas réservé aux deux familles ci-dessous — toute paire parmi `statique`/`playwright`/`vision` (jamais `manuel` en composite) reste possible si le même raisonnement s'applique, mais demeure l'exception :
-   - `vision+statique` : une vérification visuelle identifie l'élément concerné, puis une inspection du DOM confirme le balisage HTML correct.
-   - `playwright+vision` : une interaction navigateur prépare une condition de rendu (désactivation CSS, mode impression...), puis une analyse visuelle juge le résultat.
+   **Stratégies composites** : si le parcours optimal pour vérifier la règle enchaîne deux de ces méthodes, utilise une valeur composite. Deux formats, jamais mélangés dans une même valeur, toujours deux stratégies (jamais trois, jamais avec `manuel`) :
+   - `strategieA+strategieB` (PUIS) : B dépend du résultat de A, l'ordre = séquence d'exécution. Ex. `vision+statique` : une vérification visuelle identifie l'élément concerné, puis une inspection du DOM confirme le balisage HTML correct.
+   - `strategieA&strategieB` (ET) : les deux vérifications sont indépendantes, sans dépendance causale entre elles — typiquement quand l'intitulé ou le contrôle contient « ET » reliant deux critères de nature hétérogène (visuel et textuel, code et rendu...).
 
-   **Signal supplémentaire** : un intitulé ou un contrôle contenant « ET » reliant deux critères de nature hétérogène (visuel et textuel, code et rendu...) est un signal fort de stratégie composite.
+   Ce n'est pas réservé aux familles ci-dessus — toute paire parmi `statique`/`playwright`/`vision` reste possible si le même raisonnement s'applique, mais demeure l'exception.
+
+   **Précision** : la lecture d'un en-tête de réponse HTTP ou d'un code de statut (ex. 404, X-Frame-Options, Content-Type) est vérifiable par une simple requête, donc `statique` — même si atteindre la page nécessite un crawler. Ce n'est pas une interaction navigateur au sens de `playwright`.
 2. **strategie_justification** : explication courte du choix (1-2 phrases).
 3. **guide_analyse** : instruction opérationnelle pour l'agent d'audit (3-5 phrases, concrète et actionnable). Précise si besoin la technique concrète à utiliser (crawler un échantillon de pages, rechercher un pattern via regex, etc.).
 
@@ -38,6 +40,8 @@ Pour chaque règle, tu dois générer **exactement 3 champs JSON** :
    Ancre chaque vérification sur un critère factuel et vérifiable (présence ou absence d'un élément, d'un attribut, d'un texte) plutôt que sur une spéculation (« serait-il possible de... »).
 
    Si la règle porte sur une cohérence à vérifier sur plusieurs pages, le guide doit explicitement demander de comparer plusieurs pages représentatives, quelle que soit la stratégie retenue.
+
+   Si la stratégie est `strategieA&strategieB` (ET), présente les deux vérifications comme indépendantes, sans numérotation séquentielle imposant un ordre : « Vérification [A] : ... Vérification [B] (indépendante) : ... »
 
 ## Format de réponse
 
@@ -162,6 +166,40 @@ Réponds **uniquement** avec un objet JSON valide, sans texte supplémentaire :
   "strategie_analyse": "manuel",
   "strategie_justification": "Vérifier le contenu des emails effectivement envoyés par le site nécessite d'observer une boîte mail réelle, hors de la page web auditée — aucune méthode automatisée sur le site seul ne peut confirmer ce point.",
   "guide_analyse": "Identifiez les déclencheurs d'envoi d'email du site (inscription, confirmation, notification, réinitialisation de mot de passe...). Déclenchez chaque scénario avec une adresse de test et consultez la boîte mail réelle. Vérifiez que chaque email reçu, y compris ceux en no-reply, mentionne au moins un moyen de contact (adresse postale, téléphone, formulaire, autre email)."
+}
+```
+
+### Exemple 7 : "statique" — alternative textuelle d'une image-lien
+
+**Règle :** Chaque image-lien est dotée d'une alternative textuelle appropriée.
+
+**Solution :** Donner à chaque élément img/area concerné un attribut alt indiquant la cible ou le rôle du lien ; indiquer la cible ou le rôle du lien dans le contenu de chaque élément object/canvas concerné.
+
+**Contrôle :** Vérifier que l'attribut alt (ou le contenu pour object/canvas) de chaque image-lien indique la cible ou le rôle du lien.
+
+**Réponse attendue :**
+```json
+{
+  "strategie_analyse": "statique",
+  "strategie_justification": "Les attributs alt des éléments img et area, ainsi que les contenus textuels des éléments object et canvas inclus dans des liens, sont directement inspectables dans le DOM sans exécution JavaScript ni interaction.",
+  "guide_analyse": "Parcourez le DOM pour identifier chaque lien <a> ou élément à rôle de lien dont le contenu est exclusivement un <img>, <area>, <object> ou <canvas>. Vérifiez que chaque img/area dispose d'un attribut alt non vide indiquant la cible du lien, et que chaque object/canvas contient un texte non vide équivalent. Signalez tout élément de lien image dépourvu d'alternative textuelle appropriée."
+}
+```
+
+### Exemple 8 : "manuel" — vérification partiellement automatisable, mais le jugement de fond ne l'est pas
+
+**Règle :** Les titres des tableaux de données sont renseignés.
+
+**Solution :** Utiliser et renseigner l'élément HTML caption pour chaque tableau de données.
+
+**Contrôle :** Vérifier la présence de l'élément caption. Contrôler la pertinence de l'élément caption, qui doit permettre d'identifier la nature des informations apportées par le tableau. Cette vérification peut être partiellement automatisée pour la présence de l'élément, mais le contrôle de sa pertinence nécessite un examen manuel.
+
+**Réponse attendue :**
+```json
+{
+  "strategie_analyse": "manuel",
+  "strategie_justification": "Le contrôle lui-même indique que la présence de l'élément caption est automatisable, mais que juger sa pertinence (identifie-t-il bien la nature du tableau ?) nécessite un examen manuel — un jugement sémantique qu'aucune inspection factuelle du DOM ne peut fiabiliser. Le volet automatisable est absorbé par le volet manuel, pas de composite avec manuel.",
+  "guide_analyse": "Pour chaque tableau de données du site, identifiez la présence de l'élément caption. Faites relire par un humain le texte de chaque caption présent : vérifiez qu'il décrit effectivement la nature des données du tableau (et non un intitulé générique ou décoratif). Signalez les tableaux sans caption, ainsi que les captions présents mais non pertinents au regard du contenu réel du tableau."
 }
 ```
 
