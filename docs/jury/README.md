@@ -42,7 +42,7 @@ Légende : ✅ couvert · 🟡 partiel · ⬜ rien à ce stade
 | | Compétence | Preuves | État |
 | --- | --- | --- | --- |
 | C1 | Automatiser l'extraction de données | `app/ingestion/acquisition.py` (API REST Opquast + scraping), `conception/2_ingestion/D_chantier1_scraping_contexte.md` | 🟡 API + scraping faits ; le critère demande aussi fichier de données, BDD et big data |
-| C2 | Requêtes SQL d'extraction | — | ⬜ |
+| C2 | Requêtes SQL d'extraction | `app/ingestion/stockage.py::load_enriched_rules_from_db()` (hook `--resume`) | 🟡 requêtes SQL réelles avec jointures (`objectif_regle`, `phase_regle`, `regle_tag`) déjà fonctionnelles ; documentation des choix de sélection/jointures/optimisations à rédiger. Renforcé plus tard par les requêtes SQL directes de C5/US1 ("SQL déterministe", `conception.md`) |
 | C3 | Règles d'agrégation | `app/ingestion/aggregation.py`, `conception/2_ingestion/ingestion.md` | 🟡 agrégation et validation faites ; documentation des choix de nettoyage à formaliser |
 | C4 | Créer une base de données | `conception/1_BDD/bdd.md`, `conception/MLD_qualicheck.md`, `conception/B_MCD_qualicheck.drawio`, `app/migration/versions/` | 🟡 Merise et schéma faits ; registre RGPD et procédures de tri à produire |
 | C5 | API de mise à disposition | — | ⬜ non conçu |
