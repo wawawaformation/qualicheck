@@ -17,6 +17,37 @@ plus tard si l'idée tient.
   ingénierie pour ce projet. À concevoir en même temps ou juste après la spec
   d'US1, pas avant (US1 n'a pas encore de spec). Reste ouvert : l'API doit-elle
   aussi servir US2 (recherche sémantique) ?
+  - **Ne pas confondre avec l'idée ci-dessous** (API de revue/curation) : ici
+    US1/US2 partagent le même produit, même utilisateur (l'auditeur), même
+    session — un seul FastAPI avec routers reste justifié. La frontière change
+    pour un consommateur externe (voir idée suivante).
+
+- **API de revue/curation du référentiel — micro-service à part, pas un
+  router de plus** : `GET /regles` (filtrable par `review_status`) +
+  `PATCH /regles/{numero}/review` (soumet `review_status`/`review_note`,
+  `reviewed_at` posé côté serveur). Remplace le `psql` manuel utilisé
+  aujourd'hui pour la revue post-V4/V5.
+  - **Frontière de service justifiée, contrairement à US1/US2** : persona
+    différent (curateur de données, pas auditeur), moment différent du cycle
+    de vie (post-ingestion/QA, pas audit en direct), préoccupation différente
+    (qualité du référentiel, pas flux d'audit). Sa propre entrée
+    `docker-compose.yml`/`Dockerfile`, sa propre instance FastAPI, branchée sur
+    le même Postgres (`app/models/referentiel.py` réutilisable tel quel).
+  - **Consommateur réel et concret, pas hypothétique** : Élie Sloïm (fondateur
+    Opquast, cf. `README.md` "réalisé avec le soutien d'Élie Sloïm") pourrait
+    l'utiliser directement via un client REST (Bruno, Postman...) pour
+    consulter et corriger les classifications — son expertise Opquast vaut
+    bien plus qu'une revue développeur sur ces sujets.
+  - **Conséquence technique notable** : l'authentification ne peut plus être
+    "simulée" (raccourci MVP déjà noté dans le MLD pour US1/US2) — un vrai
+    tiers externe l'utiliserait, donc l'auth doit être réelle dès cette API-là.
+    Terrain d'entraînement plus honnête pour les critères OWASP/autorisation
+    de C5 qu'un scénario purement interne.
+  - **Va au-delà de C5 (Bloc 1)** : validation d'expert externe (matière pour
+    argumenter la qualité du référentiel devant le jury, et pour nourrir un
+    futur `enrich_again` avec des retours d'expert plutôt que des observations
+    de développeur) + un vrai cas d'usage pour une authentification non
+    simulée, utile bien au-delà de la seule compétence C5.
 
 - **Version très future — enrichir le RAG avec l'écosystème Opquast au-delà
   des 245 règles** : glossaire Opquast, référentiel VPTCS, informations
