@@ -5,3 +5,9 @@
 enrichissement:
   modele: kimi-k2.6
   env_var: AZURE_MODEL_KIMI
+  # Prix (€ pour 1M tokens) reconstruit à partir de la facture Azure réelle du
+  # 19/07/2026 (9,13 €), pas un tarif publié : le ratio entrée/sortie du tarif
+  # public Moonshot/OpenRouter est supposé correct, seule l'échelle est recalée.
+  # Détail : conception/2_ingestion/E_provenance_manifeste.md §6
+  prix_entree_par_million: 0.8008
+  prix_sortie_par_million: 3.3875

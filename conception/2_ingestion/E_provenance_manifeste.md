@@ -220,7 +220,7 @@ disponibles à ce point — aucun nouveau calcul, un déplacement de ~14 lignes.
 Effet : un run qui échoue au stockage journalise désormais son coût réel, au lieu
 de le perdre silencieusement.
 
-## 6. Tarifs `KIMI_PRICE_*` — valeurs closes, emplacement encore ouvert
+## 6. Tarifs `KIMI_PRICE_*` — valeurs et emplacement clos
 
 **Valeurs — closes (2026-07-22).** Reconstruites à partir d'une facture Azure
 réelle (9,13 €, 19 juillet) et des tokens journalisés dans `logs/ingestion.log`
@@ -238,14 +238,16 @@ KIMI_PRICE_OUTPUT_PER_1M = 3,3875 €  (était 3,68 €)
 
 Ce n'est pas le tarif Azure officiel — c'est la meilleure reconstruction possible
 avec une seule facture globale sans détail entrée/sortie. À corriger si un relevé
-plus détaillé devient disponible. Appliquées dans `.env` et `.env.example`.
+plus détaillé devient disponible.
 
-**Emplacement — reste ouvert.** L'argument de départ tient toujours : ce sont des
-données de référence du projet, pas des secrets, et leur historique a de la
-valeur (git le donnerait gratuitement si elles étaient dans le manifeste plutôt
-que dans `.env`, non versionné). Décision non prise dans cet incrément — à
-statuer, éventuellement en même temps que l'implémentation de `manifest.yml`
-(§5.2).
+**Emplacement — clos (2026-07-25) : `app/ingestion/manifest.yml`, pas `.env`.**
+Ce sont des données de référence du projet, pas des secrets, et leur historique a
+de la valeur — git le donne gratuitement dans le manifeste (`git log
+app/ingestion/manifest.yml`), pas dans `.env`, non versionné. Choix cohérent avec
+le principe directeur du §3 (une seule autorité par valeur, versionnée quand ce
+n'est pas un secret). `scripts/ingestion.py` lit désormais `role["prix_entree_par_million"]`
+et `role["prix_sortie_par_million"]` via `load_manifest()["enrichissement"]`,
+au lieu de `os.getenv("KIMI_PRICE_*")`.
 
 ## 7. Règle de nommage des colonnes
 
