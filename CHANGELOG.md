@@ -9,6 +9,25 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-25 — Claude Code
+
+- **Spec E implémentée — Provenance des données et manifeste d'ingestion** (plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`, spec `conception/2_ingestion/E_provenance_manifeste.md`), exécutée tâche par tâche (TDD, `superpowers:writing-plans` + `superpowers:executing-plans`), mergée sur `feature` (fast-forward, 10 commits)
+  - `app/ingestion/manifest.yml` créé — décisions courantes du pipeline d'ingestion (rôle `enrichissement` → modèle + variable d'env à résoudre), lu par le code, aucun secret
+  - `.env`/`.env.example` restructurés en inventaire par modèle (`AZURE_MODEL_KIMI` remplace `AZURE_DEPLOYMENT_INGESTION`) — seule la variable réellement lue par du code a été renommée, les 3 variables `AZURE_DEPLOYMENT_AUDIT_*`/`QUESTION_LIBRE` restent inchangées (US1/US2 non conçus)
+  - `app/ingestion/prompts/enrich_rule.md` — frontmatter `version: 3` ajouté
+  - Migration `0009_add_provenance_columns` — renomme `regle.llm_provider` → `llm_model` (VARCHAR 20→64), ajoute `prompt_version`, `created_at`, `updated_at` (toutes nullables, `NULL` = produit avant instrumentation) — voir `app/models/referentiel.py`
+  - `app/ingestion/schema.py` — `EnrichedRule.llm_model`/`prompt_version` remplacent le défaut en dur `llm_provider="kimi-k2.6"`
+  - `app/ingestion/llm_client.py` — `load_manifest()`/`load_prompt_version()` : le modèle et la version de prompt sont lus (manifeste + frontmatter), plus jamais écrits en dur ; la provenance stockée utilise structurellement les mêmes valeurs que celles ayant servi à l'appel LLM
+  - `app/ingestion/stockage.py` — `upsert_rule()` renseigne les 4 colonnes de provenance (`created_at` à la création uniquement, `updated_at` à chaque upsert) ; `load_enriched_rules_from_db()` les relit
+  - `scripts/ingestion_test.py` — bouchon aligné (`llm_model="test"`, `prompt_version=0`)
+  - `scripts/ingestion.py` — correctif de visibilité du coût : le calcul/log des tokens (`Étape 3`) est déplacé **avant** la tentative de stockage (`Étape 4`), pour qu'un échec de stockage n'efface plus le coût déjà engagé (perte constatée le 19/07 : ~6€ jamais journalisés)
+  - Tests : +7 unitaires (`test_enrichment.py`, manifeste + frontmatter + indépendance modèle/env var), +2 migration (`test_migration.py`), +2 intégration (`test_stockage_provenance.py`) — suite complète 55/55 verte, `ruff` propre
+  - Documentation : `conception/2_ingestion/MLD_qualicheck.md` + `conception/annexes/MLD_qualicheck.md` (4 colonnes + règle de nommage), `conception/2_ingestion/ingestion.md` (dernière mention `llm_provider` corrigée)
+  - PyYAML ajoutée comme dépendance (parsing manifeste + frontmatter)
+
+- **Décision close : emplacement des tarifs `KIMI_PRICE_*`** — `app/ingestion/manifest.yml` (clé `enrichissement.prix_entree_par_million`/`prix_sortie_par_million`), pas `.env`. Ce sont des données de référence du projet, pas des secrets ; le manifeste versionné donne un historique gratuit via git, contrairement à `.env`. Cohérent avec le principe directeur de la spec E (§3) déjà appliqué au reste du manifeste. `scripts/ingestion.py` lit désormais ces valeurs via `load_manifest()` au lieu de `os.getenv("KIMI_PRICE_*")` — voir `conception/2_ingestion/E_provenance_manifeste.md` §6, `TODO.md`, `docs/jury/decisions/2026-07-21-perimetre-mlops-ingestion.md`
+  - Au passage, correctif : `.env.example` avait hérité des vraies valeurs reconstruites (`0.8008`/`3.3875`) au lieu d'un gabarit vide, incohérent avec le reste du fichier — corrigé avant d'être remplacé par le manifeste
+
 ## 2026-07-23 — Claude Code
 
 - **`docs/jury/veille/CLAUDE.md` créé** — orientation rapide pour la prochaine session sur le dossier veille : thème large (pas de vérification par veille), convention de dossier `fonds/`, format ODP/MD à deux rôles, pièges déjà rencontrés (duplication, gitlink imbriqué, `git add -A` qui re-suit un dossier exclu) — voir `docs/jury/veille/CLAUDE.md`

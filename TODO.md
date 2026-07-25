@@ -21,9 +21,11 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 ## Décisions en attente
 
 - [x] **Valeurs `KIMI_PRICE_*`** — reconstruites depuis la facture réelle du 19/07
-  (9,13 €) : 0,8008 / 3,3875 €/1M. Appliquées à `.env` + `.env.example` — `A`
-- [ ] **Emplacement `KIMI_PRICE_*`** — rester dans `.env` ou passer dans le
-  manifeste ? Toujours ouvert, indépendant des valeurs (spec E §6) — `D`
+  (9,13 €) : 0,8008 / 3,3875 €/1M — `A`
+- [x] **Emplacement `KIMI_PRICE_*` — résolu (2026-07-25) : `app/ingestion/manifest.yml`**,
+  pas `.env`. Ce sont des données de référence, pas des secrets ; le manifeste
+  donne un historique gratuit via git, `.env` non versionné ne le donnait pas
+  (spec E §6) — `D`
 - [x] **`ia_souverain/synthese.md` — question résolue par la centralisation
   de la veille** — le fichier vit désormais dans le dépôt
   (`docs/jury/veille/fonds/ia_souverain/synthese.md`), plus besoin de choisir

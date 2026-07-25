@@ -140,6 +140,7 @@ utilisé, cette information sera préférée. À vérifier à l'implémentation.
 *feedback loop* relèvent d'US1, où ils porteront sur des données réelles. Les
 compétences C11 et C20 s'y démontreront, pas ici.
 
-**Reste ouvert.** L'emplacement des tarifs `KIMI_PRICE_*`, en attente de relevés de
-coûts Azure réels — le commentaire actuel du `.env` signale lui-même que la valeur
-présente est une approximation.
+**Résolu (2026-07-25).** L'emplacement des tarifs `KIMI_PRICE_*` est désormais
+`app/ingestion/manifest.yml`, pas `.env` : ce sont des données de référence du
+projet, pas des secrets, et le manifeste versionné donne un historique gratuit
+via git, contrairement à `.env`. Détail : `conception/2_ingestion/E_provenance_manifeste.md` §6.
