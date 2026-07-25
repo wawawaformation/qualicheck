@@ -33,11 +33,14 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Documentation
 
-- [ ] **`G_user_stories_qualicheck.drawio` — source corrigée, export à refaire** —
-  "68 règles" → "245 règles" (US0, texte + critère d'acceptation), erreur
-  détectée en discutant des tests d'acceptance. Source `.drawio` corrigée
-  (2026-07-25), le `.png` référencé par `conception.md` reste l'ancien rendu —
-  export manuel à refaire par David (convention du skill `schemas-drawio`) — `D`
+- [ ] **`G_user_stories_qualicheck.drawio` — export PNG supprimé, à refaire après reclarification US1/US2** —
+  d'abord corrigé "68 règles" → "245 règles" (US0, 2026-07-25), puis le `.png`
+  a été supprimé par David : le découpage US1/US2 de la source ne correspond
+  plus à celui utilisé en discussion (la partie dialogue/validation est tantôt
+  "US1 suite", tantôt "US2" selon le document — `conception.md` vs cette
+  annexe). `conception.md` neutralisé en conséquence (renvoi vers le `.drawio`
+  source, plus de lien PNG cassé). Reclarifier le découpage avant de rééexporter
+  — `D`
 - [ ] **Liens de `F_choix_llm.md` vers le benchmark** — `A`
   - Le document attend `annexes/F1_FOUNDRY_NOTES.md`, `F2_FOUNDRY_SI_NOTES.md`,
     `F3_benchmark.py`, `F4_analyse_models_azure.pdf`
@@ -60,16 +63,17 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   avec `markdown-pandoc` (« format PNG ou SVG recommandé »). Doublon
   `conception/choix_llm.md` (identique à `annexes/F_choix_llm.md`, jamais
   référencé) supprimé au passage — `A`
-- [ ] **9 images `annexes/*.png` référencées par `conception.md`, toujours
-  manquantes** — seule `G_user_stories_qualicheck.png` existe réellement
-  (converti depuis le `.jpg` récupéré la veille, pas juste renommé). Restent :
-  `B_MCD_qualicheck.png`, `C_pipeline_ingestion.png`, `D1/D2/D3_...png`,
-  `D_pipeline_audit.png`, `E_pipeline_dialogue.png`, `I_feedback_loop.png`,
-  `J_personas_qualicheck.png`. L'export drawio → image n'a jamais suivi la
-  création des sources `.drawio` — `conception.md` ne peut toujours pas se
-  compiler en PDF sans schémas cassés. `E_pipeline_dialogue.png` ne correspond
-  même pas au nom du fichier source réel (`E_pipeline_question_libre.drawio`) —
-  nom qui a aussi dérivé — `D`
+- [ ] **9 images `annexes/*.png` référencées par `conception.md`, toutes
+  manquantes** — `G_user_stories_qualicheck.png` était la seule à exister
+  réellement, supprimée le 2026-07-25 (voir entrée dédiée ci-dessus) : plus
+  aucun export n'existe désormais. Restent : `B_MCD_qualicheck.png`,
+  `C_pipeline_ingestion.png`, `D1/D2/D3_...png`, `D_pipeline_audit.png`,
+  `E_pipeline_dialogue.png`, `G_user_stories_qualicheck.png`,
+  `I_feedback_loop.png`, `J_personas_qualicheck.png`. L'export drawio → image
+  n'a jamais suivi la création des sources `.drawio` — `conception.md` ne peut
+  toujours pas se compiler en PDF sans schémas cassés. `E_pipeline_dialogue.png`
+  ne correspond même pas au nom du fichier source réel
+  (`E_pipeline_question_libre.drawio`) — nom qui a aussi dérivé — `D`
   - Export manuel, volontairement pas automatisé : David veut relire chaque
     schéma avant de le figer en image (même logique que la flèche incorrecte
     trouvée dans B_MCD — un export automatique aurait masqué l'erreur)

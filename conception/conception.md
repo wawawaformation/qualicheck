@@ -695,7 +695,7 @@ cf. [Annexe F — Choix des modèles LLM](annexes/F_choix_llm.md)
 
 Formulation complète des trois user stories (US0, US1, US2) avec scénarios détaillés pour US1 et US2.
 
-cf. [Annexe G — User stories](annexes/G_user_stories_qualicheck.png)
+cf. `annexes/G_user_stories_qualicheck.drawio` (export PNG retiré le 2026-07-25 — la source ne reflète plus le découpage US1/US2 retenu, à reclarifier avant nouvel export, voir `TODO.md`)
 
 ### Annexe J — Personas QualiCheck
 
