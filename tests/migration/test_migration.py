@@ -115,6 +115,34 @@ def test_colonnes_not_null_regle(conn):
     assert not nullable, f"Colonnes regle incorrectement nullable : {nullable}"
 
 
+def test_colonnes_provenance_regle(conn):
+    """Les 4 colonnes de provenance doivent exister sur regle, toutes nullables."""
+    colonnes = ["llm_model", "prompt_version", "created_at", "updated_at"]
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT column_name, is_nullable
+            FROM information_schema.columns
+            WHERE table_name = 'regle'
+            AND column_name = ANY(%s);
+        """, (colonnes,))
+        rows = {row[0]: row[1] for row in cur.fetchall()}
+    manquantes = set(colonnes) - set(rows)
+    assert not manquantes, f"Colonnes provenance manquantes : {manquantes}"
+    non_nullable = [col for col in colonnes if rows.get(col) != "YES"]
+    assert not non_nullable, f"Colonnes provenance incorrectement NOT NULL : {non_nullable}"
+
+
+def test_colonne_llm_provider_absente(conn):
+    """llm_provider doit avoir été renommée en llm_model (colonne absente)."""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT COUNT(*) FROM information_schema.columns
+            WHERE table_name = 'regle' AND column_name = 'llm_provider';
+        """)
+        count = cur.fetchone()[0]
+    assert count == 0, "llm_provider encore présente — devrait être renommée llm_model"
+
+
 def test_colonnes_not_null_audit(conn):
     """Les colonnes critiques de audit doivent être NOT NULL."""
     colonnes_nn = ["utilisateur_id", "url_depart", "statut", "date_creation"]

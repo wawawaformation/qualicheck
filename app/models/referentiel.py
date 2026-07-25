@@ -1,5 +1,5 @@
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import Column, ForeignKey, Integer, Numeric, PrimaryKeyConstraint, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Numeric, PrimaryKeyConstraint, String, Text
 
 from app.models.base import Base
 
@@ -26,7 +26,10 @@ class Regle(Base):
     strategie_source = Column(String(32), nullable=False)
     strategie_score = Column(Numeric(3, 2))
     guide_analyse = Column(Text, nullable=False)
-    llm_provider = Column(String(20))
+    llm_model = Column(String(64), nullable=True)
+    prompt_version = Column(Integer, nullable=True)
+    created_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, nullable=True)
     embedding = Column(Vector(384))
 
 
