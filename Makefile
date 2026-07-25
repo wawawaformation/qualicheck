@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test psql
+.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql
 
 # ============================================================
 # Docker
@@ -69,10 +69,24 @@ import_sql:
 # Tests
 # ============================================================
 
-## Lance les tests d'intégration (nécessite qualicheck-postgres démarré, migration appliquée
+## Lance toute la suite de tests (nécessite qualicheck-postgres démarré, migration appliquée
 ## et make migration-test pour les tests d'intégration destructeurs)
 test:
 	uv run pytest tests/ -v
+
+## Lance uniquement les tests unitaires (aucune BDD requise)
+test-unit:
+	uv run pytest tests/unit -v
+
+## Lance uniquement les tests d'intégration (nécessite qualicheck-postgres démarré,
+## migration appliquée et make migration-test pour les tests destructeurs)
+test-integration:
+	uv run pytest tests/integration -v
+
+## Lance uniquement les tests de migration (nécessite qualicheck-postgres démarré
+## et migration appliquée)
+test-migration:
+	uv run pytest tests/migration -v
 
 # ============================================================
 # Accès direct à la BDD
