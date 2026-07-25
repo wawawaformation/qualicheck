@@ -18,11 +18,11 @@ load_dotenv()
 
 
 def _database_url():
-    user = os.getenv("POSTGRES_USER")
-    password = os.getenv("POSTGRES_PASSWORD")
+    user = os.environ["POSTGRES_USER"]
+    password = os.environ["POSTGRES_PASSWORD"]
     host = os.getenv("POSTGRES_HOST", "localhost")
     port = os.getenv("POSTGRES_PORT", "5432")
-    db = os.getenv("POSTGRES_DB")
+    db = os.environ["POSTGRES_TEST_DB"]
     return f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
 
