@@ -199,6 +199,8 @@ class TestScrapeRule:
 
         result = scrape_rule("regle-exemple")
 
+        assert result["solution"] is not None
+        assert result["controle"] is not None
         assert "SAS au capital" not in result["solution"]
         assert "SAS au capital" not in result["controle"]
 
