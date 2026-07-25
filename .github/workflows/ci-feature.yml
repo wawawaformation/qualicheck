@@ -1,9 +1,11 @@
-name: CI
+name: CI — Feature
 
 on:
   push:
     branches-ignore:
       - main
+      - dev
+      - staging
 
 jobs:
   ci:
@@ -47,5 +49,5 @@ jobs:
       - name: Appliquer les migrations
         run: uv run python scripts/migration.py
 
-      - name: Tests d'intégration
-        run: uv run pytest tests/ -v
+      - name: Tests unitaires et d'intégration
+        run: uv run pytest tests/unit tests/integration -v

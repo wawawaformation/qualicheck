@@ -41,10 +41,11 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 
 ## CI (GitHub Actions)
 
-`.github/workflows/ci.yml` — déclenché sur push sur toute branche sauf `main`. Étapes : `uv sync` → `ruff check` → `scripts/migration.py` (contre un service `pgvector/pgvector:pg17` éphémère) → `pytest tests/`.
+`.github/workflows/ci-feature.yml` — déclenché sur push sur toute branche sauf `main`/`dev`/`staging` (branches de travail type `feature`). Étapes : `uv sync` → `ruff check` → `scripts/migration.py` (contre un service `pgvector/pgvector:pg17` éphémère, pour vérifier que les migrations s'appliquent) → `pytest tests/unit tests/integration`.
 
 - **Secrets BDD** (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`) gérés via **GitHub Secrets**, pas via `.env` — le `.env` reste strictement local, jamais commité ; les secrets CI sont une configuration séparée côté GitHub.
-- Le CI n'exécute **pas** `scripts/ingestion.py` (évite de vrais appels LLM facturés à chaque push) — les tests couvrent la BDD et les migrations, pas le pipeline d'ingestion lui-même à ce stade.
+- Le CI n'exécute **pas** `scripts/ingestion.py` (évite de vrais appels LLM facturés à chaque push) — les tests couvrent le code applicatif (unitaire + intégration), pas le pipeline d'ingestion réel.
+- `tests/migration/` (et un futur `tests/acceptance/`) sont volontairement exclus de ce workflow — scope de tests plus léger pour une branche de travail. Réservés à un futur workflow dédié `dev`/`staging` (pas encore écrit, ces branches n'existent pas encore) avec une suite plus complète avant promotion.
 
 ## Stack
 
@@ -71,7 +72,7 @@ Un seul fichier, à la racine, jamais versionné : connexion BDD + accès LLM (e
 ## Structure du repo
 
 ```text
-.github/workflows/ci.yml   # lint + migrations + tests sur push (hors main)
+.github/workflows/ci-feature.yml   # lint + migrations + tests unit/intégration sur push (hors main/dev/staging)
 conception/          # documents de conception, non exécutés — source de vérité fonctionnelle
   conception.md       # dossier de conception complet (US0/US1/US2, flux, MCD, choix techniques...) — document central
   1_BDD/bdd.md
