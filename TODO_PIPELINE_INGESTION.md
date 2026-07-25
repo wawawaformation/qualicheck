@@ -86,5 +86,10 @@ Référence : `conception/2_ingestion/ingestion.md`
 - **Dépendances résolues :** `beautifulsoup4` ajoutée à `pyproject.toml`
 - **Logging :** centralisé dans `app/logging_config.py`, fichier uniquement (pas console)
 - **Tests :** structure `tests/unit/ingestion/`, `tests/integration/ingestion/`
+- **Tests d'acceptance (US0) :** reportés à dessein — décidé le 2026-07-25. Le
+  critère d'acceptation d'US0 (`annexes/G_user_stories_qualicheck.png`) exige
+  "vectorisées et indexées dans pgvector", donc n'est atteignable qu'une fois
+  les Étapes 5-7 terminées. Écrire le test avant ferait un rouge permanent par
+  construction, pas un signal de bug
 - **Config :** variables `.env` en place (Opquast, LLM, BDD)
 - **Légende :** `[x]` fait · `[~]` fait mais à revoir · `[ ]` à faire
