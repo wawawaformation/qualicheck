@@ -62,7 +62,8 @@ def create_enriched_rule_stub(aggregated_rule):
         strategie_justification="Test justification — enrichissement bypassé (validation schéma)",
         guide_analyse="Test guide — voir scripts/ingestion_test.py pour détails",
         strategie_source="ia_import",
-        llm_provider="test",
+        llm_model="test",
+        prompt_version=0,  # 0 = bouchon, pas un vrai numéro de version de prompt
     )
 
 
