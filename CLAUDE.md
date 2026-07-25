@@ -35,7 +35,8 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 | `make down` | Éteint les conteneurs |
 | `make migration` | Applique les migrations Alembic (crée le schéma BDD) |
 | `make downgrade` | Annule les migrations (`alembic downgrade base`) — permet de retester une migration from scratch |
-| `make test` | Lance les tests (`pytest tests/`) — nécessite les conteneurs démarrés et les migrations appliquées |
+| `make migration-test` | Crée (si absente) et migre la base de test dédiée `qualicheck_test` (`POSTGRES_TEST_DB`), utilisée par les tests d'intégration destructeurs |
+| `make test` | Lance les tests (`pytest tests/`) — nécessite les conteneurs démarrés, les migrations appliquées, et `make migration-test` pour les tests d'intégration destructeurs |
 
 À jour ici pour référence rapide, mais le `Makefile` lui-même reste la source de vérité — le relire directement en cas de doute plutôt que de se fier uniquement à ce tableau.
 
@@ -43,7 +44,7 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 
 `.github/workflows/ci-feature.yml` — déclenché sur push sur toute branche sauf `main`/`dev`/`staging` (branches de travail type `feature`). Étapes : `uv sync` → `ruff check` → `scripts/migration.py` (contre un service `pgvector/pgvector:pg17` éphémère, pour vérifier que les migrations s'appliquent) → `pytest tests/unit tests/integration`.
 
-- **Secrets BDD** (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`) gérés via **GitHub Secrets**, pas via `.env` — le `.env` reste strictement local, jamais commité ; les secrets CI sont une configuration séparée côté GitHub.
+- **Secrets BDD** (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`) gérés via **GitHub Secrets**, pas via `.env` — le `.env` reste strictement local, jamais commité ; les secrets CI sont une configuration séparée côté GitHub. `POSTGRES_TEST_DB` du workflow réutilise volontairement la valeur du secret `POSTGRES_DB` (aucun secret dédié créé) — la base du service CI étant déjà éphémère à chaque run, cette réutilisation ne recrée pas le risque de l'incident du 2026-07-25.
 - Le CI n'exécute **pas** `scripts/ingestion.py` (évite de vrais appels LLM facturés à chaque push) — les tests couvrent le code applicatif (unitaire + intégration), pas le pipeline d'ingestion réel.
 - `tests/migration/` (et un futur `tests/acceptance/`) sont volontairement exclus de ce workflow — scope de tests plus léger pour une branche de travail. Réservés à un futur workflow dédié `dev`/`staging` (pas encore écrit, ces branches n'existent pas encore) avec une suite plus complète avant promotion.
 
@@ -126,7 +127,7 @@ que la valeur obtenue. Le découpage par sujet s'applique au travail à venir, p
 ## Principes généraux (tout le projet)
 
 - **Retry LLM** : 3 tentatives avec backoff croissant sur tout appel LLM, avant de considérer l'appel en échec définitif.
-- **Tests d'intégration Postgres** : tout test nécessitant une vraie connexion Postgres doit utiliser `POSTGRES_TEST_DB` (base dédiée `qualicheck_test`, provisionnée via `make migration-test`), jamais `POSTGRES_DB` directement. Suite à l'incident du 2026-07-25 : un `pytest tests/` lancé juste après une ré-ingestion réelle (245 règles, 4,32 €) a effacé ces données via un test d'intégration qui vidait la vraie base de dev locale.
+- **Tests d'intégration Postgres destructeurs** : tout test qui écrit/vide des données réelles (`clear_opquast_tables()`, insertions, etc.) doit utiliser `POSTGRES_TEST_DB` (base dédiée `qualicheck_test`, provisionnée via `make migration-test`), jamais `POSTGRES_DB` directement. Suite à l'incident du 2026-07-25 : un `pytest tests/` lancé juste après une ré-ingestion réelle (245 règles, 4,32 €) a effacé ces données via un test d'intégration qui vidait la vraie base de dev locale. Ne s'applique pas aux tests en lecture seule sur le schéma (`tests/migration/`) — leur but est justement de vérifier la vraie base de dev, `POSTGRES_DB` y reste volontaire. En CI, `POSTGRES_TEST_DB` réutilise délibérément le secret `POSTGRES_DB` (la base du service CI est déjà éphémère à chaque run) — ne pas reproduire cette égalité en local, ça recréerait l'incident.
 
 ## Documents de référence à consulter avant toute implémentation
 

@@ -9,6 +9,15 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-25 — Claude Code (Part 2)
+
+- **Incident** : un `pytest tests/` lancé juste après la ré-ingestion réelle (245 règles, 4,32 €) a effacé ces données via un test d'intégration qui vidait la vraie base de dev locale (`qualicheck`) — voir bullet ci-dessous pour le correctif
+- **Isolation des tests d'intégration Postgres destructeurs** : nouvelle variable d'env `POSTGRES_TEST_DB` (base dédiée `qualicheck_test`) + nouvelle cible `make migration-test` (crée si absente et migre cette base) — voir `.env.example`, `Makefile`
+  - `tests/integration/ingestion/test_stockage_contexte.py` et `test_stockage_provenance.py` basculés sur `POSTGRES_TEST_DB` au lieu de `POSTGRES_DB`
+  - `.github/workflows/ci-feature.yml` : ajout de `POSTGRES_TEST_DB` (réutilise volontairement le secret `POSTGRES_DB`, le service CI étant déjà éphémère par run)
+  - `CLAUDE.md` : règle posée dans « Principes généraux », scopée aux tests destructeurs (`tests/migration/` reste volontairement sur `POSTGRES_DB`, lecture seule sur le schéma de la vraie base de dev)
+- Renommage `scripts/test_storage.py` → `scripts/storage_smoke.py` (contenu inchangé) : évitait qu'un `pytest` avec chemin explicite (hors `testpaths`) ne collecte ce script de smoke-test qui écrit en base au import, sur `POSTGRES_DB`
+
 ## 2026-07-25 — Claude Code
 
 - **Spec E implémentée — Provenance des données et manifeste d'ingestion** (plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`, spec `conception/2_ingestion/E_provenance_manifeste.md`), exécutée tâche par tâche (TDD, `superpowers:writing-plans` + `superpowers:executing-plans`), mergée sur `feature` (fast-forward, 10 commits)
