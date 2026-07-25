@@ -19,13 +19,13 @@
         <mxCell id="us0_as" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;En tant qu&#39;&lt;/b&gt;administrateur de QualiCheck," vertex="1">
           <mxGeometry height="22" width="430" x="87" y="159" as="geometry" />
         </mxCell>
-        <mxCell id="us0_want" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;je veux&lt;/b&gt; importer et préparer le référentiel Opquast (68 règles)," vertex="1">
+        <mxCell id="us0_want" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;je veux&lt;/b&gt; importer et préparer le référentiel Opquast (245 règles)," vertex="1">
           <mxGeometry height="22" width="430" x="87" y="181" as="geometry" />
         </mxCell>
         <mxCell id="us0_so" parent="1" style="text;html=1;fontSize=11;fillColor=none;strokeColor=none;fontColor=#333333;" value="&lt;b&gt;afin que&lt;/b&gt; les règles soient disponibles et exploitables par l&#39;agent IA." vertex="1">
           <mxGeometry height="22" width="430" x="87" y="203" as="geometry" />
         </mxCell>
-        <mxCell id="us0_crit" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#666666;" value="Critère d&#39;acceptation : le script s&#39;exécute sans erreur, les 68 règles sont en base, vectorisées et indexées dans pgvector." vertex="1">
+        <mxCell id="us0_crit" parent="1" style="text;html=1;fontSize=10;fontStyle=2;fillColor=none;strokeColor=none;fontColor=#666666;" value="Critère d&#39;acceptation : le script s&#39;exécute sans erreur, les 245 règles sont en base, vectorisées et indexées dans pgvector." vertex="1">
           <mxGeometry height="36" width="430" x="87" y="234" as="geometry" />
         </mxCell>
         <mxCell id="us1_card" parent="1" style="rounded=1;fillColor=#EEF3FB;strokeColor=#2F5597;strokeWidth=2;" value="" vertex="1">

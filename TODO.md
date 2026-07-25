@@ -7,16 +7,13 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Prochain gros morceau
 
-- [ ] **Plan d'implémentation de la spec E** (provenance + manifeste) — `A`
-  - Spec validée et commitée : `conception/2_ingestion/E_provenance_manifeste.md`
-  - À livrer **avant le chantier 2** (prompt V4) et impérativement **avant le
-    chantier 3** (ré-ingestion réelle) : après, il faudrait une migration *et* une
-    seconde ré-ingestion facturée (~3 €)
-  - Mérite une session dédiée
-  - Intègre désormais le correctif de visibilité du coût sur échec de stockage
-    (spec E §1 quatrième manque, §5.10, critère de validation #8) — gap découvert
-    le 2026-07-22 en analysant `logs/ingestion.log` : ~6 € de tokens facturés le
-    19 juillet sur des runs échoués au stockage, jamais journalisés
+- [x] **Spec E implémentée** (provenance + manifeste) — `A` (2026-07-25)
+  - Plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`,
+    exécuté tâche par tâche, mergé sur `feature`. Les 8 critères de validation de
+    la spec sont vérifiés — détail dans `CHANGELOG.md`
+  - Débloque le chantier 2 (prompt V4) et le chantier 3 (ré-ingestion réelle)
+
+- [ ] **Chantier 2 — Prompt V4** (`TODO_PIPELINE_INGESTION.md` §R2.x) — `D`/`A`
 
 ## Décisions en attente
 
@@ -36,6 +33,11 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Documentation
 
+- [ ] **`G_user_stories_qualicheck.drawio` — source corrigée, export à refaire** —
+  "68 règles" → "245 règles" (US0, texte + critère d'acceptation), erreur
+  détectée en discutant des tests d'acceptance. Source `.drawio` corrigée
+  (2026-07-25), le `.png` référencé par `conception.md` reste l'ancien rendu —
+  export manuel à refaire par David (convention du skill `schemas-drawio`) — `D`
 - [ ] **Liens de `F_choix_llm.md` vers le benchmark** — `A`
   - Le document attend `annexes/F1_FOUNDRY_NOTES.md`, `F2_FOUNDRY_SI_NOTES.md`,
     `F3_benchmark.py`, `F4_analyse_models_azure.pdf`
