@@ -22,3 +22,15 @@ plus tard si l'idée tient.
   des 245 règles** : glossaire Opquast, référentiel VPTCS, informations
   pratiques. Idée non creusée — périmètre, source d'acquisition, et impact sur
   le chunking/l'embedding restent à évaluer le moment venu.
+  - **Motivation concrète (US2, question libre)** : une question sur la
+    méthodologie elle-même (ex. « Opquast c'est que de l'accessibilité ? »)
+    n'a probablement aucun bon match dans un corpus limité aux 245 chunks de
+    règles — le RAG renverrait des règles vaguement liées par similarité de
+    mots, sans jamais répondre à la vraie question. Sans contenu type
+    glossaire/à-propos indexé, l'agent US2 hallucinerait ou avouerait ne pas
+    savoir, cassant la promesse d'un RAG ancré dans les données Opquast.
+  - **Point de conception à garder en tête** : mélanger des chunks de règles
+    et des chunks de glossaire dans le même index pgvector demandera
+    probablement une notion de **type de contenu** par chunk (règle vs
+    glossaire vs info pratique), sinon impossible de savoir d'où vient une
+    réponse pour la citer correctement à l'auditeur.
