@@ -212,4 +212,4 @@ Repérés en construisant l'index `docs/jury/README.md`.
 
 ## Divers
 
-- [ ] **Pousser la branche `feature`** — 18 commits d'avance sur `origin/feature` — `D`
+- [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`
