@@ -9,6 +9,15 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-26 — Claude Code
+
+- **Réécriture ciblée des règles marquées à revoir (`enrich_again`)** (spec `conception/2_ingestion/J_chantier_enrich_again.md`, plan `docs/superpowers/plans/2026-07-26-enrich-again-implementation.md`), implémentée en 4 tâches (TDD)
+  - `app/ingestion/llm_client.py` — `load_prompt()`/`enrich_single_rule()` acceptent désormais les paramètres optionnels `review_note`, `current_strategie_analyse` et `strategie_source` : insèrent une section « Contexte de revue humaine » dans le prompt quand `review_note` est fourni, comportement d'enrichissement initial strictement inchangé sinon
+  - `app/ingestion/enrich_again.py` — nouveau module : `load_rules_to_review()` (sélectionne les règles `review_status IN (a_revoir, invalide)`), `clear_review_fields()` (remet `reviewed_at`/`review_status`/`review_note` à `NULL`), `enrich_again()` (orchestrateur — rappelle le LLM règle par règle, commit par règle, fail-fast)
+  - `scripts/enrich_again.py` — point d'entrée CLI sur le modèle de `scripts/ingestion.py` (même logging, fail-fast)
+  - Nouvelle cible `make enrich-again` : lance le script puis chaîne `make export_sql`, comme `make ingestion` — voir `Makefile`, `CLAUDE.md`
+  - Non exécuté pour de vrai dans le cadre de ce chantier — 11 règles réelles marquées `a_revoir` en base, lancement réel réservé à une décision délibérée de David (appel LLM payant)
+
 ## 2026-07-25 — Claude Code (Part 2)
 
 - **Incident** : un `pytest tests/` lancé juste après la ré-ingestion réelle (245 règles, 4,32 €) a effacé ces données via un test d'intégration qui vidait la vraie base de dev locale (`qualicheck`) — voir bullet ci-dessous pour le correctif

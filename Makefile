@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql
+.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again
 
 # ============================================================
 # Docker
@@ -64,6 +64,12 @@ import_sql:
 	@test -n "$(FILE)" || (echo "Usage : make import_sql FILE=backups/xxx.sql" && exit 1)
 	docker exec -i qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" < $(FILE)
 	@echo "Import terminé depuis $(FILE)"
+
+## Relance le LLM sur les règles marquées review_status = a_revoir/invalide,
+## en tenant compte de review_note, puis sauvegarde les données réelles
+enrich-again:
+	uv run python scripts/enrich_again.py
+	$(MAKE) export_sql
 
 # ============================================================
 # Tests
