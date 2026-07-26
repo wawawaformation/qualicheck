@@ -2,6 +2,16 @@
 
 Référence : `conception/2_ingestion/ingestion.md`
 
+## Prochain gros morceau
+
+- [ ] **API données (étage n-tiers)** — `app/api_data/` : permettre à d'autres
+  composants (US1/US2 à venir, via un futur `app/api_business/`) d'interroger
+  les règles enrichies/vectorisées sans passer par les scripts d'ingestion.
+  Conçue, pas encore implémentée : spec
+  `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`, plan
+  `docs/superpowers/plans/2026-07-26-api-data-implementation.md`, décision de
+  lecture ouverte `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`
+
 ## Étapes du pipeline
 
 - [x] **Étape 1 — Acquisition** — scraping corrigé (chantier 1, voir `conception/2_ingestion/D_chantier1_scraping_contexte.md`)
