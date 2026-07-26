@@ -13,7 +13,19 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     la spec sont vérifiés — détail dans `CHANGELOG.md`
   - Débloque le chantier 2 (prompt V4) et le chantier 3 (ré-ingestion réelle)
 
-- [ ] **Chantier 2 — Prompt V4** (`TODO_PIPELINE_INGESTION.md` §R2.x) — `D`/`A`
+- [x] **Prompt V5 puis V6** — recommandations exploitées, prompt bumpé en
+  `version: 6` (`app/ingestion/prompts/enrich_rule.md`) ; 11 règles à revoir
+  corrigées via `make enrich-again` sur la base des anticipations de l'audit
+  V6 (0,1610 € vs ~4,29 € pour une ré-ingestion complète des 245 règles) — `D`/`A`
+  (2026-07-26)
+  - Jeu de données déjà propre après cette correction ciblée : une
+    ré-ingestion complète sur le prompt V6 n'est **pas nécessaire dans
+    l'immédiat** — reportée, à reprendre si un futur audit révèle un besoin
+    plus large que les 11 règles déjà traitées
+
+- [x] **Étapes 5-7 (chunking, embedding, indexation)** — `make embed-rules`
+  exécuté pour de vrai : 245/245 règles vectorisées (modèle du rôle `embedding`
+  du manifest, 1536 dimensions), 0,0016 € — `A` (2026-07-26)
 
 - [ ] **Jeu de règles d'acceptance RAG (JSONL)** — `D`/`A`
   - Suite aux 245 embeddings réels (`make embed-rules`, 2026-07-26, 0.0016 €) :
@@ -104,7 +116,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   documenterait une intention non stabilisée plutôt qu'un état réel. Reste à la
   corbeille jusqu'à ce que l'architecture soit assez avancée pour valoir la peine
   d'être figée. Note au passage : le brouillon existant confond le modèle
-  d'enrichissement (Kimi) et le modèle d'audit dans sa case « LLM Audit » — à
+  d'enrichissement et le modèle d'audit dans sa case « LLM Audit » — à
   vérifier si le brouillon est repris un jour — `D`
 - [x] **`ingestion_activite_reel.drawio` et `migration_flux_reel.drawio`
   renommés** — aucun des deux n'a de pendant cible écrit dans `conception/`
