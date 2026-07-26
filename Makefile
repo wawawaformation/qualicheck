@@ -68,6 +68,7 @@ import_sql:
 ## Relance le LLM sur les règles marquées review_status = a_revoir/invalide,
 ## en tenant compte de review_note, puis sauvegarde les données réelles
 enrich-again:
+	$(MAKE) export_sql
 	uv run python scripts/enrich_again.py
 	$(MAKE) export_sql
 
