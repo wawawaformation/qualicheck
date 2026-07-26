@@ -1,6 +1,14 @@
 # Décisions courantes du pipeline d'ingestion.
 # Aucun historique ici : git s'en charge (git log manifest.yml).
 # Aucun secret ici : voir .env.
+#
+# Source de vérité pour la configuration à appliquer au *prochain* run
+# (quel modèle, quel prix, quel seuil) — jamais pour l'état des données
+# déjà en base. La version des données déjà ingérées (prompt_version,
+# llm_model par règle) vit dans la table regle elle-même, pas ici : un
+# enrich_again partiel peut mélanger les versions règle par règle, ce que
+# ce fichier ne pourrait refléter sans devenir une deuxième source de
+# vérité redondante et potentiellement fausse.
 
 enrichissement:
   modele: kimi-k2.6
