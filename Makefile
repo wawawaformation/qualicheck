@@ -72,8 +72,9 @@ enrich-again:
 	uv run python scripts/enrich_again.py
 	$(MAKE) export_sql
 
-## Recalcule l'embedding de toutes les règles (Azure text-embedding-3-small,
-## dimensions=1536), puis sauvegarde les données réelles
+## Recalcule l'embedding de toutes les règles (modèle et dimension définis
+## dans app/ingestion/manifest.yml, rôle embedding), puis sauvegarde les
+## données réelles
 embed-rules:
 	uv run python scripts/embed_rules.py
 	$(MAKE) export_sql
