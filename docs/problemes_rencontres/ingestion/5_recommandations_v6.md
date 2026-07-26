@@ -177,3 +177,40 @@ par non-régression lors de la correction ciblée :
   spec, au moment d'écrire le prompt V6.
 - **Prompt V6 complet** (texte exact des modifications) — pas rédigé ici,
   suite logique une fois `enrich_again` conçu.
+
+## 7. Résultat de la correction ciblée (exécutée le 2026-07-26)
+
+`enrich_again` (spec `conception/2_ingestion/J_chantier_enrich_again.md`) a
+été lancé pour de vrai le 2026-07-26 sur les 11 règles confirmées de ce
+document (§1-3). Coût réel : **0,1610 €** (contre ~4,29 € pour une
+ré-ingestion complète des 245 règles) — 245 lignes n'ont donc pas eu à être
+retouchées pour corriger 4,5 % du référentiel.
+
+| Règle | Avant | Après | Conforme à la recommandation ? |
+| --- | --- | --- | --- |
+| 28 | `statique+playwright` | `statique&playwright` | Oui |
+| 62 | `manuel` | `playwright` | Oui |
+| 65 | `vision+statique` | `vision&statique` | Oui |
+| 94 | `statique` | `manuel` | Oui |
+| 124 | `statique+playwright` | `statique&playwright` | Oui |
+| 125 | `statique` | `statique&playwright` | Oui — rejoint sa jumelle 124 |
+| 164 | `statique+playwright` | `statique&playwright` | Oui |
+| 182 | `manuel` | `playwright` | Oui |
+| 202 | `manuel` | `playwright` | Oui |
+| 234 | `statique` | `playwright+statique` | Mieux que suggéré (voir note) |
+| 239 | `statique+playwright` | `statique&playwright` | Oui |
+
+**Règle 234, note** : la recommandation initiale suggérait `statique+playwright`
+(§3). Le LLM a produit `playwright+statique` — ordre plus correct, puisque
+le rendu JS doit s'exécuter (Playwright) *avant* que la hiérarchie de
+titres puisse être inspectée dans le DOM final (statique) ; l'ordre inverse
+n'aurait pas de sens opérationnel.
+
+**Vérifié après coup** : `review_status`/`review_note`/`reviewed_at`
+remis à `NULL` sur les 11 lignes ; `strategie_source = ia_reingest` sur les
+11 (première utilisation réelle de cette valeur, jamais écrite jusqu'ici) ;
+aucune autre ligne du référentiel touchée (245 règles au total, inchangé).
+
+**Toujours ouvert** : la règle 96 (§2, cas contesté) n'a pas reçu de
+`review_status` et n'a donc pas été traitée par ce run — décision encore à
+prendre séparément.
