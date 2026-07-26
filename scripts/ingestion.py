@@ -22,6 +22,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.ingestion.acquisition import acquire_rules  # noqa: E402
 from app.ingestion.aggregation import aggregate_rules  # noqa: E402
+from app.ingestion.chunking import build_chunk_text  # noqa: E402
+from app.ingestion.embedding import EmbeddingClient  # noqa: E402
 from app.ingestion.enrichment import enrich_rules  # noqa: E402
 from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.stockage import (  # noqa: E402
@@ -168,6 +170,21 @@ def main() -> None:
         )
         logger.info(summary)
         progress_logger.info(summary)
+
+        try:
+            logger.info("Étape 6 — Embedding : démarrage")
+            progress_logger.info("Étape 6 — Embedding : démarrage")
+            embed_client = EmbeddingClient()
+            for i in range(0, len(enriched.regles), 50):
+                batch = enriched.regles[i : i + 50]
+                texts = [build_chunk_text(rule) for rule in batch]
+                vectors = embed_client.embed_batch(texts)
+                for rule, vector in zip(batch, vectors, strict=True):
+                    rule.embedding = vector
+            logger.info("Étape 6 — Embedding : terminée")
+        except Exception as e:
+            logger.error("Étape 6 — Embedding : ÉCHEC (%s)", e)
+            sys.exit(1)
 
         try:
             logger.info("Étape 4 — Stockage : démarrage")
