@@ -27,18 +27,17 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   exécuté pour de vrai : 245/245 règles vectorisées (modèle du rôle `embedding`
   du manifest, 1536 dimensions), 0,0016 € — `A` (2026-07-26)
 
-- [ ] **Jeu de règles d'acceptance RAG (JSONL)** — `D`/`A`
-  - Suite aux 245 embeddings réels (`make embed-rules`, 2026-07-26, 0.0016 €) :
-    deux vérifications manuelles au rapprochement cosinus (`SELECT ... ORDER BY
-    embedding <=> requête`) ont bien fait remonter la règle attendue en top 2
-    (règle 139 « soulignement réservé aux liens » sur « souligner les titres »,
-    règle 181 « information non véhiculée uniquement par couleur » sur « rouge
-    suffit pour une alerte »)
-  - Formaliser ça en jeu de test d'acceptance (Gherkin/BDD, cf. méthodologie
-    utilisateur) : un JSONL `{question, regle_numero_attendue}` rejoué
-    systématiquement plutôt que des vérifications ponctuelles à la main
-  - Reporté : nécessite du budget (appels embedding + volume de questions à
-    constituer) — repris quand plus de crédit disponible
+- [x] **Jeu de règles d'acceptance RAG (JSONL)** — `D`/`A` (2026-07-26)
+  - Spec `docs/superpowers/specs/2026-07-26-rag-acceptance-jsonl-design.md`,
+    plan `docs/superpowers/plans/2026-07-26-rag-acceptance-jsonl-implementation.md`
+  - `tests/acceptance/rag_acceptance.jsonl` : 17 cas `{question,
+    numero_regle_attendue}` (les 2 vérifiés manuellement + 15 nouveaux,
+    validés par David) ; `app/ingestion/rag_acceptance.py` (logique testée
+    unitairement) ; `scripts/check_rag_acceptance.py` + `make
+    rag-acceptance` (top_n/taux_reussite_minimum dans `manifest.yml`)
+  - Suite volontairement hors CI (coût réel à chaque run) — **premier
+    lancement réel non fait dans ce chantier**, réservé à une décision
+    délibérée de David (même logique que `make embed-rules`)
 
 ## Décisions en attente
 
