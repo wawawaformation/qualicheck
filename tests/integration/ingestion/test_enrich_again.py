@@ -137,6 +137,28 @@ def test_enrich_again_no_rules_to_review_skips_llm_call(mock_llm_client_class, s
 
 
 @patch("app.ingestion.enrich_again.LLMClient")
+def test_enrich_again_dry_run_writes_preview_without_llm_call(mock_llm_client_class, session):
+    """dry_run=True écrit l'aperçu JSON mais n'instancie jamais LLMClient."""
+    from app.ingestion.enrich_again import enrich_again
+
+    clear_opquast_tables(session)
+    store_rules(session, EnrichedRules([_rule(1, "vision+statique")]))
+    session.query(Regle).filter_by(numero=1).update(
+        {"review_status": "a_revoir", "review_note": "Note"}
+    )
+    session.commit()
+
+    enrich_again(session, dry_run=True)
+
+    mock_llm_client_class.assert_not_called()
+
+    regle = session.query(Regle).filter_by(numero=1).first()
+    assert regle.review_status == "a_revoir"  # inchangé, aucun traitement effectué
+
+    clear_opquast_tables(session)
+
+
+@patch("app.ingestion.enrich_again.LLMClient")
 def test_enrich_again_success_clears_review_and_writes_ia_reingest(
     mock_llm_client_class, session
 ):
@@ -160,6 +182,13 @@ def test_enrich_again_success_clears_review_and_writes_ia_reingest(
     ).model_copy(update={"strategie_source": "ia_reingest"})
 
     enrich_again(session)
+
+    mock_llm_instance.enrich_single_rule.assert_called_once()
+    call_args = mock_llm_instance.enrich_single_rule.call_args
+    assert call_args.args[0].number == 1
+    assert call_args.kwargs["review_note"] == "Devrait être vision&statique."
+    assert call_args.kwargs["current_strategie_analyse"] == "vision+statique"
+    assert call_args.kwargs["strategie_source"] == "ia_reingest"
 
     regle = session.query(Regle).filter_by(numero=1).first()
     assert regle.strategie_analyse == "vision&statique"

@@ -7,6 +7,7 @@ immédiatement le script avec un code de sortie non-nul — les règles déjà
 corrigées avant l'échec restent acquises (commit par règle).
 """
 
+import argparse
 import logging
 import os
 import sys
@@ -35,7 +36,19 @@ def get_engine():
     return create_engine(url)
 
 
+def parse_args() -> argparse.Namespace:
+    """Parse les arguments CLI du script."""
+    parser = argparse.ArgumentParser(description="Réécriture ciblée des règles à revoir")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Écrit l'aperçu des règles concernées sans appeler le LLM",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
     setup_logging()
     load_dotenv()
 
@@ -46,7 +59,7 @@ def main() -> None:
 
     try:
         with Session(engine) as session:
-            enrich_again(session)
+            enrich_again(session, dry_run=args.dry_run)
     except Exception as e:
         logger.error("enrich_again : ÉCHEC (%s)", e)
         sys.exit(1)
