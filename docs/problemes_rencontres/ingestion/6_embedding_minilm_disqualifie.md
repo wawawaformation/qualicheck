@@ -75,6 +75,32 @@ côté Infomaniak — BGE Multilingual Gemma2 est nommé comme candidat à éval
 explicitement hors périmètre du chantier du 2026-07-26. Sujet ouvert, pas
 d'urgence tant que la bascule production n'est pas engagée.
 
+### Mise à jour du 2026-07-26 — vérification directe du catalogue Infomaniak
+
+David a interrogé l'API produits Infomaniak (`/1/ai/products`) pour vérifier
+l'état réel des modèles d'embedding disponibles. Constat, sur les 3 modèles
+d'embedding listés au catalogue :
+
+| Modèle | `max_token_input` | `info_status` |
+| --- | --- | --- |
+| `mini_lm_l12_v2` | 128 | `coming_soon` |
+| `bge_multilingual_gemma2` | 8 000 | `coming_soon` |
+| `Qwen/Qwen3-Embedding-8B` | 8 192 | `coming_soon` |
+
+**Aucun modèle d'embedding n'est `ready` sur Infomaniak à ce jour** — pas
+seulement MiniLM. Le candidat nommé au paragraphe précédent
+(BGE Multilingual Gemma2) existe bien au catalogue, avec une limite de tokens
+qui conviendrait cette fois (8 000, largement au-dessus des ~952 tokens
+mesurés sur la règle la plus longue), mais il n'est pas encore disponible en
+production chez Infomaniak — pas une question d'évaluation interne restée en
+suspens, une indisponibilité chez le fournisseur lui-même.
+
+Point annexe observé dans le même relevé, hors périmètre de ce document mais
+utile pour la suite : Apertus-70B-Instruct (`ready`) est bien disponible dès
+maintenant, alors que Kimi-K2.6 (`coming_soon`) ne l'est pas encore — pertinent
+pour la bascule production du volet LLM (`conception.md` §Scénario nominal),
+à vérifier de nouveau au moment de l'engager.
+
 ## Ce qui reste volontairement incohérent, et pourquoi
 
 `conception.md`, `conception/annexes/F_choix_llm.md` et les MLD
