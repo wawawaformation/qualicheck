@@ -17,15 +17,16 @@ Projet fil rouge de la certification **RNCP37827 — Développeur IA agentique**
 ## Stack technique
 
 | Composant | Technologie |
-|---|---|
+| --- | --- |
 | Backend | FastAPI (Python) |
 | Frontend | Vue.js |
-| Base de données | PostgreSQL + pgvector (HNSW, 384 dim) |
+| Base de données | PostgreSQL + pgvector (HNSW, 1536 dim) |
 | Migrations | Alembic |
 | Gestion des dépendances | uv |
 | LLM (dev) | Kimi K2.6, gpt-5.4, gpt-5.4-mini via Azure |
 | LLM (prod) | Apertus-70B, Mistral Small via Infomaniak |
-| Embedding | All MiniLM L12 v2 via Infomaniak (gratuit) |
+| Embedding (actuel) | text-embedding-3-small via Azure |
+| Embedding (cible) | BGE Multilingual Gemma2 via Infomaniak (quand disponible) |
 | Déploiement | Docker + docker-compose |
 
 ---
@@ -65,7 +66,7 @@ uv run python scripts/ingestion.py
 QualiCheck mobilise trois usages distincts du RAG :
 
 | US | Mode | Justification |
-|---|---|---|
+| --- | --- | --- |
 | US1 — génération | SQL déterministe | Règles connues, sélectionnées par l'auditeur |
 | US1 — dialogue | SQL déterministe | Contexte d'audit connu, constats posés |
 | US2 — question libre | RAG sémantique pur | Pas de présélection, pgvector cherche les règles pertinentes |
@@ -84,7 +85,7 @@ La **feedback loop** collecte les validations et rejets des auditeurs (`validati
 
 ## Structure du projet
 
-```
+```text
 app/            # Domaine métier (models, migration, ingestion)
 conception/     # Documents de conception (specs, MCD, flux)
 scripts/        # Points d'entrée CLI (migration.py, ingestion.py)
