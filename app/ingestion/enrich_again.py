@@ -109,7 +109,7 @@ def clear_review_fields(session: Session, numero: int) -> None:
     session.flush()
 
 
-def enrich_again(session: Session) -> None:
+def enrich_again(session: Session, dry_run: bool = False) -> None:
     """
     Rappelle le LLM sur les règles marquées pour revue manuelle et vide
     leurs champs de revue une fois corrigées.
@@ -121,6 +121,8 @@ def enrich_again(session: Session) -> None:
 
     Args:
         session: Session SQLAlchemy active
+        dry_run: Si True, écrit l'aperçu JSON et s'arrête avant tout appel
+            LLM — permet de vérifier les règles concernées sans dépenser
 
     Raises:
         Exception: Toute erreur d'enrichissement non résolue après les
@@ -142,33 +144,41 @@ def enrich_again(session: Session) -> None:
         json.dump(preview, f, ensure_ascii=False, indent=2)
     progress_logger.info(f"enrich_again : {len(rows)} règle(s) à revoir")
 
+    if dry_run:
+        progress_logger.info("enrich_again : dry-run, aucun appel LLM effectué")
+        return
+
     llm_client = LLMClient()
 
-    for rule, review_note, current_strategie_analyse in rows:
-        try:
-            enriched = llm_client.enrich_single_rule(
-                rule,
-                review_note=review_note,
-                current_strategie_analyse=current_strategie_analyse,
-                strategie_source="ia_reingest",
-            )
-            upsert_rule(session, enriched)
-            clear_review_fields(session, numero=rule.number)
-            session.commit()
-            progress_logger.info(f"Règle {rule.number} — enrich_again : OK")
-        except Exception as e:
-            session.rollback()
-            logger.error(f"Règle {rule.number} — enrich_again : KO ({e})")
-            raise
-
-    role = load_manifest()["enrichissement"]
-    cost = (
-        llm_client.input_tokens * role["prix_entree_par_million"]
-        + llm_client.output_tokens * role["prix_sortie_par_million"]
-    ) / 1_000_000
-    summary = (
-        f"enrich_again — Tokens — entrée : {llm_client.input_tokens}, "
-        f"sortie : {llm_client.output_tokens}, coût estimé : {cost:.4f} €"
-    )
-    logger.info(summary)
-    progress_logger.info(summary)
+    try:
+        for rule, review_note, current_strategie_analyse in rows:
+            try:
+                enriched = llm_client.enrich_single_rule(
+                    rule,
+                    review_note=review_note,
+                    current_strategie_analyse=current_strategie_analyse,
+                    strategie_source="ia_reingest",
+                )
+                upsert_rule(session, enriched)
+                clear_review_fields(session, numero=rule.number)
+                session.commit()
+                progress_logger.info(
+                    f"Règle {rule.number} — enrich_again : OK "
+                    f"({current_strategie_analyse} -> {enriched.strategie_analyse})"
+                )
+            except Exception as e:
+                session.rollback()
+                logger.error(f"Règle {rule.number} — enrich_again : KO ({e})")
+                raise
+    finally:
+        role = load_manifest()["enrichissement"]
+        cost = (
+            llm_client.input_tokens * role["prix_entree_par_million"]
+            + llm_client.output_tokens * role["prix_sortie_par_million"]
+        ) / 1_000_000
+        summary = (
+            f"enrich_again — Tokens — entrée : {llm_client.input_tokens}, "
+            f"sortie : {llm_client.output_tokens}, coût estimé : {cost:.4f} €"
+        )
+        logger.info(summary)
+        progress_logger.info(summary)
