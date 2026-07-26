@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules
+.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance
 
 # ============================================================
 # Docker
@@ -80,6 +80,11 @@ enrich-again:
 embed-rules:
 	uv run python scripts/embed_rules.py
 	$(MAKE) export_sql
+
+## Rejoue le jeu d'acceptance RAG (tests/acceptance/rag_acceptance.jsonl) :
+## appel réel à l'API embeddings, coût réel, volontairement hors CI
+rag-acceptance:
+	uv run python scripts/check_rag_acceptance.py
 
 # ============================================================
 # Tests

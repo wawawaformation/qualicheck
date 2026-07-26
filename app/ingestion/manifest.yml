@@ -20,3 +20,12 @@ embedding:
   # disponible pour l'instant (premier usage réel de ce modèle). À corriger
   # dès qu'une vraie facture existe — même logique que le rôle enrichissement.
   prix_entree_par_million: 0.0184
+
+rag_acceptance:
+  # Nombre de résultats pgvector considérés par cas (marge par rapport au
+  # top 2 observé lors des vérifications manuelles du 2026-07-26)
+  top_n: 3
+  # Proportion minimale de cas réussis pour que la suite soit globalement
+  # acceptable — le rappel imparfait du RAG est déjà assumé, voir
+  # docs/jury/decisions/2026-07-25-rag-us2-petit-corpus.md
+  taux_reussite_minimum: 0.8
