@@ -107,8 +107,9 @@ recopiant requête et réponse : du code de plus, de la latence de plus, et un
 endroit de plus à mettre à jour à chaque champ ajouté.
 
 **Contrepartie, à ne pas perdre de vue** : si le navigateur appelle `api_data`,
-alors `api_data` doit être joignable depuis Internet en production — voir
-« Risques documentés ».
+alors `api_data` doit être joignable depuis Internet en production — assumé
+comme décision actée, voir « Risques documentés » et
+`docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`.
 
 ## Vue d'ensemble
 
@@ -157,6 +158,8 @@ app/api_data/main.py ─── /docs, /redoc, /openapi.json  (générés par Fas
 | Préfixe des routes | `/regles`, pas la racine | La racine porte `/health` et `/docs` ; un futur endpoint de recherche a besoin de ce cloisonnement |
 | Point d'entrée | Cible `make api-data`, **aucun fichier dans `scripts/`** | Uvicorn s'attache à un module (`app.api_data.main:app`), pas à un script CLI. Exception assumée à la convention de `scripts/CLAUDE.md`, qui gagnerait sinon un fichier ne faisant qu'appeler uvicorn. Le suffixe de la cible laisse la place à `make api-business` |
 | Conteneurisation | Pas de service ajouté à `docker-compose.yml` | Le compose ne gère que PostgreSQL ; les scripts tournent déjà sur l'hôte via `uv`. Conteneuriser relève du déploiement production, hors périmètre |
+| Lecture ouverte | **Aucun jeton sur les `GET`**, et c'est une décision actée | Le référentiel Opquast est sous **CC BY-SA 4.0**, dont le partage à l'identique est viral : fermer la lecture travaillerait contre la licence dont le projet bénéficie. Cohérent avec la veille du projet sur le pillage du savoir. Justification et options écartées : `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md` |
+| Attribution | `license_info` + citation Opquast dans la `description`, valeurs dans le manifeste | Obligation de CC BY-SA, pas une politesse. Elle manquait dans la version initiale de cette spec |
 
 ## Modules
 
@@ -185,6 +188,17 @@ validation:
   # Longueur maximale d'une review_note : borne le coût en tokens du prochain
   # enrich_again autant que la surface d'injection de prompt.
   review_note_max_length: 2000
+
+licence:
+  # Le référentiel Opquast est diffusé sous CC BY-SA 4.0 : attribution et
+  # partage à l'identique obligatoires. Cette API distribue ce contenu, elle
+  # doit donc porter le crédit et le lien vers la licence.
+  # Voir docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md
+  nom: "CC BY-SA 4.0"
+  url: "https://creativecommons.org/licenses/by-sa/4.0/deed.fr"
+  attribution: >-
+    « Référentiel Opquast - Qualité Numérique » par Opquast, utilisé sous
+    licence CC BY-SA 4.0, avec le soutien d'Élie Sloïm (Opquast).
 ```
 
 Les origines de développement et de production peuvent y cohabiter : une
@@ -227,6 +241,12 @@ Crée l'objet ASGI, monte le middleware CORS, monte le router `regles`, expose
 
 - `title`, `description` et `version` sont passés à `FastAPI(...)` depuis
   `config.py` : ce sont eux qui alimentent `/docs`.
+- **`license_info` porte l'attribution CC BY-SA 4.0**, obligation de la licence
+  du référentiel et non simple politesse. C'est le champ standard OpenAPI prévu
+  pour cela : il apparaît dans `/docs` et `/openapi.json` sans code
+  supplémentaire. La citation recommandée par Opquast est également ajoutée à
+  la `description`, pour qu'un client qui ne lit que la page Swagger la voie.
+  Justification complète : `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`.
 - `version` ne vient pas de `pyproject.toml` : le projet n'est pas installé
   comme paquet, `importlib.metadata.version()` lève `PackageNotFoundError`
   (vérifié). Elle vit dans le manifeste, où elle désigne de toute façon autre
@@ -481,6 +501,13 @@ FastAPI produit trois routes à partir des schémas Pydantic, sans code à
 | `/redoc` | ReDoc — même contenu, présentation en lecture continue |
 | `/openapi.json` | Schéma OpenAPI brut, consommable par un générateur de client |
 
+**L'attribution CC BY-SA 4.0 passe par ces trois routes.** `license_info`
+(nom + URL de la licence) et la citation recommandée par Opquast, ajoutée à la
+`description`, viennent du manifeste et apparaissent dans les trois sans code
+dédié. C'est une **obligation de la licence** du référentiel, pas une mention
+de courtoisie : tout client qui consomme cette API reçoit du contenu Opquast et
+doit pouvoir en connaître l'origine et les conditions.
+
 `RegleRead` et `ReglePatch` **sont** la documentation : un champ ajouté au
 schéma apparaît dans Swagger sans action manuelle, la doc ne peut donc pas
 dériver du code.
@@ -549,7 +576,7 @@ app.add_middleware(
 
 | Réglage | Pourquoi pas le défaut habituel |
 | --- | --- |
-| Liste explicite, pas `["*"]` | Avec `"*"`, n'importe quel site peut faire lire le corpus enrichi par le navigateur d'un visiteur. Et `"*"` est interdit par la spécification CORS dès que `allow_credentials=True` |
+| Liste explicite, pas `["*"]` | Le corpus étant ouvert en lecture, `"*"` ne créerait pas de fuite — l'argument n'est donc pas la confidentialité mais l'explicite : la liste documente qui consomme l'API depuis un navigateur, et `"*"` deviendrait de toute façon interdit par la spécification CORS si `allow_credentials` passait un jour à `True` |
 | `allow_methods` limité | Déclarer `["*"]` annoncerait des verbes qui n'existent pas ; la réponse préflight doit dire la vérité |
 | `allow_headers` explicites | `Authorization` **doit** y figurer, sinon le préflight du `PATCH` échoue — l'erreur la plus fréquente sur ce sujet |
 | `allow_credentials=False` | L'authentification passe par un header, pas par un cookie : la classe entière des attaques CSRF par cookie ne s'applique pas |
@@ -719,26 +746,26 @@ Ne sont **pas** dans ce chantier, et pourquoi :
 
 ## Risques documentés
 
-**Lecture ouverte et déploiement production.** En développement local, des
-`GET` sans authentification sont sans conséquence. Mais `FASTAPI_URL_PROD`
-pointe vers un domaine public : exposée telle quelle, l'API laisserait
-n'importe qui télécharger **l'intégralité du corpus enrichi** — les
-`guide_analyse` et `strategie_analyse` qui ont coûté environ 4 € d'appels LLM
-et constituent la valeur ajoutée du projet, sur un référentiel dont l'usage
-est accordé par Élie Sloïm.
+**Lecture ouverte — décision actée, plus un risque ouvert.** Exposée sur
+`FASTAPI_URL_PROD`, l'API laisse n'importe qui télécharger l'intégralité du
+corpus enrichi. Ce n'est pas un point à trancher plus tard : c'est un choix
+pris et justifié dans
+`docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`.
 
-Ce risque est la contrepartie directe de l'écart au 3-tiers strict : c'est
-parce que le navigateur appelle `api_data` que `api_data` doit être joignable
-depuis Internet.
+Le critère qui a tranché est la licence du référentiel : **CC BY-SA 4.0**, dont
+le partage à l'identique est viral. La base reproduisant littéralement le
+contenu Opquast, la diffusion du jeu de données relève de cette licence — la
+fermer aurait travaillé contre la licence dont le projet bénéficie. S'y ajoute
+la cohérence avec la veille documentée du projet sur le pillage du savoir et la
+souveraineté.
 
-**La réponse prévue est le passage en 3-tiers strict**, une fois
-`app/api_business/` conçue : l'écran de revue passerait par l'étage applicatif,
-`api_data` resterait sur le réseau privé, et le risque disparaîtrait par
-construction plutôt que par un réglage. À trancher **avant** tout déploiement,
-hors périmètre de cette spec. Deux autres réponses restent possibles à ce
-moment-là — exiger le Bearer sur les `GET` également, ou assumer la publication
-du référentiel enrichi — mais elles ferment ou ouvrent une porte que le
-3-tiers strict rend simplement inutile.
+**Limites assumées** : aucune mesure de ce qui est consommé, aucune limitation
+de débit. Et l'attribution devient une **obligation** — traitée par
+`license_info`, voir la section « Documentation générée ».
+
+Le passage en 3-tiers strict reste envisageable pour d'autres motifs
+(cloisonnement, réduction de la surface réseau), mais il ne répond plus à un
+problème d'exposition que cette décision ne considère plus comme tel.
 
 **Champ `contexte` vide.** Constat fait en préparant cette spec : `contexte`
 est `NULL` sur les 245 règles, alors que le correctif de code existe
