@@ -105,6 +105,18 @@ validation:
   # Longueur maximale d'une review_note : borne le coût en tokens du prochain
   # enrich_again autant que la surface d'injection de prompt.
   review_note_max_length: 2000
+
+licence:
+  # Le référentiel Opquast est diffusé sous CC BY-SA 4.0 : attribution et
+  # partage à l'identique obligatoires. Cette API distribue ce contenu, elle
+  # doit donc porter le crédit et le lien vers la licence — c'est une
+  # obligation, pas une politesse.
+  # Voir docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md
+  nom: "CC BY-SA 4.0"
+  url: "https://creativecommons.org/licenses/by-sa/4.0/deed.fr"
+  attribution: >-
+    « Référentiel Opquast - Qualité Numérique » par Opquast, utilisé sous
+    licence CC BY-SA 4.0, avec le soutien d'Élie Sloïm (Opquast).
 ```
 
 - [ ] **Step 4: Écrire le test qui échoue**
@@ -136,6 +148,13 @@ def test_le_manifeste_expose_titre_description_version():
     assert config.TITLE
     assert config.DESCRIPTION
     assert config.VERSION
+
+
+def test_le_manifeste_expose_lattribution_de_licence():
+    """Obligation CC BY-SA : crédit et lien vers la licence."""
+    assert config.LICENCE_NOM == "CC BY-SA 4.0"
+    assert config.LICENCE_URL.startswith("https://creativecommons.org/licenses/by-sa/4.0")
+    assert "Opquast" in config.ATTRIBUTION
 
 
 def test_admin_token_renvoie_le_secret(monkeypatch):
@@ -193,6 +212,13 @@ PORT: int = _MANIFEST["api"]["port"]
 CORS_ALLOWED_ORIGINS: list[str] = _MANIFEST["cors"]["allowed_origins"]
 REVIEW_NOTE_MAX_LENGTH: int = _MANIFEST["validation"]["review_note_max_length"]
 
+# Attribution CC BY-SA 4.0 : obligation de la licence du référentiel Opquast,
+# que cette API distribue. Voir
+# docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md
+LICENCE_NOM: str = _MANIFEST["licence"]["nom"]
+LICENCE_URL: str = _MANIFEST["licence"]["url"]
+ATTRIBUTION: str = _MANIFEST["licence"]["attribution"]
+
 
 def admin_token() -> str:
     """
@@ -214,7 +240,7 @@ def admin_token() -> str:
 
 Run: `uv run pytest tests/unit/api_data/test_config.py -v`
 
-Expected: PASS (6 tests)
+Expected: PASS (7 tests)
 
 - [ ] **Step 8: Vérifier le lint**
 
@@ -1180,6 +1206,15 @@ def test_health_repond_503_quand_la_base_est_injoignable(session):
 def test_la_documentation_openapi_est_servie(client):
     assert client.get("/docs").status_code == 200
     assert client.get("/openapi.json").status_code == 200
+
+
+def test_la_documentation_porte_lattribution_cc_by_sa(client):
+    """Obligation de la licence du référentiel, pas une mention de courtoisie."""
+    schema = client.get("/openapi.json").json()
+
+    assert schema["info"]["license"]["name"] == "CC BY-SA 4.0"
+    assert "creativecommons.org/licenses/by-sa/4.0" in schema["info"]["license"]["url"]
+    assert "Opquast" in schema["info"]["description"]
 ```
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
@@ -1227,8 +1262,13 @@ config.admin_token()
 
 app = FastAPI(
     title=config.TITLE,
-    description=config.DESCRIPTION,
+    # L'attribution est ajoutée à la description pour qu'un client qui ne lit
+    # que la page Swagger la voie, en plus du champ license_info.
+    description=f"{config.DESCRIPTION}\n\n{config.ATTRIBUTION}",
     version=config.VERSION,
+    # Champ standard OpenAPI. Obligation de CC BY-SA 4.0, la licence du
+    # référentiel Opquast que cette API distribue — pas une politesse.
+    license_info={"name": config.LICENCE_NOM, "url": config.LICENCE_URL},
 )
 
 app.add_middleware(
@@ -1270,7 +1310,7 @@ def health(session: Session = Depends(get_session)):
 
 Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
 
-Expected: PASS (3 tests)
+Expected: PASS (4 tests)
 
 - [ ] **Step 6: Vérifier le lint**
 
@@ -1505,7 +1545,7 @@ def lister_regles(
 
 Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
 
-Expected: PASS (11 tests)
+Expected: PASS (12 tests)
 
 - [ ] **Step 5: Vérifier le lint**
 
@@ -1595,7 +1635,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
 
-Expected: PASS (14 tests)
+Expected: PASS (15 tests)
 
 - [ ] **Step 5: Commit**
 
@@ -1783,13 +1823,13 @@ def annoter_regle(
 
 Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
 
-Expected: PASS (21 tests)
+Expected: PASS (22 tests)
 
 - [ ] **Step 5: Lancer toute la suite ciblée**
 
 Run: `uv run pytest tests/unit/api_data tests/unit/test_db.py tests/integration/api_data -v`
 
-Expected: PASS (54 tests — 6 config, 21 schémas, 4 auth, 2 db, 21 intégration)
+Expected: PASS (56 tests — 7 config, 21 schémas, 4 auth, 2 db, 22 intégration)
 
 - [ ] **Step 6: Vérifier le lint**
 
@@ -1884,6 +1924,7 @@ Ajouter le bloc suivant dans l'entrée `## 2026-07-26 — Claude Code` de `CHANG
   - `app/api_data/auth.py` (nouveau) : `require_bearer()` — token Bearer statique sur le `PATCH` uniquement, `secrets.compare_digest` (comparaison en temps constant), `HTTPBearer(auto_error=False)` pour renvoyer `401` et non le `403` par défaut, fail-fast au chargement si `FASTAPI_API_KEY` est absente ou vide
   - `app/api_data/regles.py` (nouveau) : `GET /regles` (filtres répétables `?outil=` et `?review_status=`, OU en interne, ET entre eux), `GET /regles/{numero}`, `PATCH /regles/{numero}`. Le filtre `?outil=` est un « contient » et non une égalité — 85 règles contiennent playwright via les composites, contre 62 en égalité stricte. Chargement des collections en **4 requêtes groupées** quel que soit le nombre de règles : `app/models/` ne déclare aucun `relationship()`, `selectinload()` était donc hors de portée sans modifier des modèles partagés avec le pipeline d'ingestion
   - `app/api_data/main.py` (nouveau) : objet ASGI, `CORSMiddleware` (origines depuis le manifeste, jamais `["*"]`, `allow_credentials=False` puisque l'auth passe par un header), `/health` avec vérification réelle de la base (`SELECT 1`, `503` si injoignable), et la documentation OpenAPI générée (`/docs`, `/redoc`, `/openapi.json`)
+  - **Attribution CC BY-SA 4.0 portée par l'API** (`license_info` + citation Opquast dans la `description`, valeurs dans le manifeste) : le référentiel est sous cette licence, l'API en distribue le contenu, le crédit et le lien sont donc une obligation et non une politesse — elle manquait dans la version initiale de la spec. Lecture ouverte confirmée comme décision actée, justifiée par le partage à l'identique : voir `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`
   - `Makefile` : nouvelle cible `make api-data`, le port étant lu dans le manifeste par `grep` ; `FASTAPI_URL_DEV` retiré de `.env`/`.env.example` car déductible du port
   - Tests : NN au total (unitaires sur la configuration, les schémas et la garde d'écriture ; intégration sur les 3 endpoints et `/health`). Les tests d'intégration injectent leur session par `app.dependency_overrides[get_session]` : l'API sous test ne peut alors **pas** ouvrir de connexion vers `POSTGRES_DB`, garantie structurelle issue de l'incident du 2026-07-25
   - **Le `PATCH` n'écrit que `review_status`/`review_note`/`reviewed_at`** — le référent Opquast annote, le développeur corrige plus tard via `make enrich-again`. Cette API n'appelle aucun LLM et ne recalcule aucun embedding
@@ -1911,13 +1952,16 @@ Dans `TODO.md`, ajouter ces deux entrées à la section « Décisions en attente
   2026-07-26) : aucune ingestion réelle ne l'a alimenté depuis. L'API données
   l'expose donc systématiquement vide. À arbitrer : ré-ingestion ciblée du seul
   champ `contexte` (scraping, sans appel LLM) ou statu quo — `D`
-- [ ] **Exposition publique de l'API données** — à trancher avant tout
-  déploiement. Exposée telle quelle, elle laisserait télécharger l'intégralité
-  du corpus enrichi (~4 € d'appels LLM, référentiel utilisé avec l'accord
-  d'Élie Sloïm). La réponse prévue est le passage en 3-tiers strict :
-  l'écran de revue passerait par `app/api_business/` et l'API données
-  resterait sur le réseau privé — `D`
+- [ ] **Licence du code et des étages applicatif/présentation** — non arrêtée.
+  L'étage données est sous licence libre (CC BY-SA 4.0 s'imposant au jeu de
+  données par partage à l'identique — décision actée
+  `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`), mais CC BY-SA
+  porte sur le contenu, pas sur le code : la séparation n-tiers laisse donc le
+  choix libre pour `app/api_business/` et le front — `D`
 ```
+
+L'exposition publique de l'API données n'est **pas** à ajouter en décision
+attendue : elle est actée (`docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`).
 
 - [ ] **Step 8: Vérifier la suite complète**
 
