@@ -324,10 +324,26 @@ Validation anti-injection de prompt sur `review_note`, détaillée en section
 
 Le router. Ne contient que la traduction « requête → session → réponse ».
 
-Le chargement des règles utilise **`selectinload()`** sur `objectifs`, `tags`
-et `phases`. Une jointure naïve sur 245 règles × 3 collections déclencherait
-736 requêtes (problème N+1) ; `selectinload` en émet 4, indépendamment du
-nombre de règles.
+**Chargement des collections — 4 requêtes groupées, quel que soit le nombre de
+règles.** `app/models/` ne déclare **aucun `relationship()`** : les
+associations (`objectif_regle`, `phase_regle`, `regle_tag`) sont des tables
+nues. `selectinload()` est donc hors de portée sans modifier les modèles, ce
+que ce chantier ne fait pas — `app/models/` est partagé avec le pipeline
+d'ingestion, dont une ré-exécution coûte de l'argent.
+
+À la place, quatre requêtes en lot, assemblées en Python :
+
+| Requête | Contenu |
+| --- | --- |
+| 1 | Les règles, `theme` obtenu par une jointure simple (relation 1:N, aucun risque de N+1) |
+| 2 | `regle_id` → `tag` pour toutes les règles retenues |
+| 3 | `regle_id` → `phase` pour toutes les règles retenues |
+| 4 | `regle_id` → `objectif` pour toutes les règles retenues |
+
+Les trois dernières sont regroupées en dictionnaires `{regle_id: [libellés]}`
+avant construction des réponses. Le motif naïf — une requête par collection et
+par règle, comme le fait `enrich_again.load_rules_to_review()` — produirait 736
+requêtes sur 245 règles.
 
 ### `pyproject.toml`
 
