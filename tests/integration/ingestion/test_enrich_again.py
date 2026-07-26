@@ -5,6 +5,7 @@ POSTGRES_TEST_DB migrée (make migration-test).
 """
 import os
 from datetime import UTC, datetime
+from unittest.mock import MagicMock, patch
 
 import pytest
 from dotenv import load_dotenv
@@ -115,5 +116,103 @@ def test_clear_review_fields_resets_to_null(session):
     assert regle.review_status is None
     assert regle.review_note is None
     assert regle.reviewed_at is None
+
+    clear_opquast_tables(session)
+
+
+@patch("app.ingestion.enrich_again.LLMClient")
+def test_enrich_again_no_rules_to_review_skips_llm_call(mock_llm_client_class, session):
+    """Aucune règle a_revoir/invalide -> aucun appel LLM, aucune erreur."""
+    from app.ingestion.enrich_again import enrich_again
+
+    clear_opquast_tables(session)
+    store_rules(session, EnrichedRules([_rule(1, "statique")]))
+    # Aucune règle marquée pour revue
+
+    enrich_again(session)
+
+    mock_llm_client_class.assert_not_called()
+
+    clear_opquast_tables(session)
+
+
+@patch("app.ingestion.enrich_again.LLMClient")
+def test_enrich_again_success_clears_review_and_writes_ia_reingest(
+    mock_llm_client_class, session
+):
+    """Une règle corrigée avec succès : strategie_source='ia_reingest',
+    review_* remis à NULL."""
+    from app.ingestion.enrich_again import enrich_again
+
+    clear_opquast_tables(session)
+    store_rules(session, EnrichedRules([_rule(1, "vision+statique")]))
+    session.query(Regle).filter_by(numero=1).update(
+        {"review_status": "a_revoir", "review_note": "Devrait être vision&statique."}
+    )
+    session.commit()
+
+    mock_llm_instance = MagicMock()
+    mock_llm_client_class.return_value = mock_llm_instance
+    mock_llm_instance.input_tokens = 100
+    mock_llm_instance.output_tokens = 50
+    mock_llm_instance.enrich_single_rule.return_value = _rule(
+        1, "vision&statique"
+    ).model_copy(update={"strategie_source": "ia_reingest"})
+
+    enrich_again(session)
+
+    regle = session.query(Regle).filter_by(numero=1).first()
+    assert regle.strategie_analyse == "vision&statique"
+    assert regle.strategie_source == "ia_reingest"
+    assert regle.review_status is None
+    assert regle.review_note is None
+    assert regle.reviewed_at is None
+
+    clear_opquast_tables(session)
+
+
+@patch("app.ingestion.enrich_again.LLMClient")
+def test_enrich_again_partial_failure_preserves_prior_successes(
+    mock_llm_client_class, session
+):
+    """Si la 2e règle échoue après ses tentatives, la 1ère (déjà corrigée et
+    commitée) reste acquise ; la 2e garde son review_status intact."""
+    from app.ingestion.enrich_again import enrich_again
+
+    clear_opquast_tables(session)
+    store_rules(session, EnrichedRules([
+        _rule(1, "vision+statique"),
+        _rule(2, "statique"),
+    ]))
+    session.query(Regle).filter_by(numero=1).update(
+        {"review_status": "a_revoir", "review_note": "Note 1"}
+    )
+    session.query(Regle).filter_by(numero=2).update(
+        {"review_status": "a_revoir", "review_note": "Note 2"}
+    )
+    session.commit()
+
+    mock_llm_instance = MagicMock()
+    mock_llm_client_class.return_value = mock_llm_instance
+    mock_llm_instance.input_tokens = 100
+    mock_llm_instance.output_tokens = 50
+    fixed_rule_1 = _rule(1, "vision&statique").model_copy(
+        update={"strategie_source": "ia_reingest"}
+    )
+    mock_llm_instance.enrich_single_rule.side_effect = [
+        fixed_rule_1,
+        TimeoutError("3 tentatives épuisées"),
+    ]
+
+    with pytest.raises(TimeoutError):
+        enrich_again(session)
+
+    r1 = session.query(Regle).filter_by(numero=1).first()
+    assert r1.strategie_analyse == "vision&statique"
+    assert r1.review_status is None  # traitée avec succès, nettoyée et acquise
+
+    r2 = session.query(Regle).filter_by(numero=2).first()
+    assert r2.review_status == "a_revoir"  # échec, conservée intacte
+    assert r2.review_note == "Note 2"
 
     clear_opquast_tables(session)

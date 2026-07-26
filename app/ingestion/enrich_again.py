@@ -6,7 +6,9 @@ rappelle le LLM d'enrichissement en tenant compte de review_note, puis
 vide les champs de revue une fois la correction appliquée.
 """
 
+import json
 import logging
+from pathlib import Path
 
 from sqlalchemy.orm import Session
 
@@ -21,7 +23,9 @@ from app.models.referentiel import (
     Theme,
 )
 
+from .llm_client import LLMClient, load_manifest
 from .schema import RuleAggregation
+from .stockage import upsert_rule
 
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
@@ -103,3 +107,68 @@ def clear_review_fields(session: Session, numero: int) -> None:
     regle.review_status = None
     regle.review_note = None
     session.flush()
+
+
+def enrich_again(session: Session) -> None:
+    """
+    Rappelle le LLM sur les règles marquées pour revue manuelle et vide
+    leurs champs de revue une fois corrigées.
+
+    Fail-fast, commit par règle (pas un commit global) : si une règle
+    échoue après ses 3 tentatives, l'exception se propage et arrête le
+    traitement — les règles précédentes, déjà commitées individuellement,
+    restent acquises.
+
+    Args:
+        session: Session SQLAlchemy active
+
+    Raises:
+        Exception: Toute erreur d'enrichissement non résolue après les
+            tentatives de retry (propagée depuis enrich_single_rule)
+    """
+    rows = load_rules_to_review(session)
+
+    if not rows:
+        progress_logger.info("enrich_again : aucune règle à revoir")
+        return
+
+    preview = [
+        {"numero": rule.number, "review_note": note, "strategie_analyse_actuelle": current}
+        for rule, note, current in rows
+    ]
+    tmp_dir = Path(__file__).resolve().parents[2] / "tmp"
+    tmp_dir.mkdir(exist_ok=True)
+    with open(tmp_dir / "enrich_again_preview.json", "w", encoding="utf-8") as f:
+        json.dump(preview, f, ensure_ascii=False, indent=2)
+    progress_logger.info(f"enrich_again : {len(rows)} règle(s) à revoir")
+
+    llm_client = LLMClient()
+
+    for rule, review_note, current_strategie_analyse in rows:
+        try:
+            enriched = llm_client.enrich_single_rule(
+                rule,
+                review_note=review_note,
+                current_strategie_analyse=current_strategie_analyse,
+                strategie_source="ia_reingest",
+            )
+            upsert_rule(session, enriched)
+            clear_review_fields(session, numero=rule.number)
+            session.commit()
+            progress_logger.info(f"Règle {rule.number} — enrich_again : OK")
+        except Exception as e:
+            session.rollback()
+            logger.error(f"Règle {rule.number} — enrich_again : KO ({e})")
+            raise
+
+    role = load_manifest()["enrichissement"]
+    cost = (
+        llm_client.input_tokens * role["prix_entree_par_million"]
+        + llm_client.output_tokens * role["prix_sortie_par_million"]
+    ) / 1_000_000
+    summary = (
+        f"enrich_again — Tokens — entrée : {llm_client.input_tokens}, "
+        f"sortie : {llm_client.output_tokens}, coût estimé : {cost:.4f} €"
+    )
+    logger.info(summary)
+    progress_logger.info(summary)
