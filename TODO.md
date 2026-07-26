@@ -15,6 +15,19 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 - [ ] **Chantier 2 — Prompt V4** (`TODO_PIPELINE_INGESTION.md` §R2.x) — `D`/`A`
 
+- [ ] **Jeu de règles d'acceptance RAG (JSONL)** — `D`/`A`
+  - Suite aux 245 embeddings réels (`make embed-rules`, 2026-07-26, 0.0016 €) :
+    deux vérifications manuelles au rapprochement cosinus (`SELECT ... ORDER BY
+    embedding <=> requête`) ont bien fait remonter la règle attendue en top 2
+    (règle 139 « soulignement réservé aux liens » sur « souligner les titres »,
+    règle 181 « information non véhiculée uniquement par couleur » sur « rouge
+    suffit pour une alerte »)
+  - Formaliser ça en jeu de test d'acceptance (Gherkin/BDD, cf. méthodologie
+    utilisateur) : un JSONL `{question, regle_numero_attendue}` rejoué
+    systématiquement plutôt que des vérifications ponctuelles à la main
+  - Reporté : nécessite du budget (appels embedding + volume de questions à
+    constituer) — repris quand plus de crédit disponible
+
 ## Décisions en attente
 
 - [x] **Valeurs `KIMI_PRICE_*`** — reconstruites depuis la facture réelle du 19/07
@@ -33,14 +46,19 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Documentation
 
-- [ ] **`G_user_stories_qualicheck.drawio` — export PNG supprimé, à refaire après reclarification US1/US2** —
+- [x] **Incohérence US1/US2 de `conception.md` — résolue (2026-07-26)** — la
+  partie dialogue/validation des constats (§"US1 — Dialogue et validation")
+  est bien **US1** (SQL déterministe, pas de RAG) : c'est ce que disaient déjà
+  le titre de section, le corps du texte et le tableau comparatif. Seule la
+  légende de l'image (`![Flux de dialogue — US2](...)`) contredisait le
+  reste — corrigée en `US1` — `D`/`A`
+
+- [ ] **`G_user_stories_qualicheck.drawio` — export PNG supprimé, à refaire** —
   d'abord corrigé "68 règles" → "245 règles" (US0, 2026-07-25), puis le `.png`
-  a été supprimé par David : le découpage US1/US2 de la source ne correspond
-  plus à celui utilisé en discussion (la partie dialogue/validation est tantôt
-  "US1 suite", tantôt "US2" selon le document — `conception.md` vs cette
-  annexe). `conception.md` neutralisé en conséquence (renvoi vers le `.drawio`
-  source, plus de lien PNG cassé). Reclarifier le découpage avant de rééexporter
-  — `D`
+  a été supprimé par David. Le découpage US1/US2 de `conception.md` est
+  maintenant clarifié (voir entrée ci-dessus) — reste à vérifier que cette
+  annexe (source du découpage US1/US2 illustré) est bien alignée avant de
+  rééexporter — `D`
 - [ ] **Liens de `F_choix_llm.md` vers le benchmark** — `A`
   - Le document attend `annexes/F1_FOUNDRY_NOTES.md`, `F2_FOUNDRY_SI_NOTES.md`,
     `F3_benchmark.py`, `F4_analyse_models_azure.pdf`
