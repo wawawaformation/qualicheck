@@ -41,6 +41,7 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 | `make export_sql` | Exporte les données réelles (`pg_dump --data-only`, hors `alembic_version`) dans `backups/YYYYMMDD_HHMMSS.sql` (dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse |
 | `make import_sql FILE=...` | Restaure un dump `export_sql` dans la base réelle — `FILE=` obligatoire ; échoue explicitement en cas de conflit de clé primaire (ne vide rien tout seul, voir `make clear` si besoin) |
 | `make enrich-again` | Rappelle le LLM sur les règles `review_status = a_revoir`/`invalide` (tient compte de `review_note`), vide ces champs après correction — `make export_sql` avant (backup pré-run) et après |
+| `make embed-rules` | Recalcule l'embedding de toutes les règles (`text-embedding-3-small`, `dimensions=1536`), puis `make export_sql` |
 | `make test` | Lance toute la suite (`pytest tests/`) — nécessite les conteneurs démarrés, les migrations appliquées, et `make migration-test` pour les tests d'intégration destructeurs |
 | `make test-unit` | Lance uniquement `tests/unit` — aucune BDD requise |
 | `make test-integration` | Lance uniquement `tests/integration` — nécessite `make migration-test` pour les tests destructeurs |

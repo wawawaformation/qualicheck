@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again
+.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules
 
 # ============================================================
 # Docker
@@ -70,6 +70,12 @@ import_sql:
 enrich-again:
 	$(MAKE) export_sql
 	uv run python scripts/enrich_again.py
+	$(MAKE) export_sql
+
+## Recalcule l'embedding de toutes les règles (Azure text-embedding-3-small,
+## dimensions=1536), puis sauvegarde les données réelles
+embed-rules:
+	uv run python scripts/embed_rules.py
 	$(MAKE) export_sql
 
 # ============================================================
