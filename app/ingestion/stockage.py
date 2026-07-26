@@ -112,6 +112,7 @@ def load_enriched_rules_from_db(session: Session) -> EnrichedRules:
             strategie_source=regle.strategie_source,
             llm_model=regle.llm_model,
             prompt_version=regle.prompt_version,
+            embedding=regle.embedding,
         )
         enriched_list.append(enriched)
 
@@ -195,6 +196,8 @@ def upsert_rule(session: Session, enriched_rule: EnrichedRule) -> Regle:
     regle.guide_analyse = enriched_rule.guide_analyse
     regle.llm_model = enriched_rule.llm_model
     regle.prompt_version = enriched_rule.prompt_version
+    if enriched_rule.embedding is not None:
+        regle.embedding = enriched_rule.embedding
     regle.updated_at = now
 
     session.flush()
