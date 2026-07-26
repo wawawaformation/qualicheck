@@ -41,7 +41,7 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 | `make export_sql` | Exporte les données réelles (`pg_dump --data-only`, hors `alembic_version`) dans `backups/YYYYMMDD_HHMMSS.sql` (dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse |
 | `make import_sql FILE=...` | Restaure un dump `export_sql` dans la base réelle — `FILE=` obligatoire ; échoue explicitement en cas de conflit de clé primaire (ne vide rien tout seul, voir `make clear` si besoin) |
 | `make enrich-again` | Rappelle le LLM sur les règles `review_status = a_revoir`/`invalide` (tient compte de `review_note`), vide ces champs après correction — `make export_sql` avant (backup pré-run) et après |
-| `make embed-rules` | Recalcule l'embedding de toutes les règles (`text-embedding-3-small`, `dimensions=1536`), puis `make export_sql` |
+| `make embed-rules` | Recalcule l'embedding de toutes les règles (modèle et dimension définis dans `app/ingestion/manifest.yml`, rôle `embedding`), puis `make export_sql` |
 | `make test` | Lance toute la suite (`pytest tests/`) — nécessite les conteneurs démarrés, les migrations appliquées, et `make migration-test` pour les tests d'intégration destructeurs |
 | `make test-unit` | Lance uniquement `tests/unit` — aucune BDD requise |
 | `make test-integration` | Lance uniquement `tests/integration` — nécessite `make migration-test` pour les tests destructeurs |
@@ -62,12 +62,12 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 
 - Backend : FastAPI (Python)
 - Frontend : Vue.js
-- BDD : PostgreSQL + pgvector (index HNSW, `vector(384)`)
+- BDD : PostgreSQL + pgvector (index HNSW, `vector(1536)`)
 - Migrations : Alembic
 - Gestion de paquets/environnement : `uv`
 - Linter : Ruff
-- LLM (dev) : Kimi K2.6 (enrichissement ingestion), gpt-5.4 / gpt-5.4-mini (audit, question libre) via Azure
-- Embedding : Azure `text-embedding-3-small` (`dimensions=384`), solution actuelle — cible visée à terme : BGE Multilingual Gemma2 via Infomaniak (gratuit, encore `coming_soon` au 2026-07-26). MiniLM L12 v2 (initialement visé) disqualifié : `max_token_input=128`, incompatible avec le choix "1 règle = 1 chunk" (~319 tokens en moyenne, jusqu'à ~952)
+- LLM (dev) : rôles et modèles définis dans `app/ingestion/manifest.yml` (rôle `enrichissement`, seul implémenté à ce stade) — gpt-5.4 / gpt-5.4-mini via Azure prévus pour l'audit et la question libre (US1/US2), pas encore implémentés donc pas encore dans le manifeste
+- Embedding : rôle `embedding` dans `app/ingestion/manifest.yml` — dimension native (actuellement 1536, définie dans `app/ingestion/embedding.py`) passée explicitement à l'appel API, décision actée : pas de troncature. Cible visée à terme : BGE Multilingual Gemma2 via Infomaniak (gratuit, encore `coming_soon` au 2026-07-26). MiniLM L12 v2 (initialement visé) disqualifié : `max_token_input=128`, incompatible avec le choix "1 règle = 1 chunk" (~319 tokens en moyenne, jusqu'à ~952)
 - Déploiement : Docker + docker-compose
 
 ## `.env`

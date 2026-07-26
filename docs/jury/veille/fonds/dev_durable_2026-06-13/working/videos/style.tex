@@ -1,0 +1,56 @@
+% style.tex — feuille de style autonome pour Pandoc
+% MOTEUR OBLIGATOIRE : xelatex (ou lualatex), à cause de fontspec.
+%
+% Compilation :
+%   pandoc veille-dev-durable-ia.md -o veille.pdf \
+%     --pdf-engine=xelatex -H style.tex
+%
+% NB : ce fichier fixe lui-même la police. Ne mets PAS aussi "mainfont:"
+% dans le front matter YAML, sinon double definition / conflit.
+
+% --- Police (xelatex/lualatex) -------------------------------------------
+% TeX Gyre Termes contient les accents francais, le ₂ (indice) et la
+% plupart des glyphes Unicode courants. Police deja installee chez toi.
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\setsansfont{TeX Gyre Heros}      % equivalent Helvetica, pour les titres
+\setmonofont{TeX Gyre Cursor}     % equivalent Courier, pour le code
+
+% --- Typographie francaise -----------------------------------------------
+% babel-francais est active par "lang: fr-FR" du front matter.
+\usepackage{csquotes}
+
+% --- Titres de section ---------------------------------------------------
+% Rend les ###/subsubsection bien visibles (par defaut LaTeX les noie).
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries\sffamily}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\sffamily}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\itshape}{}{0em}{}
+\titlespacing*{\subsubsection}{0pt}{1.2em}{0.4em}
+
+% --- Espacement & lisibilite ---------------------------------------------
+\usepackage{setspace}
+\setstretch{1.08}
+\setlength{\parskip}{0.6em}
+\setlength{\parindent}{0pt}
+
+% --- Didascalies (blockquotes) : encadre gris discret --------------------
+% Pandoc met les > ... dans un environnement "quote". On le restyle pour
+% que les indications de mise en scene se detachent du texte a dire.
+\usepackage{xcolor}
+\usepackage{mdframed}
+\definecolor{didasbg}{HTML}{F2F1EC}
+\definecolor{didasrule}{HTML}{C8A23B}
+\renewenvironment{quote}
+  {\begin{mdframed}[backgroundcolor=didasbg,linecolor=didasrule,
+      linewidth=2pt,topline=false,bottomline=false,rightline=false,
+      innerleftmargin=12pt,innerrightmargin=12pt,
+      innertopmargin=8pt,innerbottommargin=8pt,skipabove=8pt,skipbelow=8pt]
+   \itshape\small}
+  {\end{mdframed}}
+
+% --- Images --------------------------------------------------------------
+% Insertion : ![Legende](empilement-energies.pdf)
+% Les .pdf des schemas doivent etre dans le meme dossier que le .md.
+\usepackage{graphicx}
+\setkeys{Gin}{width=\linewidth,keepaspectratio}
