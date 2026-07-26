@@ -53,18 +53,28 @@ Référence : `conception/2_ingestion/ingestion.md`
 - [ ] **Étape 6 — Embedding**
   - [ ] `app/ingestion/embedding.py`
   - [ ] **Décision 2026-07-26** : vectorisation via Azure `text-embedding-3-small`
-    (`dimensions=384`) en solution intérimaire — les 3 modèles d'embedding du
-    catalogue Infomaniak (`mini_lm_l12_v2`, `bge_multilingual_gemma2`,
+    (`dimensions=384`, déploiement Azure vérifié : `GenerallyAvailable`,
+    8191 tokens de contexte, 125 000 TPM / 750 RPM, mise hors service
+    02/2028) en solution actuelle — les 3 modèles d'embedding du catalogue
+    Infomaniak (`mini_lm_l12_v2`, `bge_multilingual_gemma2`,
     `Qwen3-Embedding-8B`) sont encore en `coming_soon`. `dimensions=384`
     évite une migration de schéma (`regle.embedding` reste `vector(384)`),
     mais **n'évite pas** une ré-vectorisation complète du référentiel au
     moment du bascule vers Infomaniak — deux modèles différents produisent
     des espaces vectoriels non comparables, même à dimension égale
+  - [ ] **`mini_lm_l12_v2` disqualifié comme cible finale** : `max_token_input=128`,
+    incompatible avec la décision actée "1 règle = 1 chunk" (mesuré sur les
+    245 règles réelles : ~319 tokens en moyenne, jusqu'à ~952 pour la règle
+    164) — aucun chunk ne rentrerait sous cette limite. Cible Infomaniak
+    revue : **BGE Multilingual Gemma2** (`max_token_input=8000`, large
+    marge), à confirmer (dimension de sortie non documentée dans le
+    catalogue, à vérifier quand le modèle passera en `ready`)
   - [ ] Batch processing
   - [ ] Tests unitaires avec mocks
   - [ ] **À prévoir plus tard** : script de ré-vectorisation (recalcul de
-    `embedding` pour les 245 lignes) quand Infomaniak MiniLM L12 v2 passera
-    en `ready` — hors périmètre tant que ce n'est pas le cas
+    `embedding` pour les 245 lignes) quand BGE Multilingual Gemma2 (ou un
+    autre modèle Infomaniak compatible ≥ 952 tokens) passera en `ready` —
+    hors périmètre tant que ce n'est pas le cas
 
 - [ ] **Étape 7 — Indexation**
   - [ ] Intégré dans `app/ingestion/stockage.py`
