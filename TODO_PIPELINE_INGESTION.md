@@ -52,9 +52,19 @@ Référence : `conception/2_ingestion/ingestion.md`
 
 - [ ] **Étape 6 — Embedding**
   - [ ] `app/ingestion/embedding.py`
-  - [ ] Vectorisation via All MiniLM L12 v2 (Infomaniak)
+  - [ ] **Décision 2026-07-26** : vectorisation via Azure `text-embedding-3-small`
+    (`dimensions=384`) en solution intérimaire — les 3 modèles d'embedding du
+    catalogue Infomaniak (`mini_lm_l12_v2`, `bge_multilingual_gemma2`,
+    `Qwen3-Embedding-8B`) sont encore en `coming_soon`. `dimensions=384`
+    évite une migration de schéma (`regle.embedding` reste `vector(384)`),
+    mais **n'évite pas** une ré-vectorisation complète du référentiel au
+    moment du bascule vers Infomaniak — deux modèles différents produisent
+    des espaces vectoriels non comparables, même à dimension égale
   - [ ] Batch processing
   - [ ] Tests unitaires avec mocks
+  - [ ] **À prévoir plus tard** : script de ré-vectorisation (recalcul de
+    `embedding` pour les 245 lignes) quand Infomaniak MiniLM L12 v2 passera
+    en `ready` — hors périmètre tant que ce n'est pas le cas
 
 - [ ] **Étape 7 — Indexation**
   - [ ] Intégré dans `app/ingestion/stockage.py`
