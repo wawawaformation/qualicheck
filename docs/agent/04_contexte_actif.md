@@ -16,6 +16,9 @@ Objectif: donner un contexte fiable et peu couteux en tokens.
 - Tests destructeurs: `POSTGRES_TEST_DB` uniquement
 - Appels LLM: 3 retries avec backoff
 - Limiter les re-ingestions completes (cout)
+- Perimetre certification: ne pas elargir au-dela de ce qui valide les
+  competences visees (`conception/referentiel_competences.md`,
+  `conception/certif_deroule.md`)
 
 ## Source de verite technique
 

@@ -21,6 +21,10 @@ Ce fichier est volontairement court pour limiter les tokens. Le détail est disp
 - Tests destructeurs : utiliser `POSTGRES_TEST_DB`, jamais `POSTGRES_DB`.
 - Pipeline LLM : retry 3 tentatives avec backoff.
 - Coût : éviter les ré-ingestions complètes non nécessaires.
+- Périmètre certification : ne pas élargir au-delà de ce qui valide les
+  compétences visées (`conception/referentiel_competences.md`,
+  `conception/certif_deroule.md`) — temps de certification restreint,
+  proposer plus large est un risque, pas un service.
 
 ## Priorités d'exécution
 
