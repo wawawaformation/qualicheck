@@ -592,12 +592,16 @@ La cinquième ligne est le test qui compte le plus : une regex trop stricte
 casserait les notes rédigées en français, régression qu'on ne verrait qu'en
 production.
 
-`test_outils.py` — champ dérivé : `"statique&playwright"` donne
-`["statique", "playwright"]`, `"vision+statique"` donne
-`["vision", "statique"]`, `"manuel"` donne `["manuel"]`.
+Le même fichier couvre le champ dérivé `outils[]` — un fichier de test par
+module testé : `"statique&playwright"` donne `["statique", "playwright"]`,
+`"vision+statique"` donne `["vision", "statique"]`, `"manuel"` donne
+`["manuel"]`.
 
 `test_auth.py` — token correct passe · token faux donne `401` · header absent
 donne `401` · `FASTAPI_API_KEY` vide ou absente empêche le démarrage.
+
+`test_config.py` — les valeurs du manifeste sont exposées (port, longueur max,
+origines CORS) et un secret vide est refusé.
 
 ### Tests d'intégration
 
