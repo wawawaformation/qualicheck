@@ -11,8 +11,8 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 | `make migration-test` | Crée (si absente) et migre la base de test dédiée `qualicheck_test` (`POSTGRES_TEST_DB`), utilisée par les tests d'intégration destructeurs |
 | `make ingestion` | Lance l'ingestion des règles Opquast, puis `make export_sql` automatiquement — `LIMIT=n` pour ne traiter que les n premières règles (ex : `make ingestion LIMIT=5`) |
 | `make clear` | Vide les tables Opquast de la base de données (utile pour retester une ingestion) |
-| `make export_sql` | Exporte les données réelles (`pg_dump --data-only`, hors `alembic_version`) dans `backups/YYYYMMDD_HHMMSS.sql` (dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse |
-| `make import_sql FILE=...` | Restaure un dump `export_sql` dans la base réelle — `FILE=` obligatoire ; échoue explicitement en cas de conflit de clé primaire (ne vide rien tout seul, voir `make clear` si besoin) |
+| `make export_sql` | Exporte les données réelles (`pg_dump --data-only`, hors `alembic_version`/`etat_donnees`) dans `backups/YYYYMMDD_HHMMSS.sql` (dossier gitignoré) — à lancer avant toute ré-ingestion réelle coûteuse ; met aussi à jour la table `etat_donnees` (fichier, opération, horodatage) |
+| `make import_sql FILE=...` | Restaure un dump `export_sql` dans la base réelle — `FILE=` obligatoire ; échoue explicitement en cas de conflit de clé primaire (ne vide rien tout seul, voir `make clear` si besoin) ; met aussi à jour `etat_donnees` |
 | `make enrich-again` | Rappelle le LLM sur les règles `review_status = a_revoir`/`invalide` (tient compte de `review_note`), vide ces champs après correction — `make export_sql` avant (backup pré-run) et après |
 | `make embed-rules` | Recalcule l'embedding de toutes les règles (modèle et dimension définis dans `app/ingestion/manifest.yml`, rôle `embedding`), puis `make export_sql` |
 | `make test` | Lance toute la suite (`pytest tests/`) — nécessite les conteneurs démarrés, les migrations appliquées, et `make migration-test` pour les tests d'intégration destructeurs |

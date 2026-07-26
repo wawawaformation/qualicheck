@@ -248,3 +248,30 @@ def test_colonne_embedding_dimension_1536(conn):
         """)
         index = cur.fetchone()
     assert index is not None, "Index regle_embedding_idx manquant"
+
+
+def test_table_etat_donnees(conn):
+    """etat_donnees doit exister avec ses colonnes et ses contraintes CHECK."""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'etat_donnees'
+            ORDER BY ordinal_position;
+        """)
+        colonnes = cur.fetchall()
+    assert colonnes == [
+        ("id", "smallint"),
+        ("fichier_backup", "character varying"),
+        ("type_operation", "character varying"),
+        ("horodatage", "timestamp without time zone"),
+    ], f"Colonnes inattendues sur etat_donnees : {colonnes}"
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT conname FROM pg_constraint
+            WHERE conrelid = 'etat_donnees'::regclass AND contype = 'c';
+        """)
+        contraintes = {row[0] for row in cur.fetchall()}
+    assert "etat_donnees_singleton" in contraintes
+    assert "etat_donnees_type_operation_check" in contraintes
