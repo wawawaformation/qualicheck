@@ -62,6 +62,7 @@ class EnrichedRule(RuleAggregation):
     strategie_source: str = "ia_import"
     llm_model: str | None = None
     prompt_version: int | None = None
+    embedding: list[float] | None = None
 
     @field_validator("strategie_analyse", "strategie_justification", "guide_analyse")
     @classmethod
