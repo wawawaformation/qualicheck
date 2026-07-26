@@ -306,7 +306,7 @@ Le routing par stratégie est un point clé : en distinguant les règles vérifi
 
 L'auditeur consulte les constats et engage un dialogue avec l'agent pour les comprendre, les challenger ou les reformuler. Le contexte d'audit est connu — les règles ont été sélectionnées, les constats sont posés. Le système travaille en **SQL déterministe** : il injecte les données exactes des règles concernées dans le prompt de l'agent, sans recherche sémantique. L'agent répond avec précision sur les constats en cours. L'auditeur valide, modifie ou rejette chaque constat, et peut laisser un **feedback qualitatif** qui sera utilisé lors de la prochaine re-ingestion.
 
-![Flux de dialogue — US2](annexes/E_pipeline_dialogue.png)
+![Flux de dialogue — US1](annexes/E_pipeline_dialogue.png)
 
 *cf. [Annexe E — Flux de dialogue et validation US1](annexes/E_pipeline_dialogue.png)*
 
