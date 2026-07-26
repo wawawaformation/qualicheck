@@ -4,10 +4,15 @@ Historique des réalisations sur QualiCheck. Mis à jour par tout outil agentiqu
 
 Format d'entrée, une ligne par réalisation :
 
-```
+```text
 ## [date] — [outil]
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
+
+## 2026-07-26 — GitHub Copilot
+
+- Dispatch de `CLAUDE.md` pour réduction de tokens : fichier racine compacté + extraction du détail dans `docs/agent/01_contexte_projet.md`, `docs/agent/02_regles_execution.md`, `docs/agent/03_references_impl.md` — voir `CLAUDE.md`, `docs/agent/`, `CHANGELOG.md`
+- Reprise de la réorganisation documentaire sans toucher aux TODO : ajout de `docs/README.md`, `docs/agent/README.md`, `docs/agent/04_contexte_actif.md`, mise à jour de `CLAUDE.md` (nouveaux points d'entrée de contexte) et réalignement de `README.md` sur l'état réel (`pgvector` 1536, embedding actuel Azure `text-embedding-3-small`) — voir `docs/README.md`, `docs/agent/`, `CLAUDE.md`, `README.md`
 
 ## 2026-07-26 — Claude Code
 
@@ -208,7 +213,7 @@ Format d'entrée, une ligne par réalisation :
 
 ---
 
-## 2026-07-18 — OpenCode
+## 2026-07-18 — OpenCode (Part 2)
 
 - Initialisation du dépôt Git — voir `.git/`
 - Ajout du `.gitignore` (protection `.env`, Python, logs, éditeurs) — voir `.gitignore`
