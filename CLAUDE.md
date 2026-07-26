@@ -66,7 +66,7 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 - Gestion de paquets/environnement : `uv`
 - Linter : Ruff
 - LLM (dev) : Kimi K2.6 (enrichissement ingestion), gpt-5.4 / gpt-5.4-mini (audit, question libre) via Azure
-- Embedding : All MiniLM L12 v2 via Infomaniak (gratuit, 384 dim)
+- Embedding : Azure `text-embedding-3-small` (`dimensions=384`), solution actuelle — cible visée à terme : BGE Multilingual Gemma2 via Infomaniak (gratuit, encore `coming_soon` au 2026-07-26). MiniLM L12 v2 (initialement visé) disqualifié : `max_token_input=128`, incompatible avec le choix "1 règle = 1 chunk" (~319 tokens en moyenne, jusqu'à ~952)
 - Déploiement : Docker + docker-compose
 
 ## `.env`
