@@ -182,6 +182,7 @@ class LLMClient:
             number=rule.number,
             intitule=rule.intitule,
             theme=rule.theme,
+            contexte=rule.contexte,
             solution=rule.solution,
             controle=rule.controle,
             objectifs=rule.objectifs,

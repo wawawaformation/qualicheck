@@ -57,6 +57,41 @@ class TestLLMClient:
         assert client.input_tokens == 100
         assert client.output_tokens == 50
 
+    @patch("app.ingestion.llm_client.ChatOpenAI")
+    def test_enrich_single_rule_preserves_contexte(self, mock_azure_llm):
+        """Le champ contexte de la règle source est reporté sur l'EnrichedRule
+        (régression : jusqu'ici toujours perdu, écrasé à NULL en BDD)."""
+        mock_llm_instance = MagicMock()
+        mock_azure_llm.return_value = mock_llm_instance
+
+        mock_response = MagicMock()
+        mock_response.content = (
+            '{"strategie_analyse": "statique", '
+            '"strategie_justification": "Test", '
+            '"guide_analyse": "Test guide"}'
+        )
+        mock_response.usage_metadata = {"input_tokens": 10, "output_tokens": 5}
+        mock_llm_instance.invoke.return_value = mock_response
+
+        client = LLMClient()
+        rule = Rule(
+            id=1,
+            number=1,
+            intitule="Les images ont un attribut alt",
+            theme="Images et médias",
+            contexte="Un texte explicatif de test.",
+            solution="Ajouter alt descriptif",
+            controle="Vérifier alt présent",
+            objectifs=["Accessibilité"],
+            tags=["HTML"],
+            phases=["Intégration"],
+            slug="images-alt",
+        )
+
+        enriched = client.enrich_single_rule(rule)
+
+        assert enriched.contexte == "Un texte explicatif de test."
+
     @patch("tenacity.nap.time.sleep")
     @patch("app.ingestion.llm_client.ChatOpenAI")
     def test_enrich_single_rule_retry_on_timeout(self, mock_azure_llm, mock_sleep):
