@@ -80,13 +80,22 @@ class LLMClient:
         self.input_tokens = 0
         self.output_tokens = 0
 
-    def load_prompt(self, rule: Rule) -> str:
+    def load_prompt(
+        self,
+        rule: Rule,
+        review_note: str | None = None,
+        current_strategie_analyse: str | None = None,
+    ) -> str:
         """
         Charge le prompt depuis prompts/enrich_rule.md et remplace les placeholders.
 
         Remplacement manuel (pas de str.format()) car le prompt contient des
         accolades JSON littérales dans les exemples few-shot, qui entreraient
         en conflit avec la syntaxe de formatage de PromptTemplate.
+
+        Si review_note est fourni (utilisé par enrich_again), insère une
+        section "Contexte de revue humaine" juste avant l'instruction finale
+        du prompt — comportement strictement inchangé sinon.
         """
         prompt_text = _read_prompt_file()
         if prompt_text.startswith("---\n"):
@@ -105,6 +114,20 @@ class LLMClient:
         for placeholder in PROMPT_PLACEHOLDERS:
             prompt_text = prompt_text.replace(f"{{{placeholder}}}", values[placeholder])
 
+        if review_note is not None:
+            review_section = (
+                "\n## Contexte de revue humaine\n\n"
+                "Cette règle a déjà été classée une première fois avec le résultat suivant :\n"
+                f'strategie_analyse = "{current_strategie_analyse}"\n\n'
+                "Une revue humaine a identifié un problème sur cette classification :\n"
+                f"{review_note}\n\n"
+                "Reclasse cette règle en tenant compte de cette remarque.\n"
+            )
+            final_instruction = "Génère maintenant une réponse JSON pour la règle ci-dessus."
+            prompt_text = prompt_text.replace(
+                final_instruction, review_section + "\n" + final_instruction
+            )
+
         return prompt_text
 
     @retry(
@@ -112,7 +135,13 @@ class LLMClient:
         wait=wait_exponential(multiplier=2, min=2, max=8),
         reraise=True,
     )
-    def enrich_single_rule(self, rule: Rule) -> EnrichedRule:
+    def enrich_single_rule(
+        self,
+        rule: Rule,
+        review_note: str | None = None,
+        current_strategie_analyse: str | None = None,
+        strategie_source: str = "ia_import",
+    ) -> EnrichedRule:
         """
         Enrichit une règle via LLM avec retry logic.
 
@@ -121,6 +150,12 @@ class LLMClient:
 
         Args:
             rule: Rule à enrichir
+            review_note: Note de revue humaine (utilisé par enrich_again) —
+                None pour un enrichissement initial normal
+            current_strategie_analyse: Classification actuelle à corriger
+                (utilisé par enrich_again avec review_note)
+            strategie_source: Origine de la classification ("ia_import" par
+                défaut, "ia_reingest" pour enrich_again)
 
         Returns:
             EnrichedRule avec champs d'enrichissement
@@ -133,7 +168,7 @@ class LLMClient:
             tokens — les tentatives échouées avant succès ne remontent pas
             de usage_metadata exploitable.
         """
-        formatted_prompt = self.load_prompt(rule)
+        formatted_prompt = self.load_prompt(rule, review_note, current_strategie_analyse)
 
         response = self.llm.invoke(formatted_prompt)
         parsed = self.parser.parse(response.content)
@@ -156,7 +191,7 @@ class LLMClient:
             strategie_analyse=parsed["strategie_analyse"],
             strategie_justification=parsed["strategie_justification"],
             guide_analyse=parsed["guide_analyse"],
-            strategie_source="ia_import",
+            strategie_source=strategie_source,
             llm_model=self.model_name,
             prompt_version=self.prompt_version,
         )

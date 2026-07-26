@@ -424,3 +424,86 @@ class TestManifestAndPromptVersion:
         assert enriched.llm_model == "kimi-k2.6"
         _, kwargs = mock_azure_llm.call_args
         assert kwargs["model"] == "un-nom-de-deploiement-quelconque"
+
+
+class TestEnrichAgainPromptContext:
+    """Vérifie l'injection du contexte de revue humaine dans le prompt."""
+
+    @patch("app.ingestion.llm_client.ChatOpenAI")
+    def test_load_prompt_without_review_note_unchanged(self, mock_azure_llm):
+        """Sans review_note, le prompt ne contient aucune section de revue."""
+        mock_azure_llm.return_value = MagicMock()
+        client = LLMClient()
+        rule = Rule(
+            id=1, number=1, intitule="Titre", theme="Thème",
+            solution="Solution", controle="Contrôle",
+            objectifs=["Obj"], tags=["Tag"], phases=["Phase"], slug="regle-1",
+        )
+
+        prompt = client.load_prompt(rule)
+
+        assert "Contexte de revue humaine" not in prompt
+        assert prompt.count(
+            "Génère maintenant une réponse JSON pour la règle ci-dessus."
+        ) == 1
+
+    @patch("app.ingestion.llm_client.ChatOpenAI")
+    def test_load_prompt_with_review_note_adds_context_section(self, mock_azure_llm):
+        """Avec review_note, la section de revue apparaît avant l'instruction finale."""
+        mock_azure_llm.return_value = MagicMock()
+        client = LLMClient()
+        rule = Rule(
+            id=65, number=65, intitule="Titre", theme="Thème",
+            solution="Solution", controle="Contrôle",
+            objectifs=["Obj"], tags=["Tag"], phases=["Phase"], slug="regle-65",
+        )
+
+        prompt = client.load_prompt(
+            rule,
+            review_note="Devrait être vision&statique (ET), pas vision+statique.",
+            current_strategie_analyse="vision+statique",
+        )
+
+        assert "Contexte de revue humaine" in prompt
+        assert 'strategie_analyse = "vision+statique"' in prompt
+        assert "Devrait être vision&statique (ET), pas vision+statique." in prompt
+        section_index = prompt.index("Contexte de revue humaine")
+        instruction_index = prompt.index(
+            "Génère maintenant une réponse JSON pour la règle ci-dessus."
+        )
+        assert section_index < instruction_index
+
+    @patch("app.ingestion.llm_client.ChatOpenAI")
+    def test_enrich_single_rule_with_review_note_writes_ia_reingest(self, mock_azure_llm):
+        """enrich_single_rule avec review_note écrit strategie_source='ia_reingest'
+        et transmet le contexte de revue au prompt envoyé au LLM."""
+        mock_llm_instance = MagicMock()
+        mock_azure_llm.return_value = mock_llm_instance
+        mock_response = MagicMock()
+        mock_response.content = (
+            '{"strategie_analyse": "vision&statique", '
+            '"strategie_justification": "Les deux vérifications sont indépendantes.", '
+            '"guide_analyse": "Étape 1 [vision] : ... Étape 2 [statique] : ..."}'
+        )
+        mock_response.usage_metadata = {"input_tokens": 120, "output_tokens": 60}
+        mock_llm_instance.invoke.return_value = mock_response
+
+        client = LLMClient()
+        rule = Rule(
+            id=65, number=65, intitule="Titre", theme="Thème",
+            solution="Solution", controle="Contrôle",
+            objectifs=["Obj"], tags=["Tag"], phases=["Phase"], slug="regle-65",
+        )
+
+        enriched = client.enrich_single_rule(
+            rule,
+            review_note="Devrait être vision&statique (ET).",
+            current_strategie_analyse="vision+statique",
+            strategie_source="ia_reingest",
+        )
+
+        assert enriched.strategie_analyse == "vision&statique"
+        assert enriched.strategie_source == "ia_reingest"
+
+        sent_prompt = mock_llm_instance.invoke.call_args[0][0]
+        assert "Devrait être vision&statique (ET)." in sent_prompt
