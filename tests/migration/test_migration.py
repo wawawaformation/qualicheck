@@ -228,3 +228,23 @@ def test_pk_composite_audit_regle(conn):
         """)
         count = cur.fetchone()[0]
     assert count == 1, "PK absente sur audit_regle"
+
+
+def test_colonne_embedding_dimension_1536(conn):
+    """embedding doit être en vector(1536), avec son index HNSW."""
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT format_type(a.atttypid, a.atttypmod)
+            FROM pg_attribute a
+            WHERE a.attrelid = 'regle'::regclass AND a.attname = 'embedding';
+        """)
+        type_actuel = cur.fetchone()[0]
+    assert type_actuel == "vector(1536)", f"Type embedding inattendu : {type_actuel}"
+
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT indexname FROM pg_indexes
+            WHERE tablename = 'regle' AND indexname = 'regle_embedding_idx';
+        """)
+        index = cur.fetchone()
+    assert index is not None, "Index regle_embedding_idx manquant"
