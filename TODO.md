@@ -35,9 +35,10 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     validés par David) ; `app/ingestion/rag_acceptance.py` (logique testée
     unitairement) ; `scripts/check_rag_acceptance.py` + `make
     rag-acceptance` (top_n/taux_reussite_minimum dans `manifest.yml`)
-  - Suite volontairement hors CI (coût réel à chaque run) — **premier
-    lancement réel non fait dans ce chantier**, réservé à une décision
-    délibérée de David (même logique que `make embed-rules`)
+  - Suite volontairement hors CI (coût réel à chaque run)
+  - **`make rag-acceptance` lancé pour de vrai par David (2026-07-26)** :
+    17/17 cas passent, taux de réussite 100% (seuil 80%), 274 tokens, coût
+    négligeable
 
 ## Décisions en attente
 
