@@ -42,7 +42,7 @@ class Regle(Base):
     reviewed_at = Column(DateTime, nullable=True)
     review_status = Column(String(16), nullable=True)
     review_note = Column(Text, nullable=True)
-    embedding = Column(Vector(384))
+    embedding = Column(Vector(1536))
 
 
 class Objectif(Base):
