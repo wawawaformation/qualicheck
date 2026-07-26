@@ -78,3 +78,26 @@ plus tard si l'idée tient.
     probablement une notion de **type de contenu** par chunk (règle vs
     glossaire vs info pratique), sinon impossible de savoir d'où vient une
     réponse pour la citer correctement à l'auditeur.
+
+## 2026-07-26
+
+- **`app/api_data/` pourrait un jour exposer un endpoint de recherche
+  vectorielle "vecteur déjà calculé"** — reçoit `{"vecteur": [...], "top_n":
+  3}` et se contente du `ORDER BY embedding <=> :vecteur LIMIT top_n`, sans
+  jamais appeler de LLM. Respecterait la contrainte de l'API données (« aucun
+  appel LLM, aucun recalcul d'embedding » —
+  `docs/superpowers/plans/2026-07-26-api-data-implementation.md`), puisque
+  c'est exactement le motif déjà écrit et validé dans
+  `app/ingestion/rag_acceptance.py::query_top_n_numeros()`.
+  - **Volontairement pas construit maintenant** : personne ne le consomme —
+    US2 (question libre, RAG sémantique — décision actée
+    `docs/jury/decisions/2026-07-25-rag-us2-petit-corpus.md`) n'est pas
+    conçue, et c'est elle qui calculerait la question en vecteur (via un
+    appel LLM d'embedding) avant d'appeler ce futur endpoint. `app/CLAUDE.md`
+    interdit explicitement d'anticiper une structure avant sa conception —
+    construire ce bout maintenant serait spéculatif, YAGNI l'écarte.
+  - **Frontière à retrouver le jour où US2 est spécée** : soit
+    `app/api_business/` embarque l'appel LLM d'embedding puis appelle cet
+    endpoint sur `app/api_data/` (le vecteur transite en HTTP, jamais le
+    calcul), soit `api_business` requête pgvector directement — à trancher
+    avec les vrais détails d'US2, pas avant.
