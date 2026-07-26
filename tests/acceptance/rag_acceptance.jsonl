@@ -1,0 +1,17 @@
+{"question": "Peut-on souligner les titres ?", "numero_regle_attendue": 139}
+{"question": "Il faut mettre en rouge les infos de danger", "numero_regle_attendue": 181}
+{"question": "Le site doit-il être accessible uniquement en connexion sécurisée ?", "numero_regle_attendue": 197}
+{"question": "Faut-il décrire les images importantes pour les personnes qui ne peuvent pas les voir ?", "numero_regle_attendue": 118}
+{"question": "Où doit-on pouvoir trouver la politique de vie privée du site ?", "numero_regle_attendue": 15}
+{"question": "Un site marchand doit-il proposer plusieurs façons de payer ?", "numero_regle_attendue": 58}
+{"question": "Si un formulaire est refusé, faut-il montrer précisément quels champs posent problème ?", "numero_regle_attendue": 79}
+{"question": "Le site doit-il éviter les liens cassés en interne ?", "numero_regle_attendue": 152}
+{"question": "Les vidéos doivent-elles avoir des sous-titres ?", "numero_regle_attendue": 122}
+{"question": "Le site peut-il ouvrir des fenêtres popup pendant la navigation ?", "numero_regle_attendue": 154}
+{"question": "Le site doit-il avoir un moteur de recherche interne ?", "numero_regle_attendue": 168}
+{"question": "Sur mobile, les boutons doivent-ils être assez grands pour être touchés facilement ?", "numero_regle_attendue": 186}
+{"question": "Peut-on empêcher l'utilisateur de zoomer sur la page ?", "numero_regle_attendue": 193}
+{"question": "Faut-il fournir un plan du site pour les moteurs de recherche ?", "numero_regle_attendue": 220}
+{"question": "Le formulaire d'inscription doit-il accepter les adresses email avec un signe plus (+) dedans ?", "numero_regle_attendue": 24}
+{"question": "Les messages d'erreur doivent-ils être dans la même langue que le formulaire ?", "numero_regle_attendue": 82}
+{"question": "Le numéro SIRET (ou équivalent d'immatriculation légale) doit-il être affiché sur le site ?", "numero_regle_attendue": 106}
