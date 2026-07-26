@@ -42,6 +42,7 @@ Format d'entrée, une ligne par réalisation :
   - `app/ingestion/manifest.yml` — nouvelle section `rag_acceptance` (`top_n: 3`, `taux_reussite_minimum: 0.8`) : le rappel imparfait du RAG est déjà assumé (voir `docs/jury/decisions/2026-07-25-rag-us2-petit-corpus.md`), on n'exige donc pas 100% de réussite par cas mais un taux global
   - `scripts/check_rag_acceptance.py` (nouveau, sur le modèle de `scripts/embed_rules.py`) + cible `make rag-acceptance` — volontairement **hors CI** (coût réel d'appel API à chaque exécution) ; point de contrôle formalisé en scénarios Gherkin dans la spec (documentation, pas de `pytest-bdd` réel)
   - **`make rag-acceptance` exécuté pour de vrai par David (2026-07-26)** : 17/17 cas passent, taux de réussite 100% (seuil 80%), 274 tokens, coût négligeable (0,0000 €) — voir `logs/ingestion.log`
+  - **Suite proposée par David** : `app/ingestion/rag_acceptance.py` — `summarize_dataset_versions()`/`format_dataset_versions()`, logue la distribution `prompt_version`/`llm_model` des 245 règles à chaque run (visible immédiatement si le jeu de données est mélangé, ex. après un `enrich_again` partiel — constaté en vérifiant : le dernier `enrich_again` a tourné avant le bump vers `version: 6`, les 245 règles sont donc uniformément en `prompt_version = 5`). Proposition symétrique d'ajouter une version « source de vérité » dans `manifest.yml` écartée : deuxième source de vérité redondante avec `regle.prompt_version`, qui peut déjà diverger ligne par ligne
 
 ## 2026-07-25 — Claude Code (Part 2)
 

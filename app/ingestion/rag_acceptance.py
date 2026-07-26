@@ -9,6 +9,7 @@ docs/superpowers/specs/2026-07-26-rag-acceptance-jsonl-design.md.
 import json
 from pathlib import Path
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.referentiel import Regle
@@ -49,3 +50,30 @@ def compute_taux_reussite(evaluations: list[dict]) -> float:
 def is_acceptable(taux: float, seuil: float) -> bool:
     """Le taux de réussite global atteint-il le seuil minimum déclaré dans le manifest ?"""
     return taux >= seuil
+
+
+def summarize_dataset_versions(session: Session) -> list[dict]:
+    """Résume la distribution prompt_version/llm_model des règles en base.
+
+    Permet de savoir, au moment d'un run, si le jeu de données est
+    homogène (une seule version de prompt) ou mélangé (ex. suite à un
+    enrich_again partiel) — information invisible sinon.
+    """
+    resultats = (
+        session.query(Regle.prompt_version, Regle.llm_model, func.count(Regle.id))
+        .group_by(Regle.prompt_version, Regle.llm_model)
+        .order_by(Regle.prompt_version)
+        .all()
+    )
+    return [
+        {"prompt_version": prompt_version, "llm_model": llm_model, "nombre_regles": nombre}
+        for prompt_version, llm_model, nombre in resultats
+    ]
+
+
+def format_dataset_versions(summary: list[dict]) -> str:
+    """Formate la distribution prompt_version/llm_model pour le log."""
+    return " ; ".join(
+        f"prompt_version={s['prompt_version']} ({s['llm_model']}): {s['nombre_regles']} règles"
+        for s in summary
+    )

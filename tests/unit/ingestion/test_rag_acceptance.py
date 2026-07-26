@@ -2,14 +2,16 @@
 Tests unitaires pour app/ingestion/rag_acceptance.py
 
 Logique pure (load_cases, evaluate_case, compute_taux_reussite,
-is_acceptable) — aucun appel réseau ni BDD réelle. query_top_n_numeros
-n'est pas testée ici (nécessite une base réellement vectorisée), validée
-par exécution réelle via `make rag-acceptance`.
+is_acceptable, format_dataset_versions) — aucun appel réseau ni BDD
+réelle. query_top_n_numeros et summarize_dataset_versions ne sont pas
+testées ici (nécessitent une base réellement vectorisée), validées par
+exécution réelle via `make rag-acceptance`.
 """
 
 from app.ingestion.rag_acceptance import (
     compute_taux_reussite,
     evaluate_case,
+    format_dataset_versions,
     is_acceptable,
     load_cases,
 )
@@ -73,3 +75,22 @@ def test_is_acceptable_true_when_taux_above_seuil():
 def test_is_acceptable_false_when_taux_below_seuil():
     """is_acceptable est faux si le taux est strictement sous le seuil."""
     assert is_acceptable(taux=0.7, seuil=0.8) is False
+
+
+def test_format_dataset_versions_single_version():
+    """Un jeu de données homogène tient sur une seule entrée."""
+    summary = [{"prompt_version": 5, "llm_model": "kimi-k2.6", "nombre_regles": 245}]
+
+    assert format_dataset_versions(summary) == "prompt_version=5 (kimi-k2.6): 245 règles"
+
+
+def test_format_dataset_versions_mixed_versions():
+    """Un jeu de données mélangé liste chaque combinaison séparément."""
+    summary = [
+        {"prompt_version": 5, "llm_model": "kimi-k2.6", "nombre_regles": 234},
+        {"prompt_version": 6, "llm_model": "kimi-k2.6", "nombre_regles": 11},
+    ]
+
+    assert format_dataset_versions(summary) == (
+        "prompt_version=5 (kimi-k2.6): 234 règles ; prompt_version=6 (kimi-k2.6): 11 règles"
+    )

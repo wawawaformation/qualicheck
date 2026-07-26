@@ -24,9 +24,11 @@ from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
     compute_taux_reussite,
     evaluate_case,
+    format_dataset_versions,
     is_acceptable,
     load_cases,
     query_top_n_numeros,
+    summarize_dataset_versions,
 )
 from app.logging_config import setup_logging  # noqa: E402
 
@@ -65,6 +67,9 @@ def main() -> None:
 
         evaluations = []
         with Session(engine) as session:
+            dataset_summary = format_dataset_versions(summarize_dataset_versions(session))
+            progress_logger.info(f"check_rag_acceptance — Jeu de données : {dataset_summary}")
+
             for case, vector in zip(cases, vectors, strict=True):
                 numeros_retournes = query_top_n_numeros(session, vector, top_n)
                 evaluation = evaluate_case(case, numeros_retournes)
