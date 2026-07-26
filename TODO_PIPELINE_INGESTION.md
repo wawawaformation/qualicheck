@@ -29,7 +29,7 @@ Référence : `conception/2_ingestion/ingestion.md`
   - [x] Classe `EnrichedRule` (Pydantic) : extension RuleAggregation
   - [x] Classe `EnrichedRules` (collection non-vide)
   - [x] Fonction `enrich_rules()` : Rules → EnrichedRules
-  - [x] `LLMClient` avec LangChain (langchain_core) + Azure Kimi K2.6
+  - [x] `LLMClient` avec LangChain (langchain_core) + Azure (modèle : `app/ingestion/manifest.yml`, rôle `enrichissement`)
   - [x] Retry logic (3 tentatives, backoff 2s/4s via tenacity)
   - [x] Logging : erreur critique, synthèse succès
   - [x] Few-shot prompt dans `prompts/enrich_rule.md`
@@ -44,62 +44,53 @@ Référence : `conception/2_ingestion/ingestion.md`
   - [x] `scripts/ingestion.py` : orchestrateur partiel (Étapes 1-4)
   - Validation par exécution réelle (3 règles, LLM réel) + inspection BDD + test d'idempotence — pas de suite pytest ✅
 
-- [ ] **Étape 5 — Chunking**
-  - [ ] `app/ingestion/chunking.py`
-  - [ ] Construction texte chunk (intitulé + solution + controle + guide_analyse + tags + phases)
-  - [ ] 1 chunk = 1 règle
-  - [ ] Tests unitaires
+- [x] **Étape 5 — Chunking**
+  - [x] `app/ingestion/chunking.py`
+  - [x] Construction texte chunk (intitulé + solution + controle + guide_analyse + tags + phases)
+  - [x] 1 chunk = 1 règle
+  - [x] Tests unitaires (`tests/unit/ingestion/test_chunking.py`)
 
-- [ ] **Étape 6 — Embedding**
-  - [ ] `app/ingestion/embedding.py`
-  - [ ] **Décision 2026-07-26** : vectorisation via Azure `text-embedding-3-small`
-    (`dimensions=384`, déploiement Azure vérifié : `GenerallyAvailable`,
-    8191 tokens de contexte, 125 000 TPM / 750 RPM, mise hors service
-    02/2028) en solution actuelle — les 3 modèles d'embedding du catalogue
-    Infomaniak (`mini_lm_l12_v2`, `bge_multilingual_gemma2`,
-    `Qwen3-Embedding-8B`) sont encore en `coming_soon`. `dimensions=384`
-    évite une migration de schéma (`regle.embedding` reste `vector(384)`),
-    mais **n'évite pas** une ré-vectorisation complète du référentiel au
-    moment du bascule vers Infomaniak — deux modèles différents produisent
-    des espaces vectoriels non comparables, même à dimension égale
-  - [ ] **`mini_lm_l12_v2` disqualifié comme cible finale** : `max_token_input=128`,
-    incompatible avec la décision actée "1 règle = 1 chunk" (mesuré sur les
-    245 règles réelles : ~319 tokens en moyenne, jusqu'à ~952 pour la règle
-    164) — aucun chunk ne rentrerait sous cette limite. Cible Infomaniak
-    revue : **BGE Multilingual Gemma2** (`max_token_input=8000`, large
-    marge), à confirmer (dimension de sortie non documentée dans le
-    catalogue, à vérifier quand le modèle passera en `ready`)
-  - [ ] Batch processing
-  - [ ] Tests unitaires avec mocks
-  - [ ] **À prévoir plus tard** : script de ré-vectorisation (recalcul de
-    `embedding` pour les 245 lignes) quand BGE Multilingual Gemma2 (ou un
-    autre modèle Infomaniak compatible ≥ 952 tokens) passera en `ready` —
-    hors périmètre tant que ce n'est pas le cas
+- [x] **Étape 6 — Embedding**
+  - [x] `app/ingestion/embedding.py`
+  - [x] **Décision actée** : vectorisation via Azure, 1536 dimensions
+    (modèle : `app/ingestion/manifest.yml`, rôle `embedding`)
+  - [x] Batch processing (`scripts/embed_rules.py`, `BATCH_SIZE = 50`)
+  - [x] Tests unitaires avec mocks (`tests/unit/ingestion/test_embedding.py`)
+  - [x] **Exécuté pour de vrai** (2026-07-26, `make embed-rules`) : 245/245
+    règles vectorisées, 0,0016 € — voir `CHANGELOG.md`
 
-- [ ] **Étape 7 — Indexation**
-  - [ ] Intégré dans `app/ingestion/stockage.py`
-  - [ ] Écriture colonne `embedding`
-  - [ ] Index HNSW (créé par migration BDD)
+- [x] **Étape 7 — Indexation**
+  - [x] Intégré dans `app/ingestion/stockage.py`
+  - [x] Écriture colonne `embedding`
+  - [x] Index HNSW (créé par migration BDD) — vérifié en base (`regle_embedding_idx`)
+  - [x] Tests (`tests/integration/ingestion/test_stockage_embedding.py`)
 
-- [ ] **Orchestration** (partiellement fait, voir Étape 4)
+- [x] **Orchestration**
   - [x] `scripts/ingestion.py` créé, chaîne les Étapes 1-4
   - [x] Hook `--resume` : reprise depuis les règles enrichies en BDD (`load_enriched_rules_from_db()`), évite de refaire les appels LLM
-  - [ ] Étendre aux Étapes 5-7 (chunking, embedding, indexation)
-  - [x] Fail-fast + logs structurés (Étapes 1-4)
-  - [x] Code de sortie approprié (Étapes 1-4)
+  - [x] Étapes 5-7 orchestrées via `scripts/embed_rules.py` + `make embed-rules`
+    (chaîne chunking → embedding → upsert, hors `ingestion.py`)
+  - [x] Fail-fast + logs structurés (toutes étapes)
+  - [x] Code de sortie approprié (toutes étapes)
 
 ## Ingestion réelle & analyse (2026-07-19)
 
-- [x] **Ingestion complète des 245 règles** menée à terme (Kimi K2.6, prompt V3, ~1,2 M tokens, ~3 €)
+- [x] **Ingestion complète des 245 règles** menée à terme (modèle du rôle
+  `enrichissement` du manifest, prompt V3, ~1,2 M tokens, ~3 €)
 - [x] **Revue manuelle de la classification** règle par règle → `docs/problemes_rencontres/3_recommandations_v4.md`
 - [x] **Corriger le scraping** (R1.1/R1.2) — fait, chantier 1 (spec-driven, 5 tâches revues par subagent-driven-development)
 - [x] **Acquérir le texte explicatif** (R1.3) — fait, champ `contexte` (BDD `TEXT`, migration 0006) branché jusqu'au prompt LLM
 - [x] **Recalibrage `solution`/`controle`** (`VARCHAR(1024)` → `VARCHAR(2048)`, migration 0007) — le scraping corrigé capture du contenu plus long qu'avant (données précédentes tronquées par les bugs)
-- [ ] **Prompt V4** (R2.x) : stratégies composites, critère hors-page = manuel, factuel > spéculatif, marqueur « ET », multi-pages
-- [ ] **Ré-ingérer sur données saines** (R3.1) — appels LLM réels sur les 245 règles avec scraping corrigé, puis re-valider les classifications (R3.2)
-- [ ] Reclassement règle 111 → `manuel`
-
-> ⚠️ Les Étapes 5-7 (chunking, embedding, indexation) ne doivent pas être attaquées avant la ré-ingestion réelle (prompt V4 + appels LLM) : le stockage actuel contient encore les données de l'ingestion V3 pré-correction.
+- [x] **Prompt V5 puis V6** (R2.x et au-delà) : stratégies composites, critère hors-page = manuel,
+  factuel > spéculatif — prompt bumpé en `version: 6` (`app/ingestion/prompts/enrich_rule.md`),
+  voir `docs/problemes_rencontres/ingestion/5_recommandations_v6.md`
+- [x] **Correction ciblée des données** (`make enrich-again`, 2026-07-26) — 11 règles
+  à revoir corrigées sur la base des anticipations de l'audit V6 (0,1610 €). Le
+  stockage contient désormais des données propres (V5 + corrections V6 ciblées) ;
+  une ré-ingestion complète sur le prompt V6 n'est pas jugée nécessaire dans
+  l'immédiat, reportée à un besoin plus large — voir `TODO.md`
+- [x] Reclassement règle 111 → `manuel` — déjà en base (`strategie_analyse = manuel`,
+  `strategie_source = ia_import`), fait lors de l'ingestion réelle
 
 ## Notes
 
