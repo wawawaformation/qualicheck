@@ -1,5 +1,5 @@
 ---
-version: 5
+version: 6
 ---
 
 # Enrichissement de Règles Opquast
@@ -22,7 +22,7 @@ Pour chaque règle, tu dois générer **exactement 3 champs JSON** :
    - `"statique"` : l'information est présente dans le HTML/DOM et vérifiable sans interaction (ex. présence d'une balise, d'un attribut, d'un texte).
    - `"playwright"` : nécessite une interaction navigateur ou l'exécution de JS pour révéler l'information (clic, scroll, formulaire, contenu chargé dynamiquement).
    - `"vision"` : nécessite une appréciation visuelle qu'aucune inspection du code ne peut fiabiliser (ex. juger qu'un contenu est visuellement identifié comme publicitaire, qu'une mise en forme respecte une convention).
-   - `"manuel"` : **vraie exception**, réservée aux cas où même une analyse visuelle par LLM ne peut pas trancher de façon fiable — typiquement un jugement légal, éditorial ou sémantique fin, ou un contexte métier propre au site qu'aucune observation de la page ne permet de déduire. Inclut aussi (a) tout critère nécessitant d'observer quelque chose hors de la page web auditée elle-même (boîte mail, DNS, document PDF externe, SMS, second appareil...), et (b) toute exigence de vérifier qu'un mécanisme fonctionne effectivement/réellement, au-delà de sa simple présence syntaxique, dès qu'aucune méthode automatisée ne peut observer ce résultat — même si une partie du parcours reste automatisable sur la page.
+   - `"manuel"` : **vraie exception**, réservée aux cas où même une analyse visuelle par LLM ne peut pas trancher de façon fiable — typiquement un jugement légal, éditorial ou sémantique fin, ou un contexte métier propre au site qu'aucune observation de la page ne permet de déduire. Inclut aussi (a) tout critère nécessitant d'observer quelque chose hors de la page web auditée elle-même (boîte mail, DNS, document PDF externe, SMS, second appareil...), et (b) toute exigence de vérifier qu'un mécanisme fonctionne effectivement, **mais uniquement si aucune méthode automatisée (Playwright, vision) ne peut exécuter ni observer cette vérification dans le navigateur**. Attention à la sur-application de (b) : remplir un formulaire, cliquer un bouton, se connecter, télécharger un fichier, ou calculer un ratio/score (ex. contraste WCAG) sont des vérifications « effectives » que Playwright ou vision peuvent réaliser elles-mêmes — ce ne sont **pas** des cas de `manuel`, même quand le contrôle demande de constater qu'un mécanisme « fonctionne réellement ». Ne retiens (b) que si l'observation exige de sortir du navigateur (rejoint alors (a)) ou un jugement humain qu'aucun calcul ni règle factuelle ne peut trancher.
    - N'invente une autre valeur que si la règle ne correspond **réellement à aucune** des quatre.
 
    **Stratégies composites** : si le parcours optimal pour vérifier la règle enchaîne deux de ces méthodes, utilise une valeur composite. Deux formats, jamais mélangés dans une même valeur, toujours deux stratégies (jamais trois, jamais avec `manuel`) :
@@ -200,6 +200,44 @@ Réponds **uniquement** avec un objet JSON valide, sans texte supplémentaire :
   "strategie_analyse": "manuel",
   "strategie_justification": "Le contrôle lui-même indique que la présence de l'élément caption est automatisable, mais que juger sa pertinence (identifie-t-il bien la nature du tableau ?) nécessite un examen manuel — un jugement sémantique qu'aucune inspection factuelle du DOM ne peut fiabiliser. Le volet automatisable est absorbé par le volet manuel, pas de composite avec manuel.",
   "guide_analyse": "Pour chaque tableau de données du site, identifiez la présence de l'élément caption. Faites relire par un humain le texte de chaque caption présent : vérifiez qu'il décrit effectivement la nature des données du tableau (et non un intitulé générique ou décoratif). Signalez les tableaux sans caption, ainsi que les captions présents mais non pertinents au regard du contenu réel du tableau."
+}
+```
+
+---
+
+### Exemple 9 : composite `vision&statique` — deux vérifications indépendantes (ET)
+
+**Règle :** Les produits indisponibles font l'objet d'une différenciation visuelle et textuelle.
+
+**Solution :** Préciser, dans le contenu présentant chaque produit, une mention textuelle ou graphique du type « indisponible » ou « disponible ».
+
+**Contrôle :** Dans les pages produits : vérifier la présence d'une mention textuelle sur la disponibilité des produits ; ou contrôler la présence d'une indication graphique différenciant les produits disponibles de ceux qui ne le sont pas (icône, couleur, etc.) accompagnée d'une alternative textuelle appropriée.
+
+**Réponse attendue :**
+```json
+{
+  "strategie_analyse": "vision&statique",
+  "strategie_justification": "La règle combine deux critères indépendants de nature hétérogène : la différenciation visuelle des produits indisponibles (icônes, couleurs, opacité) requiert une appréciation visuelle, tandis que la mention textuelle exacte du statut de disponibilité est directement vérifiable dans le DOM. Ces deux volets ne se déduisent pas l'un de l'autre et doivent être contrôlés en parallèle.",
+  "guide_analyse": "Vérification [statique] : crawlez un échantillon représentatif de pages produits. Pour chaque produit indisponible, inspectez le DOM et recherchez une mention textuelle explicite de sa disponibilité ('indisponible', 'épuisé', 'rupture de stock'...) ou une alternative textuelle appropriée sur tout indicateur graphique. Vérification [vision] (indépendante) : capturez les écrans des mêmes pages et faites-les analyser par un LLM vision pour identifier si les produits indisponibles sont visuellement distinguables des produits disponibles (opacité, badge, icône, couleur...). Signalez l'absence de mention textuelle OU l'absence de différenciation visuelle — les deux vérifications sont indépendantes, pas séquentielles."
+}
+```
+
+---
+
+### Exemple 10 : "playwright" — critère d'apparence subjective, mais formule déterministe (piège `manuel`)
+
+**Règle :** Les contenus sont présentés avec un contraste suffisant par rapport à leur arrière-plan.
+
+**Solution :** Veiller à conserver un ratio de contraste minimal de 3:1 entre le texte et son arrière-plan, tel qu'il peut être mesuré via l'algorithme WCAG2.0.
+
+**Contrôle :** Dans l'ensemble des pages, repérer les contenus dont la différence de contraste avec leur arrière-plan est potentiellement insuffisante, calculer le ratio de contraste (méthode WCAG2.0), et vérifier qu'il est supérieur ou égal à 3:1.
+
+**Réponse attendue :**
+```json
+{
+  "strategie_analyse": "playwright",
+  "strategie_justification": "Le calcul du ratio de contraste WCAG 2.0 est déterministe et entièrement automatisable via des outils s'exécutant dans un navigateur (axe-core, Lighthouse, scripts getComputedStyle) qui mesurent les couleurs calculées du texte et de l'arrière-plan, sans requérir de jugement humain ou une analyse visuelle par LLM. Ce n'est PAS un cas de manuel malgré l'apparence perceptuelle du critère : une formule déterministe remplace le jugement visuel.",
+  "guide_analyse": "Parcourez un échantillon représentatif de pages via un crawler couplé à Playwright. Pour chaque page, exécutez un audit de contraste automatisé (axe-core, Lighthouse ou équivalent) évaluant les styles calculés de chaque nœud texte. Vérifiez que tous les textes respectent un ratio de contraste >= 3:1 avec leur arrière-plan selon l'algorithme WCAG 2.0. Pour les arrière-plans complexes (dégradés, motifs, images), contrôlez le pixel le plus défavorable au contact immédiat du texte. Signalez chaque élément dont le ratio calculé est inférieur au seuil requis."
 }
 ```
 
