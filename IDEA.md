@@ -101,3 +101,15 @@ plus tard si l'idée tient.
     endpoint sur `app/api_data/` (le vecteur transite en HTTP, jamais le
     calcul), soit `api_business` requête pgvector directement — à trancher
     avec les vrais détails d'US2, pas avant.
+
+- **US1 (audit) passera aussi par `app/api_data/`** — pas une nouvelle
+  couche CRUD dans un futur `app/api_business/`, mais de nouveaux routers
+  dans `api_data` lui-même, sur les tables métier de
+  `app/models/metier.py` (`Audit`, `Page`, `AuditPage`, `AuditRegle`,
+  `Constat`) : endpoints assez classiques (créer un audit, lister/marquer
+  des pages, lister/mettre à jour des constats). Cohérent avec l'écart déjà
+  assumé pour l'écran de revue des enrichissements — `api_data` sert le CRUD
+  sans logique métier partout où c'en est un, `api_business` reste réservé
+  à l'orchestration (routing par `strategie_analyse`, dialogue, RAG US2).
+  Piste de David, pas encore tranchée ("je pense") — à confirmer quand US1
+  sera spécée, pas avant.
