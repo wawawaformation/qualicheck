@@ -9,6 +9,10 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-27 — Claude Code
+
+- **`dirty_retriever` (outil de veille perso, branche `veille_test`)** : recherche sémantique ad hoc dans les 245 règles Opquast — prend une question en langage naturel, calcule son embedding réel (Azure `text-embedding-3-small`) et affiche en JSON les 3 règles les plus proches (similarité cosinus pgvector), avec thème résolu et score. Réutilise l'infra existante (`EmbeddingClient`, pattern de `rag_acceptance.py`), pas de test formel (outil perso hors périmètre certification) — validé avec un vrai appel sur la question « comment rédiger un texte alternatif pour une image ? » (règles 118/116/117, thème Images et médias) — voir `app/ingestion/dirty_retriever.py`, `scripts/dirty_retriever.py`
+
 ## 2026-07-26 — GitHub Copilot
 
 - Dispatch de `CLAUDE.md` pour réduction de tokens : fichier racine compacté + extraction du détail dans `docs/agent/01_contexte_projet.md`, `docs/agent/02_regles_execution.md`, `docs/agent/03_references_impl.md` — voir `CLAUDE.md`, `docs/agent/`, `CHANGELOG.md`
