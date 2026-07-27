@@ -12,6 +12,7 @@ Format d'entrée, une ligne par réalisation :
 ## 2026-07-27 — Claude Code
 
 - **`dirty_retriever` (outil de veille perso, branche `veille_test`)** : recherche sémantique ad hoc dans les 245 règles Opquast — prend une question en langage naturel, calcule son embedding réel (Azure `text-embedding-3-small`) et affiche en JSON les 3 règles les plus proches (similarité cosinus pgvector), avec thème résolu et score. Réutilise l'infra existante (`EmbeddingClient`, pattern de `rag_acceptance.py`), pas de test formel (outil perso hors périmètre certification) — validé avec un vrai appel sur la question « comment rédiger un texte alternatif pour une image ? » (règles 118/116/117, thème Images et médias) — voir `app/ingestion/dirty_retriever.py`, `scripts/dirty_retriever.py`
+- **Fix `dirty_retriever`** : le champ `embedding` (vecteur brut 1536 dimensions) fuitait dans chaque dict retourné, repéré via un usage réel (« souligner les titres » → sortie JSON illisible/énorme) — exclu explicitement de la construction du dict — voir `app/ingestion/dirty_retriever.py`
 
 ## 2026-07-26 — GitHub Copilot
 

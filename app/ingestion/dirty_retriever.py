@@ -27,7 +27,11 @@ def query_top_n_regles(session: Session, vector: list[float], top_n: int) -> lis
     )
     return [
         {
-            **{col.name: getattr(regle, col.name) for col in Regle.__table__.columns},
+            **{
+                col.name: getattr(regle, col.name)
+                for col in Regle.__table__.columns
+                if col.name != "embedding"
+            },
             "theme": theme_nom,
             "score_similarite": 1 - distance,
         }
