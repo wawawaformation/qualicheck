@@ -42,6 +42,24 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
+- [ ] **⚠️ Important — découpage des responsabilités `api_data` / `api_business`**
+  — pas encore tranché, malgré deux précédents allant dans le même sens
+  (`IDEA.md`, 2026-07-25 et 2026-07-26 : « une seule application FastAPI,
+  routers séparés par domaine », audit CRUD dans `api_data` plutôt qu'une
+  couche séparée). David reste incertain sur la frontière exacte — à
+  rediscuter avec de vrais scénarios concrets avant de coder US1
+  (« l'auditeur lance un audit », « valide un constat », etc.), pas
+  seulement dans l'abstrait. Points ouverts identifiés le 2026-07-27 :
+  - CRUD vs orchestration : certains gestes ne sont pas évidents à classer
+    (ex. « créer un audit » — pure écriture, ou déclenche déjà une action
+    métier type crawl ?)
+  - Qui parle à qui : le frontend Vue.js appelle-t-il `api_data`
+    directement pour le CRUD *et* `api_business` pour l'IA, ou tout passe
+    par `api_business` qui relaie en interne ?
+  - Authentification par table : `regles` est en lecture ouverte (licence
+    CC BY-SA), mais `audit`/`constat`/`utilisateur` portent des données
+    personnelles/business (RGPD) — un modèle d'auth différent par
+    routeur, pas un seul modèle pour toute l'API — `D`
 - [x] **Valeurs `KIMI_PRICE_*`** — reconstruites depuis la facture réelle du 19/07
   (9,13 €) : 0,8008 / 3,3875 €/1M — `A`
 - [x] **Emplacement `KIMI_PRICE_*` — résolu (2026-07-25) : `app/ingestion/manifest.yml`**,
