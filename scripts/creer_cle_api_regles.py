@@ -67,7 +67,8 @@ def ajouter_ligne_apres_dernier_fastapi(chemin: Path, nouvelle_ligne: str) -> No
         raise SystemExit(f"Aucune ligne FASTAPI_API_KEY dans {chemin}")
     dernier = indices[-1]
     if not lignes[dernier].endswith("\n"):
-        lignes[dernier] += "\n"  # sinon la ligne insérée se soude à celle-ci (ex. .env sans fin de ligne)
+        # sinon la ligne insérée se soude à celle-ci (ex. .env sans fin de ligne)
+        lignes[dernier] += "\n"
     lignes.insert(dernier + 1, nouvelle_ligne)
     chemin.write_text("".join(lignes), encoding="utf-8")
 
