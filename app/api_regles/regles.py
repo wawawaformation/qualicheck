@@ -1,11 +1,14 @@
 """Router des règles enrichies."""
 
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Query as OrmQuery
 from sqlalchemy.orm import Session
 
-from app.api_regles.schemas import OutilFiltre, RegleRead, ReviewStatusFiltre
+from app.api_regles.auth import require_bearer
+from app.api_regles.schemas import OutilFiltre, ReglePatch, RegleRead, ReviewStatusFiltre
 from app.db import get_session
 from app.models.referentiel import (
     Objectif,
@@ -146,3 +149,49 @@ def lire_regle(
             detail=f"Règle {numero} inconnue",
         )
     return lectures[0]
+
+
+@router.patch(
+    "/{numero}",
+    response_model=RegleRead,
+    dependencies=[Depends(require_bearer)],
+)
+def annoter_regle(
+    numero: int,
+    annotation: ReglePatch,
+    session: Session = Depends(get_session),
+) -> RegleRead:
+    """
+    Pose ou retire l'annotation de revue humaine d'une règle.
+
+    N'écrit QUE review_status / review_note / reviewed_at : le référent
+    annote, il ne réécrit pas l'enrichissement. La correction elle-même est un
+    autre geste, fait plus tard par un développeur via make enrich-again — le
+    seul à appeler le LLM et à coûter de l'argent.
+    """
+    regle = session.query(Regle).filter(Regle.numero == numero).one_or_none()
+    if regle is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Règle {numero} inconnue",
+        )
+
+    if annotation.review_status is None:
+        # Annulation : les trois colonnes repartent à NULL, exactement comme le
+        # fait enrich_again après une correction réussie.
+        regle.review_status = None
+        regle.review_note = None
+        regle.reviewed_at = None
+    else:
+        regle.review_status = annotation.review_status.value
+        regle.review_note = annotation.review_note
+        # Horodatage serveur, jamais accepté du client : ni falsifiable ni
+        # oubliable. Même forme que app/ingestion/stockage.py.
+        regle.reviewed_at = datetime.now(UTC).replace(tzinfo=None)
+
+    session.commit()
+
+    requete = session.query(Regle, Theme.theme).filter(
+        Theme.id == Regle.theme_id, Regle.numero == numero
+    )
+    return _charger_regles(session, requete)[0]
