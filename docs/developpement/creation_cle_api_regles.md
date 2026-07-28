@@ -13,8 +13,13 @@ transitoire en attendant mieux.
 À refaire à l'identique pour dev (local) et pour staging — les deux
 environnements déclarent les mêmes clients.
 
-**Raccourci** : `scripts/creer_cle_api_regles.py <nom-client>` automatise les
-étapes 1 à 5 (génère le jeton, modifie les 4 fichiers, crée le secret GitHub).
+**Raccourci** — automatise les étapes 1 à 5 (génère le jeton, modifie les 4
+fichiers, crée le secret GitHub) :
+
+```bash
+uv run python scripts/creer_cle_api_regles.py <nom-client>
+```
+
 Reste manuel après : relire les diffs, redémarrer l'API locale, committer et
 merger jusqu'à `staging`. Le détail ci-dessous reste la référence en cas de
 problème ou pour comprendre ce que fait le script.
