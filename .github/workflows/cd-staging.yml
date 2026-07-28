@@ -1,0 +1,45 @@
+name: CD — Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, cloclo]
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Écrire .env depuis les secrets de l'environnement staging
+        run: |
+          cat > .env << 'EOF'
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_HOST=localhost
+          POSTGRES_PORT=8832
+          FASTAPI_API_KEY=${{ secrets.FASTAPI_API_KEY }}
+          FASTAPI_API_KEY_ELIE=${{ secrets.FASTAPI_API_KEY_ELIE }}
+          FASTAPI_API_KEY_DAVID=${{ secrets.FASTAPI_API_KEY_DAVID }}
+          FASTAPI_API_KEY_FORMATEUR=${{ secrets.FASTAPI_API_KEY_FORMATEUR }}
+          COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml
+          EOF
+
+      - name: Installer uv et les dépendances (migrations + acceptance)
+        run: uv sync
+
+      - name: Appliquer les migrations Alembic
+        run: make migration
+
+      - name: Construire et (re)démarrer les conteneurs modifiés
+        run: make up
+
+      - name: Rejouer la suite d'acceptance (garde-fou post-déploiement)
+        run: make api-regles-acceptance
