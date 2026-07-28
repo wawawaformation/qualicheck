@@ -20,6 +20,7 @@ Lecture minimale recommandee (ordre):
 - Historique d'implementation: `CHANGELOG.md`
 - Commandes projet: `Makefile` et `docs/developpement/commandes.md`
 - CI: `docs/developpement/ci.md`
+- Déploiement staging: `docs/developpement/deploiement_staging.md`
 
 ## Documents utiles mais non prioritaires en contexte agent
 
