@@ -20,7 +20,7 @@ qu'elle compte pour une décision.
 | Historique des réalisations (ce qui a été fait, quand) | `CHANGELOG.md` | Ne décrit que le passé, pas les décisions à venir (`TODO.md`) |
 | Variables d'environnement/secrets réels | `.env` (non versionné) | `.env.example` documente les clés attendues, pas les valeurs réelles |
 | Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_regles/manifest.yml` | — |
-| Token Bearer des écritures de l'API données | `.env` (`FASTAPI_API_KEY`) | `FASTAPI_API_ID` existe mais n'est volontairement pas utilisé |
+| Jetons Bearer des écritures de l'API données (un par client nommé) | `app/api_regles/manifest.yml` (section `clients`) + `.env` (une variable par client) | — |
 
 ## Spécifications principales
 
