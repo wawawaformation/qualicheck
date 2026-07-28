@@ -7,7 +7,8 @@ Référence : `conception/2_ingestion/ingestion.md`
 - [x] **API référentiel (étage données) — implémentée (2026-07-28)** —
   `app/api_regles/` : `GET /regles` (filtres `?outil=`/`?review_status=`),
   `GET /regles/{numero}`, `PATCH /regles/{numero}` (annotation de revue),
-  `/health`, documentation OpenAPI. 56 tests verts. Spec
+  `/health`, documentation OpenAPI, suite d'acceptance sur données réelles
+  (`make api-regles-acceptance`). 64 tests verts. Spec
   `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`, plan
   `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`, décision de
   lecture ouverte `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`,
