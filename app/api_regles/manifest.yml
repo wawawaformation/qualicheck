@@ -29,6 +29,12 @@ validation:
 clients:
   - nom: dev
     env_var_token: FASTAPI_API_KEY
+  - nom: elie-sloim
+    env_var_token: FASTAPI_API_KEY_ELIE
+  - nom: david-legrand
+    env_var_token: FASTAPI_API_KEY_DAVID
+  - nom: formateur
+    env_var_token: FASTAPI_API_KEY_FORMATEUR
 
 licence:
   # Le référentiel Opquast est diffusé sous CC BY-SA 4.0 : attribution et

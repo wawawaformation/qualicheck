@@ -14,7 +14,16 @@ def _identifiants(token: str) -> HTTPAuthorizationCredentials:
     return HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
 
 
+def _un_seul_client(monkeypatch):
+    """Isole CLIENTS : ces tests ne doivent pas dépendre du nombre réel de
+    clients déclarés dans le manifeste ni du contenu réel de .env."""
+    monkeypatch.setattr(
+        config, "CLIENTS", [{"nom": "dev", "env_var_token": "FASTAPI_API_KEY"}]
+    )
+
+
 def test_token_valide_renvoie_le_nom_du_client(monkeypatch):
+    _un_seul_client(monkeypatch)
     monkeypatch.setenv("FASTAPI_API_KEY", JETON)
 
     assert require_bearer(_identifiants(JETON)) == "dev"
@@ -38,6 +47,7 @@ def test_plusieurs_clients_sont_distingues(monkeypatch):
 
 
 def test_token_faux_leve_401(monkeypatch):
+    _un_seul_client(monkeypatch)
     monkeypatch.setenv("FASTAPI_API_KEY", JETON)
 
     with pytest.raises(HTTPException) as erreur:
@@ -48,6 +58,7 @@ def test_token_faux_leve_401(monkeypatch):
 
 def test_header_absent_leve_401_et_non_403(monkeypatch):
     """401 = aucune identité fournie. HTTPBearer renverrait 403 par défaut."""
+    _un_seul_client(monkeypatch)
     monkeypatch.setenv("FASTAPI_API_KEY", JETON)
 
     with pytest.raises(HTTPException) as erreur:
@@ -57,6 +68,7 @@ def test_header_absent_leve_401_et_non_403(monkeypatch):
 
 
 def test_secret_absent_empeche_toute_ecriture(monkeypatch):
+    _un_seul_client(monkeypatch)
     monkeypatch.setenv("FASTAPI_API_KEY", "")
 
     with pytest.raises(RuntimeError, match="FASTAPI_API_KEY"):
