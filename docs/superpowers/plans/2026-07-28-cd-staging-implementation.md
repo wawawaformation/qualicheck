@@ -113,6 +113,7 @@ jobs:
           FASTAPI_API_KEY_ELIE=${{ secrets.FASTAPI_API_KEY_ELIE }}
           FASTAPI_API_KEY_DAVID=${{ secrets.FASTAPI_API_KEY_DAVID }}
           FASTAPI_API_KEY_FORMATEUR=${{ secrets.FASTAPI_API_KEY_FORMATEUR }}
+          COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml
           EOF
 
       - name: Installer uv et les dépendances (migrations + acceptance)
@@ -285,11 +286,16 @@ l'IP publique fixe de cloclo, dans le panneau DNS Infomaniak de `koabana.fr`.
 
 Caddy sur cloclo proxie ses cibles par nom de conteneur sur le réseau Docker
 externe `cloudnet` (déjà en place, partagé avec d'autres services), pas via
-`localhost`. Créer, dans le dossier du dépôt sur cloclo, un fichier
-`docker-compose.override.yml` **non commité** (n'existe donc pas en local
-pour David, qui n'a pas `cloudnet`) :
+`localhost`.
 
-```yaml
+**Pas dans le dossier du dépôt** : `actions/checkout` nettoie les fichiers
+non suivis (`git clean -ffdx`) avant chaque déploiement — un fichier posé
+directement là serait supprimé au run suivant. Créer plutôt un dossier
+stable à part :
+
+```bash
+mkdir -p /srv/docker/qualicheck-staging-override
+cat > /srv/docker/qualicheck-staging-override/docker-compose.override.yml << 'EOF'
 services:
   api-regles:
     networks:
@@ -298,11 +304,15 @@ services:
 networks:
   cloudnet:
     external: true
+EOF
 ```
 
-`docker compose` le fusionne automatiquement avec `docker-compose.yml` s'il
-est présent dans le même dossier — aucune option de ligne de commande à
-ajouter dans le workflow.
+Ce fichier n'est jamais commité dans le dépôt (n'existe donc pas en local
+pour David, qui n'a pas `cloudnet`). Le `.env` écrit par le workflow (Task 2)
+contient déjà `COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml`,
+qui indique à `docker compose` d'aller le fusionner depuis cet emplacement —
+aucune option de ligne de commande à ajouter, `make up` fonctionne sans
+modification.
 
 ## 7. Configuration Caddy sur cloclo
 
