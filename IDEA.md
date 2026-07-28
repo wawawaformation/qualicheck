@@ -113,3 +113,24 @@ plus tard si l'idée tient.
   à l'orchestration (routing par `strategie_analyse`, dialogue, RAG US2).
   Piste de David, pas encore tranchée ("je pense") — à confirmer quand US1
   sera spécée, pas avant.
+
+## 2026-07-28
+
+- **« QualiCheck » est déjà une marque déposée ailleurs** — RT2i
+  (traçabilité pharmaceutique depuis 1995, normes ANSM/FDA) commercialise un
+  trio **QualiTrace / QualiCheck / QualiBration**, site principal
+  `qualitrace.eu`. `qualicheck.fr` redirige activement vers `qualitrace.eu`
+  (marque protégée, pas un domaine à l'abandon) ; `qualicheck.com` semble
+  dans la même situation. Seules des extensions faibles restent libres
+  (`.dev`, `.site`, `.website`, `.fun`...). Secteur totalement différent
+  (pharma vs qualité web), aucun rapport avec Opquast.
+  - **Sans impact sur la certification** : renommer le dépôt/le projet
+    pédagogique pour ça serait un élargissement hors périmètre pour zéro
+    bénéfice de compétence (règle `CLAUDE.md` du 2026-07-26). Le nom reste
+    QualiCheck pour la certification, sans réserve.
+  - **À reconsidérer uniquement si le projet devient réellement public** —
+    scénario déjà évoqué (« à terme sur Infomaniak, sauf si Opquast
+    embauche/finance/veut »). Un nom déjà activement défendu par un tiers,
+    même hors secteur, est un handicap pour une extension `.fr`/`.com`
+    propres le jour où ça deviendrait concret. Pas urgent, à retravailler
+    (brainstorm de noms alternatifs) seulement à ce moment-là.
