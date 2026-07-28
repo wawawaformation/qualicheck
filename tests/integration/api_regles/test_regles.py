@@ -205,3 +205,19 @@ def test_les_deux_criteres_se_combinent_en_et(client, jeu_de_regles):
 
 def test_valeur_de_filtre_hors_enumeration_est_refusee(client, jeu_de_regles):
     assert client.get("/regles?outil=valeurinvalide").status_code == 422
+
+
+def test_lecture_dune_regle_par_son_numero(client, jeu_de_regles):
+    reponse = client.get("/regles/3")
+
+    assert reponse.status_code == 200
+    assert reponse.json()["numero"] == 3
+    assert reponse.json()["outils"] == ["statique", "playwright"]
+
+
+def test_numero_inconnu_donne_404(client, jeu_de_regles):
+    assert client.get("/regles/9999").status_code == 404
+
+
+def test_numero_non_entier_donne_422(client, jeu_de_regles):
+    assert client.get("/regles/abc").status_code == 422

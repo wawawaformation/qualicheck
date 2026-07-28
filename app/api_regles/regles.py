@@ -1,6 +1,6 @@
 """Router des règles enrichies."""
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Query as OrmQuery
 from sqlalchemy.orm import Session
@@ -127,3 +127,22 @@ def lister_regles(
         requete = requete.filter(or_(*conditions))
 
     return _charger_regles(session, requete)
+
+
+@router.get("/{numero}", response_model=RegleRead)
+def lire_regle(
+    numero: int,
+    session: Session = Depends(get_session),
+) -> RegleRead:
+    """Une règle enrichie, désignée par son numéro Opquast."""
+    requete = session.query(Regle, Theme.theme).filter(
+        Theme.id == Regle.theme_id, Regle.numero == numero
+    )
+    lectures = _charger_regles(session, requete)
+
+    if not lectures:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Règle {numero} inconnue",
+        )
+    return lectures[0]
