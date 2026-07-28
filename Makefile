@@ -1,4 +1,4 @@
-.PHONY: up up-db down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance client-revue
+.PHONY: up up-db down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance
 
 # ============================================================
 # Docker
@@ -109,14 +109,6 @@ api-regles:
 ## documentée, voir docs/superpowers/plans/2026-07-26-api-regles-implementation.md
 api-regles-acceptance:
 	uv run python scripts/check_api_regles_acceptance.py
-
-# ============================================================
-# Client de revue
-# ============================================================
-
-## Sert le client léger de revue humaine sur http://localhost:5173
-client-revue:
-	python3 -m http.server 5173 --directory client_revue
 
 # ============================================================
 # Tests
