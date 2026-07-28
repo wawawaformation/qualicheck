@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance
+.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles
 
 # ============================================================
 # Docker
@@ -85,6 +85,17 @@ embed-rules:
 ## appel réel à l'API embeddings, coût réel, volontairement hors CI
 rag-acceptance:
 	uv run python scripts/check_rag_acceptance.py
+
+# ============================================================
+# API données
+# ============================================================
+
+# Port lu dans le manifeste, seule source de vérité.
+API_REGLES_PORT = $(shell grep 'port:' app/api_regles/manifest.yml | tr -d ' ' | cut -d: -f2)
+
+## Démarre l'API données en développement (rechargement automatique)
+api-regles:
+	uv run uvicorn app.api_regles.main:app --reload --port $(API_REGLES_PORT)
 
 # ============================================================
 # Tests

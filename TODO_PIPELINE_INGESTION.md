@@ -4,15 +4,20 @@ Référence : `conception/2_ingestion/ingestion.md`
 
 ## Prochain gros morceau
 
-- [ ] **API référentiel (étage données)** — `app/api_regles/` : permettre à
-  d'autres composants (US1/US2 à venir, via un futur `app/api_business/`, plus
-  `app/api_audit/` pour les tables métier) d'interroger les règles
-  enrichies/vectorisées sans passer par les scripts d'ingestion.
-  Conçue, pas encore implémentée : spec
+- [x] **API référentiel (étage données) — implémentée (2026-07-28)** —
+  `app/api_regles/` : `GET /regles` (filtres `?outil=`/`?review_status=`),
+  `GET /regles/{numero}`, `PATCH /regles/{numero}` (annotation de revue),
+  `/health`, documentation OpenAPI. 56 tests verts. Spec
   `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`, plan
   `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`, décision de
   lecture ouverte `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`,
   séparation des services `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md`
+- [ ] **API audit** — `app/api_audit/` pour les tables métier de l'audit
+  (`Audit`/`Page`/`AuditPage`/`AuditRegle`/`Constat`/`Utilisateur`), à
+  concevoir avec la spec US1
+- [ ] **API applicative** — `app/api_business/` pour l'orchestration US1/US2, à
+  concevoir. Elle consommera les deux API données en HTTP et ne touchera pas
+  PostgreSQL
 
 ## Étapes du pipeline
 
