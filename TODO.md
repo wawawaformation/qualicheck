@@ -42,24 +42,18 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
-- [ ] **⚠️ Important — découpage des responsabilités `api_data` / `api_business`**
-  — pas encore tranché, malgré deux précédents allant dans le même sens
-  (`IDEA.md`, 2026-07-25 et 2026-07-26 : « une seule application FastAPI,
-  routers séparés par domaine », audit CRUD dans `api_data` plutôt qu'une
-  couche séparée). David reste incertain sur la frontière exacte — à
-  rediscuter avec de vrais scénarios concrets avant de coder US1
-  (« l'auditeur lance un audit », « valide un constat », etc.), pas
-  seulement dans l'abstrait. Points ouverts identifiés le 2026-07-27 :
-  - CRUD vs orchestration : certains gestes ne sont pas évidents à classer
-    (ex. « créer un audit » — pure écriture, ou déclenche déjà une action
-    métier type crawl ?)
-  - Qui parle à qui : le frontend Vue.js appelle-t-il `api_data`
-    directement pour le CRUD *et* `api_business` pour l'IA, ou tout passe
-    par `api_business` qui relaie en interne ?
-  - Authentification par table : `regles` est en lecture ouverte (licence
-    CC BY-SA), mais `audit`/`constat`/`utilisateur` portent des données
-    personnelles/business (RGPD) — un modèle d'auth différent par
-    routeur, pas un seul modèle pour toute l'API — `D`
+- [x] **Découpage des responsabilités `api_regles` / `api_audit` / `api_business`
+  — résolu (2026-07-28)** : une seule base de données et un seul
+  `app/models/`, mais **deux services FastAPI distincts** qui l'attaquent
+  chacun directement — `app/api_regles` (référentiel + revue, ex-`api_data`,
+  à renommer) et `app/api_audit` (tables métier de l'audit, à concevoir avec
+  la spec US1). `app/api_business` reste l'étage d'orchestration, sans jamais
+  toucher Postgres. Raisonnement complet et options écartées :
+  `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md` — `D`
+  - Reste ouvert, hors périmètre de cette décision : la frontière CRUD
+    (`api_audit`) vs orchestration (`api_business`) — ex. « créer un audit »
+    est-il un simple CRUD ou déclenche-t-il déjà une action métier (crawl) ?
+    À trancher avec la spec US1, pas avant.
 - [x] **Valeurs `KIMI_PRICE_*`** — reconstruites depuis la facture réelle du 19/07
   (9,13 €) : 0,8008 / 3,3875 €/1M — `A`
 - [x] **Emplacement `KIMI_PRICE_*` — résolu (2026-07-25) : `app/ingestion/manifest.yml`**,
