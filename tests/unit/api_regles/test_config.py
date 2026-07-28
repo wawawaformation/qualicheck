@@ -35,13 +35,23 @@ def test_le_manifeste_expose_le_client_dev():
     assert {"nom": "dev", "env_var_token": "FASTAPI_API_KEY"} in config.CLIENTS
 
 
+def _un_seul_client(monkeypatch):
+    """Isole CLIENTS : ces tests ne doivent pas dépendre du nombre réel de
+    clients déclarés dans le manifeste ni du contenu réel de .env."""
+    monkeypatch.setattr(
+        config, "CLIENTS", [{"nom": "dev", "env_var_token": "FASTAPI_API_KEY"}]
+    )
+
+
 def test_clients_tokens_renvoie_un_jeton_par_client(monkeypatch):
+    _un_seul_client(monkeypatch)
     monkeypatch.setenv("FASTAPI_API_KEY", "jeton-de-test")
     assert config.clients_tokens() == {"dev": "jeton-de-test"}
 
 
 def test_clients_tokens_refuse_un_secret_vide(monkeypatch):
     """Sans ce garde-fou, ce client serait silencieusement exclu de l'auth."""
+    _un_seul_client(monkeypatch)
     monkeypatch.setenv("FASTAPI_API_KEY", "")
     with pytest.raises(RuntimeError, match="FASTAPI_API_KEY"):
         config.clients_tokens()
