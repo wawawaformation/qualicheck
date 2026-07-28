@@ -70,10 +70,11 @@ Run: `git -C /media/david/projets/QualiCheck checkout feature`
 
 - Create: `.github/workflows/cd-staging.yml`
 - Modify: `docs/developpement/ci.md`
+- Modify: `Makefile` (nouvelle cible `up-db`, découverte nécessaire lors du premier run réel — Postgres doit tourner avant les migrations sur un environnement neuf)
 
 **Interfaces:**
 
-- Consumes: `make migration` (Makefile, existant), `make up` (Makefile, existant), `make api-regles-acceptance` (Makefile, existant) — aucune modification de ces cibles
+- Consumes: `make migration` (Makefile, existant), `make up` (Makefile, existant), `make api-regles-acceptance` (Makefile, existant), `make up-db` (Makefile, nouveau dans cette tâche) — aucune modification des cibles existantes
 - Consumes: secrets de l'environnement GitHub `staging` (créé manuellement, voir Task 3) : `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `FASTAPI_API_KEY`, `FASTAPI_API_KEY_ELIE`, `FASTAPI_API_KEY_DAVID`, `FASTAPI_API_KEY_FORMATEUR`
 - Produces: le fichier `.github/workflows/cd-staging.yml`, déclenché par un push sur `staging`
 
@@ -118,6 +119,15 @@ jobs:
 
       - name: Installer uv et les dépendances (migrations + acceptance)
         run: uv sync
+
+      - name: Démarrer Postgres et attendre qu'il accepte les connexions
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        run: |
+          make up-db
+          until docker compose exec -T postgres pg_isready -U "$POSTGRES_USER"; do
+            sleep 1
+          done
 
       - name: Appliquer les migrations Alembic
         run: make migration

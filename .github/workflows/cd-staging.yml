@@ -35,6 +35,15 @@ jobs:
       - name: Installer uv et les dépendances (migrations + acceptance)
         run: uv sync
 
+      - name: Démarrer Postgres et attendre qu'il accepte les connexions
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        run: |
+          make up-db
+          until docker compose exec -T postgres pg_isready -U "$POSTGRES_USER"; do
+            sleep 1
+          done
+
       - name: Appliquer les migrations Alembic
         run: make migration
 
