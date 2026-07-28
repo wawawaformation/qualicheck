@@ -150,3 +150,58 @@ def test_la_documentation_porte_lattribution_cc_by_sa(client):
     assert schema["info"]["license"]["name"] == "CC BY-SA 4.0"
     assert "creativecommons.org/licenses/by-sa/4.0" in schema["info"]["license"]["url"]
     assert "Opquast" in schema["info"]["description"]
+
+
+def test_liste_toutes_les_regles_triees_par_numero(client, jeu_de_regles):
+    reponse = client.get("/regles")
+
+    assert reponse.status_code == 200
+    assert [regle["numero"] for regle in reponse.json()] == [1, 2, 3, 4]
+
+
+def test_liste_expose_le_theme_et_les_outils_derives(client, jeu_de_regles):
+    composite = next(r for r in client.get("/regles").json() if r["numero"] == 3)
+
+    assert composite["theme"] == "Contenus"
+    assert composite["strategie_analyse"] == "statique&playwright"
+    assert composite["outils"] == ["statique", "playwright"]
+
+
+def test_filtre_outil_inclut_les_composites(client, jeu_de_regles):
+    """« contient playwright », pas « égale playwright » : la composite doit sortir."""
+    numeros = [r["numero"] for r in client.get("/regles?outil=playwright").json()]
+
+    assert numeros == [2, 3]
+
+
+def test_filtre_outil_repetable_est_un_ou(client, jeu_de_regles):
+    numeros = [
+        r["numero"] for r in client.get("/regles?outil=manuel&outil=playwright").json()
+    ]
+
+    assert numeros == [2, 3, 4]
+
+
+def test_filtre_review_status_aucun_exclut_les_regles_marquees(client, jeu_de_regles):
+    numeros = [r["numero"] for r in client.get("/regles?review_status=aucun").json()]
+
+    assert numeros == [1, 2, 3]
+
+
+def test_filtre_review_status_selectionne_les_regles_marquees(client, jeu_de_regles):
+    numeros = [r["numero"] for r in client.get("/regles?review_status=a_revoir").json()]
+
+    assert numeros == [4]
+
+
+def test_les_deux_criteres_se_combinent_en_et(client, jeu_de_regles):
+    numeros = [
+        r["numero"]
+        for r in client.get("/regles?outil=playwright&review_status=aucun").json()
+    ]
+
+    assert numeros == [2, 3]
+
+
+def test_valeur_de_filtre_hors_enumeration_est_refusee(client, jeu_de_regles):
+    assert client.get("/regles?outil=valeurinvalide").status_code == 422
