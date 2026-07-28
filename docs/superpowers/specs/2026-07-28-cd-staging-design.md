@@ -34,7 +34,7 @@ d'environnement `staging` déployé.
   une fois par David directement sur cloclo (hors périmètre de cette tâche).
 - **Déclencheur : push sur la branche `staging`**, qui survient au merge
   d'une PR (même en solo, pour la revue et la trace — David choisit d'ouvrir
-  systématiquement une PR `feature → staging` plutôt que de pousser
+  systématiquement une PR `dev → staging` plutôt que de pousser
   directement).
 - **Rejeu de la suite d'acceptance existante après déploiement**
   (`make api-regles-acceptance`), comme garde-fou automatisé sur l'instance
@@ -54,7 +54,7 @@ d'environnement `staging` déployé.
 ## Architecture
 
 ```text
-feature ── PR vers staging ── merge ── push sur staging
+dev ── PR vers staging ── merge ── push sur staging
                                            │
                                            ▼
                          cd-staging.yml (runner self-hosted, cloclo)
@@ -187,7 +187,7 @@ Notes sur ce squelette :
 ## Secrets — environnement GitHub `staging`
 
 Un environnement GitHub (Settings → Environments → `staging`), pas les
-secrets du repo déjà utilisés par `ci-feature.yml` pour sa base éphémère —
+secrets du repo déjà utilisés par `ci-dev.yml` pour sa base éphémère —
 évite toute collision de nom avec des valeurs différentes.
 
 | Secret | Valeur |
@@ -213,7 +213,7 @@ exécutées par David lui-même sur cloclo.
    doit appartenir au groupe `docker` (sinon `docker compose up` échoue par
    permission refusée)
 3. Environnement GitHub `staging` créé avec les secrets ci-dessus
-4. Branche `staging` créée (depuis `feature`)
+4. Branche `staging` créée (depuis `dev`)
 5. Base Postgres de staging bootstrappée une fois : `scripts/migration.py`
    puis restauration d'un dump réel (`make export_sql` en local → transfert
    → `make import_sql` sur cloclo) — pas de ré-ingestion complète (gratuit,
@@ -264,7 +264,7 @@ exécutées par David lui-même sur cloclo.
 
 ## Plan de vérification
 
-1. Une fois les 8 prérequis manuels faits : petit changement sur `feature` →
+1. Une fois les 8 prérequis manuels faits : petit changement sur `dev` →
    PR vers `staging` → merge → observer le run GitHub Actions de bout en
    bout (chaque étape verte).
 2. Vérifier `https://regles.qualicheck.koabana.fr/health` réellement depuis

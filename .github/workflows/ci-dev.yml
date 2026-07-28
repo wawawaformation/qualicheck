@@ -1,10 +1,9 @@
-name: CI — Feature
+name: CI — Dev
 
 on:
   push:
     branches-ignore:
       - main
-      - dev
       - staging
 
 jobs:
