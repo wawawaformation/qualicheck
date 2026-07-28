@@ -496,6 +496,10 @@
         <h1>Revue du référentiel</h1>
         <div class="topbar-sub">Classification des règles Opquast par l'agent d'enrichissement — GET/PATCH <span class="mono">/regles</span></div>
       </div>
+      <div class="jeton-wrap">
+        <label for="jeton-api" style="display:block;font-size:11px;color:var(--ink-soft);margin-bottom:4px;">Jeton API (pour annoter)</label>
+        <input type="password" id="jeton-api" placeholder="Coller votre jeton…" style="width:220px;padding:6px 10px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper-raised);color:var(--ink);font-size:12.5px;" />
+      </div>
       <div class="licence">
         Contenu Opquast sous licence CC BY-SA 4.0<br />
         « Référentiel Opquast – Qualité Numérique » par Opquast
@@ -756,6 +760,13 @@ async function chargerRegles() {
   REGLES = await reponse.json();
   renderList();
 }
+
+const CLE_JETON = "jetonApiRevue";
+const champJeton = document.getElementById("jeton-api");
+champJeton.value = localStorage.getItem(CLE_JETON) || "";
+champJeton.addEventListener("input", () => {
+  localStorage.setItem(CLE_JETON, champJeton.value);
+});
 
 chargerRegles();
 </script>
