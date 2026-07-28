@@ -9,7 +9,16 @@ réelle via `make api-regles-acceptance`.
 
 import httpx
 
+from app.api_regles import config
 from app.api_regles.acceptance import evaluate_case, is_acceptable, load_cases
+
+
+def _un_seul_client(monkeypatch):
+    """Isole CLIENTS : ces tests ne doivent pas dépendre du nombre réel de
+    clients déclarés dans le manifeste ni du contenu réel de .env."""
+    monkeypatch.setattr(
+        config, "CLIENTS", [{"nom": "dev", "env_var_token": "FASTAPI_API_KEY"}]
+    )
 
 
 def test_load_cases_parses_jsonl(tmp_path):
@@ -18,7 +27,7 @@ def test_load_cases_parses_jsonl(tmp_path):
     jsonl_path.write_text(
         '{"methode": "GET", "description": "D1", "chemin": "/regles", "nombre_attendu": 245}\n'
         '{"methode": "PATCH", "description": "D2", "chemin": "/regles/1", '
-        '"avec_jeton": false, "corps": {"review_status": null}, "code_attendu": 401}\n',
+        '"jeton": null, "corps": {"review_status": null}, "code_attendu": 401}\n',
         encoding="utf-8",
     )
 
@@ -30,7 +39,7 @@ def test_load_cases_parses_jsonl(tmp_path):
             "methode": "PATCH",
             "description": "D2",
             "chemin": "/regles/1",
-            "avec_jeton": False,
+            "jeton": None,
             "corps": {"review_status": None},
             "code_attendu": 401,
         },
@@ -75,7 +84,7 @@ def test_evaluate_case_patch_reussi_quand_le_code_correspond():
         "methode": "PATCH",
         "description": "Refus sans jeton",
         "chemin": "/regles/1",
-        "avec_jeton": False,
+        "jeton": None,
         "corps": {"review_status": None},
         "code_attendu": 401,
     }
@@ -90,7 +99,7 @@ def test_evaluate_case_patch_echoue_quand_le_code_differe():
         "methode": "PATCH",
         "description": "Refus sans jeton",
         "chemin": "/regles/1",
-        "avec_jeton": False,
+        "jeton": None,
         "corps": {"review_status": None},
         "code_attendu": 401,
     }
@@ -100,8 +109,9 @@ def test_evaluate_case_patch_echoue_quand_le_code_differe():
     assert resultat["reussi"] is False
 
 
-def test_evaluate_case_patch_avec_jeton_envoie_le_header_authorization(monkeypatch):
-    """avec_jeton: true ajoute le Bearer réel — lu depuis FASTAPI_API_KEY."""
+def test_evaluate_case_patch_avec_jeton_dun_client_nomme(monkeypatch):
+    """jeton: <nom_client> ajoute le Bearer réel de ce client précis."""
+    _un_seul_client(monkeypatch)
     monkeypatch.setenv("FASTAPI_API_KEY", "jeton-de-test")
     entetes_recues = {}
 
@@ -112,9 +122,9 @@ def test_evaluate_case_patch_avec_jeton_envoie_le_header_authorization(monkeypat
     client = httpx.Client(transport=httpx.MockTransport(repondre))
     case = {
         "methode": "PATCH",
-        "description": "Avec jeton",
+        "description": "Avec jeton dev",
         "chemin": "/regles/1",
-        "avec_jeton": True,
+        "jeton": "dev",
         "corps": {"review_status": None},
         "code_attendu": 200,
     }
@@ -122,6 +132,31 @@ def test_evaluate_case_patch_avec_jeton_envoie_le_header_authorization(monkeypat
     evaluate_case(client, "http://localhost:8880", case)
 
     assert entetes_recues["authorization"] == "Bearer jeton-de-test"
+
+
+def test_evaluate_case_patch_avec_jeton_invalide_envoie_un_faux_bearer():
+    """jeton: "invalide" envoie un Bearer erroné, sans lire aucun secret réel."""
+    entetes_recues = {}
+
+    def repondre(requete: httpx.Request) -> httpx.Response:
+        entetes_recues.update(requete.headers)
+        return httpx.Response(401)
+
+    client = httpx.Client(transport=httpx.MockTransport(repondre))
+    case = {
+        "methode": "PATCH",
+        "description": "Jeton invalide",
+        "chemin": "/regles/1",
+        "jeton": "invalide",
+        "corps": {"review_status": None},
+        "code_attendu": 401,
+    }
+
+    resultat = evaluate_case(client, "http://localhost:8880", case)
+
+    assert resultat["reussi"] is True
+    assert entetes_recues["authorization"].startswith("Bearer ")
+    assert "jeton-de-test" not in entetes_recues["authorization"]
 
 
 def test_is_acceptable_vrai_si_tous_les_cas_reussissent():

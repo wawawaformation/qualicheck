@@ -38,10 +38,19 @@ def _evaluer_get(client: httpx.Client, base_url: str, case: dict) -> dict:
 
 
 def _evaluer_patch(client: httpx.Client, base_url: str, case: dict) -> dict:
-    """Un cas PATCH compare le code HTTP retourné à l'attendu."""
+    """
+    Un cas PATCH compare le code HTTP retourné à l'attendu.
+
+    `jeton` déclare quel Bearer envoyer : absent/null (aucun header),
+    "invalide" (jeton erroné, pour vérifier le refus), ou le nom d'un client
+    déclaré dans manifest.yml (son vrai jeton, pour vérifier l'acceptation).
+    """
     entetes = {}
-    if case.get("avec_jeton"):
-        entetes["Authorization"] = f"Bearer {config.clients_tokens()['dev']}"
+    jeton = case.get("jeton")
+    if jeton == "invalide":
+        entetes["Authorization"] = "Bearer jeton-invente-pour-le-test"
+    elif jeton:
+        entetes["Authorization"] = f"Bearer {config.clients_tokens()[jeton]}"
 
     reponse = client.patch(
         f"{base_url}{case['chemin']}",

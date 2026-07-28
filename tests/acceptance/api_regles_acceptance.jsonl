@@ -3,4 +3,9 @@
 {"methode": "GET", "description": "Règles manuelles", "chemin": "/regles?outil=manuel", "nombre_attendu": 44}
 {"methode": "GET", "description": "Règles statiques (stratégies composites incluses)", "chemin": "/regles?outil=statique", "nombre_attendu": 124}
 {"methode": "GET", "description": "Règles jamais revues", "chemin": "/regles?review_status=aucun", "nombre_attendu": 245}
-{"methode": "PATCH", "description": "PATCH sans jeton refusé", "chemin": "/regles/1", "avec_jeton": false, "corps": {"review_status": null}, "code_attendu": 401}
+{"methode": "PATCH", "description": "PATCH sans jeton refusé", "chemin": "/regles/1", "jeton": null, "corps": {"review_status": null}, "code_attendu": 401}
+{"methode": "PATCH", "description": "PATCH avec jeton invalide refusé", "chemin": "/regles/1", "jeton": "invalide", "corps": {"review_status": null}, "code_attendu": 401}
+{"methode": "PATCH", "description": "Jeton dev franchit l'authentification (422, jamais 401 : corps volontairement invalide, aucune écriture)", "chemin": "/regles/1", "jeton": "dev", "corps": {"review_status": "a_revoir"}, "code_attendu": 422}
+{"methode": "PATCH", "description": "Jeton elie-sloim franchit l'authentification (422, jamais 401 : corps volontairement invalide, aucune écriture)", "chemin": "/regles/1", "jeton": "elie-sloim", "corps": {"review_status": "a_revoir"}, "code_attendu": 422}
+{"methode": "PATCH", "description": "Jeton david-legrand franchit l'authentification (422, jamais 401 : corps volontairement invalide, aucune écriture)", "chemin": "/regles/1", "jeton": "david-legrand", "corps": {"review_status": "a_revoir"}, "code_attendu": 422}
+{"methode": "PATCH", "description": "Jeton formateur franchit l'authentification (422, jamais 401 : corps volontairement invalide, aucune écriture)", "chemin": "/regles/1", "jeton": "formateur", "corps": {"review_status": "a_revoir"}, "code_attendu": 422}
