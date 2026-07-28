@@ -59,7 +59,7 @@ feature ── PR vers staging ── merge ── push sur staging
                                            ▼
                          cd-staging.yml (runner self-hosted, cloclo)
                                            │
-     checkout → écrit .env depuis les secrets → migrations → docker compose up -d --build
+     checkout → écrit .env depuis les secrets → démarre Postgres → migrations → docker compose up -d --build
                                            │
                                            ▼
                     rejeu de make api-regles-acceptance (garde-fou, données réelles)
@@ -111,14 +111,23 @@ jobs:
       - name: Installer uv et les dépendances (pour les migrations et l'acceptance)
         run: uv sync
 
+      - name: Démarrer Postgres et attendre qu'il accepte les connexions
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        run: |
+          make up-db
+          until docker compose exec -T postgres pg_isready -U "$POSTGRES_USER"; do
+            sleep 1
+          done
+
       - name: Appliquer les migrations Alembic
-        run: uv run python scripts/migration.py
+        run: make migration
 
       - name: Construire et (re)démarrer les conteneurs modifiés
-        run: docker compose up -d --build
+        run: make up
 
       - name: Rejouer la suite d'acceptance (garde-fou post-déploiement)
-        run: uv run python scripts/check_api_regles_acceptance.py
+        run: make api-regles-acceptance
 ```
 
 Notes sur ce squelette :
@@ -131,6 +140,14 @@ Notes sur ce squelette :
 - `docker compose up -d --build` sans argument ne reconstruit/relance que les
   services dont l'image ou la configuration a changé — Postgres (et sa
   donnée) n'est pas touché si seul le code d'`api_regles` a changé.
+- **`make up-db` (nouvelle cible Makefile) démarre Postgres seul, avant les
+  migrations** — découvert lors du premier run réel : sur une machine où la
+  stack n'a jamais tourné, les migrations échouaient (`connection refused`,
+  Postgres pas encore démarré). `docker compose up -d --build` seul ne
+  suffisait pas puisqu'il n'intervient qu'après les migrations dans ce
+  squelette. La boucle `until ... pg_isready` attend que Postgres accepte
+  vraiment les connexions (le conteneur peut être « démarré » sans être
+  encore prêt) avant de continuer.
 - Label `cloclo` sur `runs-on` : à donner au runner lors de son installation
   (`config.sh --labels cloclo`), pour un ciblage explicite plutôt qu'un
   `self-hosted` générique.

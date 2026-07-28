@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance
+.PHONY: up up-db down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance
 
 # ============================================================
 # Docker
@@ -7,6 +7,11 @@
 ## Démarre tous les conteneurs Docker (construit les images si nécessaire)
 up:
 	docker compose up -d --build
+
+## Démarre uniquement Postgres — préalable aux migrations sur un environnement
+## neuf où le reste de la stack n'a jamais tourné (ex. premier déploiement staging)
+up-db:
+	docker compose up -d postgres
 
 ## Éteint tous les conteneurs Docker
 down:
