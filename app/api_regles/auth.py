@@ -14,21 +14,21 @@ _schema = HTTPBearer(auto_error=False)
 
 def require_bearer(
     credentials: HTTPAuthorizationCredentials | None = Depends(_schema),
-) -> None:
+) -> str:
     """
-    Vérifie le token Bearer. Ne renvoie rien : laisse passer ou lève 401.
+    Vérifie le token Bearer contre chaque client déclaré, renvoie son nom.
 
-    Garde d'écriture, pas un rôle : il n'y a pas d'identité, seulement un
-    secret partagé — d'où 401 et non 403.
+    Garde d'écriture : plusieurs jetons possibles (un par client), pas de rôle
+    ni de session — d'où 401 (identité absente ou invalide) et non 403.
     """
-    attendu = config.admin_token()
-    # compare_digest : une comparaison naïve (==) s'arrête au premier caractère
-    # différent et laisse fuiter la longueur du préfixe correct par le temps de
-    # réponse. Bibliothèque standard, aucune dépendance ajoutée.
-    if credentials is None or not secrets.compare_digest(
-        credentials.credentials, attendu
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token Bearer absent ou invalide",
-        )
+    if credentials is not None:
+        for nom, jeton in config.clients_tokens().items():
+            # compare_digest : une comparaison naïve (==) s'arrête au premier
+            # caractère différent et laisse fuiter la longueur du préfixe
+            # correct par le temps de réponse. Bibliothèque standard.
+            if secrets.compare_digest(credentials.credentials, jeton):
+                return nom
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Token Bearer absent ou invalide",
+    )

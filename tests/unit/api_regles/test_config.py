@@ -31,13 +31,17 @@ def test_le_manifeste_expose_lattribution_de_licence():
     assert "Opquast" in config.ATTRIBUTION
 
 
-def test_admin_token_renvoie_le_secret(monkeypatch):
+def test_le_manifeste_expose_le_client_dev():
+    assert {"nom": "dev", "env_var_token": "FASTAPI_API_KEY"} in config.CLIENTS
+
+
+def test_clients_tokens_renvoie_un_jeton_par_client(monkeypatch):
     monkeypatch.setenv("FASTAPI_API_KEY", "jeton-de-test")
-    assert config.admin_token() == "jeton-de-test"
+    assert config.clients_tokens() == {"dev": "jeton-de-test"}
 
 
-def test_admin_token_refuse_un_secret_vide(monkeypatch):
-    """Sans ce garde-fou, la clé attendue serait vide et le PATCH ouvert."""
+def test_clients_tokens_refuse_un_secret_vide(monkeypatch):
+    """Sans ce garde-fou, ce client serait silencieusement exclu de l'auth."""
     monkeypatch.setenv("FASTAPI_API_KEY", "")
     with pytest.raises(RuntimeError, match="FASTAPI_API_KEY"):
-        config.admin_token()
+        config.clients_tokens()

@@ -41,7 +41,7 @@ def _evaluer_patch(client: httpx.Client, base_url: str, case: dict) -> dict:
     """Un cas PATCH compare le code HTTP retourné à l'attendu."""
     entetes = {}
     if case.get("avec_jeton"):
-        entetes["Authorization"] = f"Bearer {config.admin_token()}"
+        entetes["Authorization"] = f"Bearer {config.clients_tokens()['dev']}"
 
     reponse = client.patch(
         f"{base_url}{case['chemin']}",
