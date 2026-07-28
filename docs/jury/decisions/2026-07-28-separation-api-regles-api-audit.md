@@ -63,8 +63,8 @@ coût jugé faible, un seul développeur maintenant les deux.
 **Une seule base de données PostgreSQL, un seul `app/models/`, deux
 services FastAPI distincts qui l'attaquent chacun directement** :
 
-- **`app/api_regles`** (le service actuellement spécé sous le nom
-  `app/api_data`, à renommer) : `regle`, `theme`, `tag`, `phase`,
+- **`app/api_regles`** (renommé le jour même depuis `app/api_data`,
+  spec/plan/diagramme mis à jour en conséquence) : `regle`, `theme`, `tag`, `phase`,
   `objectif`, et la revue humaine (`review_status`/`review_note`/
   `reviewed_at`). Lecture ouverte, écriture par Bearer — inchangé.
 - **`app/api_audit`** (nouveau, à concevoir avec la spec US1) :
@@ -86,13 +86,15 @@ qui ne touche jamais Postgres et consomme les deux API précédentes en HTTP.
 
 ## Conséquences
 
-- **Renommage à prévoir** : la spec, le plan et le diagramme déjà écrits
-  (`docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`,
-  `docs/superpowers/plans/2026-07-26-api-data-implementation.md`,
-  `conception/annexes/flux_api_donnees.drawio`) utilisent `app/api_data/`.
-  Ce nom devient `app/api_regles/` avant que l'implémentation ne commence —
-  aucune ligne de code n'existe encore, le coût du renommage est nul
-  aujourd'hui, il grandirait à ne pas y toucher.
+- **Renommage fait dans la foulée de cette décision** : la spec, le plan et
+  le diagramme déjà écrits (`docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`,
+  `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`,
+  `conception/annexes/flux_api_donnees.drawio`), ainsi que le document de
+  décision sur la lecture ouverte
+  (`docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`, lui aussi
+  renommé), utilisaient tous `app/api_data/`. Fait avant que l'implémentation
+  ne commence — aucune ligne de code n'existait encore, le coût du
+  renommage était nul.
 - **`app/api_audit` reste à concevoir** — pas avant la spec US1
   (`app/CLAUDE.md` interdit d'anticiper une structure avant sa conception).
   Cette décision fixe seulement où il vivra et comment il accède aux

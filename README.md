@@ -103,4 +103,4 @@ Attribution : « Référentiel Opquast - Qualité Numérique » par Opquast, uti
 
 Ce projet pédagogique bénéficie en outre du **soutien d'Élie Sloïm** (fondateur d'Opquast), qui légitime l'usage expérimental du référentiel et du serveur MCP dans le cadre de la certification — ce que la licence seule ne couvre pas.
 
-La licence du code du projet et celle des étages applicatif et présentation ne sont pas encore arrêtées. Voir `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`.
+La licence du code du projet et celle des étages applicatif et présentation ne sont pas encore arrêtées. Voir `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`.

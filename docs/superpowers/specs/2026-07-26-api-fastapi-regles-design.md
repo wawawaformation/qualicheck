@@ -56,7 +56,7 @@ l'étage données.
                      │                       │  HTTP
                      ▼                       ▼
         Étage données
-          app/api_data/     ◄── CETTE SPEC
+          app/api_regles/     ◄── CETTE SPEC
           app/db.py · app/models/ · app/migration/ · app/ingestion/
                      │
                      ▼
@@ -66,11 +66,11 @@ l'étage données.
 Conséquences directes sur le design :
 
 - **`app/api_business/` ne parlera pas à PostgreSQL** : il consommera
-  `app/api_data/` en HTTP. `app/db.py` reste réservé à l'étage données.
-- **`config.py` et `auth.py` sont internes à `api_data/`**, pas des briques
+  `app/api_regles/` en HTTP. `app/db.py` reste réservé à l'étage données.
+- **`config.py` et `auth.py` sont internes à `api_regles/`**, pas des briques
   partagées : l'étage applicatif aura son propre manifeste, son propre port et
   son propre jeu de tokens.
-- **L'écran de revue des enrichissements appelle `api_data` directement.**
+- **L'écran de revue des enrichissements appelle `api_regles` directement.**
   C'est un **écart assumé** au 3-tiers strict, détaillé juste en dessous. C'est
   pour cet écran que le CORS est configuré ici.
 - Le préfixe `api_` commun aux deux paquets les regroupe côte à côte dans
@@ -82,10 +82,10 @@ En 3-tiers strict, la présentation ne parle jamais à l'étage données : elle
 passe par l'applicatif. La raison d'être de cette règle est de **centraliser
 les règles métier** pour que l'interface ne puisse pas les contourner.
 
-L'écart se défend ici parce que `api_data` **n'est pas un CRUD passe-plat** :
+L'écart se défend ici parce que `api_regles` **n'est pas un CRUD passe-plat** :
 elle porte elle-même ses invariants.
 
-| Un CRUD passe-plat ferait | `api_data` fait |
+| Un CRUD passe-plat ferait | `api_regles` fait |
 | --- | --- |
 | Écrit `review_status = "a_revoir"` sans note | **Refuse en `422`** : sans note, `enrich_again` rappellerait le LLM sans consigne |
 | Écrit la note telle quelle | **Refuse** si elle contient `#` ou des fences — protection anti-injection de prompt |
@@ -106,10 +106,10 @@ Faire transiter cet écran par `api_business` n'ajouterait donc qu'un relais
 recopiant requête et réponse : du code de plus, de la latence de plus, et un
 endroit de plus à mettre à jour à chaque champ ajouté.
 
-**Contrepartie, à ne pas perdre de vue** : si le navigateur appelle `api_data`,
-alors `api_data` doit être joignable depuis Internet en production — assumé
+**Contrepartie, à ne pas perdre de vue** : si le navigateur appelle `api_regles`,
+alors `api_regles` doit être joignable depuis Internet en production — assumé
 comme décision actée, voir « Risques documentés » et
-`docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`.
+`docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`.
 
 ## Vue d'ensemble
 
@@ -117,15 +117,15 @@ comme décision actée, voir « Risques documentés » et
 Client (écran de revue Vue.js, curl)
         │  HTTP
         ▼
-app/api_data/main.py ─── /docs, /redoc, /openapi.json  (générés par FastAPI)
+app/api_regles/main.py ─── /docs, /redoc, /openapi.json  (générés par FastAPI)
         │           └── /health                        (sonde + SELECT 1)
         │
-        ├── app/api_data/config.py ──► app/api_data/manifest.yml  (config)
+        ├── app/api_regles/config.py ──► app/api_regles/manifest.yml  (config)
         │                         └──► .env                       (secrets)
         │
         ├── CORSMiddleware   (origines depuis le manifeste)
         │
-        └── router app/api_data/regles.py
+        └── router app/api_regles/regles.py
               ├── GET   /regles            libre    filtres ?outil= ?review_status=
               ├── GET   /regles/{numero}   libre
               └── PATCH /regles/{numero}   Bearer   écrit review_status/review_note/reviewed_at
@@ -145,7 +145,7 @@ app/api_data/main.py ─── /docs, /redoc, /openapi.json  (générés par Fas
 | Décision | Choix retenu | Justification |
 | --- | --- | --- |
 | Périmètre | Les 3 endpoints `regles` + `/health` + `/docs` | US1/US2 relèvent de l'étage applicatif, non conçu ; tout endpoint pour elles serait spéculatif |
-| Nommage des paquets | `app/api_data/` ici, `app/api_business/` plus tard | L'étage doit se lire dans le chemin. Aucun fichier existant déplacé — regrouper physiquement l'étage données (`app/data/{ingestion,models,api}/`) imposerait de reprendre tous les imports des 5 scripts, des tests et des migrations Alembic |
+| Nommage des paquets | `app/api_regles/` ici, `app/api_business/` plus tard | L'étage doit se lire dans le chemin. Aucun fichier existant déplacé — regrouper physiquement l'étage données (`app/data/{ingestion,models,api}/`) imposerait de reprendre tous les imports des 5 scripts, des tests et des migrations Alembic |
 | Sémantique du `PATCH` | Écrit **uniquement** les 3 colonnes de revue | Le référent annote, il ne réécrit pas l'enrichissement. Évite les questions de provenance (`prompt_version`, `llm_model`) et de re-vectorisation |
 | `strategie_source = 'admin'` | **Non utilisée** | `review_status IS NOT NULL` exprime déjà « un humain est intervenu ». Deux colonnes pour le même fait pourraient diverger — même raisonnement que le refus d'une version de prompt dans `app/ingestion/manifest.yml`, redondante avec `regle.prompt_version` |
 | Colonne `reviewed_by` | **Non créée** | Un seul token partagé, aucun besoin de tracer l'auteur. `FASTAPI_API_ID` du `.env` reste donc **volontairement inutilisé** |
@@ -153,17 +153,17 @@ app/api_data/main.py ─── /docs, /redoc, /openapi.json  (générés par Fas
 | Pagination | Aucune | Corpus figé à 245 règles, ~500 kB de charge utile mesurés. Une pagination compliquerait chaque client sans bénéfice |
 | Filtrage | Côté serveur, deux critères à valeurs fermées | Le client doit avoir le moins de travail possible, sans usine à gaz côté serveur |
 | Accès base | Nouveau `app/db.py`, **5 scripts inchangés** | `build_engine()` est dupliqué dans 5 points d'entrée. Les migrer serait un refactoring testable seulement en les exécutant, dont certains appellent le LLM (payant). Dette signalée, pas traitée ici |
-| Configuration | `app/api_data/manifest.yml` + un unique `app/api_data/config.py` | Aucune valeur de configuration éparpillée en `os.getenv()` dans le code. Même frontière que celle actée pour `KIMI_PRICE_*` (spec E §6) : les secrets dans `.env`, les données de référence dans un manifeste versionné qui offre un historique gratuit via git |
+| Configuration | `app/api_regles/manifest.yml` + un unique `app/api_regles/config.py` | Aucune valeur de configuration éparpillée en `os.getenv()` dans le code. Même frontière que celle actée pour `KIMI_PRICE_*` (spec E §6) : les secrets dans `.env`, les données de référence dans un manifeste versionné qui offre un historique gratuit via git |
 | Port d'écoute | `8880`, dans le manifeste uniquement | `FASTAPI_URL_DEV` est retiré de `.env` : l'URL de développement se déduit du port (`http://localhost:{port}`). `FASTAPI_URL_PROD` y reste, elle n'est pas déductible |
 | Préfixe des routes | `/regles`, pas la racine | La racine porte `/health` et `/docs` ; un futur endpoint de recherche a besoin de ce cloisonnement |
-| Point d'entrée | Cible `make api-data`, **aucun fichier dans `scripts/`** | Uvicorn s'attache à un module (`app.api_data.main:app`), pas à un script CLI. Exception assumée à la convention de `scripts/CLAUDE.md`, qui gagnerait sinon un fichier ne faisant qu'appeler uvicorn. Le suffixe de la cible laisse la place à `make api-business` |
+| Point d'entrée | Cible `make api-regles`, **aucun fichier dans `scripts/`** | Uvicorn s'attache à un module (`app.api_regles.main:app`), pas à un script CLI. Exception assumée à la convention de `scripts/CLAUDE.md`, qui gagnerait sinon un fichier ne faisant qu'appeler uvicorn. Le suffixe de la cible laisse la place à `make api-business` |
 | Conteneurisation | Pas de service ajouté à `docker-compose.yml` | Le compose ne gère que PostgreSQL ; les scripts tournent déjà sur l'hôte via `uv`. Conteneuriser relève du déploiement production, hors périmètre |
-| Lecture ouverte | **Aucun jeton sur les `GET`**, et c'est une décision actée | Le référentiel Opquast est sous **CC BY-SA 4.0**, dont le partage à l'identique est viral : fermer la lecture travaillerait contre la licence dont le projet bénéficie. Cohérent avec la veille du projet sur le pillage du savoir. Justification et options écartées : `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md` |
+| Lecture ouverte | **Aucun jeton sur les `GET`**, et c'est une décision actée | Le référentiel Opquast est sous **CC BY-SA 4.0**, dont le partage à l'identique est viral : fermer la lecture travaillerait contre la licence dont le projet bénéficie. Cohérent avec la veille du projet sur le pillage du savoir. Justification et options écartées : `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md` |
 | Attribution | `license_info` + citation Opquast dans la `description`, valeurs dans le manifeste | Obligation de CC BY-SA, pas une politesse. Elle manquait dans la version initiale de cette spec |
 
 ## Modules
 
-### `app/api_data/manifest.yml` (nouveau)
+### `app/api_regles/manifest.yml` (nouveau)
 
 Source de vérité de la configuration non secrète de cette API, sur le modèle de
 `app/ingestion/manifest.yml`.
@@ -193,7 +193,7 @@ licence:
   # Le référentiel Opquast est diffusé sous CC BY-SA 4.0 : attribution et
   # partage à l'identique obligatoires. Cette API distribue ce contenu, elle
   # doit donc porter le crédit et le lien vers la licence.
-  # Voir docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md
+  # Voir docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md
   nom: "CC BY-SA 4.0"
   url: "https://creativecommons.org/licenses/by-sa/4.0/deed.fr"
   attribution: >-
@@ -204,13 +204,13 @@ licence:
 Les origines de développement et de production peuvent y cohabiter : une
 origine qui n'existe pas encore ne peut de toute façon appeler personne.
 
-### `app/api_data/config.py` (nouveau)
+### `app/api_regles/config.py` (nouveau)
 
 Charge le manifeste **une seule fois** au chargement du module, sur le motif de
 `load_manifest()` (`app/ingestion/llm_client.py`), et lit le seul secret dont
 l'API a besoin (`FASTAPI_API_KEY`).
 
-**Règle explicite** : aucun autre module de `app/api_data/` ne fait
+**Règle explicite** : aucun autre module de `app/api_regles/` ne fait
 `os.getenv()` ni ne lit de YAML. Un lecteur qui se demande « d'où vient cette
 valeur ? » n'a qu'un fichier à ouvrir, et une valeur de configuration ne peut
 pas se retrouver dupliquée à deux endroits du code.
@@ -234,7 +234,7 @@ règle « un seul point de lecture » porte sur la configuration de l'API, pas s
 les identifiants de base de données, dont `.env` est déjà la source de vérité
 unique pour tout le projet.
 
-### `app/api_data/main.py` (nouveau)
+### `app/api_regles/main.py` (nouveau)
 
 Crée l'objet ASGI, monte le middleware CORS, monte le router `regles`, expose
 `/health`.
@@ -246,13 +246,13 @@ Crée l'objet ASGI, monte le middleware CORS, monte le router `regles`, expose
   pour cela : il apparaît dans `/docs` et `/openapi.json` sans code
   supplémentaire. La citation recommandée par Opquast est également ajoutée à
   la `description`, pour qu'un client qui ne lit que la page Swagger la voie.
-  Justification complète : `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`.
+  Justification complète : `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`.
 - `version` ne vient pas de `pyproject.toml` : le projet n'est pas installé
   comme paquet, `importlib.metadata.version()` lève `PackageNotFoundError`
   (vérifié). Elle vit dans le manifeste, où elle désigne de toute façon autre
   chose — la version du contrat d'API, pas celle du paquet Python.
 
-### `app/api_data/auth.py` (nouveau)
+### `app/api_regles/auth.py` (nouveau)
 
 ```python
 security = HTTPBearer(auto_error=False)
@@ -275,7 +275,7 @@ Trois points d'implémentation qui ne vont pas de soi :
 La fonction s'appelle `require_bearer`, pas `require_admin` : c'est une garde
 d'écriture, pas un rôle.
 
-### `app/api_data/schemas.py` (nouveau)
+### `app/api_regles/schemas.py` (nouveau)
 
 Deux modèles Pydantic et deux énumérations.
 
@@ -340,7 +340,7 @@ Trois règles de validation, chacune avec sa raison d'être :
 Validation anti-injection de prompt sur `review_note`, détaillée en section
 « Sécurité ».
 
-### `app/api_data/regles.py` (nouveau)
+### `app/api_regles/regles.py` (nouveau)
 
 Le router. Ne contient que la traduction « requête → session → réponse ».
 
@@ -400,10 +400,10 @@ reste vit dans le manifeste.
 ### `Makefile`
 
 ```make
-API_DATA_PORT = $(shell grep 'port:' app/api_data/manifest.yml | tr -d ' ' | cut -d: -f2)
+API_REGLES_PORT = $(shell grep 'port:' app/api_regles/manifest.yml | tr -d ' ' | cut -d: -f2)
 
-api-data:
-	uv run uvicorn app.api_data.main:app --reload --port $(API_DATA_PORT)
+api-regles:
+	uv run uvicorn app.api_regles.main:app --reload --port $(API_REGLES_PORT)
 ```
 
 Le port est lu dans le manifeste, seule source de vérité — le `Makefile`
@@ -417,7 +417,7 @@ cherche une valeur de configuration de l'API sache où regarder :
 
 | Donnée | Source de vérité |
 | --- | --- |
-| Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_data/manifest.yml` |
+| Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_regles/manifest.yml` |
 | Token Bearer du `PATCH` | `.env` (`FASTAPI_API_KEY`) |
 
 ## Contrats d'API
@@ -600,7 +600,7 @@ Ordre TDD du projet : unitaire, puis intégration, puis acceptance.
 
 ### Tests unitaires
 
-Dans `tests/unit/api_data/`. Aucune base, aucun serveur.
+Dans `tests/unit/api_regles/`. Aucune base, aucun serveur.
 
 `test_schemas.py` — validation de `ReglePatch` :
 
@@ -632,7 +632,7 @@ origines CORS) et un secret vide est refusé.
 
 ### Tests d'intégration
 
-Dans `tests/integration/api_data/test_regles.py`, sur **`POSTGRES_TEST_DB`**,
+Dans `tests/integration/api_regles/test_regles.py`, sur **`POSTGRES_TEST_DB`**,
 en suivant le motif déjà en place dans
 `tests/integration/ingestion/test_stockage_embedding.py` (fonction
 `_database_url()` locale, fixture `session`, `clear_opquast_tables`).
@@ -661,15 +661,15 @@ Jeu de 4 règles en fixture : une `statique`, une `playwright`, une composite
 
 ### Critères de validation du chantier
 
-1. `make api-data` démarre le serveur sur le port `8880` lu dans le manifeste,
+1. `make api-regles` démarre le serveur sur le port `8880` lu dans le manifeste,
    et `/docs` affiche les 3 endpoints ainsi que le bouton « Authorize ».
 2. `GET /regles` renvoie 245 règles sur la vraie base de développement.
 3. `GET /regles?outil=playwright` en renvoie 85, `?outil=manuel` en renvoie 44.
 4. Un `PATCH` réel marque une règle, et
    `uv run python scripts/enrich_again.py --dry-run` la sélectionne — la boucle
    est bouclée sans dépenser d'argent.
-5. `pytest tests/unit/api_data tests/integration/api_data` passe intégralement.
-6. `ruff check app/api_data app/db.py tests/unit/api_data tests/integration/api_data`
+5. `pytest tests/unit/api_regles tests/integration/api_regles` passe intégralement.
+6. `ruff check app/api_regles app/db.py tests/unit/api_regles tests/integration/api_regles`
    ne remonte rien.
 
 ## Scénarios d'acceptance
@@ -750,7 +750,7 @@ Ne sont **pas** dans ce chantier, et pourquoi :
 `FASTAPI_URL_PROD`, l'API laisse n'importe qui télécharger l'intégralité du
 corpus enrichi. Ce n'est pas un point à trancher plus tard : c'est un choix
 pris et justifié dans
-`docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`.
+`docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`.
 
 Le critère qui a tranché est la licence du référentiel : **CC BY-SA 4.0**, dont
 le partage à l'identique est viral. La base reproduisant littéralement le
