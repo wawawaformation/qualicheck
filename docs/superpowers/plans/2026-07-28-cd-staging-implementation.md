@@ -184,7 +184,7 @@ EOF
 
 **Interfaces:**
 
-- Consumes: rien de nouveau côté code — documente les 6 prérequis restants de la spec (la branche `staging`, item 4 de la spec, est déjà couverte par la Task 1)
+- Consumes: rien de nouveau côté code — documente les 7 prérequis restants de la spec (la branche `staging`, item 4 de la spec, est déjà couverte par la Task 1)
 - Produces: un document autonome que David suit lui-même, hors de portée de l'agent
 
 - [ ] **Step 1: Écrire le runbook**
@@ -281,13 +281,36 @@ make import_sql FILE=<chemin du fichier transféré>
 Ajouter un enregistrement A pour `regles.qualicheck.koabana.fr` pointant vers
 l'IP publique fixe de cloclo, dans le panneau DNS Infomaniak de `koabana.fr`.
 
-## 6. Configuration Caddy sur cloclo
+## 6. Rejoindre le réseau cloudnet
+
+Caddy sur cloclo proxie ses cibles par nom de conteneur sur le réseau Docker
+externe `cloudnet` (déjà en place, partagé avec d'autres services), pas via
+`localhost`. Créer, dans le dossier du dépôt sur cloclo, un fichier
+`docker-compose.override.yml` **non commité** (n'existe donc pas en local
+pour David, qui n'a pas `cloudnet`) :
+
+```yaml
+services:
+  api-regles:
+    networks:
+      - cloudnet
+
+networks:
+  cloudnet:
+    external: true
+```
+
+`docker compose` le fusionne automatiquement avec `docker-compose.yml` s'il
+est présent dans le même dossier — aucune option de ligne de commande à
+ajouter dans le workflow.
+
+## 7. Configuration Caddy sur cloclo
 
 Ajouter au `Caddyfile` de cloclo (à adapter à ta configuration existante) :
 
 ```caddyfile
 regles.qualicheck.koabana.fr {
-    reverse_proxy localhost:8880
+    reverse_proxy api-regles:8880
 }
 ```
 
@@ -371,4 +394,4 @@ EOF
 
 ## Note finale (pas une tâche)
 
-Ce plan produit du code et de la documentation vérifiables (YAML valide, branche poussée, docs cohérentes) mais **pas** un déploiement réel : le workflow ne peut s'exécuter avec succès qu'une fois les 6 prérequis manuels du Task 3 réalisés par David sur cloclo et dans les interfaces GitHub/Infomaniak. Rien dans ce plan ne doit être présenté comme « staging est en ligne » tant que la vérification finale du runbook n'a pas été faite pour de vrai.
+Ce plan produit du code et de la documentation vérifiables (YAML valide, branche poussée, docs cohérentes) mais **pas** un déploiement réel : le workflow ne peut s'exécuter avec succès qu'une fois les 7 prérequis manuels du Task 3 réalisés par David sur cloclo et dans les interfaces GitHub/Infomaniak. Rien dans ce plan ne doit être présenté comme « staging est en ligne » tant que la vérification finale du runbook n'a pas été faite pour de vrai.
