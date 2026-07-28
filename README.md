@@ -115,6 +115,17 @@ Dockerfile      # Image de l'API de revue (service api-regles)
 
 ---
 
+## Branches
+
+| Branche | Rôle |
+| --- | --- |
+| `main` | Stable, destinée à la production — pas encore déployée |
+| `dev` | Branche de travail courante, tout le développement s'y fait au fil de l'eau |
+| `staging` | Préproduction, déployée automatiquement (`cd-staging.yml`) au merge d'une PR `dev → staging` |
+| `veille` | Veille technique personnelle, hors périmètre du produit |
+
+---
+
 ## Licence
 
 Le référentiel Opquast est diffusé sous **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr)** — attribution et partage à l'identique. Cette licence s'applique sans autorisation préalable, et le partage à l'identique étant viral, elle s'étend au jeu de données enrichi que produit ce projet.
