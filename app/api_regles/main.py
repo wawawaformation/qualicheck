@@ -5,6 +5,9 @@ API données : accès HTTP au référentiel Opquast enrichi.
 US1 et US2) consommera cette API en HTTP et ne touchera pas PostgreSQL.
 """
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -14,9 +17,21 @@ from sqlalchemy.orm import Session
 from app.api_regles import config, regles
 from app.db import get_session
 
-# Fail-fast : sans secret d'écriture, la clé attendue serait vide et le PATCH
-# ouvert à tous. L'application refuse de se charger.
-config.admin_token()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """
+    Fail-fast : sans secret d'écriture, la clé attendue serait vide et le
+    PATCH ouvert à tous. Volontairement au démarrage réel du serveur
+    (uvicorn), pas à l'import du module — sinon tout test qui importe
+    l'application (TestClient) dépendrait d'un vrai secret présent dans
+    l'environnement, y compris pour des tests qui n'exercent jamais le
+    PATCH. `TestClient(app)` sans bloc `with` ne déclenche pas ce cycle de
+    vie, contrairement à `uv run uvicorn` (make api-regles).
+    """
+    config.admin_token()
+    yield
+
 
 app = FastAPI(
     title=config.TITLE,
@@ -27,6 +42,7 @@ app = FastAPI(
     # Champ standard OpenAPI. Obligation de CC BY-SA 4.0, la licence du
     # référentiel Opquast que cette API distribue — pas une politesse.
     license_info={"name": config.LICENCE_NOM, "url": config.LICENCE_URL},
+    lifespan=lifespan,
 )
 
 app.add_middleware(
