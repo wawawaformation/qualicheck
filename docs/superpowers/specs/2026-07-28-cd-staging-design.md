@@ -162,6 +162,14 @@ Notes sur ce squelette :
   (`/srv/docker/qualicheck-staging-override/`), et `COMPOSE_FILE` (dans le
   `.env` ci-dessus) dit à `docker compose` d'aller le chercher là — sans
   toucher à `make up` ni au Makefile.
+- **`logs/.gitkeep` (nouveau fichier tracké) — même cause, autre symptôme**
+  découvert sur le premier run réel : `logs/` n'est suivi par git nulle part
+  (seul `logs/*.log` est dans `.gitignore`), donc `git clean -ffdx`
+  supprimait le dossier entier à chaque run. Le conteneur `api-regles`
+  (aucun `USER` dans le `Dockerfile`, tourne en `root`) le recréait ensuite
+  en `root` au `make up` suivant — un `chown` manuel par David ne tenait
+  donc jamais d'un run à l'autre. Un fichier tracké (même vide) dans `logs/`
+  empêche `git clean` de supprimer le dossier lui-même.
 
 ## Secrets — environnement GitHub `staging`
 
