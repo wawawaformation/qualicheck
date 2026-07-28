@@ -40,7 +40,7 @@ NUMERO_REGLE_BOUCLE_REVUE = 124
 
 
 def _entetes() -> dict[str, str]:
-    return {"Authorization": f"Bearer {config.admin_token()}"}
+    return {"Authorization": f"Bearer {config.clients_tokens()['dev']}"}
 
 
 def _lancer_dry_run() -> None:

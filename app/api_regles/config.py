@@ -38,17 +38,25 @@ LICENCE_URL: str = _MANIFEST["licence"]["url"]
 ATTRIBUTION: str = _MANIFEST["licence"]["attribution"]
 
 
-def admin_token() -> str:
-    """
-    Token Bearer attendu pour les écritures.
+CLIENTS: list[dict] = _MANIFEST.get("clients", [])
 
-    Lève RuntimeError si le secret est absent ou vide : sans ce garde-fou, la
-    clé attendue serait la chaîne vide et le PATCH deviendrait ouvert à tous.
+
+def clients_tokens() -> dict[str, str]:
+    """
+    {nom_client: jeton} pour chaque client déclaré dans le manifeste.
+
+    Lève RuntimeError si un client déclaré n'a pas son jeton renseigné dans
+    l'environnement : sans ce garde-fou, ce client serait silencieusement
+    exclu de l'authentification plutôt que de faire échouer le démarrage.
     Lu à chaque appel plutôt que figé au chargement, pour rester testable.
     """
-    token = os.getenv("FASTAPI_API_KEY", "")
-    if not token:
-        raise RuntimeError(
-            "FASTAPI_API_KEY absente ou vide dans .env : l'API refuse de démarrer."
-        )
-    return token
+    jetons = {}
+    for client in CLIENTS:
+        valeur = os.getenv(client["env_var_token"], "")
+        if not valeur:
+            raise RuntimeError(
+                f"{client['env_var_token']} absente ou vide dans .env : "
+                f"le client « {client['nom']} » ne peut pas être authentifié."
+            )
+        jetons[client["nom"]] = valeur
+    return jetons

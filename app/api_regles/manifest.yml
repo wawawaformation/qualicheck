@@ -21,6 +21,15 @@ validation:
   # enrich_again autant que la surface d'injection de prompt.
   review_note_max_length: 2000
 
+# Clients autorisés à écrire (PATCH). Chacun a son propre jeton (variable
+# .env dédiée) : un jeton par expert externe (ex. Élie Sloïm) plutôt qu'un
+# secret unique partagé, sans pour autant construire une table Postgres des
+# utilisateurs — disproportionné pour ce besoin (un tiers déclaré à la fois).
+# Voir docs/jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md
+clients:
+  - nom: dev
+    env_var_token: FASTAPI_API_KEY
+
 licence:
   # Le référentiel Opquast est diffusé sous CC BY-SA 4.0 : attribution et
   # partage à l'identique obligatoires. Cette API distribue ce contenu, elle

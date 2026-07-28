@@ -29,7 +29,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     PATCH. `TestClient(app)` sans bloc `with` ne déclenche pas ce cycle de
     vie, contrairement à `uv run uvicorn` (make api-regles).
     """
-    config.admin_token()
+    config.clients_tokens()
     yield
 
 

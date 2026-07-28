@@ -1,9 +1,10 @@
-"""Garde d'écriture : token Bearer statique, 401 dans tous les cas d'échec."""
+"""Garde d'écriture : un jeton Bearer par client, 401 dans tous les cas d'échec."""
 
 import pytest
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 
+from app.api_regles import config
 from app.api_regles.auth import require_bearer
 
 JETON = "jeton-de-test"
@@ -13,10 +14,27 @@ def _identifiants(token: str) -> HTTPAuthorizationCredentials:
     return HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
 
 
-def test_token_valide_passe(monkeypatch):
+def test_token_valide_renvoie_le_nom_du_client(monkeypatch):
     monkeypatch.setenv("FASTAPI_API_KEY", JETON)
 
-    assert require_bearer(_identifiants(JETON)) is None
+    assert require_bearer(_identifiants(JETON)) == "dev"
+
+
+def test_plusieurs_clients_sont_distingues(monkeypatch):
+    """Le nom résolu dépend du jeton reçu, pas seulement de sa validité."""
+    monkeypatch.setattr(
+        config,
+        "CLIENTS",
+        [
+            {"nom": "dev", "env_var_token": "FASTAPI_API_KEY"},
+            {"nom": "elie-sloim", "env_var_token": "FASTAPI_API_KEY_ELIE"},
+        ],
+    )
+    monkeypatch.setenv("FASTAPI_API_KEY", "jeton-dev")
+    monkeypatch.setenv("FASTAPI_API_KEY_ELIE", "jeton-elie")
+
+    assert require_bearer(_identifiants("jeton-dev")) == "dev"
+    assert require_bearer(_identifiants("jeton-elie")) == "elie-sloim"
 
 
 def test_token_faux_leve_401(monkeypatch):
