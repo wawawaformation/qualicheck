@@ -113,6 +113,12 @@ plus tard si l'idée tient.
   à l'orchestration (routing par `strategie_analyse`, dialogue, RAG US2).
   Piste de David, pas encore tranchée ("je pense") — à confirmer quand US1
   sera spécée, pas avant.
+  - **Dépassé (2026-07-28)** : en rediscutant le sujet, cette piste s'est
+    révélée être une mauvaise lecture du précédent du 2026-07-25 juste
+    au-dessus (qui distinguait déjà persona curateur vs persona auditeur).
+    Décision retenue : `api_audit` reste un service distinct, pas des
+    routers dans `api_regles`/`api_data` — voir
+    `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md`.
 
 ## 2026-07-28
 
