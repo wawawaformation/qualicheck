@@ -1,5 +1,6 @@
 """Router des règles enrichies."""
 
+import logging
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -20,6 +21,8 @@ from app.models.referentiel import (
     Tag,
     Theme,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/regles", tags=["regles"])
 
@@ -151,15 +154,12 @@ def lire_regle(
     return lectures[0]
 
 
-@router.patch(
-    "/{numero}",
-    response_model=RegleRead,
-    dependencies=[Depends(require_bearer)],
-)
+@router.patch("/{numero}", response_model=RegleRead)
 def annoter_regle(
     numero: int,
     annotation: ReglePatch,
     session: Session = Depends(get_session),
+    client_nom: str = Depends(require_bearer),
 ) -> RegleRead:
     """
     Pose ou retire l'annotation de revue humaine d'une règle.
@@ -190,6 +190,10 @@ def annoter_regle(
         regle.reviewed_at = datetime.now(UTC).replace(tzinfo=None)
 
     session.commit()
+
+    logger.info(
+        "Règle %s annotée par %s : review_status=%s", numero, client_nom, regle.review_status
+    )
 
     requete = session.query(Regle, Theme.theme).filter(
         Theme.id == Regle.theme_id, Regle.numero == numero

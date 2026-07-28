@@ -1,11 +1,14 @@
 """Garde d'écriture de l'API données."""
 
+import logging
 import secrets
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.api_regles import config
+
+logger = logging.getLogger(__name__)
 
 # auto_error=False : le comportement par défaut de HTTPBearer renvoie un 403
 # quand le header est absent. Or aucune identité n'a été fournie — c'est un 401.
@@ -28,6 +31,9 @@ def require_bearer(
             # correct par le temps de réponse. Bibliothèque standard.
             if secrets.compare_digest(credentials.credentials, jeton):
                 return nom
+    # Jamais le jeton reçu dans le log, même refusé : ce pourrait être une
+    # faute de frappe sur un vrai secret.
+    logger.warning("Authentification refusée (jeton Bearer absent ou invalide)")
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Token Bearer absent ou invalide",

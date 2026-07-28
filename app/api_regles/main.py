@@ -5,6 +5,7 @@ API données : accès HTTP au référentiel Opquast enrichi.
 US1 et US2) consommera cette API en HTTP et ne touchera pas PostgreSQL.
 """
 
+import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -16,20 +17,26 @@ from sqlalchemy.orm import Session
 
 from app.api_regles import config, regles
 from app.db import get_session
+from app.logging_config import setup_logging
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
-    Fail-fast : sans secret d'écriture, la clé attendue serait vide et le
-    PATCH ouvert à tous. Volontairement au démarrage réel du serveur
-    (uvicorn), pas à l'import du module — sinon tout test qui importe
-    l'application (TestClient) dépendrait d'un vrai secret présent dans
-    l'environnement, y compris pour des tests qui n'exercent jamais le
-    PATCH. `TestClient(app)` sans bloc `with` ne déclenche pas ce cycle de
-    vie, contrairement à `uv run uvicorn` (make api-regles).
+    Configure le logging puis vérifie les secrets. Volontairement au
+    démarrage réel du serveur (uvicorn), pas à l'import du module — sinon
+    tout test qui importe l'application (TestClient) dépendrait d'un vrai
+    secret présent dans l'environnement, y compris pour des tests qui
+    n'exercent jamais le PATCH. `TestClient(app)` sans bloc `with` ne
+    déclenche pas ce cycle de vie, contrairement à `uv run uvicorn`
+    (make api-regles) : sans le garde-fou clients_tokens(), la clé attendue
+    serait vide et le PATCH ouvert à tous.
     """
-    config.clients_tokens()
+    setup_logging(log_file="logs/api_regles.log")
+    clients = config.clients_tokens()
+    logger.info("API démarrée — clients déclarés : %s", list(clients.keys()))
     yield
 
 
@@ -72,7 +79,8 @@ def health(session: Session = Depends(get_session)):
     """
     try:
         session.execute(text("SELECT 1"))
-    except Exception:
+    except Exception as e:
+        logger.warning("Sonde /health : base injoignable (%s)", e)
         return JSONResponse(
             status_code=503,
             content={"status": "degraded", "base": "injoignable"},

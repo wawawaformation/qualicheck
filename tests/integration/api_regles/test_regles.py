@@ -311,6 +311,22 @@ def test_patch_dune_note_dinjection_de_prompt_donne_422(client, jeu_de_regles):
     assert reponse.status_code == 422
 
 
+def test_patch_journalise_le_client_ayant_annote(client, jeu_de_regles, caplog):
+    """Traçabilité minimale : qui a annoté, sans colonne reviewed_by en base."""
+    with caplog.at_level("INFO", logger="app.api_regles.regles"):
+        reponse = client.patch(
+            "/regles/1",
+            json={"review_status": "a_revoir", "review_note": "Note"},
+            headers=_entetes(),
+        )
+
+    assert reponse.status_code == 200
+    assert any(
+        "Règle 1 annotée par dev" in enregistrement.message
+        for enregistrement in caplog.records
+    )
+
+
 def test_patch_sur_numero_inconnu_donne_404(client, jeu_de_regles):
     reponse = client.patch(
         "/regles/9999",
