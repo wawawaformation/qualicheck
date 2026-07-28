@@ -1,6 +1,11 @@
 """Schémas d'entrée et de sortie de l'API données."""
 
+from datetime import datetime
 from enum import Enum
+
+from pydantic import BaseModel
+
+from app.models.referentiel import Regle
 
 # La grammaire du prompt d'enrichissement distingue `+` (PUIS — le second volet
 # dépend du résultat du premier) et `&` (ET — les deux s'exécutent
@@ -43,3 +48,73 @@ def split_outils(strategie_analyse: str) -> list[str]:
             partie for morceau in morceaux for partie in morceau.split(separateur)
         ]
     return [morceau.strip() for morceau in morceaux if morceau.strip()]
+
+
+class RegleRead(BaseModel):
+    """
+    Règle enrichie telle qu'exposée aux clients.
+
+    Volontairement absents : id (le numero est la clé publique et il est
+    UNIQUE), embedding (1536 flottants inutiles au client), strategie_score
+    (vide sur les 245 règles, alimenté par la feedback loop post-MVP),
+    created_at et updated_at.
+    """
+
+    numero: int
+    intitule: str
+    theme: str
+    contexte: str | None
+    solution: str
+    controle: str
+    strategie_analyse: str
+    outils: list[str]
+    strategie_justification: str | None
+    strategie_source: str
+    guide_analyse: str
+    objectifs: list[str]
+    tags: list[str]
+    phases: list[str]
+    prompt_version: int | None
+    llm_model: str | None
+    review_status: str | None
+    review_note: str | None
+    reviewed_at: datetime | None
+
+    @classmethod
+    def from_regle(
+        cls,
+        regle: Regle,
+        theme: str,
+        objectifs: list[str],
+        tags: list[str],
+        phases: list[str],
+    ) -> "RegleRead":
+        """
+        Construit la réponse depuis la ligne ORM et ses collections déjà
+        chargées.
+
+        Les collections sont passées explicitement : app/models/ ne déclare
+        aucun relationship(), le schéma ne peut donc pas déclencher de
+        chargement paresseux involontaire.
+        """
+        return cls(
+            numero=regle.numero,
+            intitule=regle.intitule,
+            theme=theme,
+            contexte=regle.contexte,
+            solution=regle.solution,
+            controle=regle.controle,
+            strategie_analyse=regle.strategie_analyse,
+            outils=split_outils(regle.strategie_analyse),
+            strategie_justification=regle.strategie_justification,
+            strategie_source=regle.strategie_source,
+            guide_analyse=regle.guide_analyse,
+            objectifs=objectifs,
+            tags=tags,
+            phases=phases,
+            prompt_version=regle.prompt_version,
+            llm_model=regle.llm_model,
+            review_status=regle.review_status,
+            review_note=regle.review_note,
+            reviewed_at=regle.reviewed_at,
+        )
