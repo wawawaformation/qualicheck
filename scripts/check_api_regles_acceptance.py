@@ -11,6 +11,7 @@ justifié en exception à la règle POSTGRES_TEST_DB (cf. plan
 docs/superpowers/plans/2026-07-26-api-regles-implementation.md, tâche 12).
 """
 
+import json
 import logging
 import subprocess
 import sys
@@ -45,6 +46,33 @@ def _entetes() -> dict[str, str]:
     return {"Authorization": f"Bearer {config.admin_token()}"}
 
 
+PREVIEW_PATH = Path(__file__).resolve().parents[1] / "tmp" / "enrich_again_preview.json"
+
+
+def _lancer_dry_run() -> None:
+    subprocess.run(
+        ["uv", "run", "python", "scripts/enrich_again.py", "--dry-run"],
+        capture_output=True,
+        text=True,
+        cwd=Path(__file__).resolve().parents[1],
+        check=True,
+    )
+
+
+def _preview_contient_la_regle() -> bool:
+    """
+    enrich_again écrit son aperçu dans tmp/enrich_again_preview.json — les
+    logs vont en fichier (app/logging_config.py), pas sur stdout, et le
+    fichier n'est PAS réécrit quand aucune règle n'est à revoir (retour
+    anticipé dans enrich_again()) : le supprimer avant chaque appel est donc
+    indispensable pour ne pas lire un résultat périmé.
+    """
+    if not PREVIEW_PATH.exists():
+        return False
+    preview = json.loads(PREVIEW_PATH.read_text(encoding="utf-8"))
+    return any(entree["numero"] == NUMERO_REGLE_BOUCLE_REVUE for entree in preview)
+
+
 def _verifier_boucle_revue(client: httpx.Client, base_url: str) -> bool:
     """
     Annote réellement une règle, vérifie que enrich_again --dry-run la
@@ -63,13 +91,9 @@ def _verifier_boucle_revue(client: httpx.Client, base_url: str) -> bool:
     )
     reponse.raise_for_status()
 
-    dry_run = subprocess.run(
-        ["uv", "run", "python", "scripts/enrich_again.py", "--dry-run"],
-        capture_output=True,
-        text=True,
-        cwd=Path(__file__).resolve().parents[1],
-    )
-    selectionnee = str(NUMERO_REGLE_BOUCLE_REVUE) in dry_run.stdout
+    PREVIEW_PATH.unlink(missing_ok=True)
+    _lancer_dry_run()
+    selectionnee = _preview_contient_la_regle()
 
     # Toujours remettre la règle dans son état d'origine, même si la
     # vérification ci-dessus a échoué — sinon le prochain enrich_again réel
@@ -82,13 +106,9 @@ def _verifier_boucle_revue(client: httpx.Client, base_url: str) -> bool:
     )
     reponse_annulation.raise_for_status()
 
-    dry_run_apres = subprocess.run(
-        ["uv", "run", "python", "scripts/enrich_again.py", "--dry-run"],
-        capture_output=True,
-        text=True,
-        cwd=Path(__file__).resolve().parents[1],
-    )
-    plus_selectionnee = str(NUMERO_REGLE_BOUCLE_REVUE) not in dry_run_apres.stdout
+    PREVIEW_PATH.unlink(missing_ok=True)
+    _lancer_dry_run()
+    plus_selectionnee = not _preview_contient_la_regle()
 
     return selectionnee and plus_selectionnee
 
