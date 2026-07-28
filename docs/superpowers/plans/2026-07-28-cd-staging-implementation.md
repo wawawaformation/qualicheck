@@ -135,6 +135,12 @@ jobs:
       - name: Construire et (re)démarrer les conteneurs modifiés
         run: make up
 
+      - name: Attendre que l'API réponde
+        run: |
+          until curl -sf http://localhost:8880/health; do
+            sleep 1
+          done
+
       - name: Rejouer la suite d'acceptance (garde-fou post-déploiement)
         run: make api-regles-acceptance
 ```
