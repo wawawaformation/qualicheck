@@ -21,6 +21,7 @@ Lecture minimale recommandee (ordre):
 - Commandes projet: `Makefile` et `docs/developpement/commandes.md`
 - CI: `docs/developpement/ci.md`
 - Déploiement staging: `docs/developpement/deploiement_staging.md`
+- Créer une clé API (`/regles`): `docs/developpement/creation_cle_api_regles.md`
 
 ## Documents utiles mais non prioritaires en contexte agent
 
