@@ -4,6 +4,12 @@ Procédure pour déclarer un nouveau client autorisé au `PATCH /regles/{numero}
 (annotation de revue humaine). Contexte et choix d'architecture :
 `docs/jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md`.
 
+Confirmé le 2026-07-28 : le nombre de personnes amenées à faire de la revue
+reste faible (un tiers externe déclaré à la fois) — le clé/valeur dans le
+manifeste est suffisant, une table Postgres des utilisateurs serait
+disproportionnée. Cette procédure reste donc la référence, pas une étape
+transitoire en attendant mieux.
+
 À refaire à l'identique pour dev (local) et pour staging — les deux
 environnements déclarent les mêmes clients.
 
