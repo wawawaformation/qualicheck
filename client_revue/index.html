@@ -498,7 +498,10 @@
       </div>
       <div class="jeton-wrap">
         <label for="jeton-api" style="display:block;font-size:11px;color:var(--ink-soft);margin-bottom:4px;">Jeton API (pour annoter)</label>
-        <input type="password" id="jeton-api" placeholder="Coller votre jeton…" style="width:220px;padding:6px 10px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper-raised);color:var(--ink);font-size:12.5px;" />
+        <div style="display:flex;gap:6px;">
+          <input type="password" id="jeton-api" placeholder="Coller votre jeton…" style="width:220px;padding:6px 10px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper-raised);color:var(--ink);font-size:12.5px;" />
+          <button type="button" id="jeton-effacer" title="Effacer le jeton" style="padding:6px 10px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--paper-raised);color:var(--ink-soft);font-size:12.5px;cursor:pointer;">Effacer</button>
+        </div>
       </div>
       <div class="licence">
         Contenu Opquast sous licence CC BY-SA 4.0<br />
@@ -811,6 +814,10 @@ const champJeton = document.getElementById("jeton-api");
 champJeton.value = localStorage.getItem(CLE_JETON) || "";
 champJeton.addEventListener("input", () => {
   localStorage.setItem(CLE_JETON, champJeton.value);
+});
+document.getElementById("jeton-effacer").addEventListener("click", () => {
+  champJeton.value = "";
+  localStorage.removeItem(CLE_JETON);
 });
 
 chargerRegles();
