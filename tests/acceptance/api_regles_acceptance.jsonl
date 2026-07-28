@@ -1,0 +1,5 @@
+{"description": "Total du référentiel", "chemin": "/regles", "nombre_attendu": 245}
+{"description": "Règles utilisant playwright (stratégies composites incluses)", "chemin": "/regles?outil=playwright", "nombre_attendu": 85}
+{"description": "Règles manuelles", "chemin": "/regles?outil=manuel", "nombre_attendu": 44}
+{"description": "Règles statiques (stratégies composites incluses)", "chemin": "/regles?outil=statique", "nombre_attendu": 124}
+{"description": "Règles jamais revues", "chemin": "/regles?review_status=aucun", "nombre_attendu": 245}
