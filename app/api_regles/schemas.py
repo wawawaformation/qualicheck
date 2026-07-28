@@ -3,8 +3,9 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator, model_validator
 
+from app.api_regles import config
 from app.models.referentiel import Regle
 
 # La grammaire du prompt d'enrichissement distingue `+` (PUIS — le second volet
@@ -118,3 +119,63 @@ class RegleRead(BaseModel):
             review_note=regle.review_note,
             reviewed_at=regle.reviewed_at,
         )
+
+
+class ReglePatch(BaseModel):
+    """
+    Annotation de revue humaine.
+
+    Les trois colonnes review_status / review_note / reviewed_at bougent comme
+    un bloc : le PATCH remplace l'annotation entière, il ne modifie pas les
+    champs un par un. reviewed_at n'est pas dans le corps — le serveur
+    l'horodate, un client ne peut donc ni le falsifier ni l'oublier.
+    """
+
+    review_status: ReviewStatus | None
+    review_note: str | None = None
+
+    @field_validator("review_note")
+    @classmethod
+    def valider_la_note(cls, valeur: str | None) -> str | None:
+        """
+        Refuse ce qui pourrait détourner le prompt d'enrichissement.
+
+        review_note est réinjectée brute par enrich_again dans une section
+        « Contexte de revue humaine ». Le prompt délimite ses sections par ##
+        et ses exemples par des fences : une note ne doit pouvoir simuler ni
+        l'un ni l'autre. On s'arrête là volontairement — traquer des tournures
+        comme « ignore les instructions précédentes » est une liste noire
+        perdante, la protection réelle étant que seul un porteur du token
+        écrit ce champ.
+        """
+        if valeur is None:
+            return None
+        if len(valeur) > config.REVIEW_NOTE_MAX_LENGTH:
+            raise ValueError(
+                f"review_note dépasse {config.REVIEW_NOTE_MAX_LENGTH} caractères"
+            )
+        if any(ligne.lstrip().startswith("#") for ligne in valeur.splitlines()):
+            raise ValueError("review_note ne peut pas contenir de titre markdown")
+        if "```" in valeur:
+            raise ValueError("review_note ne peut pas contenir de bloc de code")
+        return valeur
+
+    @model_validator(mode="after")
+    def valider_la_coherence(self) -> "ReglePatch":
+        """Une note n'a de sens que là où enrich_again la lira."""
+        if self.review_status is None:
+            if self.review_note is not None:
+                raise ValueError(
+                    "review_note est refusée avec review_status=null : annuler "
+                    "une annotation n'accepte pas de note"
+                )
+            return self
+        if (
+            self.review_status in (ReviewStatus.a_revoir, ReviewStatus.invalide)
+            and not self.review_note
+        ):
+            raise ValueError(
+                "review_note est obligatoire pour a_revoir et invalide : "
+                "enrich_again l'injecte dans le prompt du LLM"
+            )
+        return self
