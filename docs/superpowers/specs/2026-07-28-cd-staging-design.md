@@ -126,6 +126,12 @@ jobs:
       - name: Construire et (re)démarrer les conteneurs modifiés
         run: make up
 
+      - name: Attendre que l'API réponde
+        run: |
+          until curl -sf http://localhost:8880/health; do
+            sleep 1
+          done
+
       - name: Rejouer la suite d'acceptance (garde-fou post-déploiement)
         run: make api-regles-acceptance
 ```
@@ -140,6 +146,13 @@ Notes sur ce squelette :
 - `docker compose up -d --build` sans argument ne reconstruit/relance que les
   services dont l'image ou la configuration a changé — Postgres (et sa
   donnée) n'est pas touché si seul le code d'`api_regles` a changé.
+- **Attente sur `/health` avant l'acceptance** — même cause que pour
+  Postgres : `make up` rend la main dès que le conteneur est *démarré*, pas
+  forcément prêt à accepter des connexions (uvicorn met un instant à se
+  lancer après un rebuild). Découvert sur le premier run réel : l'acceptance
+  échouait en `Connection reset by peer` juste après un déploiement, alors
+  que l'API répondait déjà quelques secondes plus tard en vérifiant à la
+  main.
 - **`make up-db` (nouvelle cible Makefile) démarre Postgres seul, avant les
   migrations** — découvert lors du premier run réel : sur une machine où la
   stack n'a jamais tourné, les migrations échouaient (`connection refused`,
