@@ -68,6 +68,9 @@ feature ── PR vers staging ── merge ── push sur staging
 Un seul job, séquentiel, entièrement exécuté sur cloclo (le runner y tourne
 déjà — pas de SSH ni de copie de fichiers depuis GitHub).
 
+Diagramme de déploiement complet (machines, réseaux, flux) :
+`conception/annexes/K_deploiement_staging.drawio`.
+
 ## Workflow (`.github/workflows/cd-staging.yml`)
 
 ```yaml
@@ -173,7 +176,26 @@ exécutées par David lui-même sur cloclo.
 6. Enregistrement DNS A chez Infomaniak pour `regles.qualicheck.koabana.fr`
    → IP publique de cloclo
 7. Configuration Caddy sur cloclo : reverse proxy
-   `regles.qualicheck.koabana.fr` → `localhost:8880`
+   `regles.qualicheck.koabana.fr` → `api-regles:8880`, sur le réseau Docker
+   externe `cloudnet` (déjà en place sur cloclo, partagé avec d'autres
+   services — Caddy y proxie ses cibles par nom de conteneur, pas par
+   `localhost`)
+8. **`docker-compose.override.yml` créé une fois sur cloclo**, pas commité
+   dans le dépôt (n'existe donc pas en local pour David, qui n'a pas
+   `cloudnet`) : fait rejoindre `cloudnet` au service `api-regles`, en plus
+   de son réseau interne — sans quoi Caddy ne peut pas l'atteindre par son
+   nom :
+
+   ```yaml
+   services:
+     api-regles:
+       networks:
+         - cloudnet
+
+   networks:
+     cloudnet:
+       external: true
+   ```
 
 ## Gestion des erreurs
 
@@ -193,7 +215,7 @@ exécutées par David lui-même sur cloclo.
 
 ## Plan de vérification
 
-1. Une fois les 7 prérequis manuels faits : petit changement sur `feature` →
+1. Une fois les 8 prérequis manuels faits : petit changement sur `feature` →
    PR vers `staging` → merge → observer le run GitHub Actions de bout en
    bout (chaque étape verte).
 2. Vérifier `https://regles.qualicheck.koabana.fr/health` réellement depuis
