@@ -105,6 +105,7 @@ jobs:
           FASTAPI_API_KEY_ELIE=${{ secrets.FASTAPI_API_KEY_ELIE }}
           FASTAPI_API_KEY_DAVID=${{ secrets.FASTAPI_API_KEY_DAVID }}
           FASTAPI_API_KEY_FORMATEUR=${{ secrets.FASTAPI_API_KEY_FORMATEUR }}
+          COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml
           EOF
 
       - name: Installer uv et les dépendances (pour les migrations et l'acceptance)
@@ -137,7 +138,13 @@ Notes sur ce squelette :
   self-hosted réutilise le même répertoire de travail d'un run à l'autre.
   `actions/checkout` nettoie par défaut les fichiers non suivis (équivalent
   `git clean -ffdx`) avant de checkouter — le `.env` de l'étape suivante ne
-  peut donc pas être un résidu d'un run précédent.
+  peut donc pas être un résidu d'un run précédent. **Même raison pour
+  laquelle `docker-compose.override.yml` (réseau `cloudnet`, voir prérequis
+  8) ne peut pas vivre dans ce dossier checkouté** : il serait supprimé au
+  run suivant. Il vit dans un dossier stable à part
+  (`/srv/docker/qualicheck-staging-override/`), et `COMPOSE_FILE` (dans le
+  `.env` ci-dessus) dit à `docker compose` d'aller le chercher là — sans
+  toucher à `make up` ni au Makefile.
 
 ## Secrets — environnement GitHub `staging`
 
@@ -180,11 +187,15 @@ exécutées par David lui-même sur cloclo.
    externe `cloudnet` (déjà en place sur cloclo, partagé avec d'autres
    services — Caddy y proxie ses cibles par nom de conteneur, pas par
    `localhost`)
-8. **`docker-compose.override.yml` créé une fois sur cloclo**, pas commité
-   dans le dépôt (n'existe donc pas en local pour David, qui n'a pas
-   `cloudnet`) : fait rejoindre `cloudnet` au service `api-regles`, en plus
-   de son réseau interne — sans quoi Caddy ne peut pas l'atteindre par son
-   nom :
+8. **`docker-compose.override.yml` créé une fois sur cloclo**, dans un
+   dossier stable en dehors du dépôt
+   (`/srv/docker/qualicheck-staging-override/`) — jamais dans le dossier
+   checkouté par le workflow, qui serait nettoyé (fichiers non suivis
+   supprimés) au run suivant par `actions/checkout`. Fait rejoindre
+   `cloudnet` au service `api-regles`, en plus de son réseau interne — sans
+   quoi Caddy ne peut pas l'atteindre par son nom. Référencé depuis le
+   `.env` du workflow via `COMPOSE_FILE`, jamais commité dans le dépôt
+   (n'existe donc pas en local pour David, qui n'a pas `cloudnet`) :
 
    ```yaml
    services:
