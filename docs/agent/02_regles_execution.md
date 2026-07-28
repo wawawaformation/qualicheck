@@ -33,4 +33,4 @@ Exception volontaire : `tests/migration/` cible `POSTGRES_DB` (lecture seule, v�
 
 ## Branches
 
-Travail au fil de l'eau directement sur `feature`, pas de découpage par sujet.
+Travail au fil de l'eau directement sur `dev`, pas de découpage par sujet.
