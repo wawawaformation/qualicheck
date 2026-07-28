@@ -1,4 +1,4 @@
-.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles
+.PHONY: up down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance
 
 # ============================================================
 # Docker
@@ -96,6 +96,14 @@ API_REGLES_PORT = $(shell grep 'port:' app/api_regles/manifest.yml | tr -d ' ' |
 ## Démarre l'API données en développement (rechargement automatique)
 api-regles:
 	uv run uvicorn app.api_regles.main:app --reload --port $(API_REGLES_PORT)
+
+## Rejoue le jeu d'acceptance de l'API données (tests/acceptance/api_regles_acceptance.jsonl) :
+## nécessite make api-regles démarré dans un autre terminal. Aucun appel LLM,
+## mais UN PATCH réel réversible sur POSTGRES_DB (pas POSTGRES_TEST_DB) pour
+## vérifier la boucle de revue de bout en bout — exception volontaire et
+## documentée, voir docs/superpowers/plans/2026-07-26-api-regles-implementation.md
+api-regles-acceptance:
+	uv run python scripts/check_api_regles_acceptance.py
 
 # ============================================================
 # Tests
