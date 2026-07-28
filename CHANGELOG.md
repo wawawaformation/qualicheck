@@ -11,6 +11,11 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-07-28 — Claude Code
 
+- **Client léger de revue humaine** — voir `client_revue/index.html`, `Makefile` (cible `client-revue`)
+  - Reprend la maquette `conception/maquettes/ecran_revue_regles.html`, branchée sur l'API réelle (`GET /regles`, `PATCH /regles/{numero}`)
+  - Champ jeton API dans la topbar, persistance `localStorage`, envoyé en `Authorization: Bearer` uniquement au PATCH
+  - Usage local uniquement (`http://localhost:5173`), pas de déploiement distant — destiné au formateur et à Élie Sloïm pour la revue humaine
+  - Spec : `docs/superpowers/specs/2026-07-28-client-revue-design.md`, plan : `docs/superpowers/plans/2026-07-28-client-revue.md`
 - **Branche `feature` renommée `dev`** (renommage GitHub natif, redirige automatiquement toute référence) : plus cohérent avec son rôle réel de tronc de développement principal (documenté depuis le 2026-07-26, `docs/agent/02_regles_execution.md`) plutôt qu'une branche de fonctionnalité isolée. `.github/workflows/ci-feature.yml` renommé `ci-dev.yml`, `dev` retiré de son `branches-ignore` (devient la branche couverte, pas exclue — sans ce correctif la CI aurait cessé de tourner silencieusement). Docs vivantes mises à jour (`docs/agent/02_regles_execution.md`, `docs/developpement/ci.md`, `docs/developpement/deploiement_staging.md`, `docs/superpowers/specs/2026-07-28-cd-staging-design.md`) ; specs/plans/CHANGELOG datés antérieurs volontairement laissés tels quels (enregistrements historiques, pas des références à jour). Vérifié : CI verte sur un vrai push à `dev` après le renommage
 - **CD staging vérifié en conditions réelles, de bout en bout** : `https://regles.qualicheck.koabana.fr` sert les 245 vraies règles Opquast, `make api-regles-acceptance` passe intégralement contre l'instance staging réelle (245 règles, filtres, 4 jetons, boucle de revue). 4 bugs réels trouvés et corrigés en cours de route sur le premier déploiement (chacun avec son PR dédiée) :
   - `make` absent du PATH du runner self-hosted → installé sur cloclo
