@@ -244,12 +244,23 @@ async function chargerRegles() {
 const CLE_JETON = "jetonApiRevue";
 const champJeton = document.getElementById("jeton-api");
 champJeton.value = localStorage.getItem(CLE_JETON) || "";
+
+function enregistrerJeton() {
+  localStorage.setItem(CLE_JETON, champJeton.value);
+  showToast("Jeton enregistré.");
+}
+
 champJeton.addEventListener("input", () => {
   localStorage.setItem(CLE_JETON, champJeton.value);
 });
+champJeton.addEventListener("keydown", e => {
+  if (e.key === "Enter") enregistrerJeton();
+});
+document.getElementById("jeton-valider").addEventListener("click", enregistrerJeton);
 document.getElementById("jeton-effacer").addEventListener("click", () => {
   champJeton.value = "";
   localStorage.removeItem(CLE_JETON);
+  showToast("Jeton effacé.");
 });
 
 chargerRegles();
