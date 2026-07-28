@@ -682,6 +682,7 @@ function renderDetail(r) {
         <textarea id="review-note" placeholder="Expliquez le problème de classification, à l'attention du prochain enrich_again…">${r.review_note || ""}</textarea>
         <div class="field-hint">Cette note est réinjectée telle quelle dans le prompt lors du prochain <span class="mono">make enrich-again</span>.</div>
         <div class="field-error" id="note-error">Une note est obligatoire pour les statuts « À revoir » et « Invalide ».</div>
+        <div class="field-error" id="patch-error"></div>
       </div>
 
       <div class="annotation-footer">
@@ -704,7 +705,7 @@ function renderDetail(r) {
     });
   });
 
-  detail.querySelector("#btn-save").addEventListener("click", () => {
+  detail.querySelector("#btn-save").addEventListener("click", async () => {
     const chosen = segmented.querySelector("input:checked").value;
     const note = noteField.value.trim();
     const errorEl = detail.querySelector("#note-error");
@@ -714,11 +715,55 @@ function renderDetail(r) {
       return;
     }
     errorEl.classList.remove("is-visible");
-    r.review_status = chosen === "aucun" ? null : chosen;
-    r.review_note = chosen === "aucun" ? null : (note || null);
-    r.reviewed_at = chosen === "aucun" ? null : new Date().toISOString();
+    const erreurPatch = detail.querySelector("#patch-error");
+    erreurPatch.classList.remove("is-visible");
+
+    const corps = {
+      review_status: chosen === "aucun" ? null : chosen,
+      review_note: chosen === "aucun" ? null : (note || null),
+    };
+
+    let reponse;
+    try {
+      reponse = await fetch(`${API_BASE_URL}/regles/${r.numero}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${champJeton.value}`,
+        },
+        body: JSON.stringify(corps),
+      });
+    } catch {
+      erreurPatch.textContent = "Impossible de contacter l'API — vérifier qu'elle tourne (make api-regles).";
+      erreurPatch.classList.add("is-visible");
+      return;
+    }
+
+    if (!reponse.ok) {
+      const messages = {
+        401: "Jeton invalide ou absent.",
+        404: "Règle introuvable (a-t-elle été supprimée ?).",
+      };
+      if (messages[reponse.status]) {
+        erreurPatch.textContent = messages[reponse.status];
+      } else {
+        const corpsErreur = await reponse.json().catch(() => ({}));
+        const detail = corpsErreur.detail;
+        erreurPatch.textContent = typeof detail === "string"
+          ? detail
+          : Array.isArray(detail)
+            ? detail.map(e => e.msg).join(" ")
+            : `Erreur ${reponse.status}.`;
+      }
+      erreurPatch.classList.add("is-visible");
+      return;
+    }
+
+    const miseAJour = await reponse.json();
+    const index = REGLES.findIndex(regle => regle.numero === miseAJour.numero);
+    REGLES[index] = miseAJour;
     renderList();
-    renderDetail(r);
+    renderDetail(miseAJour);
     showToast(chosen === "aucun" ? "Annotation effacée." : "Annotation enregistrée.");
   });
 }
