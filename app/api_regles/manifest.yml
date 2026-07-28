@@ -1,0 +1,34 @@
+# Configuration courante de l'API données. Aucun secret ici : voir .env.
+# Aucun historique ici : git s'en charge (git log manifest.yml).
+
+api:
+  title: "QualiCheck — API données"
+  description: "Accès au référentiel Opquast enrichi et boucle de revue humaine"
+  # Version du contrat d'API, distincte de la version du paquet Python de
+  # pyproject.toml : elle évolue avec les endpoints, pas avec les dépendances.
+  version: "0.1.0"
+  port: 8880
+
+cors:
+  # Origines autorisées à appeler l'API depuis un navigateur.
+  # Développement et production peuvent cohabiter : une origine qui n'existe
+  # pas encore ne peut de toute façon appeler personne.
+  allowed_origins:
+    - http://localhost:5173
+
+validation:
+  # Longueur maximale d'une review_note : borne le coût en tokens du prochain
+  # enrich_again autant que la surface d'injection de prompt.
+  review_note_max_length: 2000
+
+licence:
+  # Le référentiel Opquast est diffusé sous CC BY-SA 4.0 : attribution et
+  # partage à l'identique obligatoires. Cette API distribue ce contenu, elle
+  # doit donc porter le crédit et le lien vers la licence — c'est une
+  # obligation, pas une politesse.
+  # Voir docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md
+  nom: "CC BY-SA 4.0"
+  url: "https://creativecommons.org/licenses/by-sa/4.0/deed.fr"
+  attribution: >-
+    « Référentiel Opquast - Qualité Numérique » par Opquast, utilisé sous
+    licence CC BY-SA 4.0, avec le soutien d'Élie Sloïm (Opquast).
