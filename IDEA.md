@@ -81,12 +81,12 @@ plus tard si l'idée tient.
 
 ## 2026-07-26
 
-- **`app/api_data/` pourrait un jour exposer un endpoint de recherche
+- **`app/api_regles/` pourrait un jour exposer un endpoint de recherche
   vectorielle "vecteur déjà calculé"** — reçoit `{"vecteur": [...], "top_n":
   3}` et se contente du `ORDER BY embedding <=> :vecteur LIMIT top_n`, sans
   jamais appeler de LLM. Respecterait la contrainte de l'API données (« aucun
   appel LLM, aucun recalcul d'embedding » —
-  `docs/superpowers/plans/2026-07-26-api-data-implementation.md`), puisque
+  `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`), puisque
   c'est exactement le motif déjà écrit et validé dans
   `app/ingestion/rag_acceptance.py::query_top_n_numeros()`.
   - **Volontairement pas construit maintenant** : personne ne le consomme —
@@ -98,7 +98,7 @@ plus tard si l'idée tient.
     construire ce bout maintenant serait spéculatif, YAGNI l'écarte.
   - **Frontière à retrouver le jour où US2 est spécée** : soit
     `app/api_business/` embarque l'appel LLM d'embedding puis appelle cet
-    endpoint sur `app/api_data/` (le vecteur transite en HTTP, jamais le
+    endpoint sur `app/api_regles/` (le vecteur transite en HTTP, jamais le
     calcul), soit `api_business` requête pgvector directement — à trancher
     avec les vrais détails d'US2, pas avant.
 

@@ -4,13 +4,15 @@ Référence : `conception/2_ingestion/ingestion.md`
 
 ## Prochain gros morceau
 
-- [ ] **API données (étage n-tiers)** — `app/api_data/` : permettre à d'autres
-  composants (US1/US2 à venir, via un futur `app/api_business/`) d'interroger
-  les règles enrichies/vectorisées sans passer par les scripts d'ingestion.
+- [ ] **API référentiel (étage données)** — `app/api_regles/` : permettre à
+  d'autres composants (US1/US2 à venir, via un futur `app/api_business/`, plus
+  `app/api_audit/` pour les tables métier) d'interroger les règles
+  enrichies/vectorisées sans passer par les scripts d'ingestion.
   Conçue, pas encore implémentée : spec
   `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`, plan
-  `docs/superpowers/plans/2026-07-26-api-data-implementation.md`, décision de
-  lecture ouverte `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`
+  `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`, décision de
+  lecture ouverte `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`,
+  séparation des services `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md`
 
 ## Étapes du pipeline
 

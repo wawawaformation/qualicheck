@@ -4,7 +4,7 @@
 
 **Goal:** Livrer l'API HTTP de l'étage données — lecture du référentiel Opquast enrichi et annotation de revue humaine — conformément à `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`.
 
-**Architecture:** FastAPI monté sur un unique router `/regles`, alimenté par une session SQLAlchemy injectée en dépendance. Toute la configuration non secrète vit dans `app/api_data/manifest.yml`, lue par le seul module `app/api_data/config.py`. Les écritures sont gardées par un token Bearer statique ; les lectures sont ouvertes. Aucun appel LLM, aucun recalcul d'embedding.
+**Architecture:** FastAPI monté sur un unique router `/regles`, alimenté par une session SQLAlchemy injectée en dépendance. Toute la configuration non secrète vit dans `app/api_regles/manifest.yml`, lue par le seul module `app/api_regles/config.py`. Les écritures sont gardées par un token Bearer statique ; les lectures sont ouvertes. Aucun appel LLM, aucun recalcul d'embedding.
 
 **Tech Stack:** Python 3.14, FastAPI, Uvicorn, Pydantic v2, SQLAlchemy 2, PostgreSQL/pgvector, pytest, Ruff, uv.
 
@@ -13,9 +13,9 @@
 - **Spec de référence** : `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`. En cas de doute, elle fait foi.
 - **Tests destructeurs** : uniquement sur `POSTGRES_TEST_DB`. Ne jamais viser `POSTGRES_DB` (incident du 2026-07-25 : 245 règles réelles effacées).
 - **Aucun appel LLM** dans cette API, aucun recalcul d'embedding.
-- **Aucun `os.getenv()` ni lecture de YAML** ailleurs que dans `app/api_data/config.py` — `app/db.py` excepté, qui lit les `POSTGRES_*` (identifiants de connexion, pas configuration d'API).
+- **Aucun `os.getenv()` ni lecture de YAML** ailleurs que dans `app/api_regles/config.py` — `app/db.py` excepté, qui lit les `POSTGRES_*` (identifiants de connexion, pas configuration d'API).
 - **Aucun `text()` avec f-string.** Le SQL passe par l'ORM ; un éventuel SQL manuel utilise des paramètres nommés.
-- **Port** : `8880`, déclaré seulement dans `app/api_data/manifest.yml`.
+- **Port** : `8880`, déclaré seulement dans `app/api_regles/manifest.yml`.
 - **Longueur maximale de `review_note`** : `2000`, déclarée seulement dans le manifeste.
 - **Origine CORS de développement** : `http://localhost:5173`. Jamais `allow_origins=["*"]`.
 - **Horodatage** : `datetime.now(UTC).replace(tzinfo=None)`, comme `app/ingestion/stockage.py:181`.
@@ -30,18 +30,18 @@
 
 | Fichier | Responsabilité |
 | --- | --- |
-| `app/api_data/manifest.yml` | Source de vérité de la configuration non secrète |
-| `app/api_data/config.py` | Seul lecteur du manifeste et du secret `FASTAPI_API_KEY` |
+| `app/api_regles/manifest.yml` | Source de vérité de la configuration non secrète |
+| `app/api_regles/config.py` | Seul lecteur du manifeste et du secret `FASTAPI_API_KEY` |
 | `app/db.py` | Construction de l'URL de connexion, moteur, dépendance `get_session` |
-| `app/api_data/schemas.py` | Énumérations, `split_outils()`, `RegleRead`, `ReglePatch` et ses validations |
-| `app/api_data/auth.py` | `require_bearer()` — garde d'écriture |
-| `app/api_data/regles.py` | Router : les 3 endpoints et le chargement en 4 requêtes |
-| `app/api_data/main.py` | Objet ASGI, CORS, montage du router, `/health` |
+| `app/api_regles/schemas.py` | Énumérations, `split_outils()`, `RegleRead`, `ReglePatch` et ses validations |
+| `app/api_regles/auth.py` | `require_bearer()` — garde d'écriture |
+| `app/api_regles/regles.py` | Router : les 3 endpoints et le chargement en 4 requêtes |
+| `app/api_regles/main.py` | Objet ASGI, CORS, montage du router, `/health` |
 | `tests/unit/test_db.py` | Composition de l'URL de connexion |
-| `tests/unit/api_data/test_config.py` | Valeurs du manifeste, refus d'un secret vide |
-| `tests/unit/api_data/test_schemas.py` | `split_outils()`, `RegleRead`, validations de `ReglePatch` |
-| `tests/unit/api_data/test_auth.py` | Token valide, token faux, header absent |
-| `tests/integration/api_data/test_regles.py` | Les 3 endpoints et `/health` sur `POSTGRES_TEST_DB` |
+| `tests/unit/api_regles/test_config.py` | Valeurs du manifeste, refus d'un secret vide |
+| `tests/unit/api_regles/test_schemas.py` | `split_outils()`, `RegleRead`, validations de `ReglePatch` |
+| `tests/unit/api_regles/test_auth.py` | Token valide, token faux, header absent |
+| `tests/integration/api_regles/test_regles.py` | Les 3 endpoints et `/health` sur `POSTGRES_TEST_DB` |
 
 `app/models/` n'est **pas modifié** : aucun `relationship()` n'est ajouté. Ce fichier est partagé avec le pipeline d'ingestion, dont une ré-exécution coûte de l'argent.
 
@@ -52,11 +52,11 @@
 **Files:**
 
 - Modify: `pyproject.toml`
-- Create: `app/api_data/__init__.py`
-- Create: `app/api_data/manifest.yml`
-- Create: `app/api_data/config.py`
-- Create: `tests/unit/api_data/__init__.py`
-- Test: `tests/unit/api_data/test_config.py`
+- Create: `app/api_regles/__init__.py`
+- Create: `app/api_regles/manifest.yml`
+- Create: `app/api_regles/config.py`
+- Create: `tests/unit/api_regles/__init__.py`
+- Test: `tests/unit/api_regles/test_config.py`
 
 **Interfaces:**
 
@@ -75,12 +75,12 @@ uv add --dev httpx
 - [ ] **Step 2: Créer les paquets vides**
 
 ```bash
-touch app/api_data/__init__.py tests/unit/api_data/__init__.py
+touch app/api_regles/__init__.py tests/unit/api_regles/__init__.py
 ```
 
 - [ ] **Step 3: Écrire le manifeste**
 
-Créer `app/api_data/manifest.yml` :
+Créer `app/api_regles/manifest.yml` :
 
 ```yaml
 # Configuration courante de l'API données. Aucun secret ici : voir .env.
@@ -111,7 +111,7 @@ licence:
   # partage à l'identique obligatoires. Cette API distribue ce contenu, elle
   # doit donc porter le crédit et le lien vers la licence — c'est une
   # obligation, pas une politesse.
-  # Voir docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md
+  # Voir docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md
   nom: "CC BY-SA 4.0"
   url: "https://creativecommons.org/licenses/by-sa/4.0/deed.fr"
   attribution: >-
@@ -121,14 +121,14 @@ licence:
 
 - [ ] **Step 4: Écrire le test qui échoue**
 
-Créer `tests/unit/api_data/test_config.py` :
+Créer `tests/unit/api_regles/test_config.py` :
 
 ```python
 """Le manifeste est la seule source de vérité de la configuration de l'API."""
 
 import pytest
 
-from app.api_data import config
+from app.api_regles import config
 
 
 def test_le_manifeste_expose_le_port():
@@ -171,19 +171,19 @@ def test_admin_token_refuse_un_secret_vide(monkeypatch):
 
 - [ ] **Step 5: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/unit/api_data/test_config.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_config.py -v`
 
-Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_data.config'`
+Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_regles.config'`
 
 - [ ] **Step 6: Écrire l'implémentation minimale**
 
-Créer `app/api_data/config.py` :
+Créer `app/api_regles/config.py` :
 
 ```python
 """
 Source de vérité de la configuration de l'API données.
 
-Aucun autre module de app/api_data/ ne lit d'environnement ni de YAML : une
+Aucun autre module de app/api_regles/ ne lit d'environnement ni de YAML : une
 valeur de configuration ne doit exister qu'à un seul endroit.
 """
 
@@ -197,7 +197,7 @@ load_dotenv()
 
 
 def load_manifest() -> dict:
-    """Charge la configuration courante de l'API (app/api_data/manifest.yml)."""
+    """Charge la configuration courante de l'API (app/api_regles/manifest.yml)."""
     manifest_path = Path(__file__).parent / "manifest.yml"
     with open(manifest_path, encoding="utf-8") as f:
         return yaml.safe_load(f)
@@ -214,7 +214,7 @@ REVIEW_NOTE_MAX_LENGTH: int = _MANIFEST["validation"]["review_note_max_length"]
 
 # Attribution CC BY-SA 4.0 : obligation de la licence du référentiel Opquast,
 # que cette API distribue. Voir
-# docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md
+# docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md
 LICENCE_NOM: str = _MANIFEST["licence"]["nom"]
 LICENCE_URL: str = _MANIFEST["licence"]["url"]
 ATTRIBUTION: str = _MANIFEST["licence"]["attribution"]
@@ -238,20 +238,20 @@ def admin_token() -> str:
 
 - [ ] **Step 7: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/unit/api_data/test_config.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_config.py -v`
 
 Expected: PASS (7 tests)
 
 - [ ] **Step 8: Vérifier le lint**
 
-Run: `uv run ruff check app/api_data tests/unit/api_data`
+Run: `uv run ruff check app/api_regles tests/unit/api_regles`
 
 Expected: `All checks passed!`
 
 - [ ] **Step 9: Commit**
 
 ```bash
-git add pyproject.toml uv.lock app/api_data tests/unit/api_data
+git add pyproject.toml uv.lock app/api_regles tests/unit/api_regles
 git commit -m "feat: add data-tier API configuration manifest"
 ```
 
@@ -315,7 +315,7 @@ Accès PostgreSQL de l'étage données.
 
 Partagé entre le pipeline d'ingestion et l'API. Lit les identifiants de
 connexion depuis .env : ce sont des secrets, pas de la configuration d'API —
-app/api_data/config.py ne les connaît pas.
+app/api_regles/config.py ne les connaît pas.
 """
 
 import os
@@ -387,8 +387,8 @@ git commit -m "feat: add shared data-tier database access module"
 
 **Files:**
 
-- Create: `app/api_data/schemas.py`
-- Test: `tests/unit/api_data/test_schemas.py`
+- Create: `app/api_regles/schemas.py`
+- Test: `tests/unit/api_regles/test_schemas.py`
 
 **Interfaces:**
 
@@ -397,12 +397,12 @@ git commit -m "feat: add shared data-tier database access module"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Créer `tests/unit/api_data/test_schemas.py` :
+Créer `tests/unit/api_regles/test_schemas.py` :
 
 ```python
 """Schémas et validations de l'API données."""
 
-from app.api_data.schemas import OutilFiltre, ReviewStatus, ReviewStatusFiltre, split_outils
+from app.api_regles.schemas import OutilFiltre, ReviewStatus, ReviewStatusFiltre, split_outils
 
 
 def test_strategie_simple_donne_un_seul_outil():
@@ -439,13 +439,13 @@ def test_aucun_est_un_filtre_de_lecture_pas_un_statut_ecrivable():
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/unit/api_data/test_schemas.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_schemas.py -v`
 
-Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_data.schemas'`
+Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_regles.schemas'`
 
 - [ ] **Step 3: Écrire l'implémentation minimale**
 
-Créer `app/api_data/schemas.py` :
+Créer `app/api_regles/schemas.py` :
 
 ```python
 """Schémas d'entrée et de sortie de l'API données."""
@@ -497,14 +497,14 @@ def split_outils(strategie_analyse: str) -> list[str]:
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/unit/api_data/test_schemas.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_schemas.py -v`
 
 Expected: PASS (6 tests)
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/api_data/schemas.py tests/unit/api_data/test_schemas.py
+git add app/api_regles/schemas.py tests/unit/api_regles/test_schemas.py
 git commit -m "feat: add analysis-strategy enums and composite splitting"
 ```
 
@@ -514,8 +514,8 @@ git commit -m "feat: add analysis-strategy enums and composite splitting"
 
 **Files:**
 
-- Modify: `app/api_data/schemas.py`
-- Test: `tests/unit/api_data/test_schemas.py`
+- Modify: `app/api_regles/schemas.py`
+- Test: `tests/unit/api_regles/test_schemas.py`
 
 **Interfaces:**
 
@@ -524,12 +524,12 @@ git commit -m "feat: add analysis-strategy enums and composite splitting"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Ajouter à `tests/unit/api_data/test_schemas.py` :
+Ajouter à `tests/unit/api_regles/test_schemas.py` :
 
 ```python
 from datetime import datetime
 
-from app.api_data.schemas import RegleRead
+from app.api_regles.schemas import RegleRead
 from app.models.referentiel import Regle
 
 
@@ -615,13 +615,13 @@ def test_from_regle_nexpose_ni_id_ni_embedding_ni_score():
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/unit/api_data/test_schemas.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_schemas.py -v`
 
 Expected: FAIL avec `ImportError: cannot import name 'RegleRead'`
 
 - [ ] **Step 3: Écrire l'implémentation minimale**
 
-Ajouter à `app/api_data/schemas.py` — les imports en tête du fichier :
+Ajouter à `app/api_regles/schemas.py` — les imports en tête du fichier :
 
 ```python
 from datetime import datetime
@@ -706,14 +706,14 @@ class RegleRead(BaseModel):
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/unit/api_data/test_schemas.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_schemas.py -v`
 
 Expected: PASS (10 tests)
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/api_data/schemas.py tests/unit/api_data/test_schemas.py
+git add app/api_regles/schemas.py tests/unit/api_regles/test_schemas.py
 git commit -m "feat: add RegleRead response schema with derived tools"
 ```
 
@@ -723,8 +723,8 @@ git commit -m "feat: add RegleRead response schema with derived tools"
 
 **Files:**
 
-- Modify: `app/api_data/schemas.py`
-- Test: `tests/unit/api_data/test_schemas.py`
+- Modify: `app/api_regles/schemas.py`
+- Test: `tests/unit/api_regles/test_schemas.py`
 
 **Interfaces:**
 
@@ -733,13 +733,13 @@ git commit -m "feat: add RegleRead response schema with derived tools"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Ajouter à `tests/unit/api_data/test_schemas.py` :
+Ajouter à `tests/unit/api_regles/test_schemas.py` :
 
 ```python
 import pytest
 from pydantic import ValidationError
 
-from app.api_data.schemas import ReglePatch
+from app.api_regles.schemas import ReglePatch
 
 
 def test_annotation_valide_est_acceptee():
@@ -820,18 +820,18 @@ def test_note_en_francais_riche_est_acceptee():
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/unit/api_data/test_schemas.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_schemas.py -v`
 
 Expected: FAIL avec `ImportError: cannot import name 'ReglePatch'`
 
 - [ ] **Step 3: Écrire l'implémentation minimale**
 
-Compléter les imports en tête de `app/api_data/schemas.py` :
+Compléter les imports en tête de `app/api_regles/schemas.py` :
 
 ```python
 from pydantic import BaseModel, field_validator, model_validator
 
-from app.api_data import config
+from app.api_regles import config
 ```
 
 Puis ajouter la classe en fin de fichier :
@@ -899,20 +899,20 @@ class ReglePatch(BaseModel):
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/unit/api_data/test_schemas.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_schemas.py -v`
 
 Expected: PASS (21 tests)
 
 - [ ] **Step 5: Vérifier le lint**
 
-Run: `uv run ruff check app/api_data tests/unit/api_data`
+Run: `uv run ruff check app/api_regles tests/unit/api_regles`
 
 Expected: `All checks passed!`
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add app/api_data/schemas.py tests/unit/api_data/test_schemas.py
+git add app/api_regles/schemas.py tests/unit/api_regles/test_schemas.py
 git commit -m "feat: add ReglePatch schema with prompt-injection validation"
 ```
 
@@ -922,8 +922,8 @@ git commit -m "feat: add ReglePatch schema with prompt-injection validation"
 
 **Files:**
 
-- Create: `app/api_data/auth.py`
-- Test: `tests/unit/api_data/test_auth.py`
+- Create: `app/api_regles/auth.py`
+- Test: `tests/unit/api_regles/test_auth.py`
 
 **Interfaces:**
 
@@ -932,7 +932,7 @@ git commit -m "feat: add ReglePatch schema with prompt-injection validation"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Créer `tests/unit/api_data/test_auth.py` :
+Créer `tests/unit/api_regles/test_auth.py` :
 
 ```python
 """Garde d'écriture : token Bearer statique, 401 dans tous les cas d'échec."""
@@ -941,7 +941,7 @@ import pytest
 from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 
-from app.api_data.auth import require_bearer
+from app.api_regles.auth import require_bearer
 
 JETON = "jeton-de-test"
 
@@ -984,13 +984,13 @@ def test_secret_absent_empeche_toute_ecriture(monkeypatch):
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/unit/api_data/test_auth.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_auth.py -v`
 
-Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_data.auth'`
+Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_regles.auth'`
 
 - [ ] **Step 3: Écrire l'implémentation minimale**
 
-Créer `app/api_data/auth.py` :
+Créer `app/api_regles/auth.py` :
 
 ```python
 """Garde d'écriture de l'API données."""
@@ -1000,7 +1000,7 @@ import secrets
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.api_data import config
+from app.api_regles import config
 
 # auto_error=False : le comportement par défaut de HTTPBearer renvoie un 403
 # quand le header est absent. Or aucune identité n'a été fournie — c'est un 401.
@@ -1031,14 +1031,14 @@ def require_bearer(
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/unit/api_data/test_auth.py -v`
+Run: `uv run pytest tests/unit/api_regles/test_auth.py -v`
 
 Expected: PASS (4 tests)
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/api_data/auth.py tests/unit/api_data/test_auth.py
+git add app/api_regles/auth.py tests/unit/api_regles/test_auth.py
 git commit -m "feat: add bearer write guard for the data API"
 ```
 
@@ -1048,10 +1048,10 @@ git commit -m "feat: add bearer write guard for the data API"
 
 **Files:**
 
-- Create: `app/api_data/main.py`
-- Create: `app/api_data/regles.py`
-- Create: `tests/integration/api_data/__init__.py`
-- Test: `tests/integration/api_data/test_regles.py`
+- Create: `app/api_regles/main.py`
+- Create: `app/api_regles/regles.py`
+- Create: `tests/integration/api_regles/__init__.py`
+- Test: `tests/integration/api_regles/test_regles.py`
 
 **Interfaces:**
 
@@ -1060,7 +1060,7 @@ git commit -m "feat: add bearer write guard for the data API"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Créer `tests/integration/api_data/__init__.py` (fichier vide), puis `tests/integration/api_data/test_regles.py` :
+Créer `tests/integration/api_regles/__init__.py` (fichier vide), puis `tests/integration/api_regles/test_regles.py` :
 
 ```python
 """
@@ -1083,7 +1083,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.api_data.main import app
+from app.api_regles.main import app
 from app.db import get_session
 from app.ingestion.stockage import clear_opquast_tables
 from app.models.referentiel import Regle, Theme
@@ -1219,13 +1219,13 @@ def test_la_documentation_porte_lattribution_cc_by_sa(client):
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
-Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_data.main'`
+Expected: FAIL avec `ModuleNotFoundError: No module named 'app.api_regles.main'`
 
 - [ ] **Step 3: Créer le router, encore vide**
 
-Créer `app/api_data/regles.py` :
+Créer `app/api_regles/regles.py` :
 
 ```python
 """Router des règles enrichies."""
@@ -1237,7 +1237,7 @@ router = APIRouter(prefix="/regles", tags=["regles"])
 
 - [ ] **Step 4: Écrire l'application**
 
-Créer `app/api_data/main.py` :
+Créer `app/api_regles/main.py` :
 
 ```python
 """
@@ -1253,7 +1253,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.api_data import config, regles
+from app.api_regles import config, regles
 from app.db import get_session
 
 # Fail-fast : sans secret d'écriture, la clé attendue serait vide et le PATCH
@@ -1308,20 +1308,20 @@ def health(session: Session = Depends(get_session)):
 
 - [ ] **Step 5: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
 Expected: PASS (4 tests)
 
 - [ ] **Step 6: Vérifier le lint**
 
-Run: `uv run ruff check app/api_data tests/integration/api_data`
+Run: `uv run ruff check app/api_regles tests/integration/api_regles`
 
 Expected: `All checks passed!`
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add app/api_data/main.py app/api_data/regles.py tests/integration/api_data
+git add app/api_regles/main.py app/api_regles/regles.py tests/integration/api_regles
 git commit -m "feat: add data API application, CORS and health probe"
 ```
 
@@ -1331,8 +1331,8 @@ git commit -m "feat: add data API application, CORS and health probe"
 
 **Files:**
 
-- Modify: `app/api_data/regles.py`
-- Test: `tests/integration/api_data/test_regles.py`
+- Modify: `app/api_regles/regles.py`
+- Test: `tests/integration/api_regles/test_regles.py`
 
 **Interfaces:**
 
@@ -1341,7 +1341,7 @@ git commit -m "feat: add data API application, CORS and health probe"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Ajouter à `tests/integration/api_data/test_regles.py` :
+Ajouter à `tests/integration/api_regles/test_regles.py` :
 
 ```python
 def test_liste_toutes_les_regles_triees_par_numero(client, jeu_de_regles):
@@ -1401,13 +1401,13 @@ def test_valeur_de_filtre_hors_enumeration_est_refusee(client, jeu_de_regles):
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
 Expected: FAIL — `GET /regles` renvoie `404`, aucune route n'est déclarée
 
 - [ ] **Step 3: Écrire l'implémentation minimale**
 
-Remplacer le contenu de `app/api_data/regles.py` :
+Remplacer le contenu de `app/api_regles/regles.py` :
 
 ```python
 """Router des règles enrichies."""
@@ -1417,7 +1417,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Query as OrmQuery
 from sqlalchemy.orm import Session
 
-from app.api_data.schemas import OutilFiltre, RegleRead, ReviewStatusFiltre
+from app.api_regles.schemas import OutilFiltre, RegleRead, ReviewStatusFiltre
 from app.db import get_session
 from app.models.referentiel import (
     Objectif,
@@ -1543,20 +1543,20 @@ def lister_regles(
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
 Expected: PASS (12 tests)
 
 - [ ] **Step 5: Vérifier le lint**
 
-Run: `uv run ruff check app/api_data tests/integration/api_data`
+Run: `uv run ruff check app/api_regles tests/integration/api_regles`
 
 Expected: `All checks passed!`
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add app/api_data/regles.py tests/integration/api_data/test_regles.py
+git add app/api_regles/regles.py tests/integration/api_regles/test_regles.py
 git commit -m "feat: add rules listing endpoint with tool and review filters"
 ```
 
@@ -1566,8 +1566,8 @@ git commit -m "feat: add rules listing endpoint with tool and review filters"
 
 **Files:**
 
-- Modify: `app/api_data/regles.py`
-- Test: `tests/integration/api_data/test_regles.py`
+- Modify: `app/api_regles/regles.py`
+- Test: `tests/integration/api_regles/test_regles.py`
 
 **Interfaces:**
 
@@ -1576,7 +1576,7 @@ git commit -m "feat: add rules listing endpoint with tool and review filters"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Ajouter à `tests/integration/api_data/test_regles.py` :
+Ajouter à `tests/integration/api_regles/test_regles.py` :
 
 ```python
 def test_lecture_dune_regle_par_son_numero(client, jeu_de_regles):
@@ -1597,13 +1597,13 @@ def test_numero_non_entier_donne_422(client, jeu_de_regles):
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
 Expected: FAIL — `GET /regles/3` renvoie `404`, la route n'existe pas
 
 - [ ] **Step 3: Écrire l'implémentation minimale**
 
-Ajouter à la fin de `app/api_data/regles.py`, et compléter l'import de `fastapi` en tête du fichier avec `HTTPException` et `status` :
+Ajouter à la fin de `app/api_regles/regles.py`, et compléter l'import de `fastapi` en tête du fichier avec `HTTPException` et `status` :
 
 ```python
 @router.get("/{numero}", response_model=RegleRead)
@@ -1633,14 +1633,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
 Expected: PASS (15 tests)
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app/api_data/regles.py tests/integration/api_data/test_regles.py
+git add app/api_regles/regles.py tests/integration/api_regles/test_regles.py
 git commit -m "feat: add single-rule read endpoint"
 ```
 
@@ -1650,8 +1650,8 @@ git commit -m "feat: add single-rule read endpoint"
 
 **Files:**
 
-- Modify: `app/api_data/regles.py`
-- Test: `tests/integration/api_data/test_regles.py`
+- Modify: `app/api_regles/regles.py`
+- Test: `tests/integration/api_regles/test_regles.py`
 
 **Interfaces:**
 
@@ -1660,7 +1660,7 @@ git commit -m "feat: add single-rule read endpoint"
 
 - [ ] **Step 1: Écrire le test qui échoue**
 
-Ajouter à `tests/integration/api_data/test_regles.py` :
+Ajouter à `tests/integration/api_regles/test_regles.py` :
 
 ```python
 def _entetes(token: str = JETON) -> dict[str, str]:
@@ -1757,19 +1757,19 @@ def test_patch_sur_numero_inconnu_donne_404(client, jeu_de_regles):
 
 - [ ] **Step 2: Lancer le test pour vérifier qu'il échoue**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
 Expected: FAIL — `PATCH /regles/1` renvoie `405 Method Not Allowed`
 
 - [ ] **Step 3: Écrire l'implémentation minimale**
 
-Ajouter à la fin de `app/api_data/regles.py`, avec les imports complémentaires en tête du fichier :
+Ajouter à la fin de `app/api_regles/regles.py`, avec les imports complémentaires en tête du fichier :
 
 ```python
 from datetime import UTC, datetime
 
-from app.api_data.auth import require_bearer
-from app.api_data.schemas import OutilFiltre, RegleRead, ReglePatch, ReviewStatusFiltre
+from app.api_regles.auth import require_bearer
+from app.api_regles.schemas import OutilFiltre, RegleRead, ReglePatch, ReviewStatusFiltre
 ```
 
 ```python
@@ -1821,26 +1821,26 @@ def annoter_regle(
 
 - [ ] **Step 4: Lancer le test pour vérifier qu'il passe**
 
-Run: `uv run pytest tests/integration/api_data/test_regles.py -v`
+Run: `uv run pytest tests/integration/api_regles/test_regles.py -v`
 
 Expected: PASS (22 tests)
 
 - [ ] **Step 5: Lancer toute la suite ciblée**
 
-Run: `uv run pytest tests/unit/api_data tests/unit/test_db.py tests/integration/api_data -v`
+Run: `uv run pytest tests/unit/api_regles tests/unit/test_db.py tests/integration/api_regles -v`
 
 Expected: PASS (56 tests — 7 config, 21 schémas, 4 auth, 2 db, 22 intégration)
 
 - [ ] **Step 6: Vérifier le lint**
 
-Run: `uv run ruff check app/api_data app/db.py tests/unit/api_data tests/unit/test_db.py tests/integration/api_data`
+Run: `uv run ruff check app/api_regles app/db.py tests/unit/api_regles tests/unit/test_db.py tests/integration/api_regles`
 
 Expected: `All checks passed!`
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add app/api_data/regles.py tests/integration/api_data/test_regles.py
+git add app/api_regles/regles.py tests/integration/api_regles/test_regles.py
 git commit -m "feat: add review annotation endpoint guarded by bearer token"
 ```
 
@@ -1861,11 +1861,11 @@ git commit -m "feat: add review annotation endpoint guarded by bearer token"
 **Interfaces:**
 
 - Consumes: `config.PORT` (tâche 1), `app` (tâche 7).
-- Produces: cible `make api-data`.
+- Produces: cible `make api-regles`.
 
 - [ ] **Step 1: Ajouter la cible Makefile**
 
-Dans `Makefile`, ajouter `api-data` à la liste `.PHONY` de la première ligne, puis créer une section après « Ingestion et données réelles » :
+Dans `Makefile`, ajouter `api-regles` à la liste `.PHONY` de la première ligne, puis créer une section après « Ingestion et données réelles » :
 
 ```make
 # ============================================================
@@ -1873,16 +1873,16 @@ Dans `Makefile`, ajouter `api-data` à la liste `.PHONY` de la première ligne, 
 # ============================================================
 
 # Port lu dans le manifeste, seule source de vérité.
-API_DATA_PORT = $(shell grep 'port:' app/api_data/manifest.yml | tr -d ' ' | cut -d: -f2)
+API_REGLES_PORT = $(shell grep 'port:' app/api_regles/manifest.yml | tr -d ' ' | cut -d: -f2)
 
 ## Démarre l'API données en développement (rechargement automatique)
-api-data:
-	uv run uvicorn app.api_data.main:app --reload --port $(API_DATA_PORT)
+api-regles:
+	uv run uvicorn app.api_regles.main:app --reload --port $(API_REGLES_PORT)
 ```
 
 - [ ] **Step 2: Vérifier que le port est bien extrait**
 
-Run: `make -n api-data`
+Run: `make -n api-regles`
 
 Expected: la commande affichée contient `--port 8880`
 
@@ -1891,7 +1891,7 @@ Expected: la commande affichée contient `--port 8880`
 Dans les deux fichiers, supprimer la ligne `FASTAPI_URL_DEV=...`. Conserver `FASTAPI_URL_PROD`, `FASTAPI_API_KEY` et `FASTAPI_API_ID`. Ajouter dans `.env.example`, au-dessus de `FASTAPI_API_ID`, le commentaire suivant :
 
 ```dotenv
-# Port et URL de développement : voir app/api_data/manifest.yml (déductibles)
+# Port et URL de développement : voir app/api_regles/manifest.yml (déductibles)
 FASTAPI_URL_PROD=...
 FASTAPI_API_KEY=...    # secret : token Bearer du PATCH de l'API données
 FASTAPI_API_ID=...     # volontairement inutilisé (pas de colonne reviewed_by)
@@ -1908,7 +1908,7 @@ Expected: `aucune lecture`
 Dans `docs/agent/03_references_impl.md`, ajouter deux lignes au tableau « Sources de vérité » :
 
 ```markdown
-| Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_data/manifest.yml` | — |
+| Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_regles/manifest.yml` | — |
 | Token Bearer des écritures de l'API données | `.env` (`FASTAPI_API_KEY`) | `FASTAPI_API_ID` existe mais n'est volontairement pas utilisé |
 ```
 
@@ -1917,15 +1917,15 @@ Dans `docs/agent/03_references_impl.md`, ajouter deux lignes au tableau « Sourc
 Ajouter le bloc suivant dans l'entrée `## 2026-07-26 — Claude Code` de `CHANGELOG.md` (la créer en tête de l'historique si elle n'existe pas). Remplacer le seul `NN` par le nombre de tests réellement obtenu à l'étape 8 :
 
 ```markdown
-- **API données (étage n-tiers)** (spec `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`, plan `docs/superpowers/plans/2026-07-26-api-data-implementation.md`), implémentée en 11 tâches (TDD)
+- **API données (étage n-tiers)** (spec `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`, plan `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`), implémentée en 11 tâches (TDD)
   - `app/db.py` (nouveau) : `build_database_url()`, `build_engine()`, `get_session()` — accès PostgreSQL partagé de l'étage données. Les 5 scripts qui dupliquent `build_engine()` sont volontairement laissés inchangés (refactoring de points d'entrée dont certains coûtent de l'argent à exécuter)
-  - `app/api_data/manifest.yml` (nouveau) : source de vérité de la configuration non secrète (titre, description, version du contrat, port `8880`, origines CORS, longueur max de `review_note`). `app/api_data/config.py` en est le seul lecteur — aucun `os.getenv()` ni YAML ailleurs dans le paquet
-  - `app/api_data/schemas.py` (nouveau) : `RegleRead` (19 champs, dont `outils[]` dérivé de la grammaire `+`/`&` de `strategie_analyse`), `ReglePatch` et ses trois validations — note obligatoire pour `a_revoir`/`invalide` (sans elle `enrich_again` appellerait le LLM sans consigne, un coût pour rien), note refusée avec `review_status: null`, et refus des titres markdown et fences qui pourraient détourner le prompt d'enrichissement
-  - `app/api_data/auth.py` (nouveau) : `require_bearer()` — token Bearer statique sur le `PATCH` uniquement, `secrets.compare_digest` (comparaison en temps constant), `HTTPBearer(auto_error=False)` pour renvoyer `401` et non le `403` par défaut, fail-fast au chargement si `FASTAPI_API_KEY` est absente ou vide
-  - `app/api_data/regles.py` (nouveau) : `GET /regles` (filtres répétables `?outil=` et `?review_status=`, OU en interne, ET entre eux), `GET /regles/{numero}`, `PATCH /regles/{numero}`. Le filtre `?outil=` est un « contient » et non une égalité — 85 règles contiennent playwright via les composites, contre 62 en égalité stricte. Chargement des collections en **4 requêtes groupées** quel que soit le nombre de règles : `app/models/` ne déclare aucun `relationship()`, `selectinload()` était donc hors de portée sans modifier des modèles partagés avec le pipeline d'ingestion
-  - `app/api_data/main.py` (nouveau) : objet ASGI, `CORSMiddleware` (origines depuis le manifeste, jamais `["*"]`, `allow_credentials=False` puisque l'auth passe par un header), `/health` avec vérification réelle de la base (`SELECT 1`, `503` si injoignable), et la documentation OpenAPI générée (`/docs`, `/redoc`, `/openapi.json`)
-  - **Attribution CC BY-SA 4.0 portée par l'API** (`license_info` + citation Opquast dans la `description`, valeurs dans le manifeste) : le référentiel est sous cette licence, l'API en distribue le contenu, le crédit et le lien sont donc une obligation et non une politesse — elle manquait dans la version initiale de la spec. Lecture ouverte confirmée comme décision actée, justifiée par le partage à l'identique : voir `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`
-  - `Makefile` : nouvelle cible `make api-data`, le port étant lu dans le manifeste par `grep` ; `FASTAPI_URL_DEV` retiré de `.env`/`.env.example` car déductible du port
+  - `app/api_regles/manifest.yml` (nouveau) : source de vérité de la configuration non secrète (titre, description, version du contrat, port `8880`, origines CORS, longueur max de `review_note`). `app/api_regles/config.py` en est le seul lecteur — aucun `os.getenv()` ni YAML ailleurs dans le paquet
+  - `app/api_regles/schemas.py` (nouveau) : `RegleRead` (19 champs, dont `outils[]` dérivé de la grammaire `+`/`&` de `strategie_analyse`), `ReglePatch` et ses trois validations — note obligatoire pour `a_revoir`/`invalide` (sans elle `enrich_again` appellerait le LLM sans consigne, un coût pour rien), note refusée avec `review_status: null`, et refus des titres markdown et fences qui pourraient détourner le prompt d'enrichissement
+  - `app/api_regles/auth.py` (nouveau) : `require_bearer()` — token Bearer statique sur le `PATCH` uniquement, `secrets.compare_digest` (comparaison en temps constant), `HTTPBearer(auto_error=False)` pour renvoyer `401` et non le `403` par défaut, fail-fast au chargement si `FASTAPI_API_KEY` est absente ou vide
+  - `app/api_regles/regles.py` (nouveau) : `GET /regles` (filtres répétables `?outil=` et `?review_status=`, OU en interne, ET entre eux), `GET /regles/{numero}`, `PATCH /regles/{numero}`. Le filtre `?outil=` est un « contient » et non une égalité — 85 règles contiennent playwright via les composites, contre 62 en égalité stricte. Chargement des collections en **4 requêtes groupées** quel que soit le nombre de règles : `app/models/` ne déclare aucun `relationship()`, `selectinload()` était donc hors de portée sans modifier des modèles partagés avec le pipeline d'ingestion
+  - `app/api_regles/main.py` (nouveau) : objet ASGI, `CORSMiddleware` (origines depuis le manifeste, jamais `["*"]`, `allow_credentials=False` puisque l'auth passe par un header), `/health` avec vérification réelle de la base (`SELECT 1`, `503` si injoignable), et la documentation OpenAPI générée (`/docs`, `/redoc`, `/openapi.json`)
+  - **Attribution CC BY-SA 4.0 portée par l'API** (`license_info` + citation Opquast dans la `description`, valeurs dans le manifeste) : le référentiel est sous cette licence, l'API en distribue le contenu, le crédit et le lien sont donc une obligation et non une politesse — elle manquait dans la version initiale de la spec. Lecture ouverte confirmée comme décision actée, justifiée par le partage à l'identique : voir `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`
+  - `Makefile` : nouvelle cible `make api-regles`, le port étant lu dans le manifeste par `grep` ; `FASTAPI_URL_DEV` retiré de `.env`/`.env.example` car déductible du port
   - Tests : NN au total (unitaires sur la configuration, les schémas et la garde d'écriture ; intégration sur les 3 endpoints et `/health`). Les tests d'intégration injectent leur session par `app.dependency_overrides[get_session]` : l'API sous test ne peut alors **pas** ouvrir de connexion vers `POSTGRES_DB`, garantie structurelle issue de l'incident du 2026-07-25
   - **Le `PATCH` n'écrit que `review_status`/`review_note`/`reviewed_at`** — le référent Opquast annote, le développeur corrige plus tard via `make enrich-again`. Cette API n'appelle aucun LLM et ne recalcule aucun embedding
 ```
@@ -1937,7 +1937,7 @@ Dans `TODO_PIPELINE_INGESTION.md`, remplacer l'entrée du « Prochain gros morce
 ```markdown
 ## Prochain gros morceau
 
-- [x] **API données (étage n-tiers)** — `app/api_data/`, 3 endpoints sur les
+- [x] **API données (étage n-tiers)** — `app/api_regles/`, 3 endpoints sur les
   règles enrichies plus `/health` et la documentation OpenAPI. Spec
   `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`
 - [ ] **API applicative** — `app/api_business/` pour US1 et US2, à concevoir.
@@ -1955,13 +1955,13 @@ Dans `TODO.md`, ajouter ces deux entrées à la section « Décisions en attente
 - [ ] **Licence du code et des étages applicatif/présentation** — non arrêtée.
   L'étage données est sous licence libre (CC BY-SA 4.0 s'imposant au jeu de
   données par partage à l'identique — décision actée
-  `docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`), mais CC BY-SA
+  `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`), mais CC BY-SA
   porte sur le contenu, pas sur le code : la séparation n-tiers laisse donc le
   choix libre pour `app/api_business/` et le front — `D`
 ```
 
 L'exposition publique de l'API données n'est **pas** à ajouter en décision
-attendue : elle est actée (`docs/jury/decisions/2026-07-26-lecture-ouverte-api-data.md`).
+attendue : elle est actée (`docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`).
 
 - [ ] **Step 8: Vérifier la suite complète**
 
@@ -1988,12 +1988,12 @@ Cette tâche s'exécute sur la **vraie base de développement** (`POSTGRES_DB`),
 
 **Interfaces:**
 
-- Consumes: la cible `make api-data` (tâche 11) et les 3 endpoints (tâches 8-10).
+- Consumes: la cible `make api-regles` (tâche 11) et les 3 endpoints (tâches 8-10).
 - Produces: les preuves des critères de validation 1 à 4 de la spec.
 
 - [ ] **Step 1: Démarrer l'API**
 
-Run: `make api-data`
+Run: `make api-regles`
 
 Expected: Uvicorn écoute sur `http://localhost:8880`. Laisser tourner dans un terminal dédié.
 

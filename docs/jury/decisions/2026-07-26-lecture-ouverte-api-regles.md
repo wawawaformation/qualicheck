@@ -51,7 +51,7 @@ ACL complète pour un seul client réellement existant. La forme « plusieurs
 jetons en écriture, un par client » reste envisageable plus tard sans remettre
 en cause la présente décision.
 
-**Trois-tiers strict — `api_data` sur réseau privé, seule `api_business`
+**Trois-tiers strict — `api_regles` sur réseau privé, seule `api_business`
 exposée** — pour : le problème d'exposition disparaît par construction plutôt
 que par un réglage. Contre : l'écran de revue des enrichissements dépendrait
 d'une API applicative non conçue ; et surtout, cette option répond à un
@@ -90,14 +90,14 @@ Licence et soutien se cumulent, ils ne se remplacent pas.
   crédit et un lien vers la licence. L'API les porte désormais via le champ
   OpenAPI standard `license_info` et la citation recommandée par Opquast dans
   sa description — visibles dans `/docs` et `/openapi.json`. Les valeurs
-  vivent dans `app/api_data/manifest.yml`, source de vérité de la
+  vivent dans `app/api_regles/manifest.yml`, source de vérité de la
   configuration.
 - **L'obligation suit le contenu, pas l'étage.** Toute brique qui *distribue*
   du contenu du référentiel doit porter l'attribution — y compris
   `app/api_business/` le jour où elle relaiera des règles à ses clients. Ce
   n'est pas acquis par le simple fait que l'étage données le fait déjà.
 - **La séparation n-tiers est aussi une frontière de licence.** Le tiers
-  données (`app/ingestion/`, `app/api_data/`, `app/models/`, et le jeu de
+  données (`app/ingestion/`, `app/api_regles/`, `app/models/`, et le jeu de
   données lui-même) forme un tout sous licence libre. La licence des autres
   étages — API applicative, interface Vue.js — **n'est pas encore décidée**, et
   le cloisonnement préserve cette liberté : CC BY-SA porte sur le contenu, pas
