@@ -88,3 +88,11 @@ Texte de discours prêt à l'emploi (rapport E1 ou oral) :
   les critères listent des options multiples (« un mix de… ») mériteraient la
   même vérification avant la soutenance plutôt que d'être découvertes à
   l'oral.
+- **Complément envisagé, si le temps le permet** : un ou plusieurs POC
+  démontrant les 3 sources manquantes (fichier, base de données comme source,
+  big data), **séparés du pipeline réel de QualiCheck** — pas intégrés à
+  `app/ingestion/`, pas versionnés comme faisant partie du produit. Renforce
+  le discours plutôt que de le contredire : montre au jury une maîtrise
+  réelle de ces patterns, sans les avoir forcés artificiellement dans le
+  projet. Piste notée dans `IDEA.md`, pas engagée — le temps de certification
+  restant (13 week-ends environ) reste la contrainte dominante.

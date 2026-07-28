@@ -140,3 +140,23 @@ plus tard si l'idée tient.
     même hors secteur, est un handicap pour une extension `.fr`/`.com`
     propres le jour où ça deviendrait concret. Pas urgent, à retravailler
     (brainstorm de noms alternatifs) seulement à ce moment-là.
+
+- **POC séparés démontrant les 3 sources d'extraction manquantes pour C1**
+  (fichier de données, base de données comme source, système big data) — si
+  le temps le permet. Contexte : `docs/jury/decisions/2026-07-28-couverture-sources-extraction-c1.md`
+  acte que QualiCheck reste à 2 sources réelles (API REST + scraping), les 3
+  autres n'ayant aucun besoin organique dans le pipeline des 245 règles
+  Opquast. Un POC **hors `app/ingestion/`, hors périmètre produit** pourrait
+  quand même démontrer la maîtrise de ces patterns au jury, sans les forcer
+  artificiellement dans le projet réel.
+  - Pistes non creusées, à choisir seulement le moment venu : fichier
+    (lecture d'un CSV/JSON quelconque, triviale) ; base de données source
+    (connexion à une base distincte de Postgres, ex. SQLite local, pour
+    illustrer l'extraction depuis un SGBD tiers) ; big data (le plus coûteux
+    des trois à démontrer sérieusement sans vraie infra — un outil local
+    léger type DuckDB serait plus réaliste qu'un vrai cluster Spark/Hadoop
+    pour le temps disponible).
+  - **Priorité basse, explicitement** : le temps de certification restant
+    (~13 week-ends au 2026-07-28) reste la contrainte dominante. Ce
+    complément ne doit pas prendre le pas sur le Bloc 3 (US1/US2), qui n'a
+    pas encore commencé.
