@@ -14,6 +14,25 @@ services:
       - qualicheck
     restart: unless-stopped
 
+  api-regles:
+    container_name: qualicheck-api-regles
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      # localhost:8832 dans .env vise l'hôte (script/tests) ; ici le conteneur
+      # atteint postgres par son nom de service, sur son port interne 5432.
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+    ports:
+      - "8880:8880"
+    depends_on:
+      - postgres
+    networks:
+      - qualicheck
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 
