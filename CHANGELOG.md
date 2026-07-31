@@ -9,6 +9,223 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-31 — Claude Code (Part 11)
+
+- **Vocabulaire `review_status` simplifié : retrait de `invalide`** — décelé
+  en confrontant les maquettes (`conception/maquettes/`) à l'API réelle
+  (`https://regles.qualicheck.koabana.fr/regles`) : `invalide` (classification
+  franchement fausse) était visuellement et fonctionnellement indiscernable
+  de `a_revoir` (à corriger), les deux finissant dans la même file de
+  réécriture ciblée. Vocabulaire réduit à `valide`/`a_revoir`, sans perte de
+  comportement — `enrich_again` sélectionne déjà par exclusion
+  (`review_status IS NOT NULL AND != 'valide'`), pas par énumération.
+  Répercuté sur `app/api_regles/schemas.py` (énums `ReviewStatus` et
+  `ReviewStatusFiltre`, message de validation), `app/ingestion/enrich_again.py`
+  (docstring), `Makefile` (commentaire de la cible `enrich-again`),
+  `conception/4_api_regles/api_regles.md`, `conception/1_BDD/MLD_qualicheck.md`,
+  `conception/3_enrichissement/G_revue_manuelle.md` (§3, §4.1, §5 + addendum
+  §6 documentant la décision) et `conception/3_enrichissement/J_chantier_enrich_again.md`.
+  Deux tests devenus obsolètes supprimés (`test_note_obligatoire_pour_invalide`,
+  `test_load_rules_to_review_includes_invalide_status`), trois docstrings de
+  test mis à jour. 134/134 tests unitaires + intégration passent, `ruff check`
+  propre. Non touché volontairement : `ecran_revue_regles_a_nettement _ameliorer.html`,
+  déjà marqué "à reprendre entièrement" dans `conception/maquettes/CLAUDE.md`
+  — corriger son vocabulaire aurait été un effort perdu avant sa refonte
+- **Ajout du lien de nav "Question libre" (US2)** dans le composant `entete`
+  (`conception/maquettes/directives/composants/entete.html`) — la maquette
+  n'exposait que "Mes audits", oubliant l'US2 (question libre, RAG sémantique)
+- **Principe de page active illustré dans `entete`** — `aria-current="page"`
+  sur le lien courant + style associé (`CSS/entete.css`), démontré sur
+  "Mes audits"
+- **4 nouveaux composants de maquette** construits depuis
+  `Etape2 Sélection des pages.pdf` : `stepper`, `ligne-page`,
+  `panneau-selection`, `navigation-etapes` — mêmes conventions que la session
+  précédente (CSS externalisé, assets locaux, `:hover`). `bouton.css` complété
+  de deux modificateurs (`--petit`, `--neutre`)
+- **`composants/formulaire.html` créé** : formulaire imaginé illustrant les
+  types de champ courants (texte, email avec erreur, mot de passe avec
+  succès, select, textarea, radio, interrupteur, case à cocher) sur la base
+  du design system existant. Mentions "(obligatoire)"/"(optionnel)" en toutes
+  lettres partout (plus d'astérisque)
+- **Restructuration `composants/`** : tous les CSS (dont `variables.css`)
+  regroupés dans `composants/CSS/`, Bootstrap Icons et la police Inter
+  rapatriés en fichiers locaux (plus de dépendance CDN)
+
+- **Montage « Livret 0 » abandonné, fusionné dans E1** — réponse reçue de la
+  référente certification (Helena) : 5 livrables au total, pas 6 ; si le
+  même projet sert aux 5, le contexte se présente une seule fois, en tête
+  du premier livrable. `docs/jury/documents_jury/commun/` supprimé
+  (`explication_projet.md`, `Livret0.pdf`). Le contexte (condensé :
+  présentation du projet + tableau des 3 US, sans l'annexe personas, pour
+  préserver le budget de pages) ouvre désormais `epreuvres/E1/E1.md`
+  directement (§ « Présentation du projet »), avec une phrase indiquant que
+  les livrets suivants n'y reviendront pas. `docs/jury/documents_jury/README.md`
+  et `TODO.md` mis à jour en conséquence. E1 passe de 3 à 4 pages, toujours
+  dans le budget 2-5 p.
+
+## 2026-07-29 — Claude Code (Part 9)
+
+- **Tirets cadratins retirés du Livret 0 et du livret E1** (demande
+  explicite : style de prose ne doit pas "sonner IA"). Titres et sous-titres
+  reformulés avec des deux-points ou des virgules ; phrases restructurées
+  plutôt que ponctuées d'incises systématiques. Pied de page et couverture
+  du template (`working/config/jury-livret.tex`) corrigés de la même façon
+- **Devise « Garbage in, garbage out » déplacée : uniquement sur E1**, pas
+  sur les 6 livrets. Mécanisme `\devise` rendu optionnel (vide par défaut) ;
+  bug découvert au passage : le YAML `header-includes:` d'un `.md` ne se
+  combine pas de façon fiable avec `--include-in-header` sur Pandoc 3.1.3
+  (la valeur du document disparaissait silencieusement). Contournement :
+  un second fichier `--include-in-header` propre à E1
+  (`epreuvres/E1/devise.tex`), les fichiers `-H` multiples se concaténant
+  correctement entre eux. Documenté dans `docs/jury/documents_jury/README.md`
+
+## 2026-07-29 — Claude Code (Part 8)
+
+- **Livret E1 rédigé** (`docs/jury/documents_jury/epreuvres/E1/E1.md`) : C1 à
+  C5, introduction (renvoi Livret 0, mention LLM + revue humaine, note sur
+  l'enrichissement du périmètre à US1/US2), synthèse des critères de
+  performance (tableau + renvoi `docs/jury/E1_bloc1_criteres_performance.xlsx`).
+  3 pages, dans le budget 2-5 p. d'E1 (`conception/certif_deroule.md`)
+- **Débordement du code inline corrigé** (`working/config/jury-livret.tex`) :
+  les chemins longs (`docs/jury/decisions/...`) sortaient de la marge —
+  `seqsplit` + `\ttfamily` sur `\texttt` autorise la coupure en fin de ligne.
+  Même bug probable dans `~/.config/pandoc/styles/conception.tex`/`formation.tex`
+  (non corrigé, hors périmètre de cette session)
+- **Devise « Garbage in, garbage out » ajoutée en page de garde** (les 6
+  livrets, template commun)
+
+## 2026-07-29 — Claude Code (Part 7)
+
+- **Branche par défaut GitHub changée `main` → `dev`** (`gh repo edit
+  --default-branch dev`) : `main` avait ~288 commits de retard sur `dev`
+  (rien n'est déployé en production, cf. `README.md` §Branches) — quiconque
+  ouvrait le dépôt sans préciser de branche (jury de certification compris)
+  atterrissait sur un squelette figé au setup Docker/BDD initial, sans rien
+  du pipeline d'ingestion ni d'`api_regles`. `README.md` mis à jour en
+  conséquence. Aucun workflow CI ne dépend du réglage de branche par défaut
+  (vérifié)
+
+## 2026-07-29 — Claude Code (Part 6)
+
+- **`conception/annexes/J_personas_qualicheck.png` exporté** (CLI `drawio
+  --export`, à la demande explicite de David — schéma déjà relu) — ajouté en
+  Annexe A du Livret 0 (`docs/jury/documents_jury/commun/explication_projet.md`),
+  référencé depuis le texte (« Détail complet des deux profils : Annexe A »)
+- **Contenu du Livret 0 relu et corrigé** : Opquast est une entreprise, pas
+  une organisation
+- **Piège Pandoc documenté** (`docs/jury/documents_jury/README.md`) : les
+  chemins d'image dans ces livrets sont relatifs à la racine du dépôt
+  (répertoire de lancement de `pandoc`), pas au dossier du fichier `.md`
+
+## 2026-07-29 — Claude Code (Part 5)
+
+- **Structure `docs/jury/documents_jury/` amorcée** — livrets à remettre au
+  jury (Livret 0 + E1 à E5), distincte du reste de `docs/jury/` qui pointe
+  vers les preuves sans les recopier (`README.md` dédié)
+  - `working/config/jury-livret.tex` : template Pandoc/XeLaTeX (identité
+    visuelle de `~/.config/pandoc/styles/conception.tex`), page de garde
+    unique — `\maketitle` redéfini, construite depuis le Front Matter
+  - `commun/explication_projet.md` = **Livret 0** : présentation du projet
+    (~2 pages), document **autonome**, remis une seule fois — pas concaténé
+    dans les 5 livrets d'épreuve. Décision alignée sur
+    `conception/certif_deroule.md` (*« 5 livrables... le contexte n'est
+    présenté qu'une fois »*) et sur le budget de pages serré d'E1/E5 (2 à 5 p.)
+  - `epreuvres/E{1..5}/` : un dossier par épreuve, s'y référence en une
+    phrase plutôt que de le recopier
+  - Build validé par compilation réelle (`./tmp/jury_livret_test/`) :
+    Livret 0 seul (2 pages, cover + contenu) et un livret d'épreuve seul
+    (cover + sommaire + corps) — commandes documentées dans
+    `docs/jury/documents_jury/README.md`
+- **Règle « fichiers temporaires dans `./tmp/` du projet »** formalisée —
+  `CLAUDE.md`, `docs/agent/02_regles_execution.md` : jamais `/tmp` système ni
+  un scratchpad d'agent hors projet
+
+## 2026-07-29 — Claude Code (Part 4)
+
+- **Dette de documentation E1 (C2/C3) résolue** — `conception/2_ingestion/ingestion.md` :
+  - §« Choix de nettoyage : rejet, jamais correction silencieuse » (Étape 2) :
+    validation Pydantic de `RuleAggregation` documentée (champs texte non
+    vides, `objectifs`/`phases` non vides, `tags` volontairement non validé
+    car seul champ optionnel) — critère C3 (« choix de nettoyage/homogénéisation »)
+  - §« Requêtes SQL d'extraction — choix de sélection, jointures et
+    optimisation » (Étape 4) : documentation de `load_enriched_rules_from_db()`
+    (sélection, jointures via tables d'association, absence volontaire de
+    batching pour un usage administratif ponctuel sur 245 lignes), mis en
+    contraste avec `app/api_regles/regles.py::_libelles_par_regle()` qui fait
+    le choix inverse (requêtes groupées) pour un contexte HTTP public —
+    critère C2 (« documentation des choix de sélection/jointures » et
+    « documentation des optimisations »)
+  - `docs/jury/E1_bloc1_criteres_performance.xlsx` mis à jour en conséquence
+    (3 critères passés de Non à Oui), commentaire C5 aligné sur
+    `conception/4_api_regles/api_regles.md` (nouvelle source de vérité)
+
+## 2026-07-29 — Claude Code (Part 3)
+
+- **Réorganisation de `conception/` selon la numérotation par sujet, abandonnée
+  depuis `1_BDD`/`2_ingestion`** — `3_enrichissement/` (créé mais resté vide)
+  reçoit désormais `E_provenance_manifeste.md`, `F_chantier2_prompt_v4.md`,
+  `G_revue_manuelle.md`, `H_chantier_prompt_v5.md`, `J_chantier_enrich_again.md`,
+  `K_chantier_prompt_v6.md`, déplacés depuis `2_ingestion/` où ils s'étaient
+  accumulés faute de dossier dédié. Nouveau `4_api_regles/api_regles.md` —
+  condensé depuis `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`,
+  seule spec qui documentait jusqu'ici `api_regles` (C5), dans un dossier
+  explicitement qualifié d'historique de travail plutôt que de source de
+  vérité
+- **Deux doublons stricts éliminés au passage** (contenu identique confirmé —
+  diff pour le Markdown, comparaison hors métadonnées pour les binaires) :
+  `MLD_qualicheck.md` et `A_dictionnaire_donnees_qualicheck.xlsx` existaient
+  chacun en deux exemplaires (`2_ingestion/` et `annexes/`), maintenus en
+  parallèle faute de référence unique — conservés dans `1_BDD/` uniquement
+  (schéma/BDD, pas ingestion). Même chose pour `I_feedback_loop.drawio`
+  (Annexe I de `conception.md`) : copie en trop dans `2_ingestion/` supprimée,
+  seule celle d'`annexes/` fait foi
+- Toutes les références croisées corrigées en conséquence (`conception.md`,
+  `docs/agent/03_references_impl.md`, `docs/README.md`, `docs/jury/README.md`,
+  `app/CLAUDE.md`, `app/ingestion/manifest.yml`, et les fichiers déplacés
+  entre eux) — les documents historiques (`docs/superpowers/`,
+  `docs/problemes_rencontres/`, `docs/jury/decisions/`, les entrées passées de
+  ce changelog) gardent volontairement leurs anciens chemins, en tant que
+  constat d'époque, pas de référence vivante
+
+## 2026-07-29 — Claude Code (Part 2)
+
+- **`G_user_stories_qualicheck.drawio` réaligné** — voir
+  `conception/annexes/G_user_stories_qualicheck.drawio`, `TODO.md` : la source
+  décrivait encore l'ancien découpage (US1 = génération des constats, US2 =
+  dialogue/validation), périmé depuis la fusion de la génération et du
+  dialogue/validation dans US1 et la redéfinition d'US2 comme question libre
+  sur une page (`conception.md`). Carte US1 et critère d'acceptation mis à
+  jour, carte US2 réécrite. Les encarts « Scénario nominal » (US1/US2)
+  retirés pour laisser plus de place aux 3 cartes user story, passées en
+  pleine largeur — le détail des scénarios reste dans `conception.md`
+  (§User stories). Export `.png` volontairement pas régénéré (relecture
+  visuelle manuelle par David requise avant export, convention déjà actée)
+- **Carte US0 complétée avec la revue humaine** (`review_status`,
+  `review_note`) — absente jusqu'ici du schéma et de `conception.md`
+  (§US0) alors que la fonctionnalité existe déjà (migration 0010,
+  `docs/2_ingestion/G_revue_manuelle.md`, endpoint `PATCH /regles/{numero}`)
+- **US0 précise l'acteur de la revue humaine** — pas seulement
+  l'administrateur : un expert qualité externe désigné (ex. Élie Sloïm) peut
+  aussi l'effectuer, authentifié par son propre jeton API
+  (`app/api_regles/manifest.yml`). Mis à jour dans `conception.md` §US0 et
+  dans le schéma G (`us0_as`)
+- **`conception.md` §US2 corrigé** — « En tant qu'auditeur qualité web » ne
+  correspondait pas aux deux personas réels d'US2 (l'auditeur expert *et*
+  l'auditeur curieux, explicitement non certifié Opquast — cf. §Personas et
+  `conception/annexes/J_personas_qualicheck.drawio`) ; reformulé en « En tant
+  que professionnel du web », répercuté dans le schéma G
+
+## 2026-07-29 — Claude Code
+
+- **Registre des traitements RGPD et procédures de tri (C4)** — voir
+  `docs/rgpd/registre_traitements.md`, décision
+  `docs/jury/decisions/2026-07-29-perimetre-registre-rgpd.md` : registre
+  scindé entre les traitements réellement en place (référentiel Opquast, hors
+  champ RGPD ; jetons API nominatifs, seule donnée personnelle réelle) et le
+  volet audit (`utilisateur`/`audit`/`constat`) anticipé dans le schéma mais
+  non peuplé/non actif, réservé pour la spec US1 — raisonnement fondé sur
+  l'article 30 du RGPD (registre des traitements réels, pas envisagés)
+
 ## 2026-07-28 — Claude Code
 
 - **Script `creer_cle_api_regles.py`** — automatise la procédure de création de clé API (`docs/developpement/creation_cle_api_regles.md`) : ajoute le client dans `manifest.yml`, `.env`/`.env.example`, le workflow `cd-staging.yml`, et crée le secret GitHub dans l'environnement `staging` via `gh`. Testé sur copies des vrais fichiers ; un bug réel trouvé et corrigé (`.env` sans retour à la ligne final faisait fusionner la nouvelle ligne avec la précédente)

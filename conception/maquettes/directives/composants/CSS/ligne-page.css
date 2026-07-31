@@ -1,0 +1,37 @@
+.demo {
+  padding: 2rem;
+  max-width: var(--container-narrow);
+}
+
+.ligne-page {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 0.5rem; /* ~29px de hauteur de ligne au total, mesure */
+  border-bottom: 1px solid var(--color-surface);
+  cursor: pointer;
+}
+
+.ligne-page:hover {
+  background: color-mix(in srgb, var(--color-text-secondary) 8%, transparent);
+}
+
+.ligne-page input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-accent);
+}
+
+.ligne-page__url {
+  font: var(--text-font);
+  color: var(--color-text);
+}
+
+.ligne-page__titre {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-left: auto;
+  text-align: right;
+}

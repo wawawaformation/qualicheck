@@ -33,7 +33,7 @@ progress_logger = logging.getLogger("progress")
 
 def load_rules_to_review(session: Session) -> list[tuple[RuleAggregation, str, str]]:
     """
-    Charge les règles marquées pour revue manuelle (a_revoir ou invalide).
+    Charge les règles marquées pour revue manuelle (a_revoir).
 
     Args:
         session: Session SQLAlchemy active

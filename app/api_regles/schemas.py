@@ -29,7 +29,6 @@ class ReviewStatusFiltre(str, Enum):
 
     valide = "valide"
     a_revoir = "a_revoir"
-    invalide = "invalide"
     aucun = "aucun"
 
 
@@ -38,7 +37,6 @@ class ReviewStatus(str, Enum):
 
     valide = "valide"
     a_revoir = "a_revoir"
-    invalide = "invalide"
 
 
 def split_outils(strategie_analyse: str) -> list[str]:
@@ -170,12 +168,9 @@ class ReglePatch(BaseModel):
                     "une annotation n'accepte pas de note"
                 )
             return self
-        if (
-            self.review_status in (ReviewStatus.a_revoir, ReviewStatus.invalide)
-            and not self.review_note
-        ):
+        if self.review_status is ReviewStatus.a_revoir and not self.review_note:
             raise ValueError(
-                "review_note est obligatoire pour a_revoir et invalide : "
+                "review_note est obligatoire pour a_revoir : "
                 "enrich_again l'injecte dans le prompt du LLM"
             )
         return self

@@ -72,7 +72,7 @@ import_sql:
 	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" -c "INSERT INTO etat_donnees (id, fichier_backup, type_operation, horodatage) VALUES (1, '$(FILE)', 'import', now()) ON CONFLICT (id) DO UPDATE SET fichier_backup = EXCLUDED.fichier_backup, type_operation = EXCLUDED.type_operation, horodatage = EXCLUDED.horodatage;" > /dev/null
 	@echo "Import terminé depuis $(FILE)"
 
-## Relance le LLM sur les règles marquées review_status = a_revoir/invalide,
+## Relance le LLM sur les règles marquées review_status = a_revoir,
 ## en tenant compte de review_note, puis sauvegarde les données réelles
 enrich-again:
 	$(MAKE) export_sql

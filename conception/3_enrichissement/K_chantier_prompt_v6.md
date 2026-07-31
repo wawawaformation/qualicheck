@@ -172,4 +172,4 @@ Ajouté après l'Exemple 9 :
 - Grammaire `OU` (alternative contextuelle) — toujours aucune occurrence
   réelle sur les 245 règles, cf. décision déjà actée en V5.
 - Script `enrich_again` — déjà livré et exécuté (chantier séparé,
-  `conception/2_ingestion/J_chantier_enrich_again.md`).
+  `conception/3_enrichissement/J_chantier_enrich_again.md`).

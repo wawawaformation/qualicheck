@@ -124,6 +124,11 @@ Dockerfile      # Image de l'API de revue (service api-regles)
 | `staging` | Préproduction, déployée automatiquement (`cd-staging.yml`) au merge d'une PR `dev → staging` |
 | `veille` | Veille technique personnelle, hors périmètre du produit |
 
+**Branche par défaut sur GitHub : `dev`.** `main` n'a pas encore reçu les
+~290 commits de `dev` (rien n'est déployé en production) — quiconque ouvre
+ce dépôt sans préciser de branche doit voir l'état réel du projet, pas un
+squelette figé au setup initial.
+
 ---
 
 ## Licence

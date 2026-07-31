@@ -56,7 +56,7 @@ regle (
   created_at *            TIMESTAMP                 -- NULL = produit avant instrumentation
   updated_at *            TIMESTAMP                 -- NULL = produit avant instrumentation
   reviewed_at *           TIMESTAMP                 -- NULL = pas encore revue manuellement
-  review_status *         VARCHAR(16)               -- valide | a_revoir | invalide
+  review_status *         VARCHAR(16)               -- valide | a_revoir
   review_note *           TEXT                      -- notes de revue, matière pour un futur script de réécriture ciblée
   embedding *             vector(384)               -- All MiniLM L12 v2, index HNSW
 )
@@ -65,7 +65,7 @@ regle (
 **Règle de nommage des colonnes** : le vocabulaire du domaine reste en français,
 le vocabulaire technique en anglais (principe de langage omniprésent, DDD). Test :
 un auditeur qualité prononcerait-il ce mot en parlant de son métier ? Détail :
-`conception/2_ingestion/E_provenance_manifeste.md` §7.
+`conception/3_enrichissement/E_provenance_manifeste.md` §7.
 
 ### objectif
 
