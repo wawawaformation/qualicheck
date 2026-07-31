@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>ligne-regle</title>
+<link rel="stylesheet" href="CSS/variables.css" />
+<link rel="stylesheet" href="CSS/base.css" />
+<link rel="stylesheet" href="CSS/tag-outil.css" />
+<link rel="stylesheet" href="CSS/badge-statut.css" />
+<link rel="stylesheet" href="CSS/ligne-regle.css" />
+</head>
+<body>
+<div style="max-width: 26rem; padding: 2rem;">
+<ul class="liste-regles">
+  <li>
+    <button class="ligne-regle" type="button" aria-current="true">
+      <span class="ligne-regle__numero">n°12</span>
+      <span>
+        <p class="ligne-regle__intitule">Les mentions légales sont accessibles depuis toutes les pages</p>
+        <span class="ligne-regle__outils">
+          <span class="tag-outil">statique</span>
+        </span>
+      </span>
+      <span class="badge-statut badge-statut--neutre">Non revue</span>
+    </button>
+  </li>
+  <li>
+    <button class="ligne-regle" type="button">
+      <span class="ligne-regle__numero">n°28</span>
+      <span>
+        <p class="ligne-regle__intitule">Le formulaire de contact confirme la bonne soumission des données</p>
+        <span class="ligne-regle__outils">
+          <span class="tag-outil">statique</span>
+          <span class="tag-outil">playwright</span>
+        </span>
+      </span>
+      <span class="badge-statut badge-statut--danger">À revoir</span>
+    </button>
+  </li>
+  <li>
+    <button class="ligne-regle" type="button">
+      <span class="ligne-regle__numero">n°44</span>
+      <span>
+        <p class="ligne-regle__intitule">Le site est intégralement servi en HTTPS</p>
+        <span class="ligne-regle__outils">
+          <span class="tag-outil">statique</span>
+        </span>
+      </span>
+      <span class="badge-statut badge-statut--succes">Validée</span>
+    </button>
+  </li>
+</ul>
+</div>
+</body>
+</html>

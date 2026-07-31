@@ -1,0 +1,27 @@
+.demo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  max-width: var(--container-narrow);
+}
+
+.bandeau-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--radius-default);
+  font: var(--text-font);
+  font-weight: 700;
+}
+
+.bandeau-message--succes {
+  background: var(--color-success-background);
+  color: var(--color-success-text);
+}
+
+.bandeau-message--erreur {
+  background: var(--color-danger-background);
+  color: var(--color-danger-text);
+}
