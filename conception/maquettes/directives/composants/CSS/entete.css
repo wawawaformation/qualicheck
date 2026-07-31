@@ -55,19 +55,6 @@
   border-bottom-color: var(--color-accent);
 }
 
-.entete__theme-toggle {
-  background: none;
-  border: none;
-  color: var(--color-text);
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: 0;
-}
-
-.entete__theme-toggle:hover {
-  color: var(--color-accent);
-}
-
 .entete__avatar {
   font-size: 2.5rem; /* approximatif, taille de l'avatar */
   color: var(--color-text-secondary);

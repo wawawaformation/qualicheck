@@ -9,6 +9,44 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-07-31 — Claude Code (Part 12)
+
+- **9 nouveaux composants de maquette** pour l'écran de revue du référentiel,
+  construits en confrontant `ecran_revue_regles_a_nettement _ameliorer.html`
+  (ancienne référence, hors design system) au design system actuel :
+  `badge-statut` (3 états, `invalide` exclu), `chip-filtre`, `barre-filtres`,
+  `tag-outil`, `ligne-regle`, `segmented-statut`, `bloc-provenance`,
+  `panneau-detail-regle`, `bandeau-message`. Egalement `formulaire.html`
+  (types de champ) complété d'une bande de succès en tete et d'un lien vers
+  les CGU
+- **Corrections d'accessibilité concrètes** (priorité Opquast) :
+  - `--color-accent-bouton` ajouté à `variables.css` : le texte blanc sur
+    bouton plein n'atteignait que 3.36:1 (sous le seuil AA 4.5:1) avec
+    `--color-accent` seul
+  - `champ-texte__aide` (messages d'erreur/succès) utilisait
+    `--color-danger-text`/`--color-success-text` — pensés pour du texte sur
+    fond colore (badge), pas sur le fond de page sombre (1.68:1/2.33:1,
+    illisibles). Corrigé en `--color-danger-background`/`--color-success-background`
+    (7.64:1/10.63:1)
+  - Focus clavier visible généralisé dans `base.css` (`summary` inclus),
+    `.visually-hidden` ajouté pour les `<legend>`/`<label>` masqués sans
+    perdre la sémantique
+  - Bug de rendu découvert : un `<legend>` se place toujours sur sa propre
+    ligne dans un fieldset flex sous Chromium 150, jamais traité comme un
+    item flex — contourné par un `<span>` visuel a cote du `<legend>`
+    masqué (accessibilité conservée)
+- **`barre-filtres`** : recherche pleine largeur, panneau de filtres
+  repliable (`<details>`, ferme par defaut), groupe Theme (14 valeurs) en 2
+  lignes de 8/6 plutôt qu'un défilement (loi de Miller), tous les groupes
+  alignés sur la même structure titre/chips, sélection en vert
+- **`entete`** : lien "Question libre" (US2) ajouté, bascule thème
+  clair/sombre retirée (hors périmètre pour l'instant), état de page active
+  illustré (`aria-current`)
+- **`bouton`** : effet de survol en négatif (fond/texte inversés) sur le
+  bouton plein, bordure épaissie à 2px
+- **`formulaire`** : bouton d'envoi grisé (CSS `:has()`, sans JS) tant que
+  la case CGU n'est pas cochée
+
 ## 2026-07-31 — Claude Code (Part 11)
 
 - **Vocabulaire `review_status` simplifié : retrait de `invalide`** — décelé

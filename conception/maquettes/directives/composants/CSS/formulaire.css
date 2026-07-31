@@ -16,3 +16,12 @@
   display: flex;
   gap: 1rem;
 }
+
+/* Bouton d'envoi grise tant que les CGU ne sont pas cochees. Approximation
+   visuelle en CSS pur (pas de vrai attribut disabled, pas de JS dans ce
+   prototype) : curseur et interaction bloques via pointer-events. */
+.formulaire:not(:has(#accepter-cgu:checked)) .formulaire__actions button[type="submit"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

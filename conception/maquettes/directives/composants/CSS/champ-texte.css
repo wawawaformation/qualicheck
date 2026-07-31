@@ -52,18 +52,22 @@
   font: var(--text-font);
   font-size: 0.875rem;
   color: var(--color-text-secondary);
+  margin-top: -0.25rem; /* rattache le message a son champ, plus proche que le gap label/champ */
 }
 
 .champ-texte--erreur input,
 .champ-texte--erreur select,
 .champ-texte--erreur textarea {
-  border-color: var(--color-danger-text);
+  /* --color-danger-text est pense pour du texte sur --color-danger-background,
+     pas directement sur le fond de page (1.68:1, illisible) : on utilise ici
+     --color-danger-background, qui atteint 7.64:1 sur le fond sombre. */
+  border-color: var(--color-danger-background);
 }
 
 .champ-texte--erreur .champ-texte__aide {
-  color: var(--color-danger-text);
+  color: var(--color-danger-background);
 }
 
 .champ-texte--succes .champ-texte__aide {
-  color: var(--color-success-text);
+  color: var(--color-success-background);
 }

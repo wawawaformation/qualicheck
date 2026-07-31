@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>segmented-statut</title>
+<link rel="stylesheet" href="CSS/variables.css" />
+<link rel="stylesheet" href="CSS/base.css" />
+<link rel="stylesheet" href="CSS/segmented-statut.css" />
+</head>
+<body>
+<div style="max-width: 26rem; padding: 2rem;">
+<fieldset class="segmented-statut">
+  <legend>Statut de revue</legend>
+  <label class="segmented-statut__option segmented-statut__option--neutre">
+    <input type="radio" name="review_status" value="aucun" checked />
+    Non revue
+  </label>
+  <label class="segmented-statut__option segmented-statut__option--danger">
+    <input type="radio" name="review_status" value="a_revoir" />
+    À revoir
+  </label>
+  <label class="segmented-statut__option segmented-statut__option--succes">
+    <input type="radio" name="review_status" value="valide" />
+    Validée
+  </label>
+</fieldset>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+.panneau-detail-regle {
+  max-width: var(--container-narrow);
+}
+
+.panneau-detail-regle__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.375rem;
+}
+
+.panneau-detail-regle__entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.panneau-detail-regle__titre {
+  font: var(--title-subsection-font);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.panneau-detail-regle__meta {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  margin-top: 0.625rem;
+}
+
+.panneau-detail-regle__section {
+  margin-top: 1.625rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--color-surface);
+}
+
+.panneau-detail-regle__section h3 {
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.5rem;
+}
+
+.panneau-detail-regle__section p {
+  font: var(--text-font);
+  color: var(--color-text);
+  margin: 0;
+  max-width: 60ch;
+}
+
+.panneau-detail-regle__section p.panneau-detail-regle__justification {
+  margin-top: 0.625rem;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+}
+
+.panneau-detail-regle .bloc-provenance {
+  margin-top: 1.625rem;
+}

@@ -36,7 +36,8 @@
   --color-surface: #070707;        /* fond de carte/section */
   --color-text: #f8f8f8;           /* titres, texte principal */
   --color-text-secondary: #8c8c8c; /* texte secondaire */
-  --color-accent: #8275fb;         /* boutons, liens, accents */
+  --color-accent: #8275fb;         /* liens, focus, bordures, badges */
+  --color-accent-bouton: #6251fa;  /* fond des boutons pleins : assombri pour 4.85:1 avec --color-text (WCAG AA), --color-accent seul n'atteint que 3.36:1 */
 
   /* Couleurs d'etat (badges de revue, messages) */
   --color-success-background: #94cd89; /* badge "Validee" */

@@ -10,11 +10,16 @@
 <link rel="stylesheet" href="CSS/champ-texte.css" />
 <link rel="stylesheet" href="CSS/champ-case.css" />
 <link rel="stylesheet" href="CSS/interrupteur.css" />
+<link rel="stylesheet" href="CSS/bandeau-message.css" />
 <link rel="stylesheet" href="CSS/formulaire.css" />
 </head>
 <body>
 <div style="padding: 2rem;">
 <form class="formulaire">
+  <div class="bandeau-message bandeau-message--succes" role="status">
+    <i class="bi bi-check-circle"></i> Votre message a bien été envoyé.
+  </div>
+
   <h2 class="formulaire__titre">Créer un compte</h2>
 
   <!-- Texte simple -->
@@ -81,8 +86,8 @@
 
   <!-- Case à cocher simple -->
   <label class="champ-case">
-    <input type="checkbox" required />
-    J'accepte les conditions d'utilisation (obligatoire)
+    <input type="checkbox" id="accepter-cgu" required />
+    J'accepte les <a href="#">conditions d'utilisation</a> (obligatoire)
   </label>
 
   <div class="formulaire__actions">

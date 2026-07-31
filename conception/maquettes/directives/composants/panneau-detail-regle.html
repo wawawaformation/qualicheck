@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>panneau-detail-regle</title>
+<link rel="stylesheet" href="CSS/variables.css" />
+<link rel="stylesheet" href="CSS/base.css" />
+<link rel="stylesheet" href="CSS/badge-statut.css" />
+<link rel="stylesheet" href="CSS/tag-outil.css" />
+<link rel="stylesheet" href="CSS/bloc-provenance.css" />
+<link rel="stylesheet" href="CSS/panneau-detail-regle.css" />
+</head>
+<body>
+<div style="padding: 2rem;">
+<article class="panneau-detail-regle">
+  <p class="panneau-detail-regle__eyebrow">Règle n°28 · Formulaires</p>
+  <div class="panneau-detail-regle__entete">
+    <h2 class="panneau-detail-regle__titre">Le formulaire de contact confirme la bonne soumission des données</h2>
+    <span class="badge-statut badge-statut--danger">À revoir</span>
+  </div>
+  <div class="panneau-detail-regle__meta">
+    <span class="tag-outil">statique</span>
+    <span class="tag-outil">playwright</span>
+    <span class="tag-meta">#formulaire</span>
+    <span class="tag-meta">#confiance</span>
+    <span class="tag-meta">Développement</span>
+  </div>
+
+  <section class="panneau-detail-regle__section">
+    <h3>Contexte</h3>
+    <p>Un utilisateur qui soumet un formulaire doit être assuré que sa demande a bien été transmise.</p>
+  </section>
+
+  <section class="panneau-detail-regle__section">
+    <h3>Solution</h3>
+    <p>Un message de confirmation explicite s'affiche après soumission, ou l'utilisateur est redirigé vers une page de confirmation.</p>
+  </section>
+
+  <section class="panneau-detail-regle__section">
+    <h3>Contrôle</h3>
+    <p>Analyser le HTML du formulaire, puis le soumettre réellement et vérifier la présence d'une confirmation.</p>
+  </section>
+
+  <section class="panneau-detail-regle__section">
+    <h3>Guide d'analyse</h3>
+    <p>Analyse statique de la structure du &lt;form&gt; (méthode, action), puis soumission réelle via Playwright pour vérifier le message ou la redirection post-soumission.</p>
+    <p class="panneau-detail-regle__justification"><strong>Justification —</strong> Deux volets indépendants : structure du formulaire (statique) et comportement réel après soumission (playwright).</p>
+  </section>
+
+  <dl class="bloc-provenance">
+    <div class="bloc-provenance__item"><dt>Stratégie</dt><dd>statique&amp;playwright</dd></div>
+    <div class="bloc-provenance__item"><dt>Version du prompt</dt><dd>6</dd></div>
+    <div class="bloc-provenance__item"><dt>Modèle</dt><dd>kimi-k2.6</dd></div>
+  </dl>
+</article>
+</div>
+</body>
+</html>
