@@ -25,6 +25,9 @@ Ce fichier est volontairement court pour limiter les tokens. Le détail est disp
   compétences visées (`conception/referentiel_competences.md`,
   `conception/certif_deroule.md`) — temps de certification restreint,
   proposer plus large est un risque, pas un service.
+- Fichiers temporaires : jamais dans `/tmp` système ni un scratchpad hors
+  projet — toujours dans `./tmp/` à la racine de QualiCheck (déjà
+  gitignoré). Détail : `docs/agent/02_regles_execution.md`.
 
 ## Priorités d'exécution
 

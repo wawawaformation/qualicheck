@@ -1,0 +1,6 @@
+% Devise propre à E1 (données) — surcharge la valeur vide par défaut
+% de jury-livret.tex. À passer en second --include-in-header, après
+% le template commun (pandoc concatène les fichiers -H dans l'ordre
+% donné ; le YAML `header-includes` du .md, lui, ne se combine pas de
+% façon fiable avec un --include-in-header sur cette version de Pandoc).
+\def\devise{Garbage in, garbage out}

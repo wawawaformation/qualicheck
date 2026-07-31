@@ -141,11 +141,6 @@ def test_note_obligatoire_pour_a_revoir():
         ReglePatch(review_status="a_revoir")
 
 
-def test_note_obligatoire_pour_invalide():
-    with pytest.raises(ValidationError, match="review_note"):
-        ReglePatch(review_status="invalide")
-
-
 def test_valide_accepte_une_absence_de_note():
     annotation = ReglePatch(review_status="valide")
 

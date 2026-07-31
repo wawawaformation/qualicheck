@@ -38,7 +38,7 @@ automatiquement si la classification change — limite assumée, pas résolue ic
 | Point | Décision |
 | --- | --- |
 | Colonnes ajoutées | `reviewed_at` (DateTime, nullable), `review_status` (String, nullable, vocabulaire fermé), `review_note` (Text, nullable) |
-| Vocabulaire de `review_status` | Fermé : `valide`, `a_revoir`, `invalide` — discipline portée par convention, pas de contrainte DB (cohérent avec `strategie_analyse`, qui n'a pas non plus de `CHECK` ou d'enum en base) |
+| Vocabulaire de `review_status` | Fermé : `valide`, `a_revoir` — discipline portée par convention, pas de contrainte DB (cohérent avec `strategie_analyse`, qui n'a pas non plus de `CHECK` ou d'enum en base) |
 | Rôle de `review_note` | Texte libre, pour noter ce qui cloche/pourrait être amélioré sur une règle donnée — matière première d'un futur script de réécriture ciblée (hors périmètre, §5), même logique que `constat.feedback_auditeur` pour la boucle US1/US2 |
 | Renseignement | Manuel uniquement (`psql` pour l'instant). Aucun champ Pydantic (`EnrichedRule`) ni logique dans `stockage.py`/`llm_client.py` |
 | Emplacement | Sur `regle` directement (pas de table séparée) — un review = un état courant par règle, pas un historique multi-valué à ce stade |
@@ -55,8 +55,8 @@ Ajout sur `Regle`, après `updated_at` :
     review_note = Column(Text, nullable=True)
 ```
 
-(`String(16)` suffit largement pour `valide`/`a_revoir`/`invalide` — le plus
-long, `a_revoir`, fait 8 caractères.)
+(`String(16)` suffit largement pour `valide`/`a_revoir` — le plus long,
+`a_revoir`, fait 8 caractères.)
 
 ### 4.2 Migration Alembic `0010_*`
 
@@ -66,7 +66,7 @@ long, `a_revoir`, fait 8 caractères.)
   `NULL` sur les 3 colonnes (aucune règle n'a encore été revue selon ce
   nouveau schéma).
 
-### 4.3 `conception/2_ingestion/MLD_qualicheck.md` et `conception/annexes/MLD_qualicheck.md`
+### 4.3 `conception/1_BDD/MLD_qualicheck.md`
 
 Ajout des 3 colonnes dans le bloc `regle`, à la suite des colonnes de
 provenance déjà documentées (spec E).
@@ -74,7 +74,7 @@ provenance déjà documentées (spec E).
 ## 5. Hors périmètre (YAGNI)
 
 - **Script de réécriture ciblée par LLM** (utilisant `review_note` comme
-  contexte pour ré-enrichir uniquement les règles `a_revoir`/`invalide`) —
+  contexte pour ré-enrichir uniquement les règles `a_revoir`) —
   reporté explicitement : construire ce script maintenant serait spéculatif,
   aucune règle n'ayant encore de vrai `review_note` à ce stade. À reprendre
   après le chantier 3 et un premier passage de revue manuelle réel.
@@ -87,6 +87,20 @@ provenance déjà documentées (spec E).
   portée par convention, pas par la base).
 - **Table d'historique des revues** — un seul état courant par règle suffit
   pour l'instant (§3).
+
+## 6. Addendum (2026-07-31) — retrait de `invalide`
+
+Le vocabulaire initial comptait un 3ᵉ état, `invalide` (classification
+carrément fausse, distinct de `a_revoir` qui signalait une classification à
+corriger). Retiré : en maquettant l'écran de revue, les deux états se sont
+révélés visuellement et fonctionnellement indiscernables pour l'usage réel
+(les deux finissent de toute façon dans la même file de réécriture ciblée,
+`review_status IS NOT NULL AND != 'valide'` — aucune requête ni aucun écran
+ne les traite différemment). Vocabulaire simplifié à `valide`/`a_revoir`,
+sans perte de comportement. Répercuté sur `app/api_regles/schemas.py`
+(énums `ReviewStatus`/`ReviewStatusFiltre`), `app/ingestion/enrich_again.py`
+(docstring), `conception/4_api_regles/api_regles.md` et
+`conception/1_BDD/MLD_qualicheck.md`.
 
 ## 6. Validation
 

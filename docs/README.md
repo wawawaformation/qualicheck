@@ -17,6 +17,8 @@ Lecture minimale recommandee (ordre):
 - Vision produit: `conception/conception.md`
 - Schema et migrations: `conception/1_BDD/bdd.md`
 - Ingestion (spec): `conception/2_ingestion/ingestion.md`
+- Enrichissement LLM (spec): `conception/3_enrichissement/E_provenance_manifeste.md`
+- API données `/regles` (spec): `conception/4_api_regles/api_regles.md`
 - Historique d'implementation: `CHANGELOG.md`
 - Commandes projet: `Makefile` et `docs/developpement/commandes.md`
 - CI: `docs/developpement/ci.md`

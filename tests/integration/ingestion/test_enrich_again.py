@@ -50,7 +50,7 @@ def _rule(number, strategie_analyse):
 
 
 def test_load_rules_to_review_filters_by_status(session):
-    """Seules les règles a_revoir/invalide sont retournées, pas valide ni NULL."""
+    """Seules les règles a_revoir sont retournées, pas valide ni NULL."""
     clear_opquast_tables(session)
 
     store_rules(session, EnrichedRules([
@@ -80,23 +80,6 @@ def test_load_rules_to_review_filters_by_status(session):
     clear_opquast_tables(session)
 
 
-def test_load_rules_to_review_includes_invalide_status(session):
-    """review_status='invalide' est aussi sélectionné, pas seulement a_revoir."""
-    clear_opquast_tables(session)
-
-    store_rules(session, EnrichedRules([_rule(1, "statique")]))
-    session.query(Regle).filter_by(numero=1).update(
-        {"review_status": "invalide", "review_note": "Note"}
-    )
-    session.commit()
-
-    to_review = load_rules_to_review(session)
-
-    assert {rule.number for rule, _, _ in to_review} == {1}
-
-    clear_opquast_tables(session)
-
-
 def test_clear_review_fields_resets_to_null(session):
     """clear_review_fields remet reviewed_at/review_status/review_note à NULL."""
     clear_opquast_tables(session)
@@ -122,7 +105,7 @@ def test_clear_review_fields_resets_to_null(session):
 
 @patch("app.ingestion.enrich_again.LLMClient")
 def test_enrich_again_no_rules_to_review_skips_llm_call(mock_llm_client_class, session):
-    """Aucune règle a_revoir/invalide -> aucun appel LLM, aucune erreur."""
+    """Aucune règle a_revoir -> aucun appel LLM, aucune erreur."""
     from app.ingestion.enrich_again import enrich_again
 
     clear_opquast_tables(session)

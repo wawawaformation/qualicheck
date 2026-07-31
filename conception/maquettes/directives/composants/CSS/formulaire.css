@@ -1,0 +1,18 @@
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-list-item-gap);
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+}
+
+.formulaire__titre {
+  font: var(--title-section-font);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.formulaire__actions {
+  display: flex;
+  gap: 1rem;
+}

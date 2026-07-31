@@ -34,3 +34,12 @@ Exception volontaire : `tests/migration/` cible `POSTGRES_DB` (lecture seule, v�
 ## Branches
 
 Travail au fil de l'eau directement sur `dev`, pas de découpage par sujet.
+
+## Fichiers temporaires
+
+Tout fichier temporaire (test de compilation, brouillon jetable, sortie
+intermédiaire) s'écrit dans `./tmp/` à la racine du dépôt QualiCheck — jamais
+dans `/tmp` système, ni dans un scratchpad d'agent hors du projet. `tmp/` est
+déjà gitignoré et déjà utilisé ainsi (ingestion, revues, brouillons de spec).
+Un test qui doit rester consultable par David (ex. un rendu PDF à valider)
+n'a pas sa place dans un répertoire qui disparaît à la fin de la session.

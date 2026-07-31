@@ -1,0 +1,22 @@
+.section-texte {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+  margin-block-start: var(--spacing-section-gap);
+}
+
+.section-texte__titre {
+  font: var(--title-section-font);
+  color: var(--color-text);
+  margin: 0 0 var(--spacing-heading-gap);
+  text-align: center;
+}
+
+.section-texte p {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-paragraph-gap);
+}
+
+.section-texte p:last-child {
+  margin-bottom: 0;
+}

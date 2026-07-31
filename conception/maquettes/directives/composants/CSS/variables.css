@@ -1,0 +1,94 @@
+:root {
+
+  /* ============================
+     TYPOGRAPHIE
+     ============================ */
+
+  /* Font families & sizes (base 16px, donc 1rem = 16px) */
+  --font-title-page-size: 3.68rem;       /* 59px */
+  --font-title-section-size: 1.75rem;    /* 28px */
+  --font-title-subsection-size: 1.25rem; /* 20px */
+  --font-title-card-size: 1.25rem;       /* 20px, alias de title-subsection */
+  --font-text-size: 1rem;                /* 16px */
+
+  --font-title-page-weight: 400;
+  --font-title-section-weight: 700;
+  --font-title-subsection-weight: 700;
+  --font-title-card-weight: 700;
+  --font-text-weight: 400;
+
+  --font-family-main: "Inter", sans-serif;
+
+  --line-height-default: 1.5; /* texte courant, pas les titres */
+
+  /* Raccourcis composes a partir des variables ci-dessus (usage: font: var(--title-page-font);) */
+  --title-page-font: var(--font-title-page-weight) var(--font-title-page-size) var(--font-family-main);
+  --title-section-font: var(--font-title-section-weight) var(--font-title-section-size) var(--font-family-main);
+  --title-subsection-font: var(--font-title-subsection-weight) var(--font-title-subsection-size) var(--font-family-main);
+  --title-card-font: var(--font-title-card-weight) var(--font-title-card-size) var(--font-family-main);
+  --text-font: var(--font-text-weight) var(--font-text-size)/var(--line-height-default) var(--font-family-main);
+
+  /* ============================
+     COULEURS (noms par fonction)
+     ============================ */
+
+  --color-background: #0b0b0e;     /* fond de page */
+  --color-surface: #070707;        /* fond de carte/section */
+  --color-text: #f8f8f8;           /* titres, texte principal */
+  --color-text-secondary: #8c8c8c; /* texte secondaire */
+  --color-accent: #8275fb;         /* boutons, liens, accents */
+
+  /* Couleurs d'etat (badges de revue, messages) */
+  --color-success-background: #94cd89; /* badge "Validee" */
+  --color-success-text: #355530;
+  --color-warning-background: #fcce92; /* bandeau message d'erreur */
+  --color-warning-text: #874e03;
+  --color-danger-background: #e7877e;  /* badge "A revoir" */
+  --color-danger-text: #6c1a14;
+  --color-neutral-background: #a5adcf; /* badge "Non revue" */
+  --color-neutral-text: #353d5f;
+
+  /* ============================
+     RAYON DE BORDURE
+     ============================ */
+
+  --radius-default: 0.25rem; /* 4px */
+
+  /* ============================
+     ESPACEMENTS
+     ============================ */
+
+  /* Mesures relevees dans Accueil.pdf */
+  --spacing-section-gap: 6.25rem; /* 100px, entre sections majeures de la page */
+  --spacing-list-item-gap: 2rem;  /* 32px, entre deux items de la liste d'etapes */
+  --spacing-icon-text-gap: 0.5rem; /* 8px, entre une pastille/icone et son texte */
+  --spacing-heading-gap: 2.25rem;  /* 36px, entre un titre de section et son contenu */
+  --spacing-paragraph-gap: 1.375rem; /* 22px, entre deux paragraphes */
+  --size-step-badge: 2.25rem;     /* 36px, diametre de la pastille numerotee */
+  --size-stepper-badge: 1.75rem; /* 28px, approximatif, carre du stepper */
+
+  /* Padding interne des composants (approximatifs, a ajuster sur le composant reel) */
+  --padding-button-block: 0.75rem; /* 12px, haut/bas */
+  --padding-button-inline: 1.5rem; /* 24px, gauche/droite */
+  --padding-button-petit-block: 0.375rem; /* 6px, approximatif */
+  --padding-button-petit-inline: 0.75rem; /* 12px, approximatif */
+  --padding-input-block: 0.75rem;  /* 12px, haut/bas */
+  --padding-input-inline: 1rem;    /* 16px, gauche/droite */
+  --padding-panel: 1.5rem; /* approximatif, interieur du panneau de selection */
+
+  /* ============================
+     CONTENEURS
+     ============================ */
+
+  /* Largeurs mesurees sur le canevas de reference (1440px) */
+  --container-wide: 51.75rem;   /* 828px, bande entete/pied-de-page */
+  --container-narrow: 36.25rem; /* 580px, colonne de contenu centree (hero, etapes, texte) */
+
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/inter-variable.woff2") format("woff2");
+  font-weight: 100 900; /* police variable, couvre les graisses 400 et 700 utilisees */
+  font-style: normal;
+}

@@ -103,6 +103,14 @@ Chaque règle acquise devient un objet `Regle`, complété puis enrichi individu
 
 Si une règle n'a pas pu être complètement récupérée (échec API ou échec scraping sur un des champs) ou enrichie, le script **s'arrête immédiatement**. L'échec est signalé de façon explicite (numéro de règle, champ manquant, source en cause) pour que l'administrateur corrige avant de relancer.
 
+**Choix de nettoyage : rejet, jamais correction silencieuse.** L'agrégation (`app/ingestion/aggregation.py::aggregate_rules()`, schéma `RuleAggregation`) ne transforme pas les données acquises — elle les **valide**, par des `field_validator` Pydantic :
+
+- `intitule`, `theme`, `solution`, `controle` : chaîne non vide et non uniquement composée d'espaces (`str.strip()` non vide). Une règle avec un de ces champs vide est rejetée, pas complétée par une valeur par défaut.
+- `objectifs`, `phases` : liste non vide — une règle sans objectif ou sans phase associée est rejetée.
+- `tags` : **volontairement non validé** — c'est le seul champ optionnel (64 des 245 règles Opquast n'ont aucun tag), une liste vide y est une donnée légitime, pas une anomalie.
+
+Aucune normalisation de casse, aucun trim silencieux au-delà du test de vacuité, aucune déduplication : aligné sur le principe fail-fast du pipeline (cf. « Gestion des erreurs et idempotence » plus bas) — une donnée douteuse arrête le script pour correction humaine, elle n'est jamais corrigée à la volée sans trace.
+
 ## Étape 3 — Enrichissement (agent LLM)
 
 Étape à plus forte valeur ajoutée du pipeline. Un agent LLM (Kimi K2.6 en développement) reçoit chaque règle agrégée et produit trois éléments :
@@ -120,6 +128,14 @@ Chaque règle enrichie est aussi tracée par `strategie_source = ia_import` (ori
 Les données brutes et enrichies sont persistées dans la table `regle`, ainsi que dans les tables de référence associées : `theme` (relation simple — une règle a exactement une thématique), `objectif`, `phase`, `tag` (relations many-to-many via tables d'association). `tag` est le seul champ optionnel : 64 des 245 règles Opquast n'ont aucun tag.
 
 Un point de vigilance conceptuel : l'unicité de `numero` permet de faire de l'ingestion une opération **idempotente** — une ré-exécution du pipeline sur les mêmes données peut mettre à jour les règles existantes (upsert) plutôt que créer des doublons. C'est ce mécanisme qui sera réutilisé en post-MVP pour la ré-ingestion ciblée.
+
+### Requêtes SQL d'extraction — choix de sélection, jointures et optimisation
+
+`app/ingestion/stockage.py::load_enriched_rules_from_db()` recharge les règles déjà enrichies depuis PostgreSQL — c'est le mécanisme du hook `--resume` (relance sans repayer les appels LLM déjà réussis). Sélection : `SELECT * FROM regle ORDER BY numero`, puis pour chaque règle une jointure vers `objectif`/`phase`/`tag` via leur table d'association respective (`objectif_regle`, `phase_regle`, `regle_tag`), filtrée sur `regle_id`. `theme` est résolu par une jointure simple (relation 1:N, pas d'association).
+
+Aucun index dédié au-delà des clés déjà en place : chaque table d'association porte une **clé primaire composite** (`regle_id`, `<autre_id>`) qui sert nativement d'index pour ces jointures — aucune optimisation supplémentaire n'était nécessaire.
+
+**Optimisation volontairement absente ici — choix assumé, pas un oubli.** Cette fonction interroge une association par règle (un aller-retour par règle et par collection), donc 3 requêtes en plus de la principale pour chaque règle — motif dit « naïf », le même que celui d'`enrich_again.py::load_rules_to_review()`. Sur 245 lignes, exécuté à la main par l'administrateur en cas de relance, le coût reste négligeable (quelques centaines de requêtes locales, pas un chemin de production sous charge). **Ce même motif naïf a été explicitement écarté ailleurs** : `app/api_regles/regles.py::_libelles_par_regle()` regroupe la même jointure en **une seule requête par collection** (3 requêtes au total, quel que soit le nombre de règles), parce que cette API est potentiellement appelée en direct par un navigateur — un contexte où 736 requêtes par appel (245 règles × 3 collections) serait inacceptable. Même besoin de jointure, deux choix différents, chacun justifié par son contexte réel d'exécution : script d'administration ponctuel d'un côté, service HTTP de l'autre.
 
 ## Étape 5 — Chunking
 
@@ -201,4 +217,4 @@ Point à trancher plus tard : l'écriture du vecteur dans la colonne `embedding`
 
 ## Post-MVP — Ré-ingestion (mention rapide)
 
-Le champ `strategie_score`, calculé depuis `constat.validation_humaine`, accumule un signal de qualité au fil des audits. Une fois un seuil atteint, une **ré-ingestion ciblée** (post-MVP) reprend l'étape 3 avec le contexte terrain (`feedback_auditeur`), met à jour `guide_analyse` (`strategie_source = ia_reingest`) et re-vectorise uniquement les chunks concernés — sans fine-tuning ni GPU, dans la continuité des principes du pipeline initial. Détail complet : cf. `I_feedback_loop.drawio`.
+Le champ `strategie_score`, calculé depuis `constat.validation_humaine`, accumule un signal de qualité au fil des audits. Une fois un seuil atteint, une **ré-ingestion ciblée** (post-MVP) reprend l'étape 3 avec le contexte terrain (`feedback_auditeur`), met à jour `guide_analyse` (`strategie_source = ia_reingest`) et re-vectorise uniquement les chunks concernés — sans fine-tuning ni GPU, dans la continuité des principes du pipeline initial. Détail complet : cf. `../annexes/I_feedback_loop.drawio`.

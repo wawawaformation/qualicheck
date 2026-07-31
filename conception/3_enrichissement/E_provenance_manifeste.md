@@ -204,7 +204,7 @@ trois nouvelles colonnes — ce qui est la sémantique voulue.
   `created_at` uniquement à la création.
 - `load_enriched_rules_from_db()` : relit les champs de provenance (hook `--resume`).
 
-### 5.9 `conception/MLD_qualicheck.md`
+### 5.9 `conception/1_BDD/MLD_qualicheck.md`
 
 Consignation de la règle de nommage (§7) et des quatre nouvelles colonnes.
 

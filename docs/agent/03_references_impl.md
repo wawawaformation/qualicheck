@@ -13,7 +13,7 @@ qu'elle compte pour une décision.
 | Version de prompt active, à écrire au prochain enrichissement | Frontmatter de `app/ingestion/prompts/enrich_rule.md` | — |
 | Version de prompt ayant produit une règle donnée (déjà en base) | Colonne `regle.prompt_version` | `manifest.yml` et le frontmatter du prompt ne le savent pas — un `enrich_again` partiel peut mélanger les versions règle par règle |
 | Modèle LLM ayant produit une règle donnée | Colonne `regle.llm_model` | — |
-| Schéma de données réellement en place | Migrations Alembic (`app/migration/versions/`) | `conception/MLD_qualicheck.md` et le dictionnaire de données décrivent la **cible**, pas forcément l'état réel courant (convention `X_reel` vs cible, ex. `docs/schemas/`) |
+| Schéma de données réellement en place | Migrations Alembic (`app/migration/versions/`) | `conception/1_BDD/MLD_qualicheck.md` et le dictionnaire de données décrivent la **cible**, pas forcément l'état réel courant (convention `X_reel` vs cible, ex. `docs/schemas/`) |
 | Dernière opération d'export/import de backup | Table `etat_donnees` | — |
 | Décisions d'architecture actées et leur justification | `docs/jury/decisions/*.md` | — |
 | Avancement détaillé du pipeline d'ingestion (étapes 1-7) | `TODO_PIPELINE_INGESTION.md` | Non dupliqué dans `TODO.md` (transverse) |
@@ -26,9 +26,11 @@ qu'elle compte pour une décision.
 
 - conception/conception.md
 - conception/1_BDD/bdd.md
+- conception/1_BDD/MLD_qualicheck.md
+- conception/1_BDD/A_dictionnaire_donnees_qualicheck.xlsx
 - conception/2_ingestion/ingestion.md
-- conception/MLD_qualicheck.md
-- conception/A_dictionnaire_donnees_qualicheck.xlsx
+- conception/3_enrichissement/E_provenance_manifeste.md
+- conception/4_api_regles/api_regles.md
 
 ## Exécution et commandes
 

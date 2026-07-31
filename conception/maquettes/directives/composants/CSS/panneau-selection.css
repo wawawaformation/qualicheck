@@ -1,0 +1,32 @@
+.panneau-selection {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+}
+
+.panneau-selection__cadre {
+  border: 1px solid var(--color-text-secondary);
+  border-radius: var(--radius-default);
+  padding: var(--padding-panel);
+}
+
+.panneau-selection__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 var(--spacing-list-item-gap);
+}
+
+.panneau-selection__compte {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+}
+
+.panneau-selection__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.panneau-selection__liste .ligne-page:last-child {
+  border-bottom: none;
+}

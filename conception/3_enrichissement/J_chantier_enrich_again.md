@@ -4,7 +4,7 @@
 > (`docs/problemes_rencontres/ingestion/5_recommandations_v6.md`), qui a
 > marqué 11 règles `review_status = a_revoir` avec un `review_note` détaillé
 > chacune. Différé explicitement depuis la spec G
-> (`conception/2_ingestion/G_revue_manuelle.md` §5) jusqu'à disposer de
+> (`conception/3_enrichissement/G_revue_manuelle.md` §5) jusqu'à disposer de
 > vraies données de revue — c'est fait. À valider avant implémentation.
 >
 > Date : 2026-07-26
@@ -42,7 +42,7 @@ règles qui n'étaient pas concernées).
 
 | Point | Décision |
 | --- | --- |
-| Sélection des règles | `regle` où `review_status IS NOT NULL AND review_status != 'valide'` (couvre `a_revoir` et `invalide`) |
+| Sélection des règles | `regle` où `review_status IS NOT NULL AND review_status != 'valide'` (couvre `a_revoir`) |
 | Fichier de prompt | **Un seul fichier** : `enrich_rule.md` reste la source unique. Une section « Contexte de revue humaine » (classification actuelle + `review_note`) est ajoutée par le code juste avant l'instruction finale du prompt, uniquement quand un `review_note` est fourni — zéro duplication, zéro risque de divergence future |
 | `strategie_source` écrit | `"ia_reingest"` — première utilisation réelle de cette valeur déjà documentée dans le MLD |
 | `prompt_version` enregistré | Celui du frontmatter courant de `enrich_rule.md` — pas de version dédiée, c'est le même prompt de base |
@@ -116,7 +116,7 @@ Nouvelle cible `enrich-again` dans la section « Ingestion et données
 réelles », juste après `import_sql` :
 
 ```makefile
-## Relance le LLM sur les règles marquées review_status = a_revoir/invalide,
+## Relance le LLM sur les règles marquées review_status = a_revoir,
 ## en tenant compte de review_note, puis sauvegarde les données réelles
 enrich-again:
 	uv run python scripts/enrich_again.py
@@ -125,7 +125,7 @@ enrich-again:
 
 ## 5. Validation
 
-1. Aucune règle `a_revoir`/`invalide` en base → le script log et sort sans
+1. Aucune règle `a_revoir` en base → le script log et sort sans
    appel LLM.
 2. Sur les 11 règles actuellement marquées : chacune reçoit un nouvel appel
    LLM incluant son `review_note`, `strategie_source` passe à `ia_reingest`,

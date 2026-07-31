@@ -1,0 +1,44 @@
+.interrupteur {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font: var(--text-font);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.interrupteur input {
+  appearance: none;
+  width: 2.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--color-text-secondary);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.interrupteur input::before {
+  content: "";
+  position: absolute;
+  top: 0.1875rem;
+  left: 0.1875rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: var(--color-text);
+  transition: transform 0.15s ease;
+}
+
+.interrupteur input:checked {
+  background: var(--color-accent);
+}
+
+.interrupteur input:checked::before {
+  transform: translateX(1rem);
+}
+
+.interrupteur input:hover {
+  filter: brightness(1.1);
+}
