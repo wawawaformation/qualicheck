@@ -9,6 +9,14 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 21)
+
+- **Politique des données : mention de Langfuse ajoutée** (section
+  « Évolution prévue ») — décision déjà actée (`TODO.md`) que Langfuse
+  monitorera les appels LLM d'US1/US2, mais pas d'ingestion ni d'US0.
+  Question de l'anonymisation des données tracées explicitement non
+  tranchée, signalée comme telle plutôt que supposée
+
 ## 2026-08-02 — Claude Code (Part 20)
 
 - **Politique des données corrigée** (`clients/contenus_partages/politique-des-donnees.md`

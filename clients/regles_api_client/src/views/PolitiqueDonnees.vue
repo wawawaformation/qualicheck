@@ -34,6 +34,13 @@
       mise à jour en conséquence dès que ces fonctionnalités seront
       disponibles.
     </p>
+    <p>
+      Ces fonctionnalités s'appuieront aussi sur <strong>Langfuse</strong>
+      pour le monitorage des appels au modèle de langage. La question de
+      l'anonymisation des données tracées (contenu des questions, réponses)
+      n'est pas encore tranchée — cette page sera précisée dès que cette
+      décision sera prise.
+    </p>
 
     <h2>Ce que QualiCheck ne fait pas</h2>
     <p>
