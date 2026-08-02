@@ -43,9 +43,9 @@ const liensNav = computed(() => {
         <p class="pied-de-page__tagline">Assistant d'aide à l'audit qualité web basé sur les règles Opquast</p>
       </div>
       <nav class="pied-de-page__nav">
-        <a href="#"><i class="bi bi-book"></i> Le projet</a>
-        <a href="#"><i class="bi bi-bank"></i> Mentions légales</a>
-        <a href="#"><i class="bi bi-shield-lock"></i> Politique des données</a>
+        <router-link to="/le-projet"><i class="bi bi-book"></i> Le projet</router-link>
+        <router-link to="/mentions-legales"><i class="bi bi-bank"></i> Mentions légales</router-link>
+        <router-link to="/politique-des-donnees"><i class="bi bi-shield-lock"></i> Politique des données</router-link>
       </nav>
     </div>
     <div class="pied-de-page__bas">
