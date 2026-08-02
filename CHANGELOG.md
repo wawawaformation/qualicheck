@@ -9,6 +9,19 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 29)
+
+- **Bug corrigé : le bouton `disabled` ne se voyait pas** — `_bouton.scss`
+  n'avait aucune règle `:disabled`, donc `.bouton--plein` (couleur pleine)
+  restait affiché tel quel malgré l'attribut `disabled` posé en Part 28.
+  Ajout d'une seule règle générique `.bouton:disabled` (opacité réduite,
+  `cursor: not-allowed`, `pointer-events: none` pour neutraliser aussi les
+  `:hover` des variantes) — sa spécificité (deux sélecteurs) l'emporte sur
+  `.bouton--plein` (un seul), pas besoin de dupliquer par variante. Vérifié
+  par capture d'écran isolée des deux états (actif/désactivé), pas
+  seulement par l'attribut DOM comme en Part 28 — c'est justement ce qui
+  avait fait manquer le bug
+
 ## 2026-08-02 — Claude Code (Part 28)
 
 - **Bouton "Enregistrer l'annotation" grisé sans clé API**
