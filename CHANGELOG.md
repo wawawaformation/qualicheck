@@ -9,6 +9,13 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 35)
+
+- **Toast collé directement sous l'entête** (`_toast.scss`) : retrait du
+  margin vertical (`margin: 0.75rem auto` → `margin-inline: auto`), plus
+  aucun espace entre `header.entete` et le toast — header et body partagent
+  déjà `--color-background`, pas de rupture visuelle à combler
+
 ## 2026-08-02 — Claude Code (Part 34)
 
 - **Systématisation du message d'action : composable `useToast`**
