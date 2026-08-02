@@ -28,7 +28,7 @@ watch(statutForm, (valeur) => {
 })
 
 const peutEnregistrer = computed(
-  () => statutForm.value !== 'a_revoir' || noteForm.value.trim() !== ''
+  () => hasKey.value && (statutForm.value !== 'a_revoir' || noteForm.value.trim() !== '')
 )
 
 // Vérifie la clé API dès l'intention de vraiment annoter (choix de "À
@@ -143,7 +143,7 @@ function enregistrer() {
       <div class="panneau-detail-regle__pied">
         <span class="panneau-detail-regle__horodatage">{{ horodatage }}</span>
         <button class="bouton bouton--plein" type="button" :disabled="!peutEnregistrer" @click="enregistrer">
-          Enregistrer l'annotation
+          {{ hasKey ? "Enregistrer l'annotation" : 'Il manque la clé API' }}
         </button>
       </div>
     </div>

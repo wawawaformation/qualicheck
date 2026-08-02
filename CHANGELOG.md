@@ -9,6 +9,15 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 28)
+
+- **Bouton "Enregistrer l'annotation" grisé sans clé API**
+  (`PanneauDetailRegle.vue`) : tant qu'aucune clé n'est enregistrée, le
+  bouton est désactivé et affiche "Il manque la clé API" au lieu du
+  libellé habituel. `peutEnregistrer` inclut désormais `hasKey.value`.
+  Vérifié par rendu réel (`/revue?regle=28` sans clé stockée →
+  `disabled` + texte attendu)
+
 ## 2026-08-02 — Claude Code (Part 27)
 
 - **Vérification de la clé API avancée au choix du statut**
