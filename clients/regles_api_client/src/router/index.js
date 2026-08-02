@@ -15,6 +15,13 @@ const router = createRouter({
     { path: '/mentions-legales', name: 'mentions-legales', component: MentionsLegales },
     { path: '/politique-des-donnees', name: 'politique-des-donnees', component: PolitiqueDonnees },
   ],
+  // savedPosition n'existe que pour un retour navigateur (précédent/suivant) :
+  // on restaure alors la position, sinon (nouveau clic sur un lien) on repart
+  // du haut — sans ça, changer de page garde le défilement de la page
+  // précédente.
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0 }
+  },
 })
 
 export default router

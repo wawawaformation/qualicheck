@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 42)
+
+- **Retour en haut de page à chaque navigation** (`router/index.js`) :
+  `scrollBehavior(to, from, savedPosition)` ajouté — `savedPosition` restauré
+  uniquement sur un retour navigateur (précédent/suivant), sinon `{ top: 0
+  }`. Signalé par David en changeant de page (ex. "Mentions légales") en
+  étant scrollé plus bas sur la page précédente. Mécanisme standard
+  Vue Router, distinct du `window.scrollTo` de `useToast` (Part 41) : celui-ci
+  couvre les changements de route, l'autre couvre un toast affiché sans
+  changer de route (ex. après une annotation, toujours sur `/revue`)
+
 ## 2026-08-02 — Claude Code (Part 41)
 
 - **Retour en haut de page à chaque message** (`useToast.afficher()`) :
