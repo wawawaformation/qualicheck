@@ -23,6 +23,14 @@ const STATUTS = [
   { valeur: 'a_revoir', libelle: 'À revoir' },
   { valeur: 'valide', libelle: 'Validée' },
 ]
+
+// Une règle n'a qu'un seul statut de revue à la fois : contrairement aux
+// autres groupes (Thème, Phase, Outil), celui-ci est exclusif — choisir un
+// statut désactive les autres. Cliquer sur le statut déjà actif l'enlève
+// (retour à "aucun filtre sur la revue").
+function basculerStatut(valeur) {
+  filtreReviewStatus.value = filtreReviewStatus.value.includes(valeur) ? [] : [valeur]
+}
 </script>
 
 <template>
@@ -73,7 +81,12 @@ const STATUTS = [
           <span class="barre-filtres__groupe-titre" aria-hidden="true">Revue</span>
           <div class="barre-filtres__groupe-ligne">
             <label class="chip-filtre" v-for="statut in STATUTS" :key="statut.valeur">
-              <input type="checkbox" :value="statut.valeur" v-model="filtreReviewStatus" />{{ statut.libelle }}
+              <input
+                type="checkbox"
+                :value="statut.valeur"
+                :checked="filtreReviewStatus.includes(statut.valeur)"
+                @change="basculerStatut(statut.valeur)"
+              />{{ statut.libelle }}
             </label>
           </div>
         </fieldset>
