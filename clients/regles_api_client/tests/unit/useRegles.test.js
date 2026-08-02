@@ -93,10 +93,26 @@ describe('useRegles — annotation', () => {
 
     const { charger, reglesBrutes, dernierResultat, annoter } = useRegles()
     await charger()
-    await annoter(28, { reviewStatus: 'a_revoir', reviewNote: 'x' })
+    const resultat = await annoter(28, { reviewStatus: 'a_revoir', reviewNote: 'x' })
 
+    expect(resultat).toBe('succes')
     expect(dernierResultat.value).toBe('succes')
     expect(reglesBrutes.value[0].review_status).toBe('a_revoir')
+  })
+
+  it('annoter deux fois de suite la même règle renvoie "succes" les deux fois', async () => {
+    // Régression : dernierResultat passe à 'succes' puis reste à 'succes' au
+    // second appel (même valeur) — un watch(dernierResultat) ne détecterait
+    // pas ce second succès. La valeur de retour, elle, est fiable à chaque appel.
+    useCleApi.mockReturnValue({ hasKey: { value: true }, cle: { value: 'ma-cle' }, clearKey: vi.fn() })
+    annoterRegle.mockResolvedValue({ ...REGLE_28, review_status: 'a_revoir', review_note: 'x' })
+
+    const { annoter } = useRegles()
+    const premier = await annoter(28, { reviewStatus: 'a_revoir', reviewNote: 'x' })
+    const second = await annoter(28, { reviewStatus: 'a_revoir', reviewNote: 'y' })
+
+    expect(premier).toBe('succes')
+    expect(second).toBe('succes')
   })
 
   it('sur ErreurAuthentification, efface la clé et redirige', async () => {
