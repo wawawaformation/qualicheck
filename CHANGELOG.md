@@ -9,6 +9,16 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 39)
+
+- **Largeur du toast alignée sur `.entete__content`** (`_toast.scss`) :
+  `width: fit-content` (petite pilule centrée) remplacé par
+  `width: 100%; max-width: var(--container-wide); box-sizing: border-box`
+  — le `box-sizing: border-box` est nécessaire ici (contrairement à
+  `.entete__content`, qui n'a pas de padding) pour que le padding du toast
+  ne dépasse pas `max-width` et casse l'alignement des bords. Vérifié par
+  contours de debug sur un viewport large : bords gauche/droit identiques
+
 ## 2026-08-02 — Claude Code (Part 38)
 
 - **Bandeau d'avertissement sur `/cle-api?retour=...`**
