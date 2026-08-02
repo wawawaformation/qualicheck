@@ -9,6 +9,42 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 53)
+
+- **Ré-ingestion complète des 245 règles (prompt v6, `contexte` comblé)** —
+  voir `app/ingestion/acquisition.py`, `CHANGELOG.md` Part 7 (2026-07-19)
+  - **Root cause identifié** : le champ `contexte` (texte explicatif
+    `c-rule-hero__subtitle`, scrapé depuis le site Opquast) a été ajouté au
+    pipeline le 2026-07-19 (commit `0f0a6e1`), **après** la seule
+    ingestion complète payante alors existante (prompt V3). Depuis, la
+    politique du projet évite les ré-ingestions complètes coûteuses ;
+    `enrich_again.py` réutilise le `contexte` déjà en base au lieu de le
+    rescraper. Conséquence : `contexte` restait `NULL` sur les 245 lignes,
+    et le prompt d'enrichissement tournait avec le fallback
+    `"(non disponible)"` sur 100 % des règles depuis l'origine
+  - **Décision** : ré-ingestion complète malgré le coût, l'absence de
+    contexte pouvant dégrader la précision de classification du LLM — à
+    faire avant l'ouverture du référentiel enrichi à la revue par des
+    volontaires externes (appel public à venir), pour ne pas leur faire
+    relire une classification déjà connue comme sous-informée
+  - **Validation pré-run** : `make ingestion LIMIT=5` (0,0849 €) — contexte
+    bien peuplé, `review_status`/`review_note`/`reviewed_at` bien remis à
+    `NULL` (le `TRUNCATE ... CASCADE` de `check_existing_data()` s'en
+    charge déjà, aucun code à ajouter)
+  - **Exécuté pour de vrai le 2026-08-02** (`make ingestion`, base `dev`) :
+    245/245 règles avec `contexte` peuplé, prompt_version 6, coût réel
+    4,7169 € (vs ~4,29 € estimé). Distribution `strategie_analyse` :
+    statique 39 %, playwright 33 %, manuel 11 %, vision (+ combinaisons)
+    ~13 % — hausse notable de `manuel` (4 % → 11 %) vs l'ingestion V3,
+    échantillon des 28 lignes `manuel` relu manuellement : classification
+    cohérente à chaque fois (vérification hors navigateur — boîte mail,
+    PDF — ou jugement sémantique/éditorial qu'aucune inspection factuelle
+    ne peut fiabiliser), pas un artefact du prompt v6
+  - **Donnée non répercutée sur `staging`** : `cd-staging.yml` ne fait que
+    des migrations Alembic au déploiement, aucune ré-ingestion. Le dump
+    `backups/20260802_204819.sql` (gitignoré) reste à transférer sur
+    `cloclo` via `make import_sql` avant l'appel public aux volontaires
+
 ## 2026-08-02 — Claude Code (Part 52)
 
 - **Premier déploiement réel réussi sur cloclo** : merge `dev → staging`
