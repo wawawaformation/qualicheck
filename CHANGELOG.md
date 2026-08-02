@@ -9,6 +9,28 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 44)
+
+- **Colonne de liste redimensionnable au glisser** (`RevueRegles.vue`,
+  `_ecran-revue-regles.scss`) — exigence documentée dans
+  `conception/maquettes/CLAUDE.md` pour l'implémentation réelle, jamais
+  simulée dans les maquettes statiques. `.ecran-revue-regles__corps` passe
+  de `display: grid` (largeur fixe) à `display: flex`, une poignée
+  (`role="separator"`, glisser à la souris + flèches gauche/droite au
+  clavier) ajustant `largeurListe` (260–640px, défaut 400px, état en
+  mémoire uniquement — pas de persistance demandée)
+- **Bug corrigé, repéré par David sur une capture annotée** : une fois la
+  colonne détail élargie, un grand espace vide apparaissait à droite du
+  panneau. Cause : `.panneau-detail-regle` (composant partagé) porte
+  `max-width: var(--container-narrow)` (580px), pensé pour un contexte
+  isolé et sans rapport avec la largeur réelle de sa colonne dans cet
+  écran — préexistant à ce chantier, simplement invisible avant que la
+  colonne détail dépasse 580px. Neutralisé spécifiquement dans
+  `.ecran-revue-regles__detail .panneau-detail-regle` (`max-width: none`),
+  sans toucher au composant partagé lui-même. Vérifié par capture d'écran
+  réelle sur la règle n°5 à 1400px de large : le panneau remplit
+  maintenant sa colonne
+
 ## 2026-08-02 — Claude Code (Part 43)
 
 - **Bug corrigé : aucun message en modifiant deux fois de suite la même

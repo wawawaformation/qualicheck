@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRegles } from '../composables/useRegles.js'
 import { useToast } from '../composables/useToast.js'
@@ -65,6 +65,39 @@ async function surAnnotation(patch) {
     afficherToast(erreurAnnotation.value ?? 'Une erreur est survenue, veuillez réessayer.', 'erreur')
   }
 }
+
+// Redimensionnement de la colonne de liste au glisser — exigence notée dans
+// conception/maquettes/CLAUDE.md pour l'implémentation réelle (pas simulable
+// en JS dans les maquettes statiques).
+const LARGEUR_MIN = 260
+const LARGEUR_MAX = 640
+const LARGEUR_PAR_DEFAUT = 400
+const largeurListe = ref(LARGEUR_PAR_DEFAUT)
+
+function commencerRedimensionnement(evenement) {
+  evenement.preventDefault()
+  const largeurDepart = largeurListe.value
+  const xDepart = evenement.clientX
+
+  function surMouvement(e) {
+    const delta = e.clientX - xDepart
+    largeurListe.value = Math.min(LARGEUR_MAX, Math.max(LARGEUR_MIN, largeurDepart + delta))
+  }
+  function surRelachement() {
+    window.removeEventListener('mousemove', surMouvement)
+    window.removeEventListener('mouseup', surRelachement)
+  }
+  window.addEventListener('mousemove', surMouvement)
+  window.addEventListener('mouseup', surRelachement)
+}
+
+function surToucheRedimensionnement(evenement) {
+  if (evenement.key === 'ArrowLeft') {
+    largeurListe.value = Math.max(LARGEUR_MIN, largeurListe.value - 20)
+  } else if (evenement.key === 'ArrowRight') {
+    largeurListe.value = Math.min(LARGEUR_MAX, largeurListe.value + 20)
+  }
+}
 </script>
 
 <template>
@@ -93,8 +126,19 @@ async function surAnnotation(patch) {
         <ListeRegles
           :regles="reglesFiltrees"
           :selectionnee-numero="regleSelectionneeNumero"
+          :style="{ width: largeurListe + 'px' }"
           @selectionner="selectionner"
         />
+
+        <div
+          class="ecran-revue-regles__poignee"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Redimensionner la liste des règles"
+          tabindex="0"
+          @mousedown="commencerRedimensionnement"
+          @keydown="surToucheRedimensionnement"
+        ></div>
 
         <div class="ecran-revue-regles__detail">
           <template v-if="regleSelectionnee">
