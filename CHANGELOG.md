@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 38)
+
+- **Bandeau d'avertissement sur `/cle-api?retour=...`**
+  (`CleApi.vue`, `BandeauMessage.vue`) : "Une clé API valide est nécessaire
+  pour enregistrer une annotation." quand l'écran est atteint via une
+  redirection (`route.query.retour` présent). `BandeauMessage` accepte
+  désormais `type="avertissement"` (icône `bi-exclamation-triangle`, fond
+  orange `--color-warning-*`, variante déjà prévue dans
+  `_bandeau-message.scss` mais jamais utilisée jusqu'ici). Vérifié par
+  capture d'écran sur l'URL exacte signalée
+
 ## 2026-08-02 — Claude Code (Part 37)
 
 - **Bug corrigé : largeur du header et du contenu désalignées**
