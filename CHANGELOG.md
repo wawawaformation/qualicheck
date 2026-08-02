@@ -9,6 +9,19 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 52)
+
+- **Premier déploiement réel réussi sur cloclo** : merge `dev → staging`
+  (`f5d197c`), push des deux branches, `cd-staging.yml` exécuté de bout en
+  bout (migrations, build + copie de `clients/regles_api_client`, suite
+  d'acceptance de l'API) sans intervention manuelle
+- **Première annotation réelle faite depuis le client déployé** :
+  David a modifié une revue de règle directement sur
+  `https://regles.qualicheck.koabana.fr/` (pas en local), vérifiée via
+  `GET /regles/2` — confirme toute la chaîne en conditions réelles :
+  chargement du client, appel API same-origin sans CORS, authentification
+  par clé, persistance en base
+
 ## 2026-08-02 — Claude Code (Part 51)
 
 - **Bug corrigé en réel sur cloclo : `/regles` servait le fichier statique
