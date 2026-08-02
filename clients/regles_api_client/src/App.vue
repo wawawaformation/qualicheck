@@ -18,20 +18,22 @@ const liensNav = computed(() => {
 
 <template>
   <header class="entete">
-    <router-link class="entete__logo" to="/revue">
-      <span class="entete__logo-icone"><i class="bi bi-check-lg"></i></span>
-      QualiCheck
-    </router-link>
-    <nav class="entete__nav">
-      <router-link
-        v-for="lien in liensNav"
-        :key="lien.texte"
-        to="/cle-api"
-        :aria-current="lien.actif ? 'page' : undefined"
-      >
-        {{ lien.texte }}
+    <div class="entete__content">
+      <router-link class="entete__logo" to="/revue">
+        <span class="entete__logo-icone"><i class="bi bi-check-lg"></i></span>
+        QualiCheck
       </router-link>
-    </nav>
+      <nav class="entete__nav">
+        <router-link
+          v-for="lien in liensNav"
+          :key="lien.texte"
+          to="/cle-api"
+          :aria-current="lien.actif ? 'page' : undefined"
+        >
+          {{ lien.texte }}
+        </router-link>
+      </nav>
+    </div>
   </header>
 
   <Transition name="toast">

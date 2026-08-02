@@ -9,6 +9,18 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 36)
+
+- **Bug corrigé : le fond du header ne couvrait pas toute la largeur**
+  (`_entete.scss`, `App.vue`) — `.entete` portait `max-width` +
+  `margin-inline: auto` directement, donc son `background` s'arrêtait à
+  `--container-wide`, invisible seulement parce qu'il partage la même
+  couleur que le fond de page. Séparé en `header.entete` (largeur 100 %,
+  fond, sticky) et un nouveau `.entete__content` interne (le flex logo/nav,
+  `max-width` + `margin-inline: auto`). Vérifié sur un viewport large
+  (1600px) avec des contours de debug temporaires — le header couvre bien
+  toute la largeur, le contenu reste centré à `--container-wide`
+
 ## 2026-08-02 — Claude Code (Part 35)
 
 - **Toast collé directement sous l'entête** (`_toast.scss`) : retrait du

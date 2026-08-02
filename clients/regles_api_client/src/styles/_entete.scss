@@ -1,14 +1,18 @@
 .entete {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: var(--container-wide);
-  margin-inline: auto;
+  width: 100%;
   padding-block: 1.5rem; /* approximatif */
   position: sticky;
   top: 0;
   z-index: 10;
   background: var(--color-background);
+}
+
+.entete__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--container-wide);
+  margin-inline: auto;
 }
 
 .entete__logo {
