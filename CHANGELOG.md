@@ -9,8 +9,877 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 51)
+
+- **Bug corrigé en réel sur cloclo : `/regles` servait le fichier statique
+  au lieu de l'API** — Caddy réordonne les directives selon un ordre fixe
+  interne, pas l'ordre du `Caddyfile` : `try_files` s'exécute avant
+  `reverse_proxy`, réécrivant `/regles` en `/index.html` (aucun fichier
+  `regles`) avant que le matcher `@api` ne voie le chemin d'origine.
+  Corrigé avec des blocs `handle` (exécution dans l'ordre écrit,
+  mutuellement exclusifs) dans la spec CD staging. **Confirmé fonctionnel
+  par David en réel** (fichier de test + `/health`/`/regles`)
+- **Ajouté au skill `client-vuejs-qualicheck`** : ce piège Caddy
+  spécifique (same-origin front+API), pour ne pas le retrouver au
+  déploiement d'US1/US2
+
+## 2026-08-02 — Claude Code (Part 50)
+
+- **Bloc Caddy complété avec les en-têtes de sécurité**
+  (spec CD staging) : David a partagé le vrai `Caddyfile` de cloclo — le
+  bloc existant pour `regles.qualicheck.koabana.fr` était un simple reverse
+  proxy, sans les en-têtes (`Strict-Transport-Security`, `Referrer-Policy`,
+  `X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`,
+  `Permissions-Policy`) présents sur les autres domaines publics du même
+  fichier (ex. `demo-dev.koabana.fr`). Aligné dans le snippet documenté
+
+## 2026-08-02 — Claude Code (Part 49)
+
+- **Décisions de déploiement pour `regles_api_client`** : même origine que
+  l'API (`regles.qualicheck.koabana.fr` sert le front à la racine, Caddy
+  reverse-proxie les chemins API sur le même domaine) — pas de CORS à
+  gérer, pas de conteneur Docker ajouté pour le front (Caddy sert les
+  fichiers statiques du build directement)
+- **`.env` et `.env.example` corrigés** : `FASTAPI_URL_PROD` pointait vers
+  `api.qualicheck.koabana.fr`, résidu incohérent avec
+  `regles.qualicheck.koabana.fr` déjà réservé et documenté dans la spec CD
+  staging (2026-07-28) — aligné
+- **`cd-staging.yml`** : étapes ajoutées après l'acceptance — installer
+  Node, `npm ci && npm run build` dans `clients/regles_api_client/`, copier
+  `dist/` vers `/srv/www/regles.qualicheck.koabana.fr/` (chemin servi par
+  Caddy)
+- **Spec CD staging amendée** (`docs/superpowers/specs/2026-07-28-cd-staging-design.md`) :
+  écrite avant l'existence du client Vue.js (usage prévu à l'époque : curl/
+  Bruno/Postman uniquement). Point 7 des prérequis manuels réécrit avec la
+  config Caddy réelle (matcher `@api` + `file_server` + fallback SPA
+  `try_files {path} /index.html`), plan de vérification complété (racine du
+  site + route interne collée directement dans la barre d'adresse)
+
+## 2026-08-02 — Claude Code (Part 48)
+
+- **Nouveau skill projet `client-vuejs-qualicheck`**
+  (`.claude/skills/client-vuejs-qualicheck/SKILL.md`) : capitalise les
+  motifs et pièges réellement rencontrés en construisant
+  `regles_api_client` (composable singleton, piège `watch()` sur une valeur
+  qui peut se répéter, redirection avec contexte en query string,
+  `scrollBehavior`, épinglage strict des versions du toolchain pour Node
+  ancien, stratégie de surcharge CSS locale-vs-partagée, vérification
+  visuelle headless sans Playwright, redimensionnement au glisser, tests
+  sans BDD, mécanisme unique de toast). Destiné aux futurs clients Vue.js
+  (US1, US2) — pas de conventions générales (déjà dans le skill global
+  `clients_api`), uniquement des choses qui ont coûté un aller-retour de
+  correction sur ce projet
+
+## 2026-08-02 — Claude Code (Part 47)
+
+- **Correction de la Part 46, à la demande de David** : `width: fit-content`
+  remplacé par `justify-content: space-between`, largeur pleine du
+  conteneur conservée — c'était le sens inverse du bon fix. Vérifié par
+  capture d'écran isolée : la boîte `.bloc-provenance` occupe maintenant
+  tout le conteneur de test, ses 3 items répartis sur toute sa largeur
+
+## 2026-08-02 — Claude Code (Part 46)
+
+- **Bug corrigé : `.bloc-provenance` s'étirait dans le panneau élargi**
+  (`_bloc-provenance.scss`) — signalé par David. Cause différente des deux
+  précédents : pas de `max-width` à neutraliser, mais l'absence de
+  contrainte de largeur sur un élément de bloc (`<dl>`), qui s'étire par
+  défaut à celle de son conteneur — ici devenu large (Part 44/45) — pendant
+  que ses items flex restent groupés à gauche (`justify-content` par défaut,
+  `flex-start`). Première tentative de correction : `width: fit-content`
+  (voir Part 47 — sens inverse de ce qui était voulu)
+
+## 2026-08-02 — Claude Code (Part 45)
+
+- **Même bug, une couche plus bas** : le fix du panneau (Part 44) réglait
+  le conteneur global, mais `.panneau-detail-regle__section p` porte son
+  propre `max-width: 60ch`, laissant le même vide à droite de chaque
+  paragraphe (Contexte, Solution, Contrôle, Guide d'analyse). Signalé par
+  David après le premier correctif. Neutralisé de la même façon, localement
+  dans `.ecran-revue-regles__detail`. Vérifié par capture d'écran réelle :
+  le paragraphe "Solution" remplit maintenant toute la largeur de la
+  colonne
+
+## 2026-08-02 — Claude Code (Part 44)
+
+- **Colonne de liste redimensionnable au glisser** (`RevueRegles.vue`,
+  `_ecran-revue-regles.scss`) — exigence documentée dans
+  `conception/maquettes/CLAUDE.md` pour l'implémentation réelle, jamais
+  simulée dans les maquettes statiques. `.ecran-revue-regles__corps` passe
+  de `display: grid` (largeur fixe) à `display: flex`, une poignée
+  (`role="separator"`, glisser à la souris + flèches gauche/droite au
+  clavier) ajustant `largeurListe` (260–640px, défaut 400px, état en
+  mémoire uniquement — pas de persistance demandée)
+- **Bug corrigé, repéré par David sur une capture annotée** : une fois la
+  colonne détail élargie, un grand espace vide apparaissait à droite du
+  panneau. Cause : `.panneau-detail-regle` (composant partagé) porte
+  `max-width: var(--container-narrow)` (580px), pensé pour un contexte
+  isolé et sans rapport avec la largeur réelle de sa colonne dans cet
+  écran — préexistant à ce chantier, simplement invisible avant que la
+  colonne détail dépasse 580px. Neutralisé spécifiquement dans
+  `.ecran-revue-regles__detail .panneau-detail-regle` (`max-width: none`),
+  sans toucher au composant partagé lui-même. Vérifié par capture d'écran
+  réelle sur la règle n°5 à 1400px de large : le panneau remplit
+  maintenant sa colonne
+
+## 2026-08-02 — Claude Code (Part 43)
+
+- **Bug corrigé : aucun message en modifiant deux fois de suite la même
+  annotation** — signalé par David. `RevueRegles.vue` déclenchait le toast
+  via `watch(dernierResultat, ...)`, qui ne réagit qu'à un **changement**
+  de valeur. Deux annotations réussies de suite sur la même règle mettent
+  `dernierResultat` à `'succes'` deux fois — la seconde fois, c'est la même
+  valeur qu'avant, donc `watch()` ne se déclenche pas
+- `useRegles.annoter()` renvoie désormais explicitement `'succes' |
+  'erreur' | 'redirection'` ; `RevueRegles.vue` réagit directement à ce
+  retour (`surAnnotation()`) au lieu d'observer `dernierResultat` par un
+  watch. `dernierResultat` reste exposé (toujours mis à jour, testé
+  directement dans `useRegles.test.js`), mais n'est plus la source de
+  déclenchement du toast
+- Test de régression ajouté : deux appels `annoter()` de suite sur la même
+  règle renvoient bien `'succes'` les deux fois (23 tests, tous verts)
+
+## 2026-08-02 — Claude Code (Part 42)
+
+- **Retour en haut de page à chaque navigation** (`router/index.js`) :
+  `scrollBehavior(to, from, savedPosition)` ajouté — `savedPosition` restauré
+  uniquement sur un retour navigateur (précédent/suivant), sinon `{ top: 0
+  }`. Signalé par David en changeant de page (ex. "Mentions légales") en
+  étant scrollé plus bas sur la page précédente. Mécanisme standard
+  Vue Router, distinct du `window.scrollTo` de `useToast` (Part 41) : celui-ci
+  couvre les changements de route, l'autre couvre un toast affiché sans
+  changer de route (ex. après une annotation, toujours sur `/revue`)
+
+## 2026-08-02 — Claude Code (Part 41)
+
+- **Retour en haut de page à chaque message** (`useToast.afficher()`) :
+  `window.scrollTo({ top: 0, behavior: 'smooth' })` systématique dès qu'un
+  message s'affiche — le toast étant juste sous l'entête, il restait caché
+  si une action précédente avait fait défiler la page (typiquement le
+  scroll automatique vers le bouton "Enregistrer" de
+  `PanneauDetailRegle.vue`). Signalé par David : le message était masqué.
+  **Non vérifié visuellement** : comportement de scroll déclenché par une
+  vraie interaction, hors de portée des outils headless disponibles ici
+
+## 2026-08-02 — Claude Code (Part 40)
+
+- **Bug corrigé : le bandeau d'avertissement de `CleApi.vue` était dans
+  `<main class="ecran-cle-api">`**, donc limité à `--container-narrow` au
+  lieu de `--container-wide` comme l'entête — repéré par David en comparant
+  la largeur mesurée (540px) à la largeur attendue (1170px)
+- **Tous les messages (succès/erreur/avertissement) unifiés via
+  `useToast`** : `useToast` porte désormais un `type` en plus du texte
+  (`afficher(texte, type, duree)`). `App.vue` rend `BandeauMessage` avec la
+  classe `.toast` (positionnement) en plus de `bandeau-message--{type}`
+  (couleurs/icône) — plus de duplication entre `_toast.scss` et
+  `_bandeau-message.scss`. Les bandeaux inline retirés de `RevueRegles.vue`
+  (erreur d'annotation) et `CleApi.vue` (avertissement au retour) : les deux
+  passent maintenant par `afficherToast(..., 'erreur'|'avertissement')`,
+  rendu une seule fois dans `App.vue`, entre l'entête et `<router-view>`
+- Vérifié par capture d'écran sur l'URL déjà signalée : le bandeau
+  avertissement occupe désormais la même largeur que `entete__content`
+
+## 2026-08-02 — Claude Code (Part 39)
+
+- **Largeur du toast alignée sur `.entete__content`** (`_toast.scss`) :
+  `width: fit-content` (petite pilule centrée) remplacé par
+  `width: 100%; max-width: var(--container-wide); box-sizing: border-box`
+  — le `box-sizing: border-box` est nécessaire ici (contrairement à
+  `.entete__content`, qui n'a pas de padding) pour que le padding du toast
+  ne dépasse pas `max-width` et casse l'alignement des bords. Vérifié par
+  contours de debug sur un viewport large : bords gauche/droit identiques
+
+## 2026-08-02 — Claude Code (Part 38)
+
+- **Bandeau d'avertissement sur `/cle-api?retour=...`**
+  (`CleApi.vue`, `BandeauMessage.vue`) : "Une clé API valide est nécessaire
+  pour enregistrer une annotation." quand l'écran est atteint via une
+  redirection (`route.query.retour` présent). `BandeauMessage` accepte
+  désormais `type="avertissement"` (icône `bi-exclamation-triangle`, fond
+  orange `--color-warning-*`, variante déjà prévue dans
+  `_bandeau-message.scss` mais jamais utilisée jusqu'ici). Vérifié par
+  capture d'écran sur l'URL exacte signalée
+
+## 2026-08-02 — Claude Code (Part 37)
+
+- **Bug corrigé : largeur du header et du contenu désalignées**
+  (`_ecran-revue-regles.scss`) — `.ecran-revue-regles` avait
+  `max-width: 75rem` codé en dur (hérité de la maquette statique
+  d'origine), alors que `.entete__content`/`.pied-de-page__haut` utilisent
+  `var(--container-wide)` (73.125rem) : un écart de 1.875rem. Ce n'était pas
+  un problème de `box-sizing` (qui ne change aucune valeur de `max-width`,
+  seulement l'inclusion du padding/bordure dans la largeur) mais une vraie
+  valeur différente à corriger. Remplacé par `var(--container-wide)`.
+  Vérifié par contours de debug sur un viewport large : bords gauche/droit
+  parfaitement alignés
+
+## 2026-08-02 — Claude Code (Part 36)
+
+- **Bug corrigé : le fond du header ne couvrait pas toute la largeur**
+  (`_entete.scss`, `App.vue`) — `.entete` portait `max-width` +
+  `margin-inline: auto` directement, donc son `background` s'arrêtait à
+  `--container-wide`, invisible seulement parce qu'il partage la même
+  couleur que le fond de page. Séparé en `header.entete` (largeur 100 %,
+  fond, sticky) et un nouveau `.entete__content` interne (le flex logo/nav,
+  `max-width` + `margin-inline: auto`). Vérifié sur un viewport large
+  (1600px) avec des contours de debug temporaires — le header couvre bien
+  toute la largeur, le contenu reste centré à `--container-wide`
+
+## 2026-08-02 — Claude Code (Part 35)
+
+- **Toast collé directement sous l'entête** (`_toast.scss`) : retrait du
+  margin vertical (`margin: 0.75rem auto` → `margin-inline: auto`), plus
+  aucun espace entre `header.entete` et le toast — header et body partagent
+  déjà `--color-background`, pas de rupture visuelle à combler
+
+## 2026-08-02 — Claude Code (Part 34)
+
+- **Systématisation du message d'action : composable `useToast`**
+  (`src/composables/useToast.js`) — état partagé au niveau du module (même
+  motif que `useCleApi`), `afficher(texte, duree)` / `effacer()`. Rendu une
+  seule fois dans `App.vue`, entre l'entête et `<router-view>` (demandé :
+  juste en dessous du header), donc valable pour n'importe quel clic dans
+  n'importe quel écran présent ou futur — plus besoin de dupliquer la
+  logique par vue
+- **`RevueRegles.vue` et `CleApi.vue` migrés** vers `useToast` : suppression
+  des implémentations locales dupliquées (`toastMessage`/`messageAction` et
+  leur `setTimeout`, répétés deux fois) et du bricolage `?cleEnregistree=1`
+  de la Part 33 — devenu inutile : le toast déclenché par `CleApi.vue` avant
+  de rediriger reste affiché après la navigation, puisqu'il est rendu par
+  `App.vue`, qui ne se démonte jamais entre deux routes
+- **Toast repositionné** : `position: fixed` centré en haut retiré, devient
+  un bloc centré (`margin-inline: auto`) directement sous l'entête, dans le
+  flux normal de la page — plus simple, et l'entête étant `position:
+  sticky`, il reste visible même si la page défile
+- Vérifié par capture d'écran isolée (entête + toast avec le CSS compilé
+  réel), positionnement confirmé
+
+## 2026-08-02 — Claude Code (Part 33)
+
+- **Bug corrigé : aucun bandeau au retour depuis la clé API après une
+  redirection d'annotation** — `CleApi.vue` redirige immédiatement vers
+  `/revue?regle=...` dans ce cas (Part 32 le documentait déjà), donc son
+  propre bandeau n'a jamais le temps de s'afficher. Le toast de
+  `RevueRegles.vue` (Part 31) est généralisé pour accepter un message
+  (`toastMessage`, plus `toastSucces` booléen) et se déclenche aussi au
+  montage si `?cleEnregistree=1` est présent dans l'URL — ajouté par
+  `CleApi.vue` lors de cette redirection spécifique. Vérifié par capture
+  d'écran réelle en visitant directement l'URL (`virtual-time-budget` court
+  pour ne pas rater la fenêtre avant l'auto-disparition du toast)
+
+## 2026-08-02 — Claude Code (Part 32)
+
+- **Bandeau de confirmation sur `CleApi.vue`** : "Clé API enregistrée."
+  (première saisie), "Clé API mise à jour." (modification), "Clé API
+  supprimée." (suppression) — réutilise `BandeauMessage` (type succès),
+  disparaît seul après 4 s. Absent uniquement quand l'enregistrement
+  redirige vers `/revue?regle=...` (retour après une tentative d'annotation
+  sans clé) : l'écran est quitté avant que le bandeau ait un sens
+
+## 2026-08-02 — Claude Code (Part 31)
+
+- **Confirmé par David** : le scroll automatique de la Part 30 fonctionne
+  bien en réel
+- **Message de succès remplacé par un toast fixe** (`RevueRegles.vue`,
+  nouveau `styles/_toast.scss`) : le bandeau inline précédent s'affichait en
+  haut du panneau, hors du cadre visible juste après l'auto-scroll vers le
+  bouton "Enregistrer" — même défaut que le bouton `disabled` invisible de
+  la Part 28/29. Le toast (`position: fixed`, centré en haut, disparaît seul
+  après 4 s) reste visible quel que soit le scroll. Le bandeau d'erreur
+  reste inline, non concerné par cette demande
+- **Rechargement de la liste depuis le serveur après un succès** :
+  `useRegles.charger()` est rappelé après chaque annotation réussie, pour
+  rester synchro avec le serveur au-delà de la mise à jour locale
+  optimiste déjà faite par `annoter()` — la règle sélectionnée et les
+  filtres ne bougent pas (précision demandée par David : recharger la
+  liste, pas la page du navigateur)
+- Style du toast vérifié par capture d'écran isolée (fond vert succès,
+  positionnement) ; le déclenchement réel (clic → toast → refetch) reste
+  hors de portée des outils headless disponibles ici
+
+## 2026-08-02 — Claude Code (Part 30)
+
+- **Scroll automatique vers le pied du formulaire d'annotation**
+  (`PanneauDetailRegle.vue`) : choisir "À revoir" ou "Validée" fait
+  apparaître le champ de note, ce qui repoussait le bouton "Enregistrer"
+  hors du cadre visible (le panneau a son propre scroll interne). Le même
+  handler qui vérifie la clé API (`surChoixStatutImportant`, ex.
+  `verifierCleAvantAnnotation`) fait maintenant aussi
+  `pied.scrollIntoView({ behavior: 'smooth', block: 'end' })` après
+  `nextTick()`. **Non vérifié visuellement** : comportement de clic + scroll
+  JS, hors de portée des outils headless disponibles dans ce projet (pas de
+  Playwright) — à confirmer par David
+
+## 2026-08-02 — Claude Code (Part 29)
+
+- **Bug corrigé : le bouton `disabled` ne se voyait pas** — `_bouton.scss`
+  n'avait aucune règle `:disabled`, donc `.bouton--plein` (couleur pleine)
+  restait affiché tel quel malgré l'attribut `disabled` posé en Part 28.
+  Ajout d'une seule règle générique `.bouton:disabled` (opacité réduite,
+  `cursor: not-allowed`, `pointer-events: none` pour neutraliser aussi les
+  `:hover` des variantes) — sa spécificité (deux sélecteurs) l'emporte sur
+  `.bouton--plein` (un seul), pas besoin de dupliquer par variante. Vérifié
+  par capture d'écran isolée des deux états (actif/désactivé), pas
+  seulement par l'attribut DOM comme en Part 28 — c'est justement ce qui
+  avait fait manquer le bug
+
+## 2026-08-02 — Claude Code (Part 28)
+
+- **Bouton "Enregistrer l'annotation" grisé sans clé API**
+  (`PanneauDetailRegle.vue`) : tant qu'aucune clé n'est enregistrée, le
+  bouton est désactivé et affiche "Il manque la clé API" au lieu du
+  libellé habituel. `peutEnregistrer` inclut désormais `hasKey.value`.
+  Vérifié par rendu réel (`/revue?regle=28` sans clé stockée →
+  `disabled` + texte attendu)
+
+## 2026-08-02 — Claude Code (Part 27)
+
+- **Vérification de la clé API avancée au choix du statut**
+  (`PanneauDetailRegle.vue`) : sélectionner "À revoir" ou "Validée" (pas
+  "Non revue") redirige immédiatement vers `/cle-api?retour=<numero>` si
+  aucune clé n'est enregistrée, au lieu d'attendre le clic sur "Enregistrer
+  l'annotation" — évite de laisser l'utilisateur rédiger une note qui
+  serait perdue à la redirection. Sur `@change` des deux radios concernées,
+  pas sur un `watch(statutForm)`, pour ne pas se déclencher quand le
+  changement de règle réinitialise le formulaire par programmation
+
+## 2026-08-02 — Claude Code (Part 26)
+
+- **Filtre "Revue" rendu exclusif** (`BarreFiltres.vue`) : une règle n'a
+  qu'un seul statut de revue à la fois, donc cocher "Non revue"/"À
+  revoir"/"Validée" désactive désormais les autres au lieu de les cumuler
+  (contrairement à Thème/Phase/Outil, qui restent en OU multi-sélection).
+  Recliquer sur le statut actif l'enlève (retour à "aucun filtre"). Suite
+  Vitest non affectée (`filtreReviewStatus` reste un tableau côté
+  `useRegles`) ; comportement de clic non vérifiable par un outil headless
+  sans navigateur piloté (décision actée : pas de Playwright) — à confirmer
+  visuellement
+
+## 2026-08-02 — Claude Code (Part 25)
+
+- **Bouton "afficher la clé" sur le champ de saisie de la clé API**
+  (`CleApi.vue`) : icône œil (`bi-eye`/`bi-eye-slash`) qui bascule
+  `type="password"`/`type="text"`. Nouveau motif générique dans
+  `_champ-texte.scss` (`.champ-texte__saisie-avec-bouton`,
+  `.champ-texte__bouton-visibilite`), réutilisable pour un futur champ
+  similaire sans dupliquer le CSS
+
+## 2026-08-02 — Claude Code (Part 24)
+
+- **« Le projet » enrichi sur la question libre et l'audit assisté**
+  (`clients/contenus_partages/le-projet.md` + `LeProjet.vue`), question
+  libre présentée en premier (prochain développement). **Jargon interne
+  retiré des pages publiques** : plus aucune mention "US0"/"US1"/"US2" dans
+  `le-projet.md`/`LeProjet.vue` et `politique-des-donnees.md`/
+  `PolitiqueDonnees.vue` — noms de fonctionnalités en clair (revue du
+  référentiel, question libre, audit assisté) à la place
+
+## 2026-08-02 — Claude Code (Part 23)
+
+- **`LICENCE.md` créé à la racine** : double régime tranché — CC BY-SA 4.0
+  pour le référentiel Opquast enrichi, droit d'auteur français (fermé,
+  aucune licence accordée) pour le reste du projet, y compris le code
+  visible sur le dépôt GitHub public. Explique la distinction visibilité ≠
+  autorisation d'usage (Code de la propriété intellectuelle, art. L111-1)
+- **`README.md`** : section « Licence » mise à jour (renvoie vers
+  `LICENCE.md`, ne dit plus « pas encore arrêtée »)
+- **Amendement** dans
+  `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md` : le point
+  laissé ouvert sur la licence du code est maintenant tranché, sans réécrire
+  la décision d'origine
+
+## 2026-08-02 — Claude Code (Part 22)
+
+- **Retour automatique à la règle après renseignement de la clé API**
+  (`regles_api_client`) : la redirection vers `/cle-api` porte désormais
+  `?retour=<numero>` (numéro de la règle qu'on tentait d'annoter),
+  `CleApi.vue` la relit et renvoie vers `/revue?regle=<numero>` une fois la
+  clé enregistrée, `RevueRegles.vue` restaure la sélection au montage.
+  Vérifié : `/revue?regle=28` sélectionne réellement la règle 28
+  (`aria-current`, panneau de détail correspondant)
+
+## 2026-08-02 — Claude Code (Part 21)
+
+- **Politique des données : mention de Langfuse ajoutée** (section
+  « Évolution prévue ») — décision déjà actée (`TODO.md`) que Langfuse
+  monitorera les appels LLM d'US1/US2, mais pas d'ingestion ni d'US0.
+  Question de l'anonymisation des données tracées explicitement non
+  tranchée, signalée comme telle plutôt que supposée
+
+## 2026-08-02 — Claude Code (Part 20)
+
+- **Politique des données corrigée** (`clients/contenus_partages/politique-des-donnees.md`
+  et `PolitiqueDonnees.vue`) : le constat « aucune création de compte » est
+  scopé explicitement à US0 (seule fonctionnalité disponible). Ajout d'une
+  section « Évolution prévue » : US1 (audit) et US2 (question libre)
+  nécessiteront un compte utilisateur et une gestion dédiée des données
+  personnelles — précision du porteur du projet, pas encore conçue en détail
+
+## 2026-08-02 — Claude Code (Part 19)
+
+- **Pages de pied de page implémentées dans `regles_api_client`** : les 3
+  liens `href="#"` ("Le projet", "Mentions légales", "Politique des
+  données") deviennent 3 routes réelles (`LeProjet.vue`,
+  `MentionsLegales.vue`, `PolitiqueDonnees.vue`), contenu repris de
+  `clients/contenus_partages/*.md`. Nouveau partial Sass `_page-contenu.scss`
+  (conteneur étroit, titres, paragraphes — réutilise les tokens existants,
+  aucun style de lien dédié nécessaire, `a { color: var(--color-accent) }`
+  s'applique déjà globalement). Vérifié par rendu réel (Chromium headless) :
+  les 3 titres s'affichent, style cohérent avec le reste du client
+
+## 2026-08-02 — Claude Code (Part 18)
+
+- **`regles_api_client` : config par `.env` remplacée par `src/apiServer.js`**
+  — décision explicite du porteur du projet, après la Part 17. Plus de
+  `.env`/`.env.example`/`.env.test`/`src/config.js` : `apiServer.js` exporte
+  une unique constante `API_REGLES_URL`, modifiée à la main selon
+  l'environnement (dev local, URL de préprod avant un build de
+  déploiement) — pas de bascule automatique par mode Vite
+- **Bug corrigé en même temps** : `reglesApiService.js` construisait
+  `${API_REGLES_URL}/regles` sans neutraliser un éventuel `/` final, ce qui
+  produisait une URL à double slash. Ajout d'un `.replace(/\/+$/, '')`
+- **Tests corrigés** : `reglesApiService.test.js` codait en dur
+  `http://localhost:8880`, cassé dès qu'`apiServer.js` contient une autre
+  valeur (ex. l'URL de préprod). Les tests lisent maintenant
+  `API_REGLES_URL` au lieu de deviner sa valeur
+- **Spec et plan amendés** (pas réécrits) : note d'amendement datée dans
+  chacun des deux documents, pointant vers ce changement, sans effacer le
+  compte-rendu de ce qui a été exécuté à l'origine
+
+## 2026-08-02 — Claude Code (Part 17)
+
+- **`clients/regles_api_client/` implémenté** (11 tâches TDD du plan
+  `docs/superpowers/plans/2026-08-02-regles-api-client-implementation.md`) :
+  premier client réel de `app/api_regles`, Vite + Vue 3 + JavaScript,
+  composables `useRegles`/`useCleApi` (pas de Pinia), CSS des maquettes US0
+  porté en Sass, `vue-router` (`/revue`, `/cle-api`), filtrage
+  recherche/thème/phase appliqué côté client (non supporté par
+  `GET /regles`). Vérifié manuellement contre l'API réelle (245/245 règles
+  chargées, rendu conforme aux maquettes)
+- **Tests** : 22 tests Vitest verts (`reglesApiService`, `useCleApi`,
+  `useRegles`, acceptance par jsonl `tests/acceptance/regles_api_client_acceptance.jsonl`)
+- **2 bugs trouvés et corrigés pendant l'implémentation** :
+  - `sass: "^1.98.0"` résolvait vers `1.102.0`, qui exige Node ≥20.19 alors
+    que ce poste tourne sous Node 18.19.1 — sass avait relevé son plancher
+    Node sans bump de version majeure. Épinglé en version exacte (`1.98.0`),
+    corrigé aussi dans le plan
+  - Bouton "Modifier la clé" (écran clé API) : première version effaçait la
+    clé directement au lieu de rouvrir le formulaire de saisie — corrigé
+    avant tout test manuel, via un état local `enModification` distinct de
+    `hasKey`
+- **`Makefile`** : cibles `regles-api-client`, `regles-api-client-install`,
+  `regles-api-client-test`
+
+## 2026-08-02 — Claude Code (Part 16)
+
+- **Nouveau skill `clients_api`** (hors dépôt QualiCheck, `~/.claude/skills/`) :
+  conventions générales pour tout futur client API (Vue.js par défaut,
+  maquettes comme référence, services HTTP centralisés, composants
+  réutilisables). Complété en cours de session : **CSS en Sass** et
+  **README obligatoire par client**
+- **Spec de conception `regles_api_client`**
+  (`docs/superpowers/specs/2026-08-02-regles-api-client-design.md`) :
+  premier client Vue.js réel de `app/api_regles`, périmètre US0 uniquement
+  (revue des règles + gestion de la clé API). Décisions actées : Vite +
+  Vue 3 + JavaScript (pas TypeScript), composables (`useRegles`,
+  `useCleApi`) sans Pinia, clé API en `localStorage`, `vue-router` (2
+  écrans), CSS en Sass en conservant les custom properties des maquettes,
+  tests Vitest sur la logique uniquement (pas de rendu de composant),
+  scénarios d'acceptance en Gherkin (documentation) + jsonl exécutable —
+  même convention que `api_regles` et le RAG (aucun outillage BDD
+  installé dans le projet)
+- **Plan d'implémentation `regles_api_client`**
+  (`docs/superpowers/plans/2026-08-02-regles-api-client-implementation.md`) :
+  11 tâches TDD. Versions du toolchain verrouillées pour compatibilité
+  Node 18.19.1 (Vite 6.4, Vitest 3.2, sass 1.98, jsdom 26, vue-router 4.6 —
+  les dernières majeures exigent Node 20+). Écart découvert en rédigeant
+  le plan : `GET /regles` ne supporte que les filtres `outil` et
+  `review_status` côté serveur, donc la recherche texte, le filtre thème
+  et le filtre phase de la maquette sont appliqués côté client sur les 245
+  règles déjà chargées (pas de pagination serveur)
+- **Implémentation mise en pause** à la demande explicite, avant la Task 1
+  du plan — spec et plan restent la référence pour la reprendre
+- **Pages de contenu partagées** (`clients/contenus_partages/le-projet.md`,
+  `mentions-legales.md`, `politique-des-donnees.md`) : les liens
+  "Le projet"/"Mentions légales"/"Politique des données" du pied de page
+  étaient des `href="#"` sur tous les écrans maquettés. Vérifié hors
+  périmètre des compétences certifiées
+  (`conception/referentiel_competences.md`, `conception/certif_deroule.md`)
+  mais nécessaires car `regles_api_client` sera réellement partagé (pas
+  seulement démontré au jury). Contenu en Markdown (pas de maquette HTML
+  dédiée), destiné à être rendu par les futurs clients Vue.js. Adresse
+  postale de l'éditeur volontairement remplacée par une formule "sur
+  demande" dans `mentions-legales.md` — éviter une exposition permanente
+  dans l'historique Git d'un dépôt public. Page "Contact" (US1/US2)
+  différée, pas encore d'écran ni de besoin identifié à ce stade
+
+## 2026-08-02 — Claude Code (Part 15)
+
+- **US0 (revue du référentiel) : 3 nouveaux écrans/états, brainstormés puis
+  maquettés** (aucune spec écrite en amont — validations successives par
+  questions ciblées, cohérent avec le mode de travail léger déjà en place
+  pour le maquettage) :
+  - `ecran-revue-regles-etats.html` : liste vide après filtrage (0/245),
+    confirmation d'enregistrement (`bandeau-message--succes`), échec
+    d'enregistrement (`bandeau-message--erreur`) — panneau détail isolé
+    sans redupliquer la liste pour les 2 derniers états. `bandeau-message.css`
+    copié dans `US0/style/` (jusqu'ici seulement dans `US2/style/`)
+  - `ecran-cle-api.html` : 2 états (aucune clé / clé enregistrée), champ
+    unique — le jeton suffit à l'identification côté serveur
+    (`app/api_regles/auth.py`), pas de champ nom d'utilisateur
+- **Nav de l'entête (US0)** : les 3 liens habituels (Mes audits/Question
+  libre/Règles Opquast) remplacés par la gestion de la clé API
+  ("Renseigner ma clé API" / "Modifier ma clé API" + "Supprimer ma clé
+  API" selon l'état) sur les 3 écrans US0 — l'écran de revue n'a jamais eu
+  de lien de menu qui lui corresponde réellement (aucun des 3 ne mène à cet
+  écran), la clé API a rempli ce vide
+- **`aria-current="page"` retiré du lien "Règles Opquast"** sur les écrans
+  US0 : ce lien mène au référentiel officiel externe (opquast.com), pas à
+  l'écran de revue interne — le marquer actif était trompeur
+- **Icône avatar (`entete__avatar`) retirée des 3 écrans US0** — pas de
+  notion de compte utilisateur sur ces écrans d'administration
+- **Pied de page (US0)** : liens "Accueil"/"Préparer un audit" (destinés à
+  l'utilisateur final) retirés de `pied-de-page__nav` sur les 3 écrans —
+  hors contexte pour une zone d'administration
+- **2 bugs CSS trouvés et corrigés en construisant `ecran-cle-api.html`**,
+  répercutés dans les 3 copies du design system
+  (`directives/composants/CSS/`, `US0/style/`, `US2/style/`) :
+  - `.bouton--neutre` sans `background: transparent` → fond gris par
+    défaut du navigateur, texte illisible ("Supprimer la clé")
+  - Écart entre les 2 rangées du pied de page trop important (4rem cumulés
+    entre `__haut` et `__bas`) — resserré à 1rem cumulé
+    (`padding-bottom`/`padding-top` explicites au lieu de `padding-block`
+    symétrique, pour ne pas toucher l'espacement extérieur)
+- **Nouvelle règle actée dans `conception/maquettes/CLAUDE.md`** : aucun
+  JavaScript dans les maquettes — tout comportement interactif repéré
+  pendant le maquettage (redimensionnement, redirection selon état...) est
+  documenté comme exigence pour l'implémentation Vue.js réelle, pas simulé
+  ici. Exigences notées sous US0 : colonne de liste redimensionnable,
+  gestion de la clé API (stockage client — localStorage/sessionStorage —
+  non tranché, à décider lors de l'implémentation)
+
+## 2026-08-02 — Claude Code (Part 14)
+
+- **Solde de crédit remis dans les 2 écrans US2** (`ecran-question-libre.html`,
+  `ecran-question-libre-garde-fous.html`) — retiré un peu vite lors d'une
+  itération précédente ; ré-affiché via `.indicateur-credit` existant ("8
+  questions restantes" / variant `--faible` "0 question restante" sur
+  l'écran garde-fous)
+- **Barre de saisie (`zone-saisie-question`) rendue réellement opaque** —
+  son fond utilisait `--color-surface` (#070707), quasi indiscernable de
+  `--color-background` (#0b0b0e), ce qui la faisait paraître transparente.
+  Nouveau token `--color-surface-opaque` (#000000, noir plein garanti)
+  ajouté dans `variables.css`, utilisé par la barre de saisie plutôt qu'une
+  valeur hex brute
+- Les deux copies (`composants/CSS/` et `US2/style/`) mises à jour en
+  parallèle, comme convenu depuis la scission des dossiers
+
+## 2026-08-02 — Claude Code (Part 13)
+
+- **US2 (question libre) : diagrammes UML** — `conception/5_us2_question_libre/cas_utilisation_us2.drawio`
+  (cas d'utilisation : vérification authentification/crédit en `«include»`,
+  soumission de page en `«extend»`, vider la session en acteur direct) et
+  `diagramme_activite_us2.drawio` (2 couloirs Utilisateur/Système, boucle de
+  re-vérification du crédit à chaque nouvelle question, bandeau d'erreur
+  après 3 échecs techniques du RAG/agent, "Terminer la session" redirige
+  explicitement vers "Mes audits" après une étape optionnelle de sauvegarde)
+- **Écran assemblé US2** — `conception/maquettes/US2/ecran-question-libre.html` :
+  5 composants (zone-soumission-page en modale CSS pure, zone-saisie-question
+  en pilule avec bouton "+" intégré, carte-regle-citee, fil-dialogue)
+  assemblés selon les conventions ChatGPT/Claude web (messages agent sans
+  bulle + avatar, bulle discrète pour l'utilisateur), historique borné
+  (`max-height` + défilement interne, jamais de contenu sous la barre de
+  saisie), horodatage et pouce haut/bas par réponse, exemple à 2 règles
+  citées dans une même réponse
+- **Écran garde-fous** — `conception/maquettes/US2/ecran-question-libre-garde-fous.html` :
+  copie illustrant crédit épuisé / échec technique (nouveau variant
+  `bandeau-message--avertissement`), question hors sujet, gros mots, idées
+  suicidaires (réponse redirigeant vers le 3114/15/112, volontairement sans
+  pouce ni règle citée)
+- **Réorganisation des dossiers de maquette** — les écrans assemblés déménagés
+  de `composants/` (réservé aux briques réutilisables) vers
+  `conception/maquettes/US2/`, avec son propre `style/` autonome (copie des
+  CSS et polices nécessaires, découplée de `composants/CSS/`)
+- **`--container-wide` élargi à 1170px** (`variables.css`, dupliqué dans
+  `US2/style/variables.css`) pour l'en-tête et le pied-de-page
+- **Pied de page aligné sur `accueil_a_revoir.png`** — séparateurs verticaux
+  (logo/tagline ↔ nav, copyright ↔ mention légale), icônes de nav en violet
+  accent, lien "Politique des données" ajouté
+- **RGPD** — section "Traitements anticipés, non actifs — US2" ajoutée à
+  `docs/rgpd/registre_traitements.md` (même logique que le volet audit US1 :
+  rien de réel à traiter tant qu'US2 n'a pas de spec), suivi dans `TODO.md`
+- **Audit UX** (nouveau skill `ui-ux-pro-max`) sur les 2 écrans US2 : cibles
+  tactiles sous 44px, absence de media queries, focus clavier peu visible
+  sur la modale CSS-only, transitions `:hover` manquantes — acceptés en
+  l'état, périmètre maquettage desktop-first, aucun correctif appliqué
+
+## 2026-07-31 — Claude Code (Part 12)
+
+- **9 nouveaux composants de maquette** pour l'écran de revue du référentiel,
+  construits en confrontant `ecran_revue_regles_a_nettement _ameliorer.html`
+  (ancienne référence, hors design system) au design system actuel :
+  `badge-statut` (3 états, `invalide` exclu), `chip-filtre`, `barre-filtres`,
+  `tag-outil`, `ligne-regle`, `segmented-statut`, `bloc-provenance`,
+  `panneau-detail-regle`, `bandeau-message`. Egalement `formulaire.html`
+  (types de champ) complété d'une bande de succès en tete et d'un lien vers
+  les CGU
+- **Corrections d'accessibilité concrètes** (priorité Opquast) :
+  - `--color-accent-bouton` ajouté à `variables.css` : le texte blanc sur
+    bouton plein n'atteignait que 3.36:1 (sous le seuil AA 4.5:1) avec
+    `--color-accent` seul
+  - `champ-texte__aide` (messages d'erreur/succès) utilisait
+    `--color-danger-text`/`--color-success-text` — pensés pour du texte sur
+    fond colore (badge), pas sur le fond de page sombre (1.68:1/2.33:1,
+    illisibles). Corrigé en `--color-danger-background`/`--color-success-background`
+    (7.64:1/10.63:1)
+  - Focus clavier visible généralisé dans `base.css` (`summary` inclus),
+    `.visually-hidden` ajouté pour les `<legend>`/`<label>` masqués sans
+    perdre la sémantique
+  - Bug de rendu découvert : un `<legend>` se place toujours sur sa propre
+    ligne dans un fieldset flex sous Chromium 150, jamais traité comme un
+    item flex — contourné par un `<span>` visuel a cote du `<legend>`
+    masqué (accessibilité conservée)
+- **`barre-filtres`** : recherche pleine largeur, panneau de filtres
+  repliable (`<details>`, ferme par defaut), groupe Theme (14 valeurs) en 2
+  lignes de 8/6 plutôt qu'un défilement (loi de Miller), tous les groupes
+  alignés sur la même structure titre/chips, sélection en vert
+- **`entete`** : lien "Question libre" (US2) ajouté, bascule thème
+  clair/sombre retirée (hors périmètre pour l'instant), état de page active
+  illustré (`aria-current`)
+- **`bouton`** : effet de survol en négatif (fond/texte inversés) sur le
+  bouton plein, bordure épaissie à 2px
+- **`formulaire`** : bouton d'envoi grisé (CSS `:has()`, sans JS) tant que
+  la case CGU n'est pas cochée
+
+## 2026-07-31 — Claude Code (Part 11)
+
+- **Vocabulaire `review_status` simplifié : retrait de `invalide`** — décelé
+  en confrontant les maquettes (`conception/maquettes/`) à l'API réelle
+  (`https://regles.qualicheck.koabana.fr/regles`) : `invalide` (classification
+  franchement fausse) était visuellement et fonctionnellement indiscernable
+  de `a_revoir` (à corriger), les deux finissant dans la même file de
+  réécriture ciblée. Vocabulaire réduit à `valide`/`a_revoir`, sans perte de
+  comportement — `enrich_again` sélectionne déjà par exclusion
+  (`review_status IS NOT NULL AND != 'valide'`), pas par énumération.
+  Répercuté sur `app/api_regles/schemas.py` (énums `ReviewStatus` et
+  `ReviewStatusFiltre`, message de validation), `app/ingestion/enrich_again.py`
+  (docstring), `Makefile` (commentaire de la cible `enrich-again`),
+  `conception/4_api_regles/api_regles.md`, `conception/1_BDD/MLD_qualicheck.md`,
+  `conception/3_enrichissement/G_revue_manuelle.md` (§3, §4.1, §5 + addendum
+  §6 documentant la décision) et `conception/3_enrichissement/J_chantier_enrich_again.md`.
+  Deux tests devenus obsolètes supprimés (`test_note_obligatoire_pour_invalide`,
+  `test_load_rules_to_review_includes_invalide_status`), trois docstrings de
+  test mis à jour. 134/134 tests unitaires + intégration passent, `ruff check`
+  propre. Non touché volontairement : `ecran_revue_regles_a_nettement _ameliorer.html`,
+  déjà marqué "à reprendre entièrement" dans `conception/maquettes/CLAUDE.md`
+  — corriger son vocabulaire aurait été un effort perdu avant sa refonte
+- **Ajout du lien de nav "Question libre" (US2)** dans le composant `entete`
+  (`conception/maquettes/directives/composants/entete.html`) — la maquette
+  n'exposait que "Mes audits", oubliant l'US2 (question libre, RAG sémantique)
+- **Principe de page active illustré dans `entete`** — `aria-current="page"`
+  sur le lien courant + style associé (`CSS/entete.css`), démontré sur
+  "Mes audits"
+- **4 nouveaux composants de maquette** construits depuis
+  `Etape2 Sélection des pages.pdf` : `stepper`, `ligne-page`,
+  `panneau-selection`, `navigation-etapes` — mêmes conventions que la session
+  précédente (CSS externalisé, assets locaux, `:hover`). `bouton.css` complété
+  de deux modificateurs (`--petit`, `--neutre`)
+- **`composants/formulaire.html` créé** : formulaire imaginé illustrant les
+  types de champ courants (texte, email avec erreur, mot de passe avec
+  succès, select, textarea, radio, interrupteur, case à cocher) sur la base
+  du design system existant. Mentions "(obligatoire)"/"(optionnel)" en toutes
+  lettres partout (plus d'astérisque)
+- **Restructuration `composants/`** : tous les CSS (dont `variables.css`)
+  regroupés dans `composants/CSS/`, Bootstrap Icons et la police Inter
+  rapatriés en fichiers locaux (plus de dépendance CDN)
+
+- **Montage « Livret 0 » abandonné, fusionné dans E1** — réponse reçue de la
+  référente certification (Helena) : 5 livrables au total, pas 6 ; si le
+  même projet sert aux 5, le contexte se présente une seule fois, en tête
+  du premier livrable. `docs/jury/documents_jury/commun/` supprimé
+  (`explication_projet.md`, `Livret0.pdf`). Le contexte (condensé :
+  présentation du projet + tableau des 3 US, sans l'annexe personas, pour
+  préserver le budget de pages) ouvre désormais `epreuvres/E1/E1.md`
+  directement (§ « Présentation du projet »), avec une phrase indiquant que
+  les livrets suivants n'y reviendront pas. `docs/jury/documents_jury/README.md`
+  et `TODO.md` mis à jour en conséquence. E1 passe de 3 à 4 pages, toujours
+  dans le budget 2-5 p.
+
+## 2026-07-29 — Claude Code (Part 9)
+
+- **Tirets cadratins retirés du Livret 0 et du livret E1** (demande
+  explicite : style de prose ne doit pas "sonner IA"). Titres et sous-titres
+  reformulés avec des deux-points ou des virgules ; phrases restructurées
+  plutôt que ponctuées d'incises systématiques. Pied de page et couverture
+  du template (`working/config/jury-livret.tex`) corrigés de la même façon
+- **Devise « Garbage in, garbage out » déplacée : uniquement sur E1**, pas
+  sur les 6 livrets. Mécanisme `\devise` rendu optionnel (vide par défaut) ;
+  bug découvert au passage : le YAML `header-includes:` d'un `.md` ne se
+  combine pas de façon fiable avec `--include-in-header` sur Pandoc 3.1.3
+  (la valeur du document disparaissait silencieusement). Contournement :
+  un second fichier `--include-in-header` propre à E1
+  (`epreuvres/E1/devise.tex`), les fichiers `-H` multiples se concaténant
+  correctement entre eux. Documenté dans `docs/jury/documents_jury/README.md`
+
+## 2026-07-29 — Claude Code (Part 8)
+
+- **Livret E1 rédigé** (`docs/jury/documents_jury/epreuvres/E1/E1.md`) : C1 à
+  C5, introduction (renvoi Livret 0, mention LLM + revue humaine, note sur
+  l'enrichissement du périmètre à US1/US2), synthèse des critères de
+  performance (tableau + renvoi `docs/jury/E1_bloc1_criteres_performance.xlsx`).
+  3 pages, dans le budget 2-5 p. d'E1 (`conception/certif_deroule.md`)
+- **Débordement du code inline corrigé** (`working/config/jury-livret.tex`) :
+  les chemins longs (`docs/jury/decisions/...`) sortaient de la marge —
+  `seqsplit` + `\ttfamily` sur `\texttt` autorise la coupure en fin de ligne.
+  Même bug probable dans `~/.config/pandoc/styles/conception.tex`/`formation.tex`
+  (non corrigé, hors périmètre de cette session)
+- **Devise « Garbage in, garbage out » ajoutée en page de garde** (les 6
+  livrets, template commun)
+
+## 2026-07-29 — Claude Code (Part 7)
+
+- **Branche par défaut GitHub changée `main` → `dev`** (`gh repo edit
+  --default-branch dev`) : `main` avait ~288 commits de retard sur `dev`
+  (rien n'est déployé en production, cf. `README.md` §Branches) — quiconque
+  ouvrait le dépôt sans préciser de branche (jury de certification compris)
+  atterrissait sur un squelette figé au setup Docker/BDD initial, sans rien
+  du pipeline d'ingestion ni d'`api_regles`. `README.md` mis à jour en
+  conséquence. Aucun workflow CI ne dépend du réglage de branche par défaut
+  (vérifié)
+
+## 2026-07-29 — Claude Code (Part 6)
+
+- **`conception/annexes/J_personas_qualicheck.png` exporté** (CLI `drawio
+  --export`, à la demande explicite de David — schéma déjà relu) — ajouté en
+  Annexe A du Livret 0 (`docs/jury/documents_jury/commun/explication_projet.md`),
+  référencé depuis le texte (« Détail complet des deux profils : Annexe A »)
+- **Contenu du Livret 0 relu et corrigé** : Opquast est une entreprise, pas
+  une organisation
+- **Piège Pandoc documenté** (`docs/jury/documents_jury/README.md`) : les
+  chemins d'image dans ces livrets sont relatifs à la racine du dépôt
+  (répertoire de lancement de `pandoc`), pas au dossier du fichier `.md`
+
+## 2026-07-29 — Claude Code (Part 5)
+
+- **Structure `docs/jury/documents_jury/` amorcée** — livrets à remettre au
+  jury (Livret 0 + E1 à E5), distincte du reste de `docs/jury/` qui pointe
+  vers les preuves sans les recopier (`README.md` dédié)
+  - `working/config/jury-livret.tex` : template Pandoc/XeLaTeX (identité
+    visuelle de `~/.config/pandoc/styles/conception.tex`), page de garde
+    unique — `\maketitle` redéfini, construite depuis le Front Matter
+  - `commun/explication_projet.md` = **Livret 0** : présentation du projet
+    (~2 pages), document **autonome**, remis une seule fois — pas concaténé
+    dans les 5 livrets d'épreuve. Décision alignée sur
+    `conception/certif_deroule.md` (*« 5 livrables... le contexte n'est
+    présenté qu'une fois »*) et sur le budget de pages serré d'E1/E5 (2 à 5 p.)
+  - `epreuvres/E{1..5}/` : un dossier par épreuve, s'y référence en une
+    phrase plutôt que de le recopier
+  - Build validé par compilation réelle (`./tmp/jury_livret_test/`) :
+    Livret 0 seul (2 pages, cover + contenu) et un livret d'épreuve seul
+    (cover + sommaire + corps) — commandes documentées dans
+    `docs/jury/documents_jury/README.md`
+- **Règle « fichiers temporaires dans `./tmp/` du projet »** formalisée —
+  `CLAUDE.md`, `docs/agent/02_regles_execution.md` : jamais `/tmp` système ni
+  un scratchpad d'agent hors projet
+
+## 2026-07-29 — Claude Code (Part 4)
+
+- **Dette de documentation E1 (C2/C3) résolue** — `conception/2_ingestion/ingestion.md` :
+  - §« Choix de nettoyage : rejet, jamais correction silencieuse » (Étape 2) :
+    validation Pydantic de `RuleAggregation` documentée (champs texte non
+    vides, `objectifs`/`phases` non vides, `tags` volontairement non validé
+    car seul champ optionnel) — critère C3 (« choix de nettoyage/homogénéisation »)
+  - §« Requêtes SQL d'extraction — choix de sélection, jointures et
+    optimisation » (Étape 4) : documentation de `load_enriched_rules_from_db()`
+    (sélection, jointures via tables d'association, absence volontaire de
+    batching pour un usage administratif ponctuel sur 245 lignes), mis en
+    contraste avec `app/api_regles/regles.py::_libelles_par_regle()` qui fait
+    le choix inverse (requêtes groupées) pour un contexte HTTP public —
+    critère C2 (« documentation des choix de sélection/jointures » et
+    « documentation des optimisations »)
+  - `docs/jury/E1_bloc1_criteres_performance.xlsx` mis à jour en conséquence
+    (3 critères passés de Non à Oui), commentaire C5 aligné sur
+    `conception/4_api_regles/api_regles.md` (nouvelle source de vérité)
+
+## 2026-07-29 — Claude Code (Part 3)
+
+- **Réorganisation de `conception/` selon la numérotation par sujet, abandonnée
+  depuis `1_BDD`/`2_ingestion`** — `3_enrichissement/` (créé mais resté vide)
+  reçoit désormais `E_provenance_manifeste.md`, `F_chantier2_prompt_v4.md`,
+  `G_revue_manuelle.md`, `H_chantier_prompt_v5.md`, `J_chantier_enrich_again.md`,
+  `K_chantier_prompt_v6.md`, déplacés depuis `2_ingestion/` où ils s'étaient
+  accumulés faute de dossier dédié. Nouveau `4_api_regles/api_regles.md` —
+  condensé depuis `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`,
+  seule spec qui documentait jusqu'ici `api_regles` (C5), dans un dossier
+  explicitement qualifié d'historique de travail plutôt que de source de
+  vérité
+- **Deux doublons stricts éliminés au passage** (contenu identique confirmé —
+  diff pour le Markdown, comparaison hors métadonnées pour les binaires) :
+  `MLD_qualicheck.md` et `A_dictionnaire_donnees_qualicheck.xlsx` existaient
+  chacun en deux exemplaires (`2_ingestion/` et `annexes/`), maintenus en
+  parallèle faute de référence unique — conservés dans `1_BDD/` uniquement
+  (schéma/BDD, pas ingestion). Même chose pour `I_feedback_loop.drawio`
+  (Annexe I de `conception.md`) : copie en trop dans `2_ingestion/` supprimée,
+  seule celle d'`annexes/` fait foi
+- Toutes les références croisées corrigées en conséquence (`conception.md`,
+  `docs/agent/03_references_impl.md`, `docs/README.md`, `docs/jury/README.md`,
+  `app/CLAUDE.md`, `app/ingestion/manifest.yml`, et les fichiers déplacés
+  entre eux) — les documents historiques (`docs/superpowers/`,
+  `docs/problemes_rencontres/`, `docs/jury/decisions/`, les entrées passées de
+  ce changelog) gardent volontairement leurs anciens chemins, en tant que
+  constat d'époque, pas de référence vivante
+
+## 2026-07-29 — Claude Code (Part 2)
+
+- **`G_user_stories_qualicheck.drawio` réaligné** — voir
+  `conception/annexes/G_user_stories_qualicheck.drawio`, `TODO.md` : la source
+  décrivait encore l'ancien découpage (US1 = génération des constats, US2 =
+  dialogue/validation), périmé depuis la fusion de la génération et du
+  dialogue/validation dans US1 et la redéfinition d'US2 comme question libre
+  sur une page (`conception.md`). Carte US1 et critère d'acceptation mis à
+  jour, carte US2 réécrite. Les encarts « Scénario nominal » (US1/US2)
+  retirés pour laisser plus de place aux 3 cartes user story, passées en
+  pleine largeur — le détail des scénarios reste dans `conception.md`
+  (§User stories). Export `.png` volontairement pas régénéré (relecture
+  visuelle manuelle par David requise avant export, convention déjà actée)
+- **Carte US0 complétée avec la revue humaine** (`review_status`,
+  `review_note`) — absente jusqu'ici du schéma et de `conception.md`
+  (§US0) alors que la fonctionnalité existe déjà (migration 0010,
+  `docs/2_ingestion/G_revue_manuelle.md`, endpoint `PATCH /regles/{numero}`)
+- **US0 précise l'acteur de la revue humaine** — pas seulement
+  l'administrateur : un expert qualité externe désigné (ex. Élie Sloïm) peut
+  aussi l'effectuer, authentifié par son propre jeton API
+  (`app/api_regles/manifest.yml`). Mis à jour dans `conception.md` §US0 et
+  dans le schéma G (`us0_as`)
+- **`conception.md` §US2 corrigé** — « En tant qu'auditeur qualité web » ne
+  correspondait pas aux deux personas réels d'US2 (l'auditeur expert *et*
+  l'auditeur curieux, explicitement non certifié Opquast — cf. §Personas et
+  `conception/annexes/J_personas_qualicheck.drawio`) ; reformulé en « En tant
+  que professionnel du web », répercuté dans le schéma G
+
+## 2026-07-29 — Claude Code
+
+- **Registre des traitements RGPD et procédures de tri (C4)** — voir
+  `docs/rgpd/registre_traitements.md`, décision
+  `docs/jury/decisions/2026-07-29-perimetre-registre-rgpd.md` : registre
+  scindé entre les traitements réellement en place (référentiel Opquast, hors
+  champ RGPD ; jetons API nominatifs, seule donnée personnelle réelle) et le
+  volet audit (`utilisateur`/`audit`/`constat`) anticipé dans le schéma mais
+  non peuplé/non actif, réservé pour la spec US1 — raisonnement fondé sur
+  l'article 30 du RGPD (registre des traitements réels, pas envisagés)
+
 ## 2026-07-28 — Claude Code
 
+- **Script `creer_cle_api_regles.py`** — automatise la procédure de création de clé API (`docs/developpement/creation_cle_api_regles.md`) : ajoute le client dans `manifest.yml`, `.env`/`.env.example`, le workflow `cd-staging.yml`, et crée le secret GitHub dans l'environnement `staging` via `gh`. Testé sur copies des vrais fichiers ; un bug réel trouvé et corrigé (`.env` sans retour à la ligne final faisait fusionner la nouvelle ligne avec la précédente)
+- **Procédure de création de clé API pour `/regles`** (dev + staging) — voir `docs/developpement/creation_cle_api_regles.md`, indexé dans `docs/README.md`
+- **Branche `feature` renommée `dev`** (renommage GitHub natif, redirige automatiquement toute référence) : plus cohérent avec son rôle réel de tronc de développement principal (documenté depuis le 2026-07-26, `docs/agent/02_regles_execution.md`) plutôt qu'une branche de fonctionnalité isolée. `.github/workflows/ci-feature.yml` renommé `ci-dev.yml`, `dev` retiré de son `branches-ignore` (devient la branche couverte, pas exclue — sans ce correctif la CI aurait cessé de tourner silencieusement). Docs vivantes mises à jour (`docs/agent/02_regles_execution.md`, `docs/developpement/ci.md`, `docs/developpement/deploiement_staging.md`, `docs/superpowers/specs/2026-07-28-cd-staging-design.md`) ; specs/plans/CHANGELOG datés antérieurs volontairement laissés tels quels (enregistrements historiques, pas des références à jour). Vérifié : CI verte sur un vrai push à `dev` après le renommage
+- **CD staging vérifié en conditions réelles, de bout en bout** : `https://regles.qualicheck.koabana.fr` sert les 245 vraies règles Opquast, `make api-regles-acceptance` passe intégralement contre l'instance staging réelle (245 règles, filtres, 4 jetons, boucle de revue). 4 bugs réels trouvés et corrigés en cours de route sur le premier déploiement (chacun avec son PR dédiée) :
+  - `make` absent du PATH du runner self-hosted → installé sur cloclo
+  - Ordre des étapes : migrations lancées avant que Postgres ne soit démarré sur une machine neuve → nouvelle cible `make up-db` + attente `pg_isready`
+  - `logs/` non suivi par git → supprimé entièrement par `git clean -ffdx` (`actions/checkout`) à chaque run, recréé en `root` par le conteneur (`Dockerfile` sans `USER`), rendant tout `chown` manuel temporaire → `logs/.gitkeep` (fichier tracké) pour que le dossier survive
+  - Acceptance lancée avant qu'uvicorn n'accepte les connexions après `make up` (`Connection reset by peer`) → attente sur `/health`
+  - Build Docker en échec (DNS injoignable dans le conteneur de build) : corrigé côté infra cloclo (`/etc/docker/daemon.json`, hors dépôt)
+  - Base staging bootstrappée pour de vrai : `make export_sql` en local → transfert → `make import_sql` sur cloclo
 - **CD staging opérationnel** (`docs/superpowers/specs/2026-07-28-cd-staging-design.md`, `docs/superpowers/plans/2026-07-28-cd-staging-implementation.md`) : `.github/workflows/cd-staging.yml` (runner self-hosted sur cloclo, déclenché au merge d'une PR vers `staging`) — migrations, `docker compose up -d --build`, rejeu de la suite d'acceptance existante comme garde-fou. Runbook `docs/developpement/deploiement_staging.md`. Branche `staging` créée. **Tous les prérequis manuels réalisés pour de vrai par David sur cloclo** : `uv`, runner self-hosted (service systemd, en ligne), environnement GitHub `staging` + 7 secrets, DNS A (`regles.qualicheck.koabana.fr` → IP de cloclo), `docker-compose.override.yml` (réseau `cloudnet`, découverte en cours de route : Caddy proxie par nom de conteneur, pas par `localhost` — fichier déplacé hors du dossier checkouté pour survivre au nettoyage de `actions/checkout`), config Caddy (`reverse-proxy/Caddyfile`, 502 confirmé en attendant le premier déploiement réel). Reste : bootstrap de la base staging (dump exporté, `backups/20260728_135208.sql`, transfert et import à faire), premier déploiement réel non encore déclenché
 - **Environnement GitHub `staging` créé, avec ses 7 secrets** (`gh api` pour l'environnement, `gh secret set --env staging` pour les secrets) : `POSTGRES_USER`/`POSTGRES_DB` (`qualicheck_staging`), `POSTGRES_PASSWORD` (généré, `secrets.token_urlsafe`), et les 4 jetons `FASTAPI_API_KEY*` déjà générés localement (copiés tels quels, jamais affichés en clair dans ce commit). Premier prérequis manuel du plan `docs/superpowers/plans/2026-07-28-cd-staging-implementation.md` réalisé pour de vrai — reste : runner self-hosted, `docker-compose.override.yml` (réseau `cloudnet`), Caddy, DNS Infomaniak, bootstrap de la base staging, tous hors de portée de l'agent (infrastructure personnelle de David)
 - **Logging ajouté à `api_regles`** (`app/logging_config.py` réutilisé, `logs/api_regles.log`, monté hors du conteneur via `docker-compose.yml`) : démarrage (clients déclarés), authentifications refusées (`WARNING`, sans jamais loguer le jeton reçu), sonde `/health` en échec (`WARNING`), et annotation réussie avec le **nom du client résolu** (`INFO`, ex. « Règle 1 annotée par elie-sloim ») — traçabilité minimale de qui annote quoi, sans colonne `reviewed_by` en base. `annoter_regle()` capture désormais le retour de `require_bearer()` (`client_nom: str = Depends(...)`) au lieu de l'ignorer via `dependencies=[...]`. Vérifié en conditions réelles (conteneur reconstruit et redémarré) : démarrage loggé, un 401 réel loggé, une annotation réelle (`elie-sloim`) loggée puis annulée, règle 1 revenue à `NULL` en base

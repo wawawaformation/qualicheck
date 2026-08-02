@@ -78,6 +78,18 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - Reste ouvert si souhaité : `F_choix_llm.md` cite ce fichier comme annexe
     (argumentation souveraineté, Bayart, Cloud Act) — copier spécifiquement
     dans `conception/annexes/` en plus, ou le renvoi vers `fonds/` suffit ?
+- [ ] **Persister le retour pouce haut/bas d'US2 (question libre)** — la
+  maquette (`conception/maquettes/directives/composants/ecran-question-libre.html`,
+  `fil-dialogue.html`) affiche un bouton pouce haut/bas sous chaque réponse de
+  l'agent, mais rien n'est encore spécifié côté modèle/API pour stocker ce
+  retour. Intention actée : garder une trace exploitable pour améliorer le
+  système plus tard (ex. jeu d'exemples pour affiner le prompt RAG, détection
+  des réponses mal notées) — à spécifier avec la conception d'US2 (API
+  `api_business`, pas encore conçue) — `D`
+  - Volet RGPD déjà anticipé dans `docs/rgpd/registre_traitements.md`
+    (section « Traitements anticipés, non actifs — US2 »), même logique que
+    le volet audit US1 : rien à traiter tant qu'US2 n'a pas de spec, mais
+    finalité/base légale/conservation à trancher à ce moment-là.
 
 ## Documentation
 
@@ -88,12 +100,16 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   légende de l'image (`![Flux de dialogue — US2](...)`) contredisait le
   reste — corrigée en `US1` — `D`/`A`
 
-- [ ] **`G_user_stories_qualicheck.drawio` — export PNG supprimé, à refaire** —
-  d'abord corrigé "68 règles" → "245 règles" (US0, 2026-07-25), puis le `.png`
-  a été supprimé par David. Le découpage US1/US2 de `conception.md` est
-  maintenant clarifié (voir entrée ci-dessus) — reste à vérifier que cette
-  annexe (source du découpage US1/US2 illustré) est bien alignée avant de
-  rééexporter — `D`
+- [ ] **`G_user_stories_qualicheck.drawio` — contenu réaligné (2026-07-29), export PNG toujours à refaire** —
+  la source décrivait encore l'ancien découpage (US1 = génération des constats,
+  US2 = dialogue/validation), périmé depuis que `conception.md` a fusionné
+  génération + dialogue/validation dans US1 et redéfini US2 comme la question
+  libre sur une page (RAG sémantique pur). Carte US1 et critère d'acceptation
+  mis à jour, carte US2 réécrite. Les encarts « Scénario nominal » retirés
+  (plus de place laissée aux 3 cartes, passées en pleine largeur ; le détail
+  des scénarios reste dans `conception.md`) — `A` (2026-07-29). Reste à
+  relire visuellement dans draw.io (espacement, retouche manuelle habituelle)
+  puis exporter en `.png` — `D`
 - [ ] **Liens de `F_choix_llm.md` vers le benchmark** — `A`
   - Le document attend `annexes/F1_FOUNDRY_NOTES.md`, `F2_FOUNDRY_SI_NOTES.md`,
     `F3_benchmark.py`, `F4_analyse_models_azure.pdf`
@@ -116,20 +132,24 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   avec `markdown-pandoc` (« format PNG ou SVG recommandé »). Doublon
   `conception/choix_llm.md` (identique à `annexes/F_choix_llm.md`, jamais
   référencé) supprimé au passage — `A`
-- [ ] **9 images `annexes/*.png` référencées par `conception.md`, toutes
+- [ ] **9 images `annexes/*.png` référencées par `conception.md`, 8 encore
   manquantes** — `G_user_stories_qualicheck.png` était la seule à exister
-  réellement, supprimée le 2026-07-25 (voir entrée dédiée ci-dessus) : plus
-  aucun export n'existe désormais. Restent : `B_MCD_qualicheck.png`,
-  `C_pipeline_ingestion.png`, `D1/D2/D3_...png`, `D_pipeline_audit.png`,
-  `E_pipeline_dialogue.png`, `G_user_stories_qualicheck.png`,
-  `I_feedback_loop.png`, `J_personas_qualicheck.png`. L'export drawio → image
-  n'a jamais suivi la création des sources `.drawio` — `conception.md` ne peut
-  toujours pas se compiler en PDF sans schémas cassés. `E_pipeline_dialogue.png`
-  ne correspond même pas au nom du fichier source réel
-  (`E_pipeline_question_libre.drawio`) — nom qui a aussi dérivé — `D`
+  réellement, supprimée le 2026-07-25 (voir entrée dédiée ci-dessus).
+  `J_personas_qualicheck.png` **exporté le 2026-07-29** (CLI `drawio
+  --export`, schéma relu au préalable), satisfait le renvoi Annexe J de
+  `conception.md`. Restent :
+  `B_MCD_qualicheck.png`, `C_pipeline_ingestion.png`, `D1/D2/D3_...png`,
+  `D_pipeline_audit.png`, `E_pipeline_dialogue.png`,
+  `G_user_stories_qualicheck.png`, `I_feedback_loop.png`. L'export drawio →
+  image n'a jamais suivi la création des sources `.drawio` — `conception.md`
+  ne peut toujours pas se compiler en PDF sans schémas cassés.
+  `E_pipeline_dialogue.png` ne correspond même pas au nom du fichier source
+  réel (`E_pipeline_question_libre.drawio`) — nom qui a aussi dérivé — `D`
   - Export manuel, volontairement pas automatisé : David veut relire chaque
     schéma avant de le figer en image (même logique que la flèche incorrecte
-    trouvée dans B_MCD — un export automatique aurait masqué l'erreur)
+    trouvée dans B_MCD — un export automatique aurait masqué l'erreur).
+    Exception faite pour `J_personas_qualicheck.png` : schéma déjà relu par
+    David, export explicitement délégué
 - [x] **`G_user_stories_qualicheck.drawio` récupéré** — source + export `.jpg`
   copiés depuis la corbeille vers `conception/annexes/`, nom déjà conforme à ce
   qu'attendait `conception.md` — `A` (2026-07-23)
@@ -226,9 +246,20 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 
 Repérés en construisant l'index `docs/jury/README.md`.
 
-- [ ] **Registre des traitements de données personnelles** (C4) — livrable à part
-  entière, pas une section de spec — `D`
-- [ ] **Procédures de tri RGPD** avec leur fréquence d'exécution (C4) — `D`
+- [x] **Registre des traitements de données personnelles — résolu (2026-07-29)**
+  (C4) : `docs/rgpd/registre_traitements.md`, scindé entre traitements réels
+  (référentiel Opquast : hors champ RGPD ; jetons API nominatifs) et volet
+  audit anticipé mais non actif (`utilisateur`/`audit`/`constat`, à compléter
+  avec la spec US1) — raisonnement dans
+  `docs/jury/decisions/2026-07-29-perimetre-registre-rgpd.md` — `A`
+- [x] **Procédures de tri RGPD — résolues (2026-07-29)** (C4) : couvertes dans
+  `docs/rgpd/registre_traitements.md` §Procédures de tri (rien à purger côté
+  référentiel, révocation manuelle des jetons API, volet audit à définir avec
+  US1) — `A`
+- [ ] **Reste ouvert pour US1** : le registre RGPD change de périmètre une fois
+  `utilisateur`/`audit`/`constat` peuplés — ne plus le traiter comme une
+  extension du registre référentiel, le repenser comme un traitement de
+  données personnelles à part entière — `D`
 - [ ] **Objectifs d'accessibilité dans les critères d'acceptation** des user stories
   (C14), appuyés sur WCAG ou RGAA — `D`
 - [ ] **Décider du statut de `benchmark-azure/`** (C8, C11, C21) — projet externe

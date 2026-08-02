@@ -1,0 +1,103 @@
+.fil-dialogue {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem; /* entre deux echanges distincts (loi de proximite) */
+}
+
+.echange-dialogue {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* entre la question et sa reponse, dans le meme echange */
+}
+
+.message-dialogue p {
+  font: var(--text-font);
+  margin: 0;
+}
+
+/* Message utilisateur : bulle discrete, alignee a droite (convention chat) */
+.message-dialogue--utilisateur {
+  align-self: flex-end;
+  max-width: 30rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-default);
+  background: var(--color-surface-elevee);
+  border: 1px solid var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.message-dialogue--utilisateur p {
+  color: var(--color-text); /* 14.6:1 sur --color-surface-elevee */
+}
+
+.message-dialogue__horodatage {
+  align-self: flex-end;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+/* Message agent : pas de bulle, texte fluide avec avatar (convention ChatGPT/Claude) */
+.message-dialogue--agent {
+  align-self: stretch;
+  display: flex;
+  gap: 0.75rem;
+  max-width: 38rem;
+}
+
+.message-dialogue--agent__avatar {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--color-accent-bouton);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.message-dialogue--agent__corps {
+  flex: 1 1 auto;
+  padding-top: 0.3125rem;
+}
+
+.message-dialogue--agent p {
+  color: var(--color-text);
+  line-height: var(--line-height-default);
+}
+
+.message-dialogue__regles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+/* Retour utilisateur sur la reponse (pouce haut/bas), discret par defaut */
+.message-dialogue__retour {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.message-dialogue__retour button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.message-dialogue__retour button:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-secondary);
+}

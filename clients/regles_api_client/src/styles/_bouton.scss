@@ -1,0 +1,65 @@
+.demo {
+  display: flex;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-icon-text-gap);
+  padding: var(--padding-button-block) var(--padding-button-inline);
+  border-radius: var(--radius-default);
+  border: 2px solid var(--color-accent-bouton);
+  font: var(--text-font);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bouton--plein {
+  background: var(--color-accent-bouton);
+  color: var(--color-text);
+}
+
+.bouton--plein:hover,
+.bouton--plein.bouton--survol {
+  background: var(--color-text);
+  color: var(--color-accent-bouton);
+}
+
+.bouton--contour {
+  background: transparent;
+  border-color: var(--color-text-secondary);
+  color: var(--color-accent-bouton);
+}
+
+.bouton--contour:hover {
+  border-color: var(--color-accent-bouton);
+  background: color-mix(in srgb, var(--color-accent-bouton) 15%, transparent);
+}
+
+.bouton--neutre {
+  background: transparent;
+  border-color: var(--color-text-secondary);
+  color: var(--color-text);
+}
+
+.bouton--neutre:hover {
+  background: color-mix(in srgb, var(--color-text-secondary) 15%, transparent);
+}
+
+// Spécificité volontaire : un seul sélecteur générique (.bouton:disabled a
+// une spécificité supérieure à .bouton--plein/--contour/--neutre pris seuls),
+// pas besoin de dupliquer la règle par variante. pointer-events:none neutralise
+// aussi les styles :hover des variantes, qui resteraient sinon actifs au survol
+// d'un bouton désactivé.
+.bouton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.bouton--petit {
+  padding: var(--padding-button-petit-block) var(--padding-button-petit-inline);
+  font-size: 0.875rem; /* 14px, mesure */
+}

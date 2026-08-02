@@ -1,0 +1,49 @@
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+}
+
+.stepper__step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 11px mesure, arrondi */
+}
+
+.stepper__badge {
+  flex-shrink: 0;
+  width: var(--size-stepper-badge);
+  height: var(--size-stepper-badge);
+  border-radius: var(--radius-default);
+  border: 1px solid var(--color-text-secondary);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: var(--text-font);
+  font-weight: 700;
+}
+
+.stepper__label {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+}
+
+.stepper__step--active .stepper__badge {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.stepper__step--active .stepper__label {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.stepper__trait {
+  flex: 1;
+  height: 1px;
+  background: var(--color-text-secondary);
+  margin-inline: 1rem;
+}

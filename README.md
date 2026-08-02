@@ -124,14 +124,15 @@ Dockerfile      # Image de l'API de revue (service api-regles)
 | `staging` | Préproduction, déployée automatiquement (`cd-staging.yml`) au merge d'une PR `dev → staging` |
 | `veille` | Veille technique personnelle, hors périmètre du produit |
 
+**Branche par défaut sur GitHub : `dev`.** `main` n'a pas encore reçu les
+~290 commits de `dev` (rien n'est déployé en production) — quiconque ouvre
+ce dépôt sans préciser de branche doit voir l'état réel du projet, pas un
+squelette figé au setup initial.
+
 ---
 
 ## Licence
 
-Le référentiel Opquast est diffusé sous **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr)** — attribution et partage à l'identique. Cette licence s'applique sans autorisation préalable, et le partage à l'identique étant viral, elle s'étend au jeu de données enrichi que produit ce projet.
-
-Attribution : « Référentiel Opquast - Qualité Numérique » par Opquast, utilisé sous licence CC BY-SA 4.0.
+Le référentiel Opquast enrichi est diffusé sous **[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr)** — attribution et partage à l'identique. Le reste du projet (code, conception, maquettes) reste fermé, sous droit d'auteur français, même si ce dépôt GitHub est public. Détail des deux régimes et de ce que ça implique concrètement : [LICENCE.md](LICENCE.md).
 
 Ce projet pédagogique bénéficie en outre du **soutien d'Élie Sloïm** (fondateur d'Opquast), qui légitime l'usage expérimental du référentiel et du serveur MCP dans le cadre de la certification — ce que la licence seule ne couvre pas.
-
-La licence du code du projet et celle des étages applicatif et présentation ne sont pas encore arrêtées. Voir `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`.

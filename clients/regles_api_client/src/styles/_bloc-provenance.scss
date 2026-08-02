@@ -1,0 +1,30 @@
+.bloc-provenance {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0.875rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-text-secondary);
+  border-radius: var(--radius-default);
+  font: var(--text-font);
+  font-size: 0.8125rem;
+}
+
+.bloc-provenance__item {
+  display: flex;
+  gap: 0.375rem;
+  margin: 0;
+}
+
+.bloc-provenance__item dt {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.bloc-provenance__item dd {
+  margin: 0;
+  color: var(--color-text);
+}

@@ -16,6 +16,20 @@ place, IP publique fixe, domaine `koabana.fr` réel chez Infomaniak). Rien
 n'existe encore côté CD : pas de workflow, pas de runner, pas
 d'environnement `staging` déployé.
 
+**Amendement du 2026-08-02** : cette spec a été écrite avant l'existence de
+`clients/regles_api_client/` (client Vue.js réel, US0). À l'époque, l'usage
+prévu était un client HTTP direct (curl, Bruno, Postman) — d'où « CORS
+inchangé » dans les décisions ci-dessous. Décision prise en déployant :
+**même origine** pour le front et l'API (`regles.qualicheck.koabana.fr`
+sert le front Vue.js à la racine, Caddy reverse-proxie les chemins de l'API
+sur ce même domaine) — la conclusion « pas de CORS à gérer » reste donc
+vraie, mais pour une raison différente (same-origin, pas absence de
+navigateur). Pas de conteneur Docker ajouté pour le front : Caddy sert les
+fichiers statiques du build directement, cohérent avec le choix déjà acté
+de ne pas ajouter de conteneur superflu. Détail : sections « Prérequis
+manuels » (point 7 modifié) et workflow `cd-staging.yml` (étapes de build
+ajoutées).
+
 ## Décisions actées pendant le brainstorming
 
 - **Un seul workflow `cd-staging.yml`**, pas un fichier par service
@@ -34,7 +48,7 @@ d'environnement `staging` déployé.
   une fois par David directement sur cloclo (hors périmètre de cette tâche).
 - **Déclencheur : push sur la branche `staging`**, qui survient au merge
   d'une PR (même en solo, pour la revue et la trace — David choisit d'ouvrir
-  systématiquement une PR `feature → staging` plutôt que de pousser
+  systématiquement une PR `dev → staging` plutôt que de pousser
   directement).
 - **Rejeu de la suite d'acceptance existante après déploiement**
   (`make api-regles-acceptance`), comme garde-fou automatisé sur l'instance
@@ -54,7 +68,7 @@ d'environnement `staging` déployé.
 ## Architecture
 
 ```text
-feature ── PR vers staging ── merge ── push sur staging
+dev ── PR vers staging ── merge ── push sur staging
                                            │
                                            ▼
                          cd-staging.yml (runner self-hosted, cloclo)
@@ -187,7 +201,7 @@ Notes sur ce squelette :
 ## Secrets — environnement GitHub `staging`
 
 Un environnement GitHub (Settings → Environments → `staging`), pas les
-secrets du repo déjà utilisés par `ci-feature.yml` pour sa base éphémère —
+secrets du repo déjà utilisés par `ci-dev.yml` pour sa base éphémère —
 évite toute collision de nom avec des valeurs différentes.
 
 | Secret | Valeur |
@@ -213,18 +227,68 @@ exécutées par David lui-même sur cloclo.
    doit appartenir au groupe `docker` (sinon `docker compose up` échoue par
    permission refusée)
 3. Environnement GitHub `staging` créé avec les secrets ci-dessus
-4. Branche `staging` créée (depuis `feature`)
+4. Branche `staging` créée (depuis `dev`)
 5. Base Postgres de staging bootstrappée une fois : `scripts/migration.py`
    puis restauration d'un dump réel (`make export_sql` en local → transfert
    → `make import_sql` sur cloclo) — pas de ré-ingestion complète (gratuit,
    données identiques à la base locale au moment du dump)
 6. Enregistrement DNS A chez Infomaniak pour `regles.qualicheck.koabana.fr`
    → IP publique de cloclo
-7. Configuration Caddy sur cloclo : reverse proxy
-   `regles.qualicheck.koabana.fr` → `api-regles:8880`, sur le réseau Docker
-   externe `cloudnet` (déjà en place sur cloclo, partagé avec d'autres
-   services — Caddy y proxie ses cibles par nom de conteneur, pas par
-   `localhost`)
+7. **Configuration Caddy sur cloclo** (amendée le 2026-08-02 : même origine
+   front + API, plus un reverse proxy pur) — fichiers statiques du client
+   Vue.js à la racine, chemins de l'API reverse-proxiés vers
+   `api-regles:8880` sur le réseau Docker externe `cloudnet` (déjà en place
+   sur cloclo, partagé avec d'autres services — Caddy y proxie ses cibles
+   par nom de conteneur, pas par `localhost`) :
+
+   Remplace le bloc existant du `Caddyfile` (`reverse-proxy/Caddyfile` sur
+   cloclo), qui ne faisait qu'un reverse proxy simple sans en-têtes de
+   sécurité — aligné ici sur le style des autres domaines publics du même
+   `Caddyfile` (ex. `demo-dev.koabana.fr`) :
+
+   ```caddyfile
+   regles.qualicheck.koabana.fr {
+       encode zstd gzip
+
+       header {
+           Strict-Transport-Security "max-age=31536000; includeSubDomains"
+           Referrer-Policy "strict-origin-when-cross-origin"
+           X-Frame-Options "SAMEORIGIN"
+           X-Content-Type-Options "nosniff"
+           X-XSS-Protection "1; mode=block"
+           Permissions-Policy "interest-cohort=()"
+       }
+
+       @api path /regles* /health /docs* /redoc /openapi.json
+       handle @api {
+           reverse_proxy api-regles:8880
+       }
+       handle {
+           root * /srv/www/regles.qualicheck.koabana.fr
+           try_files {path} /index.html
+           file_server
+       }
+   }
+   ```
+
+   **Piège Caddy évité ici** : `reverse_proxy @api ...` suivi de `try_files`
+   *sans* `handle` ne fonctionne pas — Caddy réordonne les directives selon
+   un ordre fixe interne, pas l'ordre du fichier, et `try_files` s'exécute
+   **avant** `reverse_proxy` dans cet ordre. `try_files {path} /index.html`
+   réécrit alors `/regles` en `/index.html` en interne (aucun fichier
+   `regles` n'existe), avant que `@api` n'ait vu le chemin d'origine — testé
+   en réel sur cloclo le 2026-08-02, `/regles` retournait le fichier
+   statique au lieu du proxy. Les blocs `handle` s'exécutent dans l'ordre
+   écrit et s'excluent mutuellement (switch/case), ce qui contourne le
+   problème.
+
+   Le répertoire `/srv/www/regles.qualicheck.koabana.fr/` doit exister et
+   être accessible en écriture par l'utilisateur du runner GitHub Actions
+   (qui y copie le build à chaque déploiement — voir `cd-staging.yml`).
+   `try_files {path} /index.html` : nécessaire pour le SPA (`vue-router`
+   en mode `createWebHistory`) — une route interne comme `/cle-api`
+   n'existe pas en tant que fichier, Caddy doit retomber sur `index.html`
+   pour que Vue Router la gère côté client.
 8. **`docker-compose.override.yml` créé une fois sur cloclo**, dans un
    dossier stable en dehors du dépôt
    (`/srv/docker/qualicheck-staging-override/`) — jamais dans le dossier
@@ -264,13 +328,21 @@ exécutées par David lui-même sur cloclo.
 
 ## Plan de vérification
 
-1. Une fois les 8 prérequis manuels faits : petit changement sur `feature` →
+1. Une fois les 8 prérequis manuels faits : petit changement sur `dev` →
    PR vers `staging` → merge → observer le run GitHub Actions de bout en
    bout (chaque étape verte).
 2. Vérifier `https://regles.qualicheck.koabana.fr/health` réellement depuis
    l'extérieur du réseau local (pas depuis cloclo lui-même).
 3. Vérifier que `logs/api_regles.log` se met à jour sur cloclo après le
    déploiement (message de démarrage avec les 4 clients déclarés).
+4. Vérifier `https://regles.qualicheck.koabana.fr/` (racine, sans chemin) :
+   le client Vue.js doit s'afficher, la liste des règles doit se charger
+   sans erreur CORS dans la console (confirmerait le same-origin).
+5. Vérifier qu'une route interne du client (ex.
+   `https://regles.qualicheck.koabana.fr/mentions-legales` collée
+   directement dans la barre d'adresse, pas juste cliquée depuis
+   l'application) s'affiche correctement — confirme que le fallback
+   `try_files {path} /index.html` fonctionne pour `vue-router`.
 
 ## Hors périmètre (explicitement)
 

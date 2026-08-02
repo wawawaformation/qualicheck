@@ -1,0 +1,36 @@
+.demo {
+  padding: 2rem;
+  max-width: var(--container-narrow);
+}
+
+.etape-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-icon-text-gap);
+}
+
+.etape-item__badge {
+  flex-shrink: 0;
+  width: var(--size-step-badge);
+  height: var(--size-step-badge);
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: var(--text-font);
+  font-weight: 700;
+}
+
+.etape-item__titre {
+  font: var(--title-card-font);
+  color: var(--color-text);
+  margin: 0 0 0.25rem; /* 4px, mesure */
+}
+
+.etape-item__description {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+  margin: 0;
+}

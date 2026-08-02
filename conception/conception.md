@@ -125,7 +125,7 @@ Cette séparation est volontaire : il faut d'abord accumuler suffisamment de don
 
 #### US0 — Importer et préparer le référentiel Opquast
 
-> En tant qu'administrateur de QualiCheck, je souhaite importer et préparer les 245 règles du référentiel Opquast, afin qu'elles soient disponibles dans l'application et exploitables par les agents IA.
+> En tant qu'administrateur de QualiCheck, je souhaite importer, préparer et permettre la revue humaine — par moi-même ou par un expert qualité externe désigné — des 245 règles du référentiel Opquast, afin qu'elles soient disponibles, fiables et exploitables par les agents IA.
 
 **Couverture fonctionnelle :**
 
@@ -136,10 +136,11 @@ Cette séparation est volontaire : il faut d'abord accumuler suffisamment de don
 - Construction des chunks (1 chunk par règle, texte dénormalisé)
 - Génération des embeddings et indexation pgvector
 - Journalisation du résultat de l'import
+- Revue humaine des classifications LLM (`review_status`, `review_note`, `reviewed_at`), effectuée par l'administrateur ou un expert qualité externe désigné (ex. Élie Sloïm), chacun authentifié par son propre jeton API — voir `app/api_regles/manifest.yml`
 
 Cette US est réalisée par un script Python autonome, exécutable en ligne de commande, sans interface web. La re-ingestion avec injection des feedbacks terrain (`--mode reingest`) est prévue en post-MVP.
 
-**Critère d'acceptation** : le script s'exécute sans erreur, les 245 règles sont en base, vectorisées et indexées dans pgvector.
+**Critère d'acceptation** : le script s'exécute sans erreur, les 245 règles sont en base, vectorisées et indexées dans pgvector ; chaque règle peut être annotée (`review_status`, `review_note`) via l'API du référentiel.
 
 #### US1 — Audit assisté
 
@@ -174,7 +175,7 @@ Cette US est réalisée par un script Python autonome, exécutable en ligne de c
 
 #### US2 — Question libre sur une page
 
-> En tant qu'auditeur qualité web, je veux pouvoir soumettre une URL ou une capture d'écran et poser des questions libres, afin d'obtenir une analyse Opquast rapide sans passer par un audit structuré.
+> En tant que professionnel du web, je veux pouvoir soumettre une URL ou une capture d'écran et poser des questions libres, afin d'obtenir une analyse Opquast rapide sans passer par un audit structuré.
 
 **Couverture fonctionnelle :**
 
@@ -482,7 +483,7 @@ FREE_QUESTION_LLM  = "gpt54"        # US2 — question libre
 
 > Cette illustration décrit le principe (un réglage par usage, indépendant du
 > modèle). La forme concrète de la configuration est revue par
-> `2_ingestion/E_provenance_manifeste.md` : l'affectation d'un modèle à un usage
+> `3_enrichissement/E_provenance_manifeste.md` : l'affectation d'un modèle à un usage
 > passe dans un manifeste versionné, le `.env` ne portant plus qu'un annuaire des
 > modèles joignables.
 

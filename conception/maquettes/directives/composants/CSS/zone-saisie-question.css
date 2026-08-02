@@ -1,0 +1,84 @@
+.zone-saisie-question {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  border: 1px solid var(--color-text-secondary);
+  border-radius: 1.25rem;
+  background: var(--color-surface-opaque);
+  position: sticky;
+  bottom: 1.5rem;
+  z-index: 5;
+}
+
+.zone-saisie-question__plus {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-text-secondary);
+  background: transparent;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.zone-saisie-question__plus:hover {
+  color: var(--color-text);
+  border-color: var(--color-text);
+}
+
+.zone-saisie-question:focus-within {
+  border-color: var(--color-accent);
+}
+
+.zone-saisie-question textarea {
+  flex: 1 1 auto;
+  resize: none;
+  font: var(--text-font);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  padding: 0.4375rem 0;
+  max-height: 8rem;
+}
+
+.zone-saisie-question textarea::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.zone-saisie-question textarea:focus-visible {
+  outline: none;
+}
+
+.zone-saisie-question__envoyer {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-accent-bouton);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.zone-saisie-question__envoyer:hover {
+  filter: brightness(1.12);
+}
+
+/* Etat bloque (ex. credit epuise) : desactive visuellement sans cacher le contenu */
+.zone-saisie-question--desactive {
+  opacity: 0.5;
+}
+
+.zone-saisie-question--desactive textarea,
+.zone-saisie-question--desactive button {
+  cursor: not-allowed;
+}

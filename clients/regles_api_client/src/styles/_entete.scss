@@ -1,0 +1,70 @@
+.entete {
+  width: 100%;
+  padding-block: 1.5rem; /* approximatif */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-background);
+}
+
+.entete__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--container-wide);
+  margin-inline: auto;
+}
+
+.entete__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-icon-text-gap);
+  font: var(--title-card-font);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.entete__logo:hover {
+  opacity: 0.85;
+}
+
+.entete__logo-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-default);
+  background: var(--color-accent);
+  color: var(--color-text);
+}
+
+.entete__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem; /* 24px, mesure entre les deux liens */
+}
+
+.entete__nav a {
+  font: var(--text-font);
+  color: var(--color-text);
+  text-decoration: none;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px solid transparent;
+}
+
+.entete__nav a:hover {
+  color: var(--color-accent);
+}
+
+.entete__nav a[aria-current="page"] {
+  color: var(--color-accent);
+  font-weight: 700;
+  border-bottom-color: var(--color-accent);
+}
+
+.entete__avatar {
+  font-size: 2.5rem; /* approximatif, taille de l'avatar */
+  color: var(--color-text-secondary);
+  line-height: 1;
+}

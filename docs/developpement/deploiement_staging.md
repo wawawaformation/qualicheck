@@ -123,7 +123,7 @@ Puis `docker restart caddy`.
 
 ## Vérification finale
 
-1. Merger une PR `feature → staging` (même triviale) et observer le run
+1. Merger une PR `dev → staging` (même triviale) et observer le run
    GitHub Actions de bout en bout.
 2. `curl https://regles.qualicheck.koabana.fr/health` depuis un réseau
    différent de celui de cloclo.

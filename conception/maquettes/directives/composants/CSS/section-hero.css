@@ -1,0 +1,36 @@
+.section-hero {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+  padding-block-start: 4rem; /* approximatif, haut de page */
+  text-align: center;
+}
+
+.section-hero__titre {
+  font: var(--title-page-font);
+  color: var(--color-text);
+  margin: 0 0 1.75rem; /* 28px, mesure */
+}
+
+.section-hero__titre .accent {
+  color: var(--color-accent);
+}
+
+.section-hero__sous-titre {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+  margin: 0 0 3.375rem; /* 54px, mesure */
+}
+
+.section-hero__formulaire {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0 0 1.75rem; /* 29px, mesure */
+}
+
+.section-hero__mention {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+  margin: 0;
+}

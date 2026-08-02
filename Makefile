@@ -1,4 +1,4 @@
-.PHONY: up up-db down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance
+.PHONY: up up-db down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -72,7 +72,7 @@ import_sql:
 	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" -c "INSERT INTO etat_donnees (id, fichier_backup, type_operation, horodatage) VALUES (1, '$(FILE)', 'import', now()) ON CONFLICT (id) DO UPDATE SET fichier_backup = EXCLUDED.fichier_backup, type_operation = EXCLUDED.type_operation, horodatage = EXCLUDED.horodatage;" > /dev/null
 	@echo "Import terminé depuis $(FILE)"
 
-## Relance le LLM sur les règles marquées review_status = a_revoir/invalide,
+## Relance le LLM sur les règles marquées review_status = a_revoir,
 ## en tenant compte de review_note, puis sauvegarde les données réelles
 enrich-again:
 	$(MAKE) export_sql
@@ -109,6 +109,23 @@ api-regles:
 ## documentée, voir docs/superpowers/plans/2026-07-26-api-regles-implementation.md
 api-regles-acceptance:
 	uv run python scripts/check_api_regles_acceptance.py
+
+# ============================================================
+# Clients
+# ============================================================
+
+## Installe les dépendances npm du client de revue des règles
+regles-api-client-install:
+	cd clients/regles_api_client && npm install
+
+## Démarre le serveur de développement du client de revue des règles
+## (Vite, http://localhost:5173) — nécessite make api-regles démarré à part
+regles-api-client:
+	cd clients/regles_api_client && npm run dev
+
+## Lance les tests (unitaires + acceptance) du client de revue des règles
+regles-api-client-test:
+	cd clients/regles_api_client && npm run test
 
 # ============================================================
 # Tests

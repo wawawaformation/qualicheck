@@ -1,0 +1,7 @@
+.navigation-etapes {
+  display: flex;
+  justify-content: space-between;
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+  margin-block-start: 2.5rem; /* approximatif, entre le panneau et la navigation */
+}

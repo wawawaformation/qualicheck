@@ -1,0 +1,23 @@
+.champ-case,
+.champ-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: var(--text-font);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.champ-case input,
+.champ-radio input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.champ-radio-groupe {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

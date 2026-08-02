@@ -1,0 +1,19 @@
+// Positionnement uniquement : les couleurs/icônes viennent de
+// bandeau-message--{type} (voir _bandeau-message.scss), appliqué en même
+// temps que cette classe sur le même élément.
+.toast {
+  width: 100%;
+  max-width: var(--container-wide);
+  margin-inline: auto;
+  box-sizing: border-box;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.toast-enter-active,
+.toast-leave-active {
+  transition: opacity 0.2s ease;
+}
+.toast-enter-from,
+.toast-leave-to {
+  opacity: 0;
+}

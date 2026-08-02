@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>barre-filtres</title>
+<link rel="stylesheet" href="CSS/bootstrap-icons.css" />
+<link rel="stylesheet" href="CSS/variables.css" />
+<link rel="stylesheet" href="CSS/base.css" />
+<link rel="stylesheet" href="CSS/chip-filtre.css" />
+<link rel="stylesheet" href="CSS/barre-filtres.css" />
+</head>
+<body>
+<div style="padding: 2rem; max-width: 75rem;">
+<div class="barre-filtres">
+  <div class="barre-filtres__ligne-recherche">
+    <div class="barre-filtres__recherche">
+      <label for="recherche" class="visually-hidden">Rechercher dans l'intitulé des règles</label>
+      <input type="search" id="recherche" placeholder="Rechercher dans l'intitulé…" />
+    </div>
+    <p class="barre-filtres__compte"><strong>18</strong> / 245 règles affichées</p>
+  </div>
+
+  <details class="barre-filtres__filtres">
+    <summary>Filtres <i class="bi bi-chevron-down"></i></summary>
+    <div class="barre-filtres__groupes">
+      <fieldset class="barre-filtres__groupe">
+        <legend class="visually-hidden">Thème</legend>
+        <span class="barre-filtres__groupe-titre" aria-hidden="true">Thème</span>
+        <div class="barre-filtres__groupe-ligne">
+          <label class="chip-filtre"><input type="checkbox" value="E-Commerce" />E-Commerce</label>
+          <label class="chip-filtre"><input type="checkbox" value="Formulaires" />Formulaires</label>
+          <label class="chip-filtre"><input type="checkbox" value="Sécurité" />Sécurité</label>
+          <label class="chip-filtre"><input type="checkbox" value="Navigation" />Navigation</label>
+          <label class="chip-filtre"><input type="checkbox" value="Identification et contact" />Identification et contact</label>
+          <label class="chip-filtre"><input type="checkbox" value="Liens" />Liens</label>
+          <label class="chip-filtre"><input type="checkbox" value="Données personnelles" />Données personnelles</label>
+          <label class="chip-filtre"><input type="checkbox" value="Présentation" />Présentation</label>
+        </div>
+        <div class="barre-filtres__groupe-ligne">
+          <label class="chip-filtre"><input type="checkbox" value="Structure et code" />Structure et code</label>
+          <label class="chip-filtre"><input type="checkbox" value="Contenus" />Contenus</label>
+          <label class="chip-filtre"><input type="checkbox" value="Serveur et performances" />Serveur et performances</label>
+          <label class="chip-filtre"><input type="checkbox" value="Images et médias" />Images et médias</label>
+          <label class="chip-filtre"><input type="checkbox" value="Internationalisation" />Internationalisation</label>
+          <label class="chip-filtre"><input type="checkbox" value="Newsletter" />Newsletter</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="barre-filtres__groupe">
+        <legend class="visually-hidden">Phase</legend>
+        <span class="barre-filtres__groupe-titre" aria-hidden="true">Phase</span>
+        <div class="barre-filtres__groupe-ligne">
+          <label class="chip-filtre"><input type="checkbox" value="Conception" />Conception</label>
+          <label class="chip-filtre"><input type="checkbox" value="Développement" />Développement</label>
+          <label class="chip-filtre"><input type="checkbox" value="Editorial" />Editorial</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="barre-filtres__groupe">
+        <legend class="visually-hidden">Outil</legend>
+        <span class="barre-filtres__groupe-titre" aria-hidden="true">Outil</span>
+        <div class="barre-filtres__groupe-ligne">
+          <label class="chip-filtre"><input type="checkbox" value="statique" />Statique</label>
+          <label class="chip-filtre"><input type="checkbox" value="playwright" />Playwright</label>
+          <label class="chip-filtre"><input type="checkbox" value="vision" />Vision</label>
+          <label class="chip-filtre"><input type="checkbox" value="manuel" />Manuel</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="barre-filtres__groupe">
+        <legend class="visually-hidden">Revue</legend>
+        <span class="barre-filtres__groupe-titre" aria-hidden="true">Revue</span>
+        <div class="barre-filtres__groupe-ligne">
+          <label class="chip-filtre"><input type="checkbox" value="aucun" />Non revue</label>
+          <label class="chip-filtre"><input type="checkbox" value="a_revoir" />À revoir</label>
+          <label class="chip-filtre"><input type="checkbox" value="valide" />Validée</label>
+        </div>
+      </fieldset>
+    </div>
+  </details>
+</div>
+</div>
+</body>
+</html>
