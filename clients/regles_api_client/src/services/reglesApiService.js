@@ -1,9 +1,14 @@
-import { API_REGLES_URL } from '../config.js'
+import { API_REGLES_URL } from '../apiServer.js'
+
+// Tolère un slash final dans API_REGLES_URL (ex. valeur d'un environnement
+// donnée avec ou sans "/" de fin) : sinon "https://x.fr/" + "/regles"
+// produirait "https://x.fr//regles".
+const BASE_URL = API_REGLES_URL.replace(/\/+$/, '')
 
 export class ErreurAuthentification extends Error {}
 
 export async function listerRegles() {
-  const reponse = await fetch(`${API_REGLES_URL}/regles`)
+  const reponse = await fetch(`${BASE_URL}/regles`)
   if (!reponse.ok) {
     throw new Error(`Échec du chargement des règles (${reponse.status})`)
   }
@@ -11,7 +16,7 @@ export async function listerRegles() {
 }
 
 export async function annoterRegle(numero, { reviewStatus, reviewNote }, cle) {
-  const reponse = await fetch(`${API_REGLES_URL}/regles/${numero}`, {
+  const reponse = await fetch(`${BASE_URL}/regles/${numero}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

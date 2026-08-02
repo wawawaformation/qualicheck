@@ -71,7 +71,6 @@ clients/regles_api_client/
 ├── README.md
 ├── package.json
 ├── vite.config.js
-├── .env.example
 ├── src/
 │   ├── main.js
 │   ├── App.vue
@@ -90,7 +89,7 @@ clients/regles_api_client/
 │   │   └── useCleApi.js           # lecture/écriture localStorage
 │   ├── services/
 │   │   └── reglesApiService.js    # seul point d'appel HTTP
-│   ├── config.js                  # VITE_API_REGLES_URL (import.meta.env)
+│   ├── apiServer.js                # API_REGLES_URL, modifié à la main (dev/prod)
 │   └── styles/
 │       ├── _variables.scss        # tokens portés depuis US0/style/variables.css
 │       ├── _bouton.scss
@@ -110,25 +109,25 @@ clients/regles_api_client/
 
 ## Modules
 
-### `src/config.js`
+### `src/apiServer.js`
 
-Seul point de lecture de `import.meta.env` — même règle que
-`app/api_regles/config.py` côté serveur : une valeur de configuration n'existe
-qu'à un seul endroit.
+**Amendement du 2026-08-02, après la première implémentation** : ce module
+remplace le `src/config.js` lu via `import.meta.env`/`.env.example` décrit
+plus haut dans cette spec. Décision explicite du porteur du projet : pas de
+fichier `.env` local pour ce client, `apiServer.js` est la source de vérité
+unique, modifiée à la main selon l'environnement (valeur de dev en local,
+URL de préprod avant un `npm run build` de déploiement).
 
 ```js
-export const API_REGLES_URL = import.meta.env.VITE_API_REGLES_URL
-```
-
-`.env.example` :
-
-```dotenv
-VITE_API_REGLES_URL=http://localhost:8880
+export const API_REGLES_URL = 'http://localhost:8880'
 ```
 
 Aucun secret dans ce fichier : la clé API n'est jamais une variable
 d'environnement du client, elle est saisie par l'utilisateur et stockée en
-`localStorage` (cf. `useCleApi`).
+`localStorage` (cf. `useCleApi`). `reglesApiService.js` retire tout `/` final
+de cette valeur avant de construire ses URLs (`API_REGLES_URL.replace(/\/+$/,
+''`) — une valeur donnée avec un slash de fin ne doit pas produire de double
+slash.
 
 ### `src/composables/useCleApi.js`
 
