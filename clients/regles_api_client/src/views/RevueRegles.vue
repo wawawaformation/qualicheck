@@ -9,8 +9,16 @@ import BandeauMessage from '../components/BandeauMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
-const toastSucces = ref(false)
+const toastMessage = ref(null)
 let masquerToast = null
+
+function afficherToast(texte) {
+  toastMessage.value = texte
+  clearTimeout(masquerToast)
+  masquerToast = setTimeout(() => {
+    toastMessage.value = null
+  }, 4000)
+}
 const {
   reglesBrutes,
   reglesFiltrees,
@@ -40,6 +48,12 @@ onMounted(async () => {
   if (!Number.isNaN(regleARestaurer)) {
     selectionner(regleARestaurer)
   }
+  // La clé vient d'être enregistrée sur /cle-api, qui a redirigé ici sans
+  // pouvoir afficher son propre bandeau (l'écran est quitté avant) : on
+  // affiche la confirmation ici à la place.
+  if (route.query.cleEnregistree) {
+    afficherToast('Clé API enregistrée.')
+  }
 })
 
 watch(redirectionCleApi, (doitRediriger) => {
@@ -57,13 +71,7 @@ watch(redirectionCleApi, (doitRediriger) => {
 // par annoter() — la règle sélectionnée et les filtres ne bougent pas.
 watch(dernierResultat, async (valeur) => {
   if (valeur !== 'succes') return
-
-  toastSucces.value = true
-  clearTimeout(masquerToast)
-  masquerToast = setTimeout(() => {
-    toastSucces.value = false
-  }, 4000)
-
+  afficherToast('Annotation enregistrée.')
   await charger()
 })
 
@@ -73,8 +81,8 @@ onUnmounted(() => clearTimeout(masquerToast))
 <template>
   <main class="ecran-revue-regles">
     <Transition name="toast">
-      <div v-if="toastSucces" class="toast-succes" role="status">
-        <i class="bi bi-check-circle"></i> Annotation enregistrée.
+      <div v-if="toastMessage" class="toast-succes" role="status">
+        <i class="bi bi-check-circle"></i> {{ toastMessage }}
       </div>
     </Transition>
 

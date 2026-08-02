@@ -37,9 +37,11 @@ function enregistrer() {
   // Arrivée ici depuis une tentative d'annotation sans clé valide (RevueRegles.vue
   // ajoute ?retour=<numero> avant de rediriger) : une fois la clé enregistrée, on
   // retourne directement sur la règle plutôt que de laisser l'utilisateur y revenir
-  // à la main. Le bandeau de confirmation n'a alors pas de sens : on quitte l'écran.
+  // à la main. Le bandeau de cet écran n'aurait pas le temps de s'afficher (l'écran
+  // est quitté immédiatement) : RevueRegles.vue affiche sa propre confirmation via
+  // ?cleEnregistree=1.
   if (route.query.retour) {
-    router.push({ path: '/revue', query: { regle: route.query.retour } })
+    router.push({ path: '/revue', query: { regle: route.query.retour, cleEnregistree: '1' } })
     return
   }
   afficherMessage(modification ? 'Clé API mise à jour.' : 'Clé API enregistrée.')
