@@ -7,8 +7,8 @@ lang: fr-FR
 
 ## Quelles données sont traitées aujourd'hui
 
-À ce stade, seule la revue du référentiel (US0) est disponible. Elle ne
-demande aucune création de compte utilisateur.
+À ce stade, seule la revue du référentiel est disponible. Elle ne demande
+aucune création de compte utilisateur.
 
 La seule donnée saisie par l'utilisateur est la **clé API** nécessaire pour
 annoter une règle du référentiel (écran « Clé API »). Cette clé :
@@ -23,10 +23,10 @@ annoter une règle du référentiel (écran « Clé API »). Cette clé :
 
 ## Évolution prévue (audit et question libre)
 
-Les fonctionnalités à venir (US1 — préparation et suivi d'un audit, US2 —
-question libre) nécessiteront la création d'un compte utilisateur et une
-gestion dédiée des données personnelles associées. Cette page sera mise à
-jour en conséquence dès que ces fonctionnalités seront disponibles.
+Les fonctionnalités à venir (audit assisté, question libre) nécessiteront la
+création d'un compte utilisateur et une gestion dédiée des données
+personnelles associées. Cette page sera mise à jour en conséquence dès que
+ces fonctionnalités seront disponibles.
 
 Ces fonctionnalités s'appuieront aussi sur **Langfuse** pour le monitorage
 des appels au modèle de langage. La question de l'anonymisation des données
