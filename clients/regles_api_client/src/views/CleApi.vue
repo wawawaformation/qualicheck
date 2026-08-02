@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCleApi } from '../composables/useCleApi.js'
 import { useToast } from '../composables/useToast.js'
+import BandeauMessage from '../components/BandeauMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -48,6 +49,12 @@ function supprimer() {
       <h1 class="ecran-cle-api__titre">Clé API</h1>
       <p class="ecran-cle-api__sous-titre">Nécessaire pour modifier les règles du référentiel.</p>
     </div>
+
+    <BandeauMessage
+      v-if="route.query.retour"
+      type="avertissement"
+      message="Une clé API valide est nécessaire pour enregistrer une annotation."
+    />
 
     <template v-if="!hasKey || enModification">
       <div class="champ-texte">
