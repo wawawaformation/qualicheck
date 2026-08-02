@@ -9,6 +9,19 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 30)
+
+- **Scroll automatique vers le pied du formulaire d'annotation**
+  (`PanneauDetailRegle.vue`) : choisir "À revoir" ou "Validée" fait
+  apparaître le champ de note, ce qui repoussait le bouton "Enregistrer"
+  hors du cadre visible (le panneau a son propre scroll interne). Le même
+  handler qui vérifie la clé API (`surChoixStatutImportant`, ex.
+  `verifierCleAvantAnnotation`) fait maintenant aussi
+  `pied.scrollIntoView({ behavior: 'smooth', block: 'end' })` après
+  `nextTick()`. **Non vérifié visuellement** : comportement de clic + scroll
+  JS, hors de portée des outils headless disponibles dans ce projet (pas de
+  Playwright) — à confirmer par David
+
 ## 2026-08-02 — Claude Code (Part 29)
 
 - **Bug corrigé : le bouton `disabled` ne se voyait pas** — `_bouton.scss`
