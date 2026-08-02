@@ -9,6 +9,23 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 43)
+
+- **Bug corrigé : aucun message en modifiant deux fois de suite la même
+  annotation** — signalé par David. `RevueRegles.vue` déclenchait le toast
+  via `watch(dernierResultat, ...)`, qui ne réagit qu'à un **changement**
+  de valeur. Deux annotations réussies de suite sur la même règle mettent
+  `dernierResultat` à `'succes'` deux fois — la seconde fois, c'est la même
+  valeur qu'avant, donc `watch()` ne se déclenche pas
+- `useRegles.annoter()` renvoie désormais explicitement `'succes' |
+  'erreur' | 'redirection'` ; `RevueRegles.vue` réagit directement à ce
+  retour (`surAnnotation()`) au lieu d'observer `dernierResultat` par un
+  watch. `dernierResultat` reste exposé (toujours mis à jour, testé
+  directement dans `useRegles.test.js`), mais n'est plus la source de
+  déclenchement du toast
+- Test de régression ajouté : deux appels `annoter()` de suite sur la même
+  règle renvoient bien `'succes'` les deux fois (23 tests, tous verts)
+
 ## 2026-08-02 — Claude Code (Part 42)
 
 - **Retour en haut de page à chaque navigation** (`router/index.js`) :

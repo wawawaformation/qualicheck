@@ -23,7 +23,6 @@ const {
   phasesDisponibles,
   regleSelectionneeNumero,
   regleSelectionnee,
-  dernierResultat,
   erreurAnnotation,
   redirectionCleApi,
   charger,
@@ -50,22 +49,22 @@ watch(redirectionCleApi, (doitRediriger) => {
   }
 })
 
-// Les bandeaux de succès/erreur inline étaient affichés en haut du panneau
-// de détail, hors du cadre visible juste après l'auto-scroll vers le bouton
-// "Enregistrer" (même souci que le bouton disabled invisible) : remplacés
-// par le toast global (useToast, rendu dans App.vue entre l'entête et
-// <router-view>), visible quel que soit le scroll et quel que soit l'écran.
-// La liste est aussi rechargée depuis le serveur après un succès pour
-// rester synchro au-delà de la mise à jour locale déjà faite par
-// annoter() — la règle sélectionnée et les filtres ne bougent pas.
-watch(dernierResultat, async (valeur) => {
-  if (valeur === 'succes') {
+// Réagit directement au résultat renvoyé par annoter(), pas à un
+// watch(dernierResultat) : deux annotations réussies de suite sur la même
+// règle mettent dernierResultat à 'succes' deux fois de suite (même valeur),
+// qu'un watch ne détecterait pas comme un changement — voir useRegles.js.
+// La liste est rechargée depuis le serveur après un succès pour rester
+// synchro au-delà de la mise à jour locale déjà faite par annoter() — la
+// règle sélectionnée et les filtres ne bougent pas.
+async function surAnnotation(patch) {
+  const resultat = await annoter(regleSelectionnee.value.numero, patch)
+  if (resultat === 'succes') {
     afficherToast('Annotation enregistrée.')
     await charger()
-  } else if (valeur === 'erreur') {
+  } else if (resultat === 'erreur') {
     afficherToast(erreurAnnotation.value ?? 'Une erreur est survenue, veuillez réessayer.', 'erreur')
   }
-})
+}
 </script>
 
 <template>
@@ -99,10 +98,7 @@ watch(dernierResultat, async (valeur) => {
 
         <div class="ecran-revue-regles__detail">
           <template v-if="regleSelectionnee">
-            <PanneauDetailRegle
-              :regle="regleSelectionnee"
-              @annoter="(patch) => annoter(regleSelectionnee.numero, patch)"
-            />
+            <PanneauDetailRegle :regle="regleSelectionnee" @annoter="surAnnotation" />
           </template>
           <p v-else class="ecran-revue-regles__detail-placeholder">
             Sélectionnez une règle dans la liste pour l'examiner et l'annoter.

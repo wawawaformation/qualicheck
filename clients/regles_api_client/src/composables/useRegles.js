@@ -65,11 +65,16 @@ export function useRegles() {
     erreurAnnotation.value = null
   }
 
+  // Renvoie explicitement le résultat plutôt que de laisser l'appelant
+  // observer dernierResultat par un watch() : deux annotations réussies de
+  // suite sur la même règle mettraient dernierResultat à 'succes' deux fois
+  // de suite, soit la même valeur — un watch ne déclenche que sur un
+  // changement de valeur, donc ne verrait pas la deuxième réussite.
   async function annoter(numero, patch) {
     const { hasKey, cle, clearKey } = useCleApi()
     if (!hasKey.value) {
       redirectionCleApi.value = true
-      return
+      return 'redirection'
     }
     try {
       const regleMiseAJour = await annoterRegle(numero, patch, cle.value)
@@ -77,14 +82,16 @@ export function useRegles() {
       if (index !== -1) reglesBrutes.value[index] = regleMiseAJour
       dernierResultat.value = 'succes'
       erreurAnnotation.value = null
+      return 'succes'
     } catch (e) {
       if (e instanceof ErreurAuthentification) {
         clearKey()
         redirectionCleApi.value = true
-        return
+        return 'redirection'
       }
       dernierResultat.value = 'erreur'
       erreurAnnotation.value = e.message
+      return 'erreur'
     }
   }
 
