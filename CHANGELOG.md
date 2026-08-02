@@ -9,6 +9,21 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 46)
+
+- **Bug corrigé : `.bloc-provenance` s'étirait dans le panneau élargi**
+  (`_bloc-provenance.scss`) — signalé par David. Cause différente des deux
+  précédents : pas de `max-width` à neutraliser, mais l'absence de
+  contrainte de largeur sur un élément de bloc (`<dl>`), qui s'étire par
+  défaut à celle de son conteneur — ici devenu large (Part 44/45) — pendant
+  que ses items flex restent groupés à gauche (`justify-content` par défaut,
+  `flex-start`). Changer le `justify-content` n'aurait fait qu'écarter les 3
+  items dans une boîte toujours trop large ; la bonne correction est
+  `width: fit-content` sur `.bloc-provenance` lui-même — fix générique du
+  composant partagé, pas une neutralisation locale à cet écran comme les
+  deux précédentes. Vérifié par capture d'écran isolée : le contour de la
+  boîte s'arrête bien au contenu, pas au conteneur
+
 ## 2026-08-02 — Claude Code (Part 45)
 
 - **Même bug, une couche plus bas** : le fix du panneau (Part 44) réglait
