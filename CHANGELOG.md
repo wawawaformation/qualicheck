@@ -9,6 +9,49 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 16)
+
+- **Nouveau skill `clients_api`** (hors dépôt QualiCheck, `~/.claude/skills/`) :
+  conventions générales pour tout futur client API (Vue.js par défaut,
+  maquettes comme référence, services HTTP centralisés, composants
+  réutilisables). Complété en cours de session : **CSS en Sass** et
+  **README obligatoire par client**
+- **Spec de conception `regles_api_client`**
+  (`docs/superpowers/specs/2026-08-02-regles-api-client-design.md`) :
+  premier client Vue.js réel de `app/api_regles`, périmètre US0 uniquement
+  (revue des règles + gestion de la clé API). Décisions actées : Vite +
+  Vue 3 + JavaScript (pas TypeScript), composables (`useRegles`,
+  `useCleApi`) sans Pinia, clé API en `localStorage`, `vue-router` (2
+  écrans), CSS en Sass en conservant les custom properties des maquettes,
+  tests Vitest sur la logique uniquement (pas de rendu de composant),
+  scénarios d'acceptance en Gherkin (documentation) + jsonl exécutable —
+  même convention que `api_regles` et le RAG (aucun outillage BDD
+  installé dans le projet)
+- **Plan d'implémentation `regles_api_client`**
+  (`docs/superpowers/plans/2026-08-02-regles-api-client-implementation.md`) :
+  11 tâches TDD. Versions du toolchain verrouillées pour compatibilité
+  Node 18.19.1 (Vite 6.4, Vitest 3.2, sass 1.98, jsdom 26, vue-router 4.6 —
+  les dernières majeures exigent Node 20+). Écart découvert en rédigeant
+  le plan : `GET /regles` ne supporte que les filtres `outil` et
+  `review_status` côté serveur, donc la recherche texte, le filtre thème
+  et le filtre phase de la maquette sont appliqués côté client sur les 245
+  règles déjà chargées (pas de pagination serveur)
+- **Implémentation mise en pause** à la demande explicite, avant la Task 1
+  du plan — spec et plan restent la référence pour la reprendre
+- **Pages de contenu partagées** (`clients/contenus_partages/le-projet.md`,
+  `mentions-legales.md`, `politique-des-donnees.md`) : les liens
+  "Le projet"/"Mentions légales"/"Politique des données" du pied de page
+  étaient des `href="#"` sur tous les écrans maquettés. Vérifié hors
+  périmètre des compétences certifiées
+  (`conception/referentiel_competences.md`, `conception/certif_deroule.md`)
+  mais nécessaires car `regles_api_client` sera réellement partagé (pas
+  seulement démontré au jury). Contenu en Markdown (pas de maquette HTML
+  dédiée), destiné à être rendu par les futurs clients Vue.js. Adresse
+  postale de l'éditeur volontairement remplacée par une formule "sur
+  demande" dans `mentions-legales.md` — éviter une exposition permanente
+  dans l'historique Git d'un dépôt public. Page "Contact" (US1/US2)
+  différée, pas encore d'écran ni de besoin identifié à ce stade
+
 ## 2026-08-02 — Claude Code (Part 15)
 
 - **US0 (revue du référentiel) : 3 nouveaux écrans/états, brainstormés puis
