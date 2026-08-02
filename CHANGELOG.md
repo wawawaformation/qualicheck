@@ -9,6 +9,19 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 37)
+
+- **Bug corrigé : largeur du header et du contenu désalignées**
+  (`_ecran-revue-regles.scss`) — `.ecran-revue-regles` avait
+  `max-width: 75rem` codé en dur (hérité de la maquette statique
+  d'origine), alors que `.entete__content`/`.pied-de-page__haut` utilisent
+  `var(--container-wide)` (73.125rem) : un écart de 1.875rem. Ce n'était pas
+  un problème de `box-sizing` (qui ne change aucune valeur de `max-width`,
+  seulement l'inclusion du padding/bordure dans la largeur) mais une vraie
+  valeur différente à corriger. Remplacé par `var(--container-wide)`.
+  Vérifié par contours de debug sur un viewport large : bords gauche/droit
+  parfaitement alignés
+
 ## 2026-08-02 — Claude Code (Part 36)
 
 - **Bug corrigé : le fond du header ne couvrait pas toute la largeur**
