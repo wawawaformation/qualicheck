@@ -9,6 +9,27 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 31)
+
+- **Confirmé par David** : le scroll automatique de la Part 30 fonctionne
+  bien en réel
+- **Message de succès remplacé par un toast fixe** (`RevueRegles.vue`,
+  nouveau `styles/_toast.scss`) : le bandeau inline précédent s'affichait en
+  haut du panneau, hors du cadre visible juste après l'auto-scroll vers le
+  bouton "Enregistrer" — même défaut que le bouton `disabled` invisible de
+  la Part 28/29. Le toast (`position: fixed`, centré en haut, disparaît seul
+  après 4 s) reste visible quel que soit le scroll. Le bandeau d'erreur
+  reste inline, non concerné par cette demande
+- **Rechargement de la liste depuis le serveur après un succès** :
+  `useRegles.charger()` est rappelé après chaque annotation réussie, pour
+  rester synchro avec le serveur au-delà de la mise à jour locale
+  optimiste déjà faite par `annoter()` — la règle sélectionnée et les
+  filtres ne bougent pas (précision demandée par David : recharger la
+  liste, pas la page du navigateur)
+- Style du toast vérifié par capture d'écran isolée (fond vert succès,
+  positionnement) ; le déclenchement réel (clic → toast → refetch) reste
+  hors de portée des outils headless disponibles ici
+
 ## 2026-08-02 — Claude Code (Part 30)
 
 - **Scroll automatique vers le pied du formulaire d'annotation**

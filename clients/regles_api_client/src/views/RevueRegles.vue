@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRegles } from '../composables/useRegles.js'
 import BarreFiltres from '../components/BarreFiltres.vue'
@@ -9,6 +9,8 @@ import BandeauMessage from '../components/BandeauMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
+const toastSucces = ref(false)
+let masquerToast = null
 const {
   reglesBrutes,
   reglesFiltrees,
@@ -45,10 +47,37 @@ watch(redirectionCleApi, (doitRediriger) => {
     router.push({ path: '/cle-api', query: { retour: regleSelectionneeNumero.value } })
   }
 })
+
+// Le bandeau de succès inline était affiché en haut du panneau de détail,
+// hors du cadre visible juste après l'auto-scroll vers le bouton
+// "Enregistrer" (même souci que le bouton disabled invisible) : remplacé
+// par un toast fixe (voir styles/_toast.scss), visible quel que soit le
+// scroll, qui disparaît seul. La liste est aussi rechargée depuis le
+// serveur pour rester synchro au-delà de la mise à jour locale déjà faite
+// par annoter() — la règle sélectionnée et les filtres ne bougent pas.
+watch(dernierResultat, async (valeur) => {
+  if (valeur !== 'succes') return
+
+  toastSucces.value = true
+  clearTimeout(masquerToast)
+  masquerToast = setTimeout(() => {
+    toastSucces.value = false
+  }, 4000)
+
+  await charger()
+})
+
+onUnmounted(() => clearTimeout(masquerToast))
 </script>
 
 <template>
   <main class="ecran-revue-regles">
+    <Transition name="toast">
+      <div v-if="toastSucces" class="toast-succes" role="status">
+        <i class="bi bi-check-circle"></i> Annotation enregistrée.
+      </div>
+    </Transition>
+
     <div class="ecran-revue-regles__entete">
       <h1 class="ecran-revue-regles__titre">Revue du référentiel</h1>
       <p class="ecran-revue-regles__sous-titre">Classification des règles Opquast par l'agent d'enrichissement</p>
@@ -78,9 +107,8 @@ watch(redirectionCleApi, (doitRediriger) => {
 
         <div class="ecran-revue-regles__detail">
           <template v-if="regleSelectionnee">
-            <BandeauMessage v-if="dernierResultat === 'succes'" type="succes" message="Annotation enregistrée." />
             <BandeauMessage
-              v-else-if="dernierResultat === 'erreur'"
+              v-if="dernierResultat === 'erreur'"
               type="erreur"
               :message="erreurAnnotation ?? 'Une erreur est survenue, veuillez réessayer.'"
             />
