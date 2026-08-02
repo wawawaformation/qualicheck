@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useRegles } from '../composables/useRegles.js'
 import BarreFiltres from '../components/BarreFiltres.vue'
 import ListeRegles from '../components/ListeRegles.vue'
 import PanneauDetailRegle from '../components/PanneauDetailRegle.vue'
 import BandeauMessage from '../components/BandeauMessage.vue'
 
+const route = useRoute()
 const router = useRouter()
 const {
   reglesBrutes,
@@ -29,10 +30,20 @@ const {
   annoter,
 } = useRegles()
 
-onMounted(charger)
+onMounted(async () => {
+  await charger()
+  // Retour depuis l'écran clé API après une redirection (voir le watch
+  // ci-dessous) : la règle qu'on tentait d'annoter est rouverte directement.
+  const regleARestaurer = Number(route.query.regle)
+  if (!Number.isNaN(regleARestaurer)) {
+    selectionner(regleARestaurer)
+  }
+})
 
 watch(redirectionCleApi, (doitRediriger) => {
-  if (doitRediriger) router.push('/cle-api')
+  if (doitRediriger) {
+    router.push({ path: '/cle-api', query: { retour: regleSelectionneeNumero.value } })
+  }
 })
 </script>
 
