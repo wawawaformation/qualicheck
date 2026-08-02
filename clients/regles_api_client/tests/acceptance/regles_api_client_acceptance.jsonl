@@ -1,0 +1,4 @@
+{"scenario": "annotation reussie", "a_cle": true, "reponse_patch_statut": 200, "reponse_patch_corps": {"numero": 28, "intitule": "x", "theme": "Formulaires", "contexte": null, "solution": "s", "controle": "c", "strategie_analyse": "statique", "outils": ["statique"], "strategie_justification": null, "strategie_source": "llm", "guide_analyse": "g", "objectifs": [], "tags": [], "phases": [], "prompt_version": 1, "llm_model": "kimi", "review_status": "a_revoir", "review_note": "Note de test", "reviewed_at": "2026-08-02T10:00:00"}, "resultat_attendu": "succes"}
+{"scenario": "tentative sans cle API enregistree", "a_cle": false, "resultat_attendu": "redirection_cle_api"}
+{"scenario": "cle API revoquee par le serveur", "a_cle": true, "reponse_patch_statut": 401, "resultat_attendu": "redirection_cle_api"}
+{"scenario": "erreur serveur pendant l'annotation", "a_cle": true, "reponse_patch_statut": 500, "resultat_attendu": "erreur"}
