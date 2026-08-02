@@ -16,6 +16,20 @@ place, IP publique fixe, domaine `koabana.fr` réel chez Infomaniak). Rien
 n'existe encore côté CD : pas de workflow, pas de runner, pas
 d'environnement `staging` déployé.
 
+**Amendement du 2026-08-02** : cette spec a été écrite avant l'existence de
+`clients/regles_api_client/` (client Vue.js réel, US0). À l'époque, l'usage
+prévu était un client HTTP direct (curl, Bruno, Postman) — d'où « CORS
+inchangé » dans les décisions ci-dessous. Décision prise en déployant :
+**même origine** pour le front et l'API (`regles.qualicheck.koabana.fr`
+sert le front Vue.js à la racine, Caddy reverse-proxie les chemins de l'API
+sur ce même domaine) — la conclusion « pas de CORS à gérer » reste donc
+vraie, mais pour une raison différente (same-origin, pas absence de
+navigateur). Pas de conteneur Docker ajouté pour le front : Caddy sert les
+fichiers statiques du build directement, cohérent avec le choix déjà acté
+de ne pas ajouter de conteneur superflu. Détail : sections « Prérequis
+manuels » (point 7 modifié) et workflow `cd-staging.yml` (étapes de build
+ajoutées).
+
 ## Décisions actées pendant le brainstorming
 
 - **Un seul workflow `cd-staging.yml`**, pas un fichier par service
@@ -220,11 +234,31 @@ exécutées par David lui-même sur cloclo.
    données identiques à la base locale au moment du dump)
 6. Enregistrement DNS A chez Infomaniak pour `regles.qualicheck.koabana.fr`
    → IP publique de cloclo
-7. Configuration Caddy sur cloclo : reverse proxy
-   `regles.qualicheck.koabana.fr` → `api-regles:8880`, sur le réseau Docker
-   externe `cloudnet` (déjà en place sur cloclo, partagé avec d'autres
-   services — Caddy y proxie ses cibles par nom de conteneur, pas par
-   `localhost`)
+7. **Configuration Caddy sur cloclo** (amendée le 2026-08-02 : même origine
+   front + API, plus un reverse proxy pur) — fichiers statiques du client
+   Vue.js à la racine, chemins de l'API reverse-proxiés vers
+   `api-regles:8880` sur le réseau Docker externe `cloudnet` (déjà en place
+   sur cloclo, partagé avec d'autres services — Caddy y proxie ses cibles
+   par nom de conteneur, pas par `localhost`) :
+
+   ```caddyfile
+   regles.qualicheck.koabana.fr {
+       @api path /regles* /health /docs* /redoc /openapi.json
+       reverse_proxy @api api-regles:8880
+
+       root * /srv/www/regles.qualicheck.koabana.fr
+       try_files {path} /index.html
+       file_server
+   }
+   ```
+
+   Le répertoire `/srv/www/regles.qualicheck.koabana.fr/` doit exister et
+   être accessible en écriture par l'utilisateur du runner GitHub Actions
+   (qui y copie le build à chaque déploiement — voir `cd-staging.yml`).
+   `try_files {path} /index.html` : nécessaire pour le SPA (`vue-router`
+   en mode `createWebHistory`) — une route interne comme `/cle-api`
+   n'existe pas en tant que fichier, Caddy doit retomber sur `index.html`
+   pour que Vue Router la gère côté client.
 8. **`docker-compose.override.yml` créé une fois sur cloclo**, dans un
    dossier stable en dehors du dépôt
    (`/srv/docker/qualicheck-staging-override/`) — jamais dans le dossier
@@ -271,6 +305,14 @@ exécutées par David lui-même sur cloclo.
    l'extérieur du réseau local (pas depuis cloclo lui-même).
 3. Vérifier que `logs/api_regles.log` se met à jour sur cloclo après le
    déploiement (message de démarrage avec les 4 clients déclarés).
+4. Vérifier `https://regles.qualicheck.koabana.fr/` (racine, sans chemin) :
+   le client Vue.js doit s'afficher, la liste des règles doit se charger
+   sans erreur CORS dans la console (confirmerait le same-origin).
+5. Vérifier qu'une route interne du client (ex.
+   `https://regles.qualicheck.koabana.fr/mentions-legales` collée
+   directement dans la barre d'adresse, pas juste cliquée depuis
+   l'application) s'affiche correctement — confirme que le fallback
+   `try_files {path} /index.html` fonctionne pour `vue-router`.
 
 ## Hors périmètre (explicitement)
 

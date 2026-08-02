@@ -58,3 +58,20 @@ jobs:
 
       - name: Rejouer la suite d'acceptance (garde-fou post-déploiement)
         run: make api-regles-acceptance
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Construire le client regles_api_client
+        working-directory: clients/regles_api_client
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publier le build sur le chemin servi par Caddy
+        run: |
+          mkdir -p /srv/www/regles.qualicheck.koabana.fr
+          rm -rf /srv/www/regles.qualicheck.koabana.fr/*
+          cp -r clients/regles_api_client/dist/* /srv/www/regles.qualicheck.koabana.fr/
