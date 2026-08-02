@@ -1,0 +1,23 @@
+.page-contenu {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+  padding-block: 2rem;
+}
+.page-contenu__titre {
+  font: var(--title-section-font);
+  color: var(--color-text);
+  margin: 0 0 1.5rem;
+}
+.page-contenu h2 {
+  font-size: 1.125rem;
+  color: var(--color-text);
+  margin: 2rem 0 0.75rem;
+}
+.page-contenu p,
+.page-contenu li {
+  font: var(--text-font);
+  color: var(--color-text-secondary);
+}
+.page-contenu ul {
+  padding-left: 1.25rem;
+}

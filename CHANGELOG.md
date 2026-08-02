@@ -9,6 +9,18 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 19)
+
+- **Pages de pied de page implémentées dans `regles_api_client`** : les 3
+  liens `href="#"` ("Le projet", "Mentions légales", "Politique des
+  données") deviennent 3 routes réelles (`LeProjet.vue`,
+  `MentionsLegales.vue`, `PolitiqueDonnees.vue`), contenu repris de
+  `clients/contenus_partages/*.md`. Nouveau partial Sass `_page-contenu.scss`
+  (conteneur étroit, titres, paragraphes — réutilise les tokens existants,
+  aucun style de lien dédié nécessaire, `a { color: var(--color-accent) }`
+  s'applique déjà globalement). Vérifié par rendu réel (Chromium headless) :
+  les 3 titres s'affichent, style cohérent avec le reste du client
+
 ## 2026-08-02 — Claude Code (Part 18)
 
 - **`regles_api_client` : config par `.env` remplacée par `src/apiServer.js`**
