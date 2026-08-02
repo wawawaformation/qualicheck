@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 41)
+
+- **Retour en haut de page à chaque message** (`useToast.afficher()`) :
+  `window.scrollTo({ top: 0, behavior: 'smooth' })` systématique dès qu'un
+  message s'affiche — le toast étant juste sous l'entête, il restait caché
+  si une action précédente avait fait défiler la page (typiquement le
+  scroll automatique vers le bouton "Enregistrer" de
+  `PanneauDetailRegle.vue`). Signalé par David : le message était masqué.
+  **Non vérifié visuellement** : comportement de scroll déclenché par une
+  vraie interaction, hors de portée des outils headless disponibles ici
+
 ## 2026-08-02 — Claude Code (Part 40)
 
 - **Bug corrigé : le bandeau d'avertissement de `CleApi.vue` était dans
