@@ -1,30 +1,20 @@
 <script setup>
-import { onUnmounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCleApi } from '../composables/useCleApi.js'
-import BandeauMessage from '../components/BandeauMessage.vue'
+import { useToast } from '../composables/useToast.js'
 
 const route = useRoute()
 const router = useRouter()
 const { hasKey, setKey, clearKey } = useCleApi()
+const { afficher: afficherToast } = useToast()
 const saisie = ref('')
 const enModification = ref(false)
 const cleVisible = ref(false)
-const messageAction = ref(null)
-let masquerMessageAction = null
-
-function afficherMessage(texte) {
-  messageAction.value = texte
-  clearTimeout(masquerMessageAction)
-  masquerMessageAction = setTimeout(() => {
-    messageAction.value = null
-  }, 4000)
-}
 
 function commencerModification() {
   enModification.value = true
   saisie.value = ''
-  messageAction.value = null
 }
 
 function enregistrer() {
@@ -33,26 +23,23 @@ function enregistrer() {
   setKey(saisie.value.trim())
   saisie.value = ''
   enModification.value = false
+  afficherToast(modification ? 'Clé API mise à jour.' : 'Clé API enregistrée.')
 
   // Arrivée ici depuis une tentative d'annotation sans clé valide (RevueRegles.vue
   // ajoute ?retour=<numero> avant de rediriger) : une fois la clé enregistrée, on
   // retourne directement sur la règle plutôt que de laisser l'utilisateur y revenir
-  // à la main. Le bandeau de cet écran n'aurait pas le temps de s'afficher (l'écran
-  // est quitté immédiatement) : RevueRegles.vue affiche sa propre confirmation via
-  // ?cleEnregistree=1.
+  // à la main. Le toast déclenché ci-dessus reste visible après la navigation : il
+  // est géré par useToast (état partagé) et rendu dans App.vue, qui ne se démonte
+  // jamais entre deux routes.
   if (route.query.retour) {
-    router.push({ path: '/revue', query: { regle: route.query.retour, cleEnregistree: '1' } })
-    return
+    router.push({ path: '/revue', query: { regle: route.query.retour } })
   }
-  afficherMessage(modification ? 'Clé API mise à jour.' : 'Clé API enregistrée.')
 }
 
 function supprimer() {
   clearKey()
-  afficherMessage('Clé API supprimée.')
+  afficherToast('Clé API supprimée.')
 }
-
-onUnmounted(() => clearTimeout(masquerMessageAction))
 </script>
 
 <template>
@@ -61,8 +48,6 @@ onUnmounted(() => clearTimeout(masquerMessageAction))
       <h1 class="ecran-cle-api__titre">Clé API</h1>
       <p class="ecran-cle-api__sous-titre">Nécessaire pour modifier les règles du référentiel.</p>
     </div>
-
-    <BandeauMessage v-if="messageAction" type="succes" :message="messageAction" />
 
     <template v-if="!hasKey || enModification">
       <div class="champ-texte">
