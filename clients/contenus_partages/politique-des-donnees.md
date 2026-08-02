@@ -5,9 +5,10 @@ date: Août 2026
 lang: fr-FR
 ---
 
-## Quelles données sont traitées
+## Quelles données sont traitées aujourd'hui
 
-QualiCheck ne demande aucune création de compte utilisateur.
+À ce stade, seule la revue du référentiel (US0) est disponible. Elle ne
+demande aucune création de compte utilisateur.
 
 La seule donnée saisie par l'utilisateur est la **clé API** nécessaire pour
 annoter une règle du référentiel (écran « Clé API »). Cette clé :
@@ -19,6 +20,13 @@ annoter une règle du référentiel (écran « Clé API »). Cette clé :
 - n'est associée à aucun nom d'utilisateur : le serveur identifie un client
   déclaré par la clé elle-même, il ne trace pas d'auteur individuel des
   annotations.
+
+## Évolution prévue (audit et question libre)
+
+Les fonctionnalités à venir (US1 — préparation et suivi d'un audit, US2 —
+question libre) nécessiteront la création d'un compte utilisateur et une
+gestion dédiée des données personnelles associées. Cette page sera mise à
+jour en conséquence dès que ces fonctionnalités seront disponibles.
 
 ## Ce que QualiCheck ne fait pas
 

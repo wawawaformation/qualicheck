@@ -9,6 +9,15 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 20)
+
+- **Politique des données corrigée** (`clients/contenus_partages/politique-des-donnees.md`
+  et `PolitiqueDonnees.vue`) : le constat « aucune création de compte » est
+  scopé explicitement à US0 (seule fonctionnalité disponible). Ajout d'une
+  section « Évolution prévue » : US1 (audit) et US2 (question libre)
+  nécessiteront un compte utilisateur et une gestion dédiée des données
+  personnelles — précision du porteur du projet, pas encore conçue en détail
+
 ## 2026-08-02 — Claude Code (Part 19)
 
 - **Pages de pied de page implémentées dans `regles_api_client`** : les 3
