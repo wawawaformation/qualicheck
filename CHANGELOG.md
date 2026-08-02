@@ -9,6 +9,15 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 32)
+
+- **Bandeau de confirmation sur `CleApi.vue`** : "Clé API enregistrée."
+  (première saisie), "Clé API mise à jour." (modification), "Clé API
+  supprimée." (suppression) — réutilise `BandeauMessage` (type succès),
+  disparaît seul après 4 s. Absent uniquement quand l'enregistrement
+  redirige vers `/revue?regle=...` (retour après une tentative d'annotation
+  sans clé) : l'écran est quitté avant que le bandeau ait un sens
+
 ## 2026-08-02 — Claude Code (Part 31)
 
 - **Confirmé par David** : le scroll automatique de la Part 30 fonctionne
