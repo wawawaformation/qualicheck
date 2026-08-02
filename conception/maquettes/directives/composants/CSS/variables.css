@@ -35,6 +35,7 @@
   --color-background: #0b0b0e;     /* fond de page */
   --color-surface: #070707;        /* fond de carte/section */
   --color-surface-elevee: #242424; /* fond gris visible (ex. bulle question), distinct de --color-surface */
+  --color-surface-opaque: #000000; /* noir plein garanti, distinct de --color-background : masque ce qu'il y a derriere (ex. barre de saisie sticky) */
   --color-text: #f8f8f8;           /* titres, texte principal */
   --color-text-secondary: #8c8c8c; /* texte secondaire */
   --color-accent: #8275fb;         /* liens, focus, bordures, badges */
