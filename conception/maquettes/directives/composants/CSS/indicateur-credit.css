@@ -1,0 +1,16 @@
+.indicateur-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-icon-text-gap);
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-text-secondary);
+  font: var(--text-font);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.indicateur-credit--faible {
+  border-color: var(--color-warning-background);
+  color: var(--color-warning-background);
+}
