@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { libelleStatut } from '../utils/statutRevue.js'
 import { useCleApi } from '../composables/useCleApi.js'
@@ -11,6 +11,8 @@ const emit = defineEmits(['annoter'])
 
 const router = useRouter()
 const { hasKey } = useCleApi()
+
+const pied = ref(null)
 
 const statutForm = ref(props.regle.review_status ?? 'aucun')
 const noteForm = ref(props.regle.review_note ?? '')
@@ -31,16 +33,22 @@ const peutEnregistrer = computed(
   () => hasKey.value && (statutForm.value !== 'a_revoir' || noteForm.value.trim() !== '')
 )
 
-// Vérifie la clé API dès l'intention de vraiment annoter (choix de "À
-// revoir" ou "Validée"), pas à "Non revue" : plus tôt que le clic sur
-// "Enregistrer", pour ne pas laisser l'utilisateur rédiger une note qui
-// serait perdue à la redirection. Sur @change, pas sur un watch(statutForm) :
-// un watch se déclencherait aussi quand le changement de règle réinitialise
-// statutForm par programmation, pas seulement sur un vrai clic utilisateur.
-function verifierCleAvantAnnotation() {
+// Choisir "À revoir" ou "Validée" (pas "Non revue") signale une vraie
+// intention d'annoter : on vérifie la clé API immédiatement, plus tôt que le
+// clic sur "Enregistrer", pour ne pas laisser l'utilisateur rédiger une note
+// qui serait perdue à la redirection — et on amène directement le bouton
+// "Enregistrer" en vue, puisque le champ de note qui vient d'apparaître le
+// repousse hors du cadre visible du panneau (qui a son propre scroll).
+// Sur @change, pas sur un watch(statutForm) : un watch se déclencherait
+// aussi quand le changement de règle réinitialise statutForm par
+// programmation, pas seulement sur un vrai clic utilisateur.
+async function surChoixStatutImportant() {
   if (!hasKey.value) {
     router.push({ path: '/cle-api', query: { retour: props.regle.numero } })
+    return
   }
+  await nextTick()
+  pied.value?.scrollIntoView({ behavior: 'smooth', block: 'end' })
 }
 
 const badge = computed(() => libelleStatut(props.regle.review_status))
@@ -113,7 +121,7 @@ function enregistrer() {
             name="review_status"
             value="a_revoir"
             v-model="statutForm"
-            @change="verifierCleAvantAnnotation"
+            @change="surChoixStatutImportant"
           />
           À revoir
         </label>
@@ -123,7 +131,7 @@ function enregistrer() {
             name="review_status"
             value="valide"
             v-model="statutForm"
-            @change="verifierCleAvantAnnotation"
+            @change="surChoixStatutImportant"
           />
           Validée
         </label>
@@ -140,7 +148,7 @@ function enregistrer() {
         </p>
       </div>
 
-      <div class="panneau-detail-regle__pied">
+      <div class="panneau-detail-regle__pied" ref="pied">
         <span class="panneau-detail-regle__horodatage">{{ horodatage }}</span>
         <button class="bouton bouton--plein" type="button" :disabled="!peutEnregistrer" @click="enregistrer">
           {{ hasKey ? "Enregistrer l'annotation" : 'Il manque la clé API' }}
