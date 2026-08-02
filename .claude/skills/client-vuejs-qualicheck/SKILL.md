@@ -127,6 +127,33 @@ le conteneur reste étroit, visible dès qu'il s'élargit.
   `var(--container-wide)`, 73.125rem : écart invisible à l'œil, visible aux
   DevTools).
 
+## Déploiement same-origin (Caddy) : l'ordre des directives n'est pas l'ordre du fichier
+
+Pour servir le front (fichiers statiques) et l'API (reverse proxy) sur le
+même domaine, **ne pas** empiler `reverse_proxy @matcher ...` puis
+`try_files`/`file_server` à plat — Caddy réordonne les directives selon un
+ordre fixe interne, pas l'ordre écrit dans le `Caddyfile`, et `try_files`
+s'exécute **avant** `reverse_proxy` dans cet ordre. Résultat observé en réel
+(cloclo, 2026-08-02) : une requête vers `/regles` était réécrite en interne
+vers `/index.html` par `try_files` (aucun fichier `regles`) avant que le
+matcher API n'ait vu le chemin d'origine — l'API ne recevait jamais la
+requête.
+
+**Fix : des blocs `handle`**, qui s'exécutent dans l'ordre écrit et
+s'excluent mutuellement (switch/case) :
+
+```caddyfile
+@api path /regles* /health /docs* /redoc /openapi.json
+handle @api {
+    reverse_proxy api-regles:8880
+}
+handle {
+    root * /srv/www/mondomaine
+    try_files {path} /index.html
+    file_server
+}
+```
+
 ## Vérification visuelle sans Playwright
 
 Ce projet n'a pas d'outil de navigateur piloté. Toute vérification passe
