@@ -4,6 +4,12 @@ import {
   annoterRegle,
   ErreurAuthentification,
 } from '../../src/services/reglesApiService.js'
+import { API_REGLES_URL } from '../../src/apiServer.js'
+
+// apiServer.js est modifié à la main selon l'environnement (dev/prod) : les
+// tests lisent sa valeur courante plutôt que de coder une URL en dur, sinon
+// ils casseraient dès qu'on bascule apiServer.js sur une autre valeur.
+const BASE_URL = API_REGLES_URL.replace(/\/+$/, '')
 
 describe('listerRegles', () => {
   beforeEach(() => {
@@ -19,7 +25,7 @@ describe('listerRegles', () => {
 
     const regles = await listerRegles()
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:8880/regles')
+    expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/regles`)
     expect(regles).toEqual([{ numero: 1 }])
   })
 
@@ -48,7 +54,7 @@ describe('annoterRegle', () => {
       'ma-cle'
     )
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:8880/regles/28', {
+    expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/regles/28`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

@@ -16,22 +16,21 @@ npm install
 
 ## Configuration
 
-Copier `.env.example` vers `.env` et ajuster si besoin :
+Aucun `.env` : l'URL de `app/api_regles` est une valeur unique dans
+`src/apiServer.js`, à modifier à la main selon l'environnement (`npm run
+dev` en local contre `http://localhost:8880`, URL de préprod avant un
+`npm run build` de déploiement).
 
-```dotenv
-VITE_API_REGLES_URL=http://localhost:8880
-```
-
-Aucun secret ici : la clé API se saisit dans l'application (écran « Clé
-API ») et reste stockée dans le `localStorage` du navigateur — jamais dans
-une variable d'environnement.
+Aucun secret dans ce fichier : la clé API se saisit dans l'application
+(écran « Clé API ») et reste stockée dans le `localStorage` du navigateur.
 
 ## Lancement
 
-1. Démarrer l'API données dans un autre terminal, à la racine du projet :
+1. Vérifier que `src/apiServer.js` pointe vers l'API voulue.
+2. Démarrer l'API données dans un autre terminal, à la racine du projet :
    `make api-regles`
-2. Démarrer ce client : `npm run dev`
-3. Ouvrir `http://localhost:5173`
+3. Démarrer ce client : `npm run dev`
+4. Ouvrir `http://localhost:5173`
 
 ## Tests
 

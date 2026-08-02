@@ -8,6 +8,15 @@
 
 **Tech Stack:** Vue 3.5, vue-router 4.6, Vite 6.4, Vitest 3.2 + jsdom 26, Sass 1.98 (versions verrouillées pour compatibilité Node 18 — l'environnement de développement tourne sous Node 18.19.1).
 
+> **Amendement du 2026-08-02, après exécution complète de ce plan** : les
+> Tasks 1 et 2 ci-dessous créent `.env.example`/`.env.test`/`src/config.js`
+> (lecture de `import.meta.env.VITE_API_REGLES_URL`), tel qu'exécuté. Décision
+> ultérieure, explicite : plus de fichier `.env` pour ce client — remplacés
+> par `src/apiServer.js`, une valeur unique modifiée à la main selon
+> l'environnement. Voir l'amendement correspondant dans la spec de
+> conception et `CHANGELOG.md`. Les étapes suivantes restent le compte-rendu
+> fidèle de ce qui a été exécuté au moment du plan initial.
+
 ## Global Constraints
 
 - Spec de référence : `docs/superpowers/specs/2026-08-02-regles-api-client-design.md`. Toute divergence avec ce document doit être signalée, pas silencieusement appliquée.

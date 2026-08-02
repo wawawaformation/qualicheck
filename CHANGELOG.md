@@ -9,6 +9,25 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 18)
+
+- **`regles_api_client` : config par `.env` remplacée par `src/apiServer.js`**
+  — décision explicite du porteur du projet, après la Part 17. Plus de
+  `.env`/`.env.example`/`.env.test`/`src/config.js` : `apiServer.js` exporte
+  une unique constante `API_REGLES_URL`, modifiée à la main selon
+  l'environnement (dev local, URL de préprod avant un build de
+  déploiement) — pas de bascule automatique par mode Vite
+- **Bug corrigé en même temps** : `reglesApiService.js` construisait
+  `${API_REGLES_URL}/regles` sans neutraliser un éventuel `/` final, ce qui
+  produisait une URL à double slash. Ajout d'un `.replace(/\/+$/, '')`
+- **Tests corrigés** : `reglesApiService.test.js` codait en dur
+  `http://localhost:8880`, cassé dès qu'`apiServer.js` contient une autre
+  valeur (ex. l'URL de préprod). Les tests lisent maintenant
+  `API_REGLES_URL` au lieu de deviner sa valeur
+- **Spec et plan amendés** (pas réécrits) : note d'amendement datée dans
+  chacun des deux documents, pointant vers ce changement, sans effacer le
+  compte-rendu de ce qui a été exécuté à l'origine
+
 ## 2026-08-02 — Claude Code (Part 17)
 
 - **`clients/regles_api_client/` implémenté** (11 tâches TDD du plan
