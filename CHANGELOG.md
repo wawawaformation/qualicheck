@@ -9,6 +9,19 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 33)
+
+- **Bug corrigé : aucun bandeau au retour depuis la clé API après une
+  redirection d'annotation** — `CleApi.vue` redirige immédiatement vers
+  `/revue?regle=...` dans ce cas (Part 32 le documentait déjà), donc son
+  propre bandeau n'a jamais le temps de s'afficher. Le toast de
+  `RevueRegles.vue` (Part 31) est généralisé pour accepter un message
+  (`toastMessage`, plus `toastSucces` booléen) et se déclenche aussi au
+  montage si `?cleEnregistree=1` est présent dans l'URL — ajouté par
+  `CleApi.vue` lors de cette redirection spécifique. Vérifié par capture
+  d'écran réelle en visitant directement l'URL (`virtual-time-budget` court
+  pour ne pas rater la fenêtre avant l'auto-disparition du toast)
+
 ## 2026-08-02 — Claude Code (Part 32)
 
 - **Bandeau de confirmation sur `CleApi.vue`** : "Clé API enregistrée."
