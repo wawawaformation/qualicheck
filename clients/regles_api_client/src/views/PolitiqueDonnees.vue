@@ -2,8 +2,11 @@
   <main class="page-contenu">
     <h1 class="page-contenu__titre">Politique des données</h1>
 
-    <h2>Quelles données sont traitées</h2>
-    <p>QualiCheck ne demande aucune création de compte utilisateur.</p>
+    <h2>Quelles données sont traitées aujourd'hui</h2>
+    <p>
+      À ce stade, seule la revue du référentiel (US0) est disponible. Elle ne
+      demande aucune création de compte utilisateur.
+    </p>
     <p>
       La seule donnée saisie par l'utilisateur est la <strong>clé API</strong>
       nécessaire pour annoter une règle du référentiel (écran « Clé API »).
@@ -22,6 +25,15 @@
         individuel des annotations.
       </li>
     </ul>
+
+    <h2>Évolution prévue (audit et question libre)</h2>
+    <p>
+      Les fonctionnalités à venir (US1 — préparation et suivi d'un audit, US2
+      — question libre) nécessiteront la création d'un compte utilisateur et
+      une gestion dédiée des données personnelles associées. Cette page sera
+      mise à jour en conséquence dès que ces fonctionnalités seront
+      disponibles.
+    </p>
 
     <h2>Ce que QualiCheck ne fait pas</h2>
     <p>
