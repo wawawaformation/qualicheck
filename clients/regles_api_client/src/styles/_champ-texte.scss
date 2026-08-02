@@ -48,6 +48,35 @@
   outline: none;
 }
 
+.champ-texte__saisie-avec-bouton {
+  position: relative;
+  display: flex;
+}
+
+.champ-texte__saisie-avec-bouton input {
+  flex: 1;
+  padding-right: 2.5rem; /* laisse la place au bouton de visibilité */
+}
+
+.champ-texte__bouton-visibilite {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.champ-texte__bouton-visibilite:hover,
+.champ-texte__bouton-visibilite:focus-visible {
+  color: var(--color-accent);
+}
+
 .champ-texte__aide {
   font: var(--text-font);
   font-size: 0.875rem;

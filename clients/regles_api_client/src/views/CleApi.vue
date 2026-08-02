@@ -8,6 +8,7 @@ const router = useRouter()
 const { hasKey, setKey, clearKey } = useCleApi()
 const saisie = ref('')
 const enModification = ref(false)
+const cleVisible = ref(false)
 
 function commencerModification() {
   enModification.value = true
@@ -40,7 +41,22 @@ function enregistrer() {
     <template v-if="!hasKey || enModification">
       <div class="champ-texte">
         <label for="cle-api">Votre clé API</label>
-        <input type="password" id="cle-api" v-model="saisie" placeholder="Collez votre clé ici" />
+        <div class="champ-texte__saisie-avec-bouton">
+          <input
+            :type="cleVisible ? 'text' : 'password'"
+            id="cle-api"
+            v-model="saisie"
+            placeholder="Collez votre clé ici"
+          />
+          <button
+            type="button"
+            class="champ-texte__bouton-visibilite"
+            :aria-label="cleVisible ? 'Masquer la clé' : 'Afficher la clé'"
+            @click="cleVisible = !cleVisible"
+          >
+            <i class="bi" :class="cleVisible ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
         <p class="champ-texte__aide">
           Cette clé vous a été fournie par l'équipe QualiCheck. Elle n'est nécessaire que pour
           enregistrer des annotations sur les règles.
