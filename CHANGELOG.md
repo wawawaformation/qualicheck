@@ -9,6 +9,28 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 49)
+
+- **Décisions de déploiement pour `regles_api_client`** : même origine que
+  l'API (`regles.qualicheck.koabana.fr` sert le front à la racine, Caddy
+  reverse-proxie les chemins API sur le même domaine) — pas de CORS à
+  gérer, pas de conteneur Docker ajouté pour le front (Caddy sert les
+  fichiers statiques du build directement)
+- **`.env` et `.env.example` corrigés** : `FASTAPI_URL_PROD` pointait vers
+  `api.qualicheck.koabana.fr`, résidu incohérent avec
+  `regles.qualicheck.koabana.fr` déjà réservé et documenté dans la spec CD
+  staging (2026-07-28) — aligné
+- **`cd-staging.yml`** : étapes ajoutées après l'acceptance — installer
+  Node, `npm ci && npm run build` dans `clients/regles_api_client/`, copier
+  `dist/` vers `/srv/www/regles.qualicheck.koabana.fr/` (chemin servi par
+  Caddy)
+- **Spec CD staging amendée** (`docs/superpowers/specs/2026-07-28-cd-staging-design.md`) :
+  écrite avant l'existence du client Vue.js (usage prévu à l'époque : curl/
+  Bruno/Postman uniquement). Point 7 des prérequis manuels réécrit avec la
+  config Caddy réelle (matcher `@api` + `file_server` + fallback SPA
+  `try_files {path} /index.html`), plan de vérification complété (racine du
+  site + route interne collée directement dans la barre d'adresse)
+
 ## 2026-08-02 — Claude Code (Part 48)
 
 - **Nouveau skill projet `client-vuejs-qualicheck`**
