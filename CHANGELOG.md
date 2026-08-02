@@ -9,6 +9,22 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 14)
+
+- **Solde de crédit remis dans les 2 écrans US2** (`ecran-question-libre.html`,
+  `ecran-question-libre-garde-fous.html`) — retiré un peu vite lors d'une
+  itération précédente ; ré-affiché via `.indicateur-credit` existant ("8
+  questions restantes" / variant `--faible` "0 question restante" sur
+  l'écran garde-fous)
+- **Barre de saisie (`zone-saisie-question`) rendue réellement opaque** —
+  son fond utilisait `--color-surface` (#070707), quasi indiscernable de
+  `--color-background` (#0b0b0e), ce qui la faisait paraître transparente.
+  Nouveau token `--color-surface-opaque` (#000000, noir plein garanti)
+  ajouté dans `variables.css`, utilisé par la barre de saisie plutôt qu'une
+  valeur hex brute
+- Les deux copies (`composants/CSS/` et `US2/style/`) mises à jour en
+  parallèle, comme convenu depuis la scission des dossiers
+
 ## 2026-08-02 — Claude Code (Part 13)
 
 - **US2 (question libre) : diagrammes UML** — `conception/5_us2_question_libre/cas_utilisation_us2.drawio`
