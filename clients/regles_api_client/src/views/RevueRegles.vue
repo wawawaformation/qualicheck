@@ -6,7 +6,6 @@ import { useToast } from '../composables/useToast.js'
 import BarreFiltres from '../components/BarreFiltres.vue'
 import ListeRegles from '../components/ListeRegles.vue'
 import PanneauDetailRegle from '../components/PanneauDetailRegle.vue'
-import BandeauMessage from '../components/BandeauMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -51,17 +50,21 @@ watch(redirectionCleApi, (doitRediriger) => {
   }
 })
 
-// Le bandeau de succès inline était affiché en haut du panneau de détail,
-// hors du cadre visible juste après l'auto-scroll vers le bouton
-// "Enregistrer" (même souci que le bouton disabled invisible) : remplacé
-// par le toast global (useToast), visible quel que soit le scroll. La liste
-// est aussi rechargée depuis le serveur pour rester synchro au-delà de la
-// mise à jour locale déjà faite par annoter() — la règle sélectionnée et
-// les filtres ne bougent pas.
+// Les bandeaux de succès/erreur inline étaient affichés en haut du panneau
+// de détail, hors du cadre visible juste après l'auto-scroll vers le bouton
+// "Enregistrer" (même souci que le bouton disabled invisible) : remplacés
+// par le toast global (useToast, rendu dans App.vue entre l'entête et
+// <router-view>), visible quel que soit le scroll et quel que soit l'écran.
+// La liste est aussi rechargée depuis le serveur après un succès pour
+// rester synchro au-delà de la mise à jour locale déjà faite par
+// annoter() — la règle sélectionnée et les filtres ne bougent pas.
 watch(dernierResultat, async (valeur) => {
-  if (valeur !== 'succes') return
-  afficherToast('Annotation enregistrée.')
-  await charger()
+  if (valeur === 'succes') {
+    afficherToast('Annotation enregistrée.')
+    await charger()
+  } else if (valeur === 'erreur') {
+    afficherToast(erreurAnnotation.value ?? 'Une erreur est survenue, veuillez réessayer.', 'erreur')
+  }
 })
 </script>
 
@@ -96,11 +99,6 @@ watch(dernierResultat, async (valeur) => {
 
         <div class="ecran-revue-regles__detail">
           <template v-if="regleSelectionnee">
-            <BandeauMessage
-              v-if="dernierResultat === 'erreur'"
-              type="erreur"
-              :message="erreurAnnotation ?? 'Une erreur est survenue, veuillez réessayer.'"
-            />
             <PanneauDetailRegle
               :regle="regleSelectionnee"
               @annoter="(patch) => annoter(regleSelectionnee.numero, patch)"
