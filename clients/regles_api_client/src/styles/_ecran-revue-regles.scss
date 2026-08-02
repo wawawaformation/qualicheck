@@ -63,6 +63,13 @@
 .ecran-revue-regles__detail .panneau-detail-regle {
   max-width: none;
 }
+// Même raison : .panneau-detail-regle__section p porte max-width: 60ch
+// (lisibilité pensée pour le contexte étroit d'origine), qui laissait le
+// même vide à droite de chaque paragraphe (Contexte, Solution, Contrôle,
+// Guide d'analyse) une fois la colonne détail élargie.
+.ecran-revue-regles__detail .panneau-detail-regle__section p {
+  max-width: none;
+}
 .ecran-revue-regles__detail-placeholder {
   height: 100%;
   display: flex;

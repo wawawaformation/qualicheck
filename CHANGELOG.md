@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 45)
+
+- **Même bug, une couche plus bas** : le fix du panneau (Part 44) réglait
+  le conteneur global, mais `.panneau-detail-regle__section p` porte son
+  propre `max-width: 60ch`, laissant le même vide à droite de chaque
+  paragraphe (Contexte, Solution, Contrôle, Guide d'analyse). Signalé par
+  David après le premier correctif. Neutralisé de la même façon, localement
+  dans `.ecran-revue-regles__detail`. Vérifié par capture d'écran réelle :
+  le paragraphe "Solution" remplit maintenant toute la largeur de la
+  colonne
+
 ## 2026-08-02 — Claude Code (Part 44)
 
 - **Colonne de liste redimensionnable au glisser** (`RevueRegles.vue`,
