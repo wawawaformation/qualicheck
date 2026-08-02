@@ -9,6 +9,15 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 25)
+
+- **Bouton "afficher la clé" sur le champ de saisie de la clé API**
+  (`CleApi.vue`) : icône œil (`bi-eye`/`bi-eye-slash`) qui bascule
+  `type="password"`/`type="text"`. Nouveau motif générique dans
+  `_champ-texte.scss` (`.champ-texte__saisie-avec-bouton`,
+  `.champ-texte__bouton-visibilite`), réutilisable pour un futur champ
+  similaire sans dupliquer le CSS
+
 ## 2026-08-02 — Claude Code (Part 24)
 
 - **« Le projet » enrichi sur la question libre et l'audit assisté**
