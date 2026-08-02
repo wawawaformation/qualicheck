@@ -28,6 +28,11 @@ question libre) nécessiteront la création d'un compte utilisateur et une
 gestion dédiée des données personnelles associées. Cette page sera mise à
 jour en conséquence dès que ces fonctionnalités seront disponibles.
 
+Ces fonctionnalités s'appuieront aussi sur **Langfuse** pour le monitorage
+des appels au modèle de langage. La question de l'anonymisation des données
+tracées (contenu des questions, réponses) n'est pas encore tranchée — cette
+page sera précisée dès que cette décision sera prise.
+
 ## Ce que QualiCheck ne fait pas
 
 Aucun cookie de suivi ni outil d'analyse d'audience n'est mis en place à ce
