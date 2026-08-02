@@ -1,5 +1,56 @@
+<script setup>
+import { ref } from 'vue'
+import { useCleApi } from '../composables/useCleApi.js'
+
+const { hasKey, setKey, clearKey } = useCleApi()
+const saisie = ref('')
+const enModification = ref(false)
+
+function commencerModification() {
+  enModification.value = true
+  saisie.value = ''
+}
+
+function enregistrer() {
+  if (saisie.value.trim() === '') return
+  setKey(saisie.value.trim())
+  saisie.value = ''
+  enModification.value = false
+}
+</script>
+
 <template>
   <main class="ecran-cle-api">
-    <p>Écran de gestion de la clé API (à venir — Task 9)</p>
+    <div>
+      <h1 class="ecran-cle-api__titre">Clé API</h1>
+      <p class="ecran-cle-api__sous-titre">Nécessaire pour modifier les règles du référentiel.</p>
+    </div>
+
+    <template v-if="!hasKey || enModification">
+      <div class="champ-texte">
+        <label for="cle-api">Votre clé API</label>
+        <input type="password" id="cle-api" v-model="saisie" placeholder="Collez votre clé ici" />
+        <p class="champ-texte__aide">
+          Cette clé vous a été fournie par l'équipe QualiCheck. Elle n'est nécessaire que pour
+          enregistrer des annotations sur les règles.
+        </p>
+      </div>
+      <div class="ecran-cle-api__actions">
+        <button class="bouton bouton--plein" type="button" @click="enregistrer">
+          {{ hasKey ? 'Enregistrer la nouvelle clé' : 'Enregistrer la clé' }}
+        </button>
+      </div>
+    </template>
+
+    <template v-else>
+      <p class="ecran-cle-api__statut">Une clé API est enregistrée sur cet appareil.</p>
+      <dl class="bloc-provenance">
+        <div class="bloc-provenance__item"><dt>Clé API</dt><dd>••••••••••••••••••••••••••••••••</dd></div>
+      </dl>
+      <div class="ecran-cle-api__actions">
+        <button class="bouton bouton--contour" type="button" @click="commencerModification">Modifier la clé</button>
+        <button class="bouton bouton--neutre" type="button" @click="clearKey">Supprimer la clé</button>
+      </div>
+    </template>
   </main>
 </template>
