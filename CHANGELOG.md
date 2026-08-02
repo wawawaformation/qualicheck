@@ -9,6 +9,24 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 40)
+
+- **Bug corrigé : le bandeau d'avertissement de `CleApi.vue` était dans
+  `<main class="ecran-cle-api">`**, donc limité à `--container-narrow` au
+  lieu de `--container-wide` comme l'entête — repéré par David en comparant
+  la largeur mesurée (540px) à la largeur attendue (1170px)
+- **Tous les messages (succès/erreur/avertissement) unifiés via
+  `useToast`** : `useToast` porte désormais un `type` en plus du texte
+  (`afficher(texte, type, duree)`). `App.vue` rend `BandeauMessage` avec la
+  classe `.toast` (positionnement) en plus de `bandeau-message--{type}`
+  (couleurs/icône) — plus de duplication entre `_toast.scss` et
+  `_bandeau-message.scss`. Les bandeaux inline retirés de `RevueRegles.vue`
+  (erreur d'annotation) et `CleApi.vue` (avertissement au retour) : les deux
+  passent maintenant par `afficherToast(..., 'erreur'|'avertissement')`,
+  rendu une seule fois dans `App.vue`, entre l'entête et `<router-view>`
+- Vérifié par capture d'écran sur l'URL déjà signalée : le bandeau
+  avertissement occupe désormais la même largeur que `entete__content`
+
 ## 2026-08-02 — Claude Code (Part 39)
 
 - **Largeur du toast alignée sur `.entete__content`** (`_toast.scss`) :

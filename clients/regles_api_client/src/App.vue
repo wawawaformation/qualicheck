@@ -3,10 +3,11 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCleApi } from './composables/useCleApi.js'
 import { useToast } from './composables/useToast.js'
+import BandeauMessage from './components/BandeauMessage.vue'
 
 const route = useRoute()
 const { hasKey } = useCleApi()
-const { message: toastMessage } = useToast()
+const { message: toastMessage, type: toastType } = useToast()
 
 const liensNav = computed(() => {
   if (hasKey.value) {
@@ -37,9 +38,7 @@ const liensNav = computed(() => {
   </header>
 
   <Transition name="toast">
-    <div v-if="toastMessage" class="toast-succes" role="status">
-      <i class="bi bi-check-circle"></i> {{ toastMessage }}
-    </div>
+    <BandeauMessage v-if="toastMessage" class="toast" :type="toastType" :message="toastMessage" />
   </Transition>
 
   <router-view />
