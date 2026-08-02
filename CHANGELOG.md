@@ -9,6 +9,20 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 23)
+
+- **`LICENCE.md` créé à la racine** : double régime tranché — CC BY-SA 4.0
+  pour le référentiel Opquast enrichi, droit d'auteur français (fermé,
+  aucune licence accordée) pour le reste du projet, y compris le code
+  visible sur le dépôt GitHub public. Explique la distinction visibilité ≠
+  autorisation d'usage (Code de la propriété intellectuelle, art. L111-1)
+- **`README.md`** : section « Licence » mise à jour (renvoie vers
+  `LICENCE.md`, ne dit plus « pas encore arrêtée »)
+- **Amendement** dans
+  `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md` : le point
+  laissé ouvert sur la licence du code est maintenant tranché, sans réécrire
+  la décision d'origine
+
 ## 2026-08-02 — Claude Code (Part 22)
 
 - **Retour automatique à la règle après renseignement de la clé API**

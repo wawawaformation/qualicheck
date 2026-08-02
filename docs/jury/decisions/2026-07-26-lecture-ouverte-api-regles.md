@@ -108,6 +108,9 @@ Licence et soutien se cumulent, ils ne se remplacent pas.
 - **Ce que la décision ne dit pas** : elle ne se prononce pas sur la licence du
   code du projet, ni sur celle des étages applicatif et présentation. Deux
   sujets distincts à trancher séparément.
+  **Amendement du 2026-08-02** : ces deux sujets sont désormais tranchés,
+  voir `LICENCE.md` à la racine — droit d'auteur français, fermé, à ce
+  stade.
 - **Ce document n'est pas un avis juridique.** Savoir si l'enrichissement pris
   isolément constitue une œuvre dérivée au sens de la licence est une question
   de droit que le projet ne tranche pas. La conclusion pratique n'en dépend
