@@ -9,6 +9,16 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 50)
+
+- **Bloc Caddy complété avec les en-têtes de sécurité**
+  (spec CD staging) : David a partagé le vrai `Caddyfile` de cloclo — le
+  bloc existant pour `regles.qualicheck.koabana.fr` était un simple reverse
+  proxy, sans les en-têtes (`Strict-Transport-Security`, `Referrer-Policy`,
+  `X-Frame-Options`, `X-Content-Type-Options`, `X-XSS-Protection`,
+  `Permissions-Policy`) présents sur les autres domaines publics du même
+  fichier (ex. `demo-dev.koabana.fr`). Aligné dans le snippet documenté
+
 ## 2026-08-02 — Claude Code (Part 49)
 
 - **Décisions de déploiement pour `regles_api_client`** : même origine que

@@ -241,8 +241,24 @@ exécutées par David lui-même sur cloclo.
    sur cloclo, partagé avec d'autres services — Caddy y proxie ses cibles
    par nom de conteneur, pas par `localhost`) :
 
+   Remplace le bloc existant du `Caddyfile` (`reverse-proxy/Caddyfile` sur
+   cloclo), qui ne faisait qu'un reverse proxy simple sans en-têtes de
+   sécurité — aligné ici sur le style des autres domaines publics du même
+   `Caddyfile` (ex. `demo-dev.koabana.fr`) :
+
    ```caddyfile
    regles.qualicheck.koabana.fr {
+       encode zstd gzip
+
+       header {
+           Strict-Transport-Security "max-age=31536000; includeSubDomains"
+           Referrer-Policy "strict-origin-when-cross-origin"
+           X-Frame-Options "SAMEORIGIN"
+           X-Content-Type-Options "nosniff"
+           X-XSS-Protection "1; mode=block"
+           Permissions-Policy "interest-cohort=()"
+       }
+
        @api path /regles* /health /docs* /redoc /openapi.json
        reverse_proxy @api api-regles:8880
 
