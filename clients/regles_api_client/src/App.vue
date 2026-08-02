@@ -1,3 +1,56 @@
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useCleApi } from './composables/useCleApi.js'
+
+const route = useRoute()
+const { hasKey } = useCleApi()
+
+const liensNav = computed(() => {
+  if (hasKey.value) {
+    return [{ texte: 'Modifier ma clé API', actif: false }, { texte: 'Supprimer ma clé API', actif: false }]
+  }
+  return [{ texte: 'Renseigner ma clé API', actif: route.name === 'cle-api' }]
+})
+</script>
+
 <template>
-  <p>regles_api_client</p>
+  <header class="entete">
+    <router-link class="entete__logo" to="/revue">
+      <span class="entete__logo-icone"><i class="bi bi-check-lg"></i></span>
+      QualiCheck
+    </router-link>
+    <nav class="entete__nav">
+      <router-link
+        v-for="lien in liensNav"
+        :key="lien.texte"
+        to="/cle-api"
+        :aria-current="lien.actif ? 'page' : undefined"
+      >
+        {{ lien.texte }}
+      </router-link>
+    </nav>
+  </header>
+
+  <router-view />
+
+  <footer class="pied-de-page">
+    <div class="pied-de-page__haut">
+      <div>
+        <a class="pied-de-page__logo" href="#">
+          <i class="bi bi-check-lg"></i> QualiCheck
+        </a>
+        <p class="pied-de-page__tagline">Assistant d'aide à l'audit qualité web basé sur les règles Opquast</p>
+      </div>
+      <nav class="pied-de-page__nav">
+        <a href="#"><i class="bi bi-book"></i> Le projet</a>
+        <a href="#"><i class="bi bi-bank"></i> Mentions légales</a>
+        <a href="#"><i class="bi bi-shield-lock"></i> Politique des données</a>
+      </nav>
+    </div>
+    <div class="pied-de-page__bas">
+      <p>🄯 Copyleft 2026, vous trouverez le projet sur <a href="#">GitHub</a></p>
+      <p class="pied-de-page__mention">QualiCheck n'est pas un outil officiel Opquast et ne remplace pas l'expertise d'un auditeur</p>
+    </div>
+  </footer>
 </template>
