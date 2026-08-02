@@ -19,6 +19,12 @@ export function useToast() {
     masquer = setTimeout(() => {
       message.value = null
     }, duree)
+
+    // Le toast est juste sous l'entête : si une action précédente a fait
+    // défiler la page (ex. le scroll automatique vers le bouton
+    // "Enregistrer" dans PanneauDetailRegle.vue), le message resterait
+    // caché au-dessus du cadre visible sans ce retour en haut.
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function effacer() {
