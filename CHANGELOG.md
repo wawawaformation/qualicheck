@@ -9,6 +9,28 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 34)
+
+- **Systématisation du message d'action : composable `useToast`**
+  (`src/composables/useToast.js`) — état partagé au niveau du module (même
+  motif que `useCleApi`), `afficher(texte, duree)` / `effacer()`. Rendu une
+  seule fois dans `App.vue`, entre l'entête et `<router-view>` (demandé :
+  juste en dessous du header), donc valable pour n'importe quel clic dans
+  n'importe quel écran présent ou futur — plus besoin de dupliquer la
+  logique par vue
+- **`RevueRegles.vue` et `CleApi.vue` migrés** vers `useToast` : suppression
+  des implémentations locales dupliquées (`toastMessage`/`messageAction` et
+  leur `setTimeout`, répétés deux fois) et du bricolage `?cleEnregistree=1`
+  de la Part 33 — devenu inutile : le toast déclenché par `CleApi.vue` avant
+  de rediriger reste affiché après la navigation, puisqu'il est rendu par
+  `App.vue`, qui ne se démonte jamais entre deux routes
+- **Toast repositionné** : `position: fixed` centré en haut retiré, devient
+  un bloc centré (`margin-inline: auto`) directement sous l'entête, dans le
+  flux normal de la page — plus simple, et l'entête étant `position:
+  sticky`, il reste visible même si la page défile
+- Vérifié par capture d'écran isolée (entête + toast avec le CSS compilé
+  réel), positionnement confirmé
+
 ## 2026-08-02 — Claude Code (Part 33)
 
 - **Bug corrigé : aucun bandeau au retour depuis la clé API après une

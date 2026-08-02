@@ -1,7 +1,8 @@
 <script setup>
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useRegles } from '../composables/useRegles.js'
+import { useToast } from '../composables/useToast.js'
 import BarreFiltres from '../components/BarreFiltres.vue'
 import ListeRegles from '../components/ListeRegles.vue'
 import PanneauDetailRegle from '../components/PanneauDetailRegle.vue'
@@ -9,16 +10,7 @@ import BandeauMessage from '../components/BandeauMessage.vue'
 
 const route = useRoute()
 const router = useRouter()
-const toastMessage = ref(null)
-let masquerToast = null
-
-function afficherToast(texte) {
-  toastMessage.value = texte
-  clearTimeout(masquerToast)
-  masquerToast = setTimeout(() => {
-    toastMessage.value = null
-  }, 4000)
-}
+const { afficher: afficherToast } = useToast()
 const {
   reglesBrutes,
   reglesFiltrees,
@@ -44,15 +36,12 @@ onMounted(async () => {
   await charger()
   // Retour depuis l'écran clé API après une redirection (voir le watch
   // ci-dessous) : la règle qu'on tentait d'annoter est rouverte directement.
+  // Le toast affiché par CleApi.vue avant de rediriger ici (useToast est
+  // partagé, App.vue le rend sans jamais se démonter) reste visible tel quel
+  // — pas besoin de le redéclencher ici.
   const regleARestaurer = Number(route.query.regle)
   if (!Number.isNaN(regleARestaurer)) {
     selectionner(regleARestaurer)
-  }
-  // La clé vient d'être enregistrée sur /cle-api, qui a redirigé ici sans
-  // pouvoir afficher son propre bandeau (l'écran est quitté avant) : on
-  // affiche la confirmation ici à la place.
-  if (route.query.cleEnregistree) {
-    afficherToast('Clé API enregistrée.')
   }
 })
 
@@ -65,27 +54,19 @@ watch(redirectionCleApi, (doitRediriger) => {
 // Le bandeau de succès inline était affiché en haut du panneau de détail,
 // hors du cadre visible juste après l'auto-scroll vers le bouton
 // "Enregistrer" (même souci que le bouton disabled invisible) : remplacé
-// par un toast fixe (voir styles/_toast.scss), visible quel que soit le
-// scroll, qui disparaît seul. La liste est aussi rechargée depuis le
-// serveur pour rester synchro au-delà de la mise à jour locale déjà faite
-// par annoter() — la règle sélectionnée et les filtres ne bougent pas.
+// par le toast global (useToast), visible quel que soit le scroll. La liste
+// est aussi rechargée depuis le serveur pour rester synchro au-delà de la
+// mise à jour locale déjà faite par annoter() — la règle sélectionnée et
+// les filtres ne bougent pas.
 watch(dernierResultat, async (valeur) => {
   if (valeur !== 'succes') return
   afficherToast('Annotation enregistrée.')
   await charger()
 })
-
-onUnmounted(() => clearTimeout(masquerToast))
 </script>
 
 <template>
   <main class="ecran-revue-regles">
-    <Transition name="toast">
-      <div v-if="toastMessage" class="toast-succes" role="status">
-        <i class="bi bi-check-circle"></i> {{ toastMessage }}
-      </div>
-    </Transition>
-
     <div class="ecran-revue-regles__entete">
       <h1 class="ecran-revue-regles__titre">Revue du référentiel</h1>
       <p class="ecran-revue-regles__sous-titre">Classification des règles Opquast par l'agent d'enrichissement</p>
