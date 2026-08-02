@@ -1,0 +1,73 @@
+.demo {
+  padding: 2rem;
+  max-width: var(--container-narrow);
+}
+
+.champ-texte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-icon-text-gap);
+}
+
+.champ-texte label {
+  font: var(--text-font);
+  color: var(--color-text);
+}
+
+.champ-texte input,
+.champ-texte select,
+.champ-texte textarea {
+  font: var(--text-font);
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-text-secondary);
+  border-radius: var(--radius-default);
+  padding: var(--padding-input-block) var(--padding-input-inline);
+}
+
+.champ-texte textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+.champ-texte input::placeholder,
+.champ-texte textarea::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.champ-texte input:hover,
+.champ-texte select:hover,
+.champ-texte textarea:hover {
+  border-color: var(--color-accent);
+}
+
+.champ-texte input:focus-visible,
+.champ-texte select:focus-visible,
+.champ-texte textarea:focus-visible {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.champ-texte__aide {
+  font: var(--text-font);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-top: -0.25rem; /* rattache le message a son champ, plus proche que le gap label/champ */
+}
+
+.champ-texte--erreur input,
+.champ-texte--erreur select,
+.champ-texte--erreur textarea {
+  /* --color-danger-text est pense pour du texte sur --color-danger-background,
+     pas directement sur le fond de page (1.68:1, illisible) : on utilise ici
+     --color-danger-background, qui atteint 7.64:1 sur le fond sombre. */
+  border-color: var(--color-danger-background);
+}
+
+.champ-texte--erreur .champ-texte__aide {
+  color: var(--color-danger-background);
+}
+
+.champ-texte--succes .champ-texte__aide {
+  color: var(--color-success-background);
+}
