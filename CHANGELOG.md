@@ -9,6 +9,30 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 17)
+
+- **`clients/regles_api_client/` implémenté** (11 tâches TDD du plan
+  `docs/superpowers/plans/2026-08-02-regles-api-client-implementation.md`) :
+  premier client réel de `app/api_regles`, Vite + Vue 3 + JavaScript,
+  composables `useRegles`/`useCleApi` (pas de Pinia), CSS des maquettes US0
+  porté en Sass, `vue-router` (`/revue`, `/cle-api`), filtrage
+  recherche/thème/phase appliqué côté client (non supporté par
+  `GET /regles`). Vérifié manuellement contre l'API réelle (245/245 règles
+  chargées, rendu conforme aux maquettes)
+- **Tests** : 22 tests Vitest verts (`reglesApiService`, `useCleApi`,
+  `useRegles`, acceptance par jsonl `tests/acceptance/regles_api_client_acceptance.jsonl`)
+- **2 bugs trouvés et corrigés pendant l'implémentation** :
+  - `sass: "^1.98.0"` résolvait vers `1.102.0`, qui exige Node ≥20.19 alors
+    que ce poste tourne sous Node 18.19.1 — sass avait relevé son plancher
+    Node sans bump de version majeure. Épinglé en version exacte (`1.98.0`),
+    corrigé aussi dans le plan
+  - Bouton "Modifier la clé" (écran clé API) : première version effaçait la
+    clé directement au lieu de rouvrir le formulaire de saisie — corrigé
+    avant tout test manuel, via un état local `enModification` distinct de
+    `hasKey`
+- **`Makefile`** : cibles `regles-api-client`, `regles-api-client-install`,
+  `regles-api-client-test`
+
 ## 2026-08-02 — Claude Code (Part 16)
 
 - **Nouveau skill `clients_api`** (hors dépôt QualiCheck, `~/.claude/skills/`) :
