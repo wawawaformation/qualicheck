@@ -9,6 +9,18 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 26)
+
+- **Filtre "Revue" rendu exclusif** (`BarreFiltres.vue`) : une règle n'a
+  qu'un seul statut de revue à la fois, donc cocher "Non revue"/"À
+  revoir"/"Validée" désactive désormais les autres au lieu de les cumuler
+  (contrairement à Thème/Phase/Outil, qui restent en OU multi-sélection).
+  Recliquer sur le statut actif l'enlève (retour à "aucun filtre"). Suite
+  Vitest non affectée (`filtreReviewStatus` reste un tableau côté
+  `useRegles`) ; comportement de clic non vérifiable par un outil headless
+  sans navigateur piloté (décision actée : pas de Playwright) — à confirmer
+  visuellement
+
 ## 2026-08-02 — Claude Code (Part 25)
 
 - **Bouton "afficher la clé" sur le champ de saisie de la clé API**
