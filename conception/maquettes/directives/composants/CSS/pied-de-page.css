@@ -9,7 +9,8 @@
   align-items: stretch; /* le separateur vertical doit couvrir toute la hauteur de la ligne */
   max-width: var(--container-wide);
   margin-inline: auto;
-  padding-block: 2.5rem;
+  padding-top: 2.5rem;
+  padding-bottom: 0.5rem;
 }
 
 .pied-de-page__logo {
@@ -65,7 +66,8 @@
   justify-content: space-between;
   max-width: var(--container-wide);
   margin-inline: auto;
-  padding-block: 1.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 1.5rem;
   border-top: 1px solid var(--color-surface);
   font: var(--text-font);
   color: var(--color-text-secondary);

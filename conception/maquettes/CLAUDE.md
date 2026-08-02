@@ -19,6 +19,14 @@ variables.css est un fichier de variables CSS qu'il faudra completer.
 
 Les icônes utilisées dans l'interface sont des Bootstrap Icons.
 
+## Règle : aucun JavaScript dans les maquettes
+
+Les maquettes (composants isolés et écrans assemblés) restent du HTML/CSS
+statique, sans comportement interactif réel (pas de redimensionnement au
+glisser, pas de filtrage dynamique, pas de drag&drop...). Un comportement
+interactif repéré comme nécessaire est documenté comme exigence pour
+l'implémentation réelle (le futur client Vue.js), pas simulé ici avec du JS.
+
 ## Composants HTML/CSS construits depuis Accueil.pdf
 
 Le dossier `directive/composants/` contient la decoupe HTML de la page d'accueil :
@@ -44,3 +52,24 @@ Au fur et à mesure de la conception, tu complèteras ce dossier avec des petits
 
 1. US0 : amélioration des règles et de leur enrichissement
 Le fichier ecran_revue_regles_a_nettement _ameliorer.html reflete parfaitement le comportement fonctionnel mais n'est pas en accord avec le style général de l'interface. Il faudra donc le reprendre pour qu'il soit en accord avec le style général de l'interface.
+
+Exigences repérées pendant le maquettage, à reprendre lors de l'implémentation Vue.js (pas simulées en JS ici, cf. règle ci-dessus) :
+
+- Colonne de liste des règles (`ecran-revue-regles__liste`) redimensionnable par
+  l'utilisateur (glisser le bord droit) pour laisser plus ou moins de place au
+  panneau de détail/annotation — largeur mini/maxi à définir lors de
+  l'implémentation.
+- Gestion de la clé API (`ecran-cle-api.html`, 2 états : aucune clé / clé
+  enregistrée) : l'utilisateur peut la renseigner, la modifier ou la
+  supprimer à tout moment via l'entête (remplace les 3 liens habituels du
+  menu — "Renseigner ma clé API" si aucune clé, "Modifier ma clé API" /
+  "Supprimer ma clé API" si une clé est enregistrée). Si l'utilisateur tente
+  d'enregistrer une annotation sans clé valide, il est redirigé vers cet
+  écran. Champ unique (le jeton suffit à l'identification côté serveur, cf.
+  `app/api_regles/auth.py`), pas de champ nom d'utilisateur. Stockage côté
+  client (localStorage/sessionStorage) non encore décidé — à trancher lors
+  de l'implémentation.
+- Pied de page : sur les écrans d'administration US0 (revue des règles, clé
+  API), les liens "Accueil" et "Préparer un audit" (destinés à l'utilisateur
+  final) sont retirés de `pied-de-page__nav` — seuls restent "Le projet",
+  "Mentions légales", "Politique des données".
