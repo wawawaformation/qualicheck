@@ -1,11 +1,16 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { libelleStatut } from '../utils/statutRevue.js'
+import { useCleApi } from '../composables/useCleApi.js'
 
 const props = defineProps({
   regle: { type: Object, required: true },
 })
 const emit = defineEmits(['annoter'])
+
+const router = useRouter()
+const { hasKey } = useCleApi()
 
 const statutForm = ref(props.regle.review_status ?? 'aucun')
 const noteForm = ref(props.regle.review_note ?? '')
@@ -25,6 +30,18 @@ watch(statutForm, (valeur) => {
 const peutEnregistrer = computed(
   () => statutForm.value !== 'a_revoir' || noteForm.value.trim() !== ''
 )
+
+// Vérifie la clé API dès l'intention de vraiment annoter (choix de "À
+// revoir" ou "Validée"), pas à "Non revue" : plus tôt que le clic sur
+// "Enregistrer", pour ne pas laisser l'utilisateur rédiger une note qui
+// serait perdue à la redirection. Sur @change, pas sur un watch(statutForm) :
+// un watch se déclencherait aussi quand le changement de règle réinitialise
+// statutForm par programmation, pas seulement sur un vrai clic utilisateur.
+function verifierCleAvantAnnotation() {
+  if (!hasKey.value) {
+    router.push({ path: '/cle-api', query: { retour: props.regle.numero } })
+  }
+}
 
 const badge = computed(() => libelleStatut(props.regle.review_status))
 
@@ -91,11 +108,23 @@ function enregistrer() {
           Non revue
         </label>
         <label class="segmented-statut__option segmented-statut__option--danger">
-          <input type="radio" name="review_status" value="a_revoir" v-model="statutForm" />
+          <input
+            type="radio"
+            name="review_status"
+            value="a_revoir"
+            v-model="statutForm"
+            @change="verifierCleAvantAnnotation"
+          />
           À revoir
         </label>
         <label class="segmented-statut__option segmented-statut__option--succes">
-          <input type="radio" name="review_status" value="valide" v-model="statutForm" />
+          <input
+            type="radio"
+            name="review_status"
+            value="valide"
+            v-model="statutForm"
+            @change="verifierCleAvantAnnotation"
+          />
           Validée
         </label>
       </fieldset>

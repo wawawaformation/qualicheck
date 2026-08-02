@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 27)
+
+- **Vérification de la clé API avancée au choix du statut**
+  (`PanneauDetailRegle.vue`) : sélectionner "À revoir" ou "Validée" (pas
+  "Non revue") redirige immédiatement vers `/cle-api?retour=<numero>` si
+  aucune clé n'est enregistrée, au lieu d'attendre le clic sur "Enregistrer
+  l'annotation" — évite de laisser l'utilisateur rédiger une note qui
+  serait perdue à la redirection. Sur `@change` des deux radios concernées,
+  pas sur un `watch(statutForm)`, pour ne pas se déclencher quand le
+  changement de règle réinitialise le formulaire par programmation
+
 ## 2026-08-02 — Claude Code (Part 26)
 
 - **Filtre "Revue" rendu exclusif** (`BarreFiltres.vue`) : une règle n'a
