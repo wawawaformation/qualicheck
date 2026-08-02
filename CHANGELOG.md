@@ -9,6 +9,21 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 48)
+
+- **Nouveau skill projet `client-vuejs-qualicheck`**
+  (`.claude/skills/client-vuejs-qualicheck/SKILL.md`) : capitalise les
+  motifs et pièges réellement rencontrés en construisant
+  `regles_api_client` (composable singleton, piège `watch()` sur une valeur
+  qui peut se répéter, redirection avec contexte en query string,
+  `scrollBehavior`, épinglage strict des versions du toolchain pour Node
+  ancien, stratégie de surcharge CSS locale-vs-partagée, vérification
+  visuelle headless sans Playwright, redimensionnement au glisser, tests
+  sans BDD, mécanisme unique de toast). Destiné aux futurs clients Vue.js
+  (US1, US2) — pas de conventions générales (déjà dans le skill global
+  `clients_api`), uniquement des choses qui ont coûté un aller-retour de
+  correction sur ce projet
+
 ## 2026-08-02 — Claude Code (Part 47)
 
 - **Correction de la Part 46, à la demande de David** : `width: fit-content`
