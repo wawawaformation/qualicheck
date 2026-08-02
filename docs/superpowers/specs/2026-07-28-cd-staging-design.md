@@ -260,13 +260,27 @@ exécutées par David lui-même sur cloclo.
        }
 
        @api path /regles* /health /docs* /redoc /openapi.json
-       reverse_proxy @api api-regles:8880
-
-       root * /srv/www/regles.qualicheck.koabana.fr
-       try_files {path} /index.html
-       file_server
+       handle @api {
+           reverse_proxy api-regles:8880
+       }
+       handle {
+           root * /srv/www/regles.qualicheck.koabana.fr
+           try_files {path} /index.html
+           file_server
+       }
    }
    ```
+
+   **Piège Caddy évité ici** : `reverse_proxy @api ...` suivi de `try_files`
+   *sans* `handle` ne fonctionne pas — Caddy réordonne les directives selon
+   un ordre fixe interne, pas l'ordre du fichier, et `try_files` s'exécute
+   **avant** `reverse_proxy` dans cet ordre. `try_files {path} /index.html`
+   réécrit alors `/regles` en `/index.html` en interne (aucun fichier
+   `regles` n'existe), avant que `@api` n'ait vu le chemin d'origine — testé
+   en réel sur cloclo le 2026-08-02, `/regles` retournait le fichier
+   statique au lieu du proxy. Les blocs `handle` s'exécutent dans l'ordre
+   écrit et s'excluent mutuellement (switch/case), ce qui contourne le
+   problème.
 
    Le répertoire `/srv/www/regles.qualicheck.koabana.fr/` doit exister et
    être accessible en écriture par l'utilisateur du runner GitHub Actions

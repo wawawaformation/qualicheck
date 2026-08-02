@@ -9,6 +9,20 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 51)
+
+- **Bug corrigé en réel sur cloclo : `/regles` servait le fichier statique
+  au lieu de l'API** — Caddy réordonne les directives selon un ordre fixe
+  interne, pas l'ordre du `Caddyfile` : `try_files` s'exécute avant
+  `reverse_proxy`, réécrivant `/regles` en `/index.html` (aucun fichier
+  `regles`) avant que le matcher `@api` ne voie le chemin d'origine.
+  Corrigé avec des blocs `handle` (exécution dans l'ordre écrit,
+  mutuellement exclusifs) dans la spec CD staging. **Confirmé fonctionnel
+  par David en réel** (fichier de test + `/health`/`/regles`)
+- **Ajouté au skill `client-vuejs-qualicheck`** : ce piège Caddy
+  spécifique (same-origin front+API), pour ne pas le retrouver au
+  déploiement d'US1/US2
+
 ## 2026-08-02 — Claude Code (Part 50)
 
 - **Bloc Caddy complété avec les en-têtes de sécurité**
