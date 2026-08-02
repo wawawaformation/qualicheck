@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>ecran-revue-regles</title>
+<link rel="stylesheet" href="style/bootstrap-icons.css" />
+<link rel="stylesheet" href="style/variables.css" />
+<link rel="stylesheet" href="style/base.css" />
+<link rel="stylesheet" href="style/entete.css" />
+<link rel="stylesheet" href="style/pied-de-page.css" />
+<link rel="stylesheet" href="style/bouton.css" />
+<link rel="stylesheet" href="style/champ-texte.css" />
+<link rel="stylesheet" href="style/chip-filtre.css" />
+<link rel="stylesheet" href="style/barre-filtres.css" />
+<link rel="stylesheet" href="style/badge-statut.css" />
+<link rel="stylesheet" href="style/tag-outil.css" />
+<link rel="stylesheet" href="style/ligne-regle.css" />
+<link rel="stylesheet" href="style/segmented-statut.css" />
+<link rel="stylesheet" href="style/bloc-provenance.css" />
+<link rel="stylesheet" href="style/panneau-detail-regle.css" />
+<style>
+  .ecran-revue-regles {
+    max-width: 75rem;
+    margin-inline: auto;
+    padding-block: 2rem;
+  }
+  .ecran-revue-regles__entete {
+    margin-bottom: 1.5rem;
+  }
+  .ecran-revue-regles__titre {
+    font: var(--title-section-font);
+    color: var(--color-text);
+    margin: 0;
+  }
+  .ecran-revue-regles__sous-titre {
+    font: var(--text-font);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 0.375rem 0 0;
+  }
+  .ecran-revue-regles__corps {
+    display: grid;
+    grid-template-columns: minmax(20rem, 26rem) 1fr;
+    gap: 0;
+    margin-top: 1rem;
+    border: 1px solid var(--color-surface);
+    border-radius: var(--radius-default);
+    min-height: 34rem;
+  }
+  .ecran-revue-regles__liste {
+    border-right: 1px solid var(--color-surface);
+    max-height: 40rem;
+    overflow-y: auto;
+  }
+  .ecran-revue-regles__detail {
+    padding: 1.75rem 2rem;
+    max-height: 40rem;
+    overflow-y: auto;
+  }
+  .panneau-detail-regle__annotation {
+    margin-top: 1.625rem;
+    padding-top: 1.125rem;
+    border-top: 1px solid var(--color-surface);
+  }
+  .panneau-detail-regle__annotation h3 {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-secondary);
+    margin: 0 0 0.875rem;
+  }
+  .panneau-detail-regle__annotation .champ-texte {
+    margin-top: 1rem;
+  }
+  .panneau-detail-regle__pied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .panneau-detail-regle__horodatage {
+    font: var(--text-font);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+  }
+</style>
+</head>
+<body>
+<header class="entete">
+  <a class="entete__logo" href="#">
+    <span class="entete__logo-icone"><i class="bi bi-check-lg"></i></span>
+    QualiCheck
+  </a>
+  <nav class="entete__nav">
+    <a href="#">Modifier ma clé API</a>
+    <a href="#">Supprimer ma clé API</a>
+  </nav>
+</header>
+
+<main class="ecran-revue-regles">
+  <div class="ecran-revue-regles__entete">
+    <h1 class="ecran-revue-regles__titre">Revue du référentiel</h1>
+    <p class="ecran-revue-regles__sous-titre">Classification des règles Opquast par l'agent d'enrichissement</p>
+  </div>
+
+  <div class="barre-filtres">
+    <div class="barre-filtres__ligne-recherche">
+      <div class="barre-filtres__recherche">
+        <label for="recherche" class="visually-hidden">Rechercher dans l'intitulé des règles</label>
+        <input type="search" id="recherche" placeholder="Rechercher dans l'intitulé…" />
+      </div>
+      <p class="barre-filtres__compte"><strong>6</strong> / 245 règles affichées</p>
+    </div>
+
+    <details class="barre-filtres__filtres">
+      <summary>Filtres <i class="bi bi-chevron-down"></i></summary>
+      <div class="barre-filtres__groupes">
+        <fieldset class="barre-filtres__groupe">
+          <legend class="visually-hidden">Thème</legend>
+          <span class="barre-filtres__groupe-titre" aria-hidden="true">Thème</span>
+          <div class="barre-filtres__groupe-ligne">
+            <label class="chip-filtre"><input type="checkbox" value="E-Commerce" />E-Commerce</label>
+            <label class="chip-filtre"><input type="checkbox" value="Formulaires" />Formulaires</label>
+            <label class="chip-filtre"><input type="checkbox" value="Sécurité" />Sécurité</label>
+            <label class="chip-filtre"><input type="checkbox" value="Navigation" />Navigation</label>
+            <label class="chip-filtre"><input type="checkbox" value="Identification et contact" />Identification et contact</label>
+            <label class="chip-filtre"><input type="checkbox" value="Liens" />Liens</label>
+            <label class="chip-filtre"><input type="checkbox" value="Données personnelles" />Données personnelles</label>
+            <label class="chip-filtre"><input type="checkbox" value="Présentation" />Présentation</label>
+          </div>
+          <div class="barre-filtres__groupe-ligne">
+            <label class="chip-filtre"><input type="checkbox" value="Structure et code" />Structure et code</label>
+            <label class="chip-filtre"><input type="checkbox" value="Contenus" />Contenus</label>
+            <label class="chip-filtre"><input type="checkbox" value="Serveur et performances" />Serveur et performances</label>
+            <label class="chip-filtre"><input type="checkbox" value="Images et médias" />Images et médias</label>
+            <label class="chip-filtre"><input type="checkbox" value="Internationalisation" />Internationalisation</label>
+            <label class="chip-filtre"><input type="checkbox" value="Newsletter" />Newsletter</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="barre-filtres__groupe">
+          <legend class="visually-hidden">Phase</legend>
+          <span class="barre-filtres__groupe-titre" aria-hidden="true">Phase</span>
+          <div class="barre-filtres__groupe-ligne">
+            <label class="chip-filtre"><input type="checkbox" value="Conception" />Conception</label>
+            <label class="chip-filtre"><input type="checkbox" value="Développement" />Développement</label>
+            <label class="chip-filtre"><input type="checkbox" value="Editorial" />Editorial</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="barre-filtres__groupe">
+          <legend class="visually-hidden">Outil</legend>
+          <span class="barre-filtres__groupe-titre" aria-hidden="true">Outil</span>
+          <div class="barre-filtres__groupe-ligne">
+            <label class="chip-filtre"><input type="checkbox" value="statique" />Statique</label>
+            <label class="chip-filtre"><input type="checkbox" value="playwright" />Playwright</label>
+            <label class="chip-filtre"><input type="checkbox" value="vision" />Vision</label>
+            <label class="chip-filtre"><input type="checkbox" value="manuel" />Manuel</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="barre-filtres__groupe">
+          <legend class="visually-hidden">Revue</legend>
+          <span class="barre-filtres__groupe-titre" aria-hidden="true">Revue</span>
+          <div class="barre-filtres__groupe-ligne">
+            <label class="chip-filtre"><input type="checkbox" value="aucun" />Non revue</label>
+            <label class="chip-filtre"><input type="checkbox" value="a_revoir" />À revoir</label>
+            <label class="chip-filtre"><input type="checkbox" value="valide" />Validée</label>
+          </div>
+        </fieldset>
+      </div>
+    </details>
+  </div>
+
+  <div class="ecran-revue-regles__corps">
+    <nav class="ecran-revue-regles__liste" aria-label="Liste des règles">
+      <ul class="liste-regles">
+        <li>
+          <button class="ligne-regle" type="button">
+            <span class="ligne-regle__numero">n°12</span>
+            <span>
+              <p class="ligne-regle__intitule">Les mentions légales sont accessibles depuis toutes les pages</p>
+              <span class="ligne-regle__outils">
+                <span class="tag-outil">statique</span>
+              </span>
+            </span>
+            <span class="badge-statut badge-statut--neutre">Non revue</span>
+          </button>
+        </li>
+        <li>
+          <button class="ligne-regle" type="button" aria-current="true">
+            <span class="ligne-regle__numero">n°28</span>
+            <span>
+              <p class="ligne-regle__intitule">Le formulaire de contact confirme la bonne soumission des données</p>
+              <span class="ligne-regle__outils">
+                <span class="tag-outil">statique</span>
+                <span class="tag-outil">playwright</span>
+              </span>
+            </span>
+            <span class="badge-statut badge-statut--danger">À revoir</span>
+          </button>
+        </li>
+        <li>
+          <button class="ligne-regle" type="button">
+            <span class="ligne-regle__numero">n°44</span>
+            <span>
+              <p class="ligne-regle__intitule">Le site est intégralement servi en HTTPS</p>
+              <span class="ligne-regle__outils">
+                <span class="tag-outil">statique</span>
+              </span>
+            </span>
+            <span class="badge-statut badge-statut--succes">Validée</span>
+          </button>
+        </li>
+        <li>
+          <button class="ligne-regle" type="button">
+            <span class="ligne-regle__numero">n°65</span>
+            <span>
+              <p class="ligne-regle__intitule">Les liens ne sont pas soulignés en dehors du texte courant</p>
+              <span class="ligne-regle__outils">
+                <span class="tag-outil">vision</span>
+              </span>
+            </span>
+            <span class="badge-statut badge-statut--neutre">Non revue</span>
+          </button>
+        </li>
+        <li>
+          <button class="ligne-regle" type="button">
+            <span class="ligne-regle__numero">n°124</span>
+            <span>
+              <p class="ligne-regle__intitule">Les contenus audio et vidéo ne démarrent pas automatiquement</p>
+              <span class="ligne-regle__outils">
+                <span class="tag-outil">statique</span>
+                <span class="tag-outil">playwright</span>
+              </span>
+            </span>
+            <span class="badge-statut badge-statut--danger">À revoir</span>
+          </button>
+        </li>
+        <li>
+          <button class="ligne-regle" type="button">
+            <span class="ligne-regle__numero">n°181</span>
+            <span>
+              <p class="ligne-regle__intitule">L'information n'est jamais véhiculée par la seule couleur</p>
+              <span class="ligne-regle__outils">
+                <span class="tag-outil">vision</span>
+                <span class="tag-outil">statique</span>
+              </span>
+            </span>
+            <span class="badge-statut badge-statut--succes">Validée</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="ecran-revue-regles__detail">
+      <article class="panneau-detail-regle">
+        <p class="panneau-detail-regle__eyebrow">Règle n°28 · Formulaires</p>
+        <div class="panneau-detail-regle__entete">
+          <h2 class="panneau-detail-regle__titre">Le formulaire de contact confirme la bonne soumission des données</h2>
+          <span class="badge-statut badge-statut--danger">À revoir</span>
+        </div>
+        <div class="panneau-detail-regle__meta">
+          <span class="tag-outil">statique</span>
+          <span class="tag-outil">playwright</span>
+          <span class="tag-meta">#formulaire</span>
+          <span class="tag-meta">#confiance</span>
+          <span class="tag-meta">Développement</span>
+        </div>
+
+        <section class="panneau-detail-regle__section">
+          <h3>Contexte</h3>
+          <p>Un utilisateur qui soumet un formulaire doit être assuré que sa demande a bien été transmise.</p>
+        </section>
+
+        <section class="panneau-detail-regle__section">
+          <h3>Solution</h3>
+          <p>Un message de confirmation explicite s'affiche après soumission, ou l'utilisateur est redirigé vers une page de confirmation.</p>
+        </section>
+
+        <section class="panneau-detail-regle__section">
+          <h3>Contrôle</h3>
+          <p>Analyser le HTML du formulaire, puis le soumettre réellement et vérifier la présence d'une confirmation.</p>
+        </section>
+
+        <section class="panneau-detail-regle__section">
+          <h3>Guide d'analyse</h3>
+          <p>Analyse statique de la structure du &lt;form&gt; (méthode, action), puis soumission réelle via Playwright pour vérifier le message ou la redirection post-soumission.</p>
+          <p class="panneau-detail-regle__justification"><strong>Justification —</strong> Deux volets indépendants : structure du formulaire (statique) et comportement réel après soumission (playwright).</p>
+        </section>
+
+        <dl class="bloc-provenance">
+          <div class="bloc-provenance__item"><dt>Stratégie</dt><dd>statique&amp;playwright</dd></div>
+          <div class="bloc-provenance__item"><dt>Version du prompt</dt><dd>6</dd></div>
+          <div class="bloc-provenance__item"><dt>Modèle</dt><dd>kimi-k2.6</dd></div>
+        </dl>
+
+        <div class="panneau-detail-regle__annotation">
+          <h3>Annotation de revue</h3>
+          <fieldset class="segmented-statut">
+            <legend>Statut de revue</legend>
+            <label class="segmented-statut__option segmented-statut__option--neutre">
+              <input type="radio" name="review_status" value="aucun" />
+              Non revue
+            </label>
+            <label class="segmented-statut__option segmented-statut__option--danger">
+              <input type="radio" name="review_status" value="a_revoir" checked />
+              À revoir
+            </label>
+            <label class="segmented-statut__option segmented-statut__option--succes">
+              <input type="radio" name="review_status" value="valide" />
+              Validée
+            </label>
+          </fieldset>
+
+          <div class="champ-texte">
+            <label for="review-note">Note de revue <span style="color: var(--color-danger-background);">— obligatoire</span></label>
+            <textarea id="review-note" rows="3">La grammaire ET (« &amp; ») est correcte ici, mais guide_analyse ne précise pas l'ordre d'exécution recommandé (statique avant playwright). À clarifier pour l'agent d'audit.</textarea>
+            <p class="champ-texte__aide">Cette note est réinjectée telle quelle dans le prompt lors du prochain <code>make enrich-again</code>.</p>
+          </div>
+
+          <div class="panneau-detail-regle__pied">
+            <span class="panneau-detail-regle__horodatage">Dernière revue : 24/07/2026 09:12</span>
+            <button class="bouton bouton--plein" type="submit">Enregistrer l'annotation</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</main>
+
+<footer class="pied-de-page">
+  <div class="pied-de-page__haut">
+    <div>
+      <a class="pied-de-page__logo" href="#">
+        <i class="bi bi-check-lg"></i> QualiCheck
+      </a>
+      <p class="pied-de-page__tagline">Assistant d'aide à l'audit qualité web basé sur les règles Opquast</p>
+    </div>
+    <nav class="pied-de-page__nav">
+      <a href="#"><i class="bi bi-book"></i> Le projet</a>
+      <a href="#"><i class="bi bi-bank"></i> Mentions légales</a>
+      <a href="#"><i class="bi bi-shield-lock"></i> Politique des données</a>
+    </nav>
+  </div>
+  <div class="pied-de-page__bas">
+    <p>🄯 Copyleft 2026, vous trouverez le projet sur <a href="#">GitHub</a></p>
+    <p class="pied-de-page__mention">QualiCheck n'est pas un outil officiel Opquast et ne remplace pas l'expertise d'un auditeur</p>
+  </div>
+</footer>
+</body>
+</html>

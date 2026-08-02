@@ -9,6 +9,51 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 15)
+
+- **US0 (revue du référentiel) : 3 nouveaux écrans/états, brainstormés puis
+  maquettés** (aucune spec écrite en amont — validations successives par
+  questions ciblées, cohérent avec le mode de travail léger déjà en place
+  pour le maquettage) :
+  - `ecran-revue-regles-etats.html` : liste vide après filtrage (0/245),
+    confirmation d'enregistrement (`bandeau-message--succes`), échec
+    d'enregistrement (`bandeau-message--erreur`) — panneau détail isolé
+    sans redupliquer la liste pour les 2 derniers états. `bandeau-message.css`
+    copié dans `US0/style/` (jusqu'ici seulement dans `US2/style/`)
+  - `ecran-cle-api.html` : 2 états (aucune clé / clé enregistrée), champ
+    unique — le jeton suffit à l'identification côté serveur
+    (`app/api_regles/auth.py`), pas de champ nom d'utilisateur
+- **Nav de l'entête (US0)** : les 3 liens habituels (Mes audits/Question
+  libre/Règles Opquast) remplacés par la gestion de la clé API
+  ("Renseigner ma clé API" / "Modifier ma clé API" + "Supprimer ma clé
+  API" selon l'état) sur les 3 écrans US0 — l'écran de revue n'a jamais eu
+  de lien de menu qui lui corresponde réellement (aucun des 3 ne mène à cet
+  écran), la clé API a rempli ce vide
+- **`aria-current="page"` retiré du lien "Règles Opquast"** sur les écrans
+  US0 : ce lien mène au référentiel officiel externe (opquast.com), pas à
+  l'écran de revue interne — le marquer actif était trompeur
+- **Icône avatar (`entete__avatar`) retirée des 3 écrans US0** — pas de
+  notion de compte utilisateur sur ces écrans d'administration
+- **Pied de page (US0)** : liens "Accueil"/"Préparer un audit" (destinés à
+  l'utilisateur final) retirés de `pied-de-page__nav` sur les 3 écrans —
+  hors contexte pour une zone d'administration
+- **2 bugs CSS trouvés et corrigés en construisant `ecran-cle-api.html`**,
+  répercutés dans les 3 copies du design system
+  (`directives/composants/CSS/`, `US0/style/`, `US2/style/`) :
+  - `.bouton--neutre` sans `background: transparent` → fond gris par
+    défaut du navigateur, texte illisible ("Supprimer la clé")
+  - Écart entre les 2 rangées du pied de page trop important (4rem cumulés
+    entre `__haut` et `__bas`) — resserré à 1rem cumulé
+    (`padding-bottom`/`padding-top` explicites au lieu de `padding-block`
+    symétrique, pour ne pas toucher l'espacement extérieur)
+- **Nouvelle règle actée dans `conception/maquettes/CLAUDE.md`** : aucun
+  JavaScript dans les maquettes — tout comportement interactif repéré
+  pendant le maquettage (redimensionnement, redirection selon état...) est
+  documenté comme exigence pour l'implémentation Vue.js réelle, pas simulé
+  ici. Exigences notées sous US0 : colonne de liste redimensionnable,
+  gestion de la clé API (stockage client — localStorage/sessionStorage —
+  non tranché, à décider lors de l'implémentation)
+
 ## 2026-08-02 — Claude Code (Part 14)
 
 - **Solde de crédit remis dans les 2 écrans US2** (`ecran-question-libre.html`,
