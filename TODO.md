@@ -78,6 +78,18 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - Reste ouvert si souhaité : `F_choix_llm.md` cite ce fichier comme annexe
     (argumentation souveraineté, Bayart, Cloud Act) — copier spécifiquement
     dans `conception/annexes/` en plus, ou le renvoi vers `fonds/` suffit ?
+- [ ] **Persister le retour pouce haut/bas d'US2 (question libre)** — la
+  maquette (`conception/maquettes/directives/composants/ecran-question-libre.html`,
+  `fil-dialogue.html`) affiche un bouton pouce haut/bas sous chaque réponse de
+  l'agent, mais rien n'est encore spécifié côté modèle/API pour stocker ce
+  retour. Intention actée : garder une trace exploitable pour améliorer le
+  système plus tard (ex. jeu d'exemples pour affiner le prompt RAG, détection
+  des réponses mal notées) — à spécifier avec la conception d'US2 (API
+  `api_business`, pas encore conçue) — `D`
+  - Volet RGPD déjà anticipé dans `docs/rgpd/registre_traitements.md`
+    (section « Traitements anticipés, non actifs — US2 »), même logique que
+    le volet audit US1 : rien à traiter tant qu'US2 n'a pas de spec, mais
+    finalité/base légale/conservation à trancher à ce moment-là.
 
 ## Documentation
 

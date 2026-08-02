@@ -9,6 +9,45 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 13)
+
+- **US2 (question libre) : diagrammes UML** — `conception/5_us2_question_libre/cas_utilisation_us2.drawio`
+  (cas d'utilisation : vérification authentification/crédit en `«include»`,
+  soumission de page en `«extend»`, vider la session en acteur direct) et
+  `diagramme_activite_us2.drawio` (2 couloirs Utilisateur/Système, boucle de
+  re-vérification du crédit à chaque nouvelle question, bandeau d'erreur
+  après 3 échecs techniques du RAG/agent, "Terminer la session" redirige
+  explicitement vers "Mes audits" après une étape optionnelle de sauvegarde)
+- **Écran assemblé US2** — `conception/maquettes/US2/ecran-question-libre.html` :
+  5 composants (zone-soumission-page en modale CSS pure, zone-saisie-question
+  en pilule avec bouton "+" intégré, carte-regle-citee, fil-dialogue)
+  assemblés selon les conventions ChatGPT/Claude web (messages agent sans
+  bulle + avatar, bulle discrète pour l'utilisateur), historique borné
+  (`max-height` + défilement interne, jamais de contenu sous la barre de
+  saisie), horodatage et pouce haut/bas par réponse, exemple à 2 règles
+  citées dans une même réponse
+- **Écran garde-fous** — `conception/maquettes/US2/ecran-question-libre-garde-fous.html` :
+  copie illustrant crédit épuisé / échec technique (nouveau variant
+  `bandeau-message--avertissement`), question hors sujet, gros mots, idées
+  suicidaires (réponse redirigeant vers le 3114/15/112, volontairement sans
+  pouce ni règle citée)
+- **Réorganisation des dossiers de maquette** — les écrans assemblés déménagés
+  de `composants/` (réservé aux briques réutilisables) vers
+  `conception/maquettes/US2/`, avec son propre `style/` autonome (copie des
+  CSS et polices nécessaires, découplée de `composants/CSS/`)
+- **`--container-wide` élargi à 1170px** (`variables.css`, dupliqué dans
+  `US2/style/variables.css`) pour l'en-tête et le pied-de-page
+- **Pied de page aligné sur `accueil_a_revoir.png`** — séparateurs verticaux
+  (logo/tagline ↔ nav, copyright ↔ mention légale), icônes de nav en violet
+  accent, lien "Politique des données" ajouté
+- **RGPD** — section "Traitements anticipés, non actifs — US2" ajoutée à
+  `docs/rgpd/registre_traitements.md` (même logique que le volet audit US1 :
+  rien de réel à traiter tant qu'US2 n'a pas de spec), suivi dans `TODO.md`
+- **Audit UX** (nouveau skill `ui-ux-pro-max`) sur les 2 écrans US2 : cibles
+  tactiles sous 44px, absence de media queries, focus clavier peu visible
+  sur la modale CSS-only, transitions `:hover` manquantes — acceptés en
+  l'état, périmètre maquettage desktop-first, aucun correctif appliqué
+
 ## 2026-07-31 — Claude Code (Part 12)
 
 - **9 nouveaux composants de maquette** pour l'écran de revue du référentiel,

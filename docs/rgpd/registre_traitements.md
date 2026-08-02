@@ -60,6 +60,26 @@ de la spec US1, avec au minimum :
 - Durée de conservation des audits/constats
 - Droits des personnes concernées (accès, rectification, suppression)
 
+## Traitements anticipés, non actifs — US2 (question libre)
+
+Ajouté le 2026-08-01, à l'occasion du maquettage de l'écran US2
+(`conception/maquettes/directives/composants/ecran-question-libre.html`,
+`fil-dialogue.html`) : un bouton pouce haut/bas apparaît sous chaque réponse
+de l'agent, dans l'intention de garder une trace exploitable pour améliorer
+le système plus tard (ex. enrichir `tests/acceptance/rag_acceptance.jsonl`
+avec les cas mal notés).
+
+Aucun traitement n'étant réellement mis en œuvre (US2 n'a ni spec ni
+implémentation à ce jour — simple maquette statique), ce volet reste hors du
+présent registre au sens de l'article 30 du RGPD, même logique que le volet
+audit ci-dessus. À trancher au moment de la spec US2, au minimum :
+
+- Nature exacte des données liées au retour (le pouce seul ? la question
+  posée ? la page/URL éventuellement soumise ?)
+- Finalité précise et base légale
+- Durée de conservation
+- Droits des personnes concernées
+
 ## Procédures de tri (rétention/purge)
 
 - **Référentiel Opquast** : aucune purge nécessaire — donnée non
@@ -69,3 +89,4 @@ de la spec US1, avec au minimum :
   clients), à revoir si le nombre de clients externes grandit.
 - **Volet audit** (`utilisateur`/`audit`/`constat`) : procédure à définir
   avec la spec US1.
+- **Volet US2** (retour pouce haut/bas) : procédure à définir avec la spec US2.

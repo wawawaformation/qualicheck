@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>ecran-question-libre</title>
+<link rel="stylesheet" href="style/bootstrap-icons.css" />
+<link rel="stylesheet" href="style/variables.css" />
+<link rel="stylesheet" href="style/base.css" />
+<link rel="stylesheet" href="style/entete.css" />
+<link rel="stylesheet" href="style/pied-de-page.css" />
+<link rel="stylesheet" href="style/bouton.css" />
+<link rel="stylesheet" href="style/champ-texte.css" />
+<link rel="stylesheet" href="style/indicateur-credit.css" />
+<link rel="stylesheet" href="style/zone-soumission-page.css" />
+<link rel="stylesheet" href="style/carte-regle-citee.css" />
+<link rel="stylesheet" href="style/fil-dialogue.css" />
+<link rel="stylesheet" href="style/zone-saisie-question.css" />
+<style>
+  .ecran-question-libre {
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-block: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .ecran-question-libre__entete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .ecran-question-libre__titre {
+    font: var(--title-section-font);
+    color: var(--color-text);
+    margin: 0;
+  }
+  .ecran-question-libre__droite {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .icone-bouton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-text-secondary);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  .icone-bouton:hover {
+    color: var(--color-text);
+    border-color: var(--color-text);
+  }
+  .ecran-question-libre__cadre {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.25rem;
+    border: 1px solid var(--color-surface);
+    border-radius: var(--radius-default);
+  }
+  .avertissement-ia {
+    font: var(--text-font);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-surface);
+  }
+  .avertissement-ia i {
+    margin-right: 0.375rem;
+  }
+  .ecran-question-libre__fil {
+    min-height: 10rem;
+    max-height: 26rem; /* au-dela, defilement interne : l'historique ne doit jamais deborder sous la barre de question */
+    overflow-y: auto;
+    padding-right: 1rem; /* espace entre le contenu et l'ascenseur */
+  }
+</style>
+</head>
+<body>
+<header class="entete">
+  <a class="entete__logo" href="#">
+    <span class="entete__logo-icone"><i class="bi bi-check-lg"></i></span>
+    QualiCheck
+  </a>
+  <nav class="entete__nav">
+    <a href="#">Mes audits</a>
+    <a href="#" aria-current="page">Question libre</a>
+    <a href="#">Règles Opquast</a>
+    <span class="entete__avatar"><i class="bi bi-person-circle"></i></span>
+  </nav>
+</header>
+
+<main class="ecran-question-libre">
+  <div class="ecran-question-libre__entete">
+    <h1 class="ecran-question-libre__titre">Question libre</h1>
+    <div class="ecran-question-libre__droite">
+      <button class="icone-bouton" type="button" title="Vider la session" aria-label="Vider la session">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
+      <button class="icone-bouton" type="button" title="Terminer la session" aria-label="Terminer la session">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="ecran-question-libre__cadre">
+    <p class="avertissement-ia">
+      <i class="bi bi-info-circle"></i>
+      Vous échangez avec un système d'intelligence artificielle à risque limité (niveau 3 sur 4 selon l'AI Act), <a href="https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil" target="_blank" rel="noopener">voir les 4 niveaux de risque</a>
+    </p>
+
+    <div class="fil-dialogue ecran-question-libre__fil">
+      <div class="echange-dialogue">
+        <div class="message-dialogue message-dialogue--utilisateur">
+          <p>Est-ce que mes liens de navigation doivent être soulignés ?</p>
+          <span class="message-dialogue__horodatage">01/08/2026 09:14</span>
+        </div>
+        <div class="message-dialogue message-dialogue--agent">
+          <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+          <div class="message-dialogue--agent__corps">
+            <p>Le soulignement doit rester réservé aux liens dans le texte courant. En dehors (menus, boutons), il ne doit pas être utilisé pour ne pas créer de confusion visuelle.</p>
+            <div class="message-dialogue__regles">
+              <div class="carte-regle-citee">
+                <span class="carte-regle-citee__numero">n°65</span>
+                <p class="carte-regle-citee__intitule">Les liens ne sont pas soulignés en dehors du texte courant</p>
+              </div>
+            </div>
+            <div class="message-dialogue__retour">
+              <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+                <i class="bi bi-hand-thumbs-up"></i>
+              </button>
+              <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+                <i class="bi bi-hand-thumbs-down"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="echange-dialogue">
+        <div class="message-dialogue message-dialogue--utilisateur">
+          <p>Dois-je afficher mes mentions légales sur toutes les pages ?</p>
+          <span class="message-dialogue__horodatage">01/08/2026 09:17</span>
+        </div>
+        <div class="message-dialogue message-dialogue--agent">
+          <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+          <div class="message-dialogue--agent__corps">
+            <p>Oui, un lien vers les mentions légales doit être accessible depuis n'importe quelle page du site, généralement via le pied de page.</p>
+            <div class="message-dialogue__regles">
+              <div class="carte-regle-citee">
+                <span class="carte-regle-citee__numero">n°12</span>
+                <p class="carte-regle-citee__intitule">Les mentions légales sont accessibles depuis toutes les pages</p>
+              </div>
+            </div>
+            <div class="message-dialogue__retour">
+              <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+                <i class="bi bi-hand-thumbs-up"></i>
+              </button>
+              <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+                <i class="bi bi-hand-thumbs-down"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="echange-dialogue">
+        <div class="message-dialogue message-dialogue--utilisateur">
+          <p>Est-ce grave si une partie de mon site n'est pas en HTTPS ?</p>
+          <span class="message-dialogue__horodatage">01/08/2026 09:21</span>
+        </div>
+        <div class="message-dialogue message-dialogue--agent">
+          <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+          <div class="message-dialogue--agent__corps">
+            <p>Oui : l'ensemble du site, y compris les images et scripts, doit être servi en HTTPS. Un contenu mixte (une ressource chargée en HTTP) expose une faille de confidentialité.</p>
+            <div class="message-dialogue__regles">
+              <div class="carte-regle-citee">
+                <span class="carte-regle-citee__numero">n°44</span>
+                <p class="carte-regle-citee__intitule">Le site est intégralement servi en HTTPS</p>
+              </div>
+            </div>
+            <div class="message-dialogue__retour">
+              <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+                <i class="bi bi-hand-thumbs-up"></i>
+              </button>
+              <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+                <i class="bi bi-hand-thumbs-down"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="echange-dialogue">
+        <div class="message-dialogue message-dialogue--utilisateur">
+          <p>Que dois-je vérifier sur les images de mon site ?</p>
+          <span class="message-dialogue__horodatage">01/08/2026 09:25</span>
+        </div>
+        <div class="message-dialogue message-dialogue--agent">
+          <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+          <div class="message-dialogue--agent__corps">
+            <p>Deux points à vérifier ici : chaque image porteuse d'information doit avoir une alternative textuelle pertinente, et les dimensions annoncées doivent correspondre à l'affichage réel pour éviter les décalages de mise en page.</p>
+            <div class="message-dialogue__regles">
+              <div class="carte-regle-citee">
+                <span class="carte-regle-citee__numero">n°8</span>
+                <p class="carte-regle-citee__intitule">Chaque image porteuse d'information a une alternative textuelle</p>
+              </div>
+              <div class="carte-regle-citee">
+                <span class="carte-regle-citee__numero">n°23</span>
+                <p class="carte-regle-citee__intitule">Les dimensions des images sont correctement définies</p>
+              </div>
+            </div>
+            <div class="message-dialogue__retour">
+              <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+                <i class="bi bi-hand-thumbs-up"></i>
+              </button>
+              <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+                <i class="bi bi-hand-thumbs-down"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form class="zone-saisie-question">
+      <label for="toggle-page" class="zone-saisie-question__plus" title="Ajouter une page à analyser" aria-label="Ajouter une page à analyser">
+        <i class="bi bi-plus-lg"></i>
+      </label>
+      <label for="question" class="visually-hidden">Poser une question</label>
+      <textarea id="question" rows="1" placeholder="Posez votre question sur la qualité web…"></textarea>
+      <button class="zone-saisie-question__envoyer" type="submit" aria-label="Envoyer">
+        <i class="bi bi-arrow-right"></i>
+      </button>
+    </form>
+
+    <input type="checkbox" id="toggle-page" class="zone-soumission-page__case" />
+    <label for="toggle-page" class="zone-soumission-page__fond" aria-hidden="true"></label>
+    <div class="zone-soumission-page__modale" role="dialog" aria-modal="true" aria-labelledby="titre-soumission-page">
+      <div class="zone-soumission-page__entete">
+        <h2 class="zone-soumission-page__titre" id="titre-soumission-page">Ajouter une page à analyser</h2>
+        <label for="toggle-page" class="zone-soumission-page__fermer" aria-label="Fermer">
+          <i class="bi bi-x-lg"></i>
+        </label>
+      </div>
+      <div class="champ-texte">
+        <label for="page-url">URL de la page</label>
+        <input type="url" id="page-url" placeholder="https://exemple.com/page" />
+      </div>
+      <p class="zone-soumission-page__ou">ou</p>
+      <div class="zone-soumission-page__fichier">
+        <label class="bouton bouton--contour bouton--neutre" for="page-capture">
+          <i class="bi bi-paperclip"></i> Joindre un fichier
+        </label>
+        <input type="file" id="page-capture" accept=".pdf,.png,.webp,.jpg,.jpeg,.txt,.md,application/pdf,image/png,image/webp,image/jpeg,text/plain,text/markdown" class="visually-hidden" />
+        <p class="champ-texte__aide">Formats acceptés : pdf, png, webp, jpg, txt, md</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="pied-de-page">
+  <div class="pied-de-page__haut">
+    <div>
+      <a class="pied-de-page__logo" href="#">
+        <i class="bi bi-check-lg"></i> QualiCheck
+      </a>
+      <p class="pied-de-page__tagline">Assistant d'aide à l'audit qualité web basé sur les règles Opquast</p>
+    </div>
+    <nav class="pied-de-page__nav">
+      <a href="#"><i class="bi bi-house"></i> Accueil</a>
+      <a href="#"><i class="bi bi-search"></i> Préparer un audit</a>
+      <a href="#"><i class="bi bi-book"></i> Le projet</a>
+      <a href="#"><i class="bi bi-bank"></i> Mentions légales</a>
+      <a href="#"><i class="bi bi-shield-lock"></i> Politique des données</a>
+    </nav>
+  </div>
+  <div class="pied-de-page__bas">
+    <p>🄯 Copyleft 2026, vous trouverez le projet sur <a href="#">GitHub</a></p>
+    <p class="pied-de-page__mention">QualiCheck n'est pas un outil officiel Opquast et ne remplace pas l'expertise d'un auditeur</p>
+  </div>
+</footer>
+</body>
+</html>

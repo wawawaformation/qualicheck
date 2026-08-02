@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>fil-dialogue</title>
+<link rel="stylesheet" href="CSS/bootstrap-icons.css" />
+<link rel="stylesheet" href="CSS/variables.css" />
+<link rel="stylesheet" href="CSS/base.css" />
+<link rel="stylesheet" href="CSS/carte-regle-citee.css" />
+<link rel="stylesheet" href="CSS/fil-dialogue.css" />
+</head>
+<body>
+<div style="padding: 2rem; max-width: 44rem;">
+<div class="fil-dialogue">
+  <div class="echange-dialogue">
+    <div class="message-dialogue message-dialogue--utilisateur">
+      <p>Est-ce que mes liens de navigation doivent être soulignés ?</p>
+      <span class="message-dialogue__horodatage">01/08/2026 09:14</span>
+    </div>
+    <div class="message-dialogue message-dialogue--agent">
+      <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+      <div class="message-dialogue--agent__corps">
+        <p>Le soulignement doit rester réservé aux liens dans le texte courant. En dehors (menus, boutons), il ne doit pas être utilisé pour ne pas créer de confusion visuelle.</p>
+        <div class="message-dialogue__regles">
+          <div class="carte-regle-citee">
+            <span class="carte-regle-citee__numero">n°65</span>
+            <p class="carte-regle-citee__intitule">Les liens ne sont pas soulignés en dehors du texte courant</p>
+          </div>
+        </div>
+        <div class="message-dialogue__retour">
+          <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+            <i class="bi bi-hand-thumbs-up"></i>
+          </button>
+          <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+            <i class="bi bi-hand-thumbs-down"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="echange-dialogue">
+    <div class="message-dialogue message-dialogue--utilisateur">
+      <p>Dois-je afficher mes mentions légales sur toutes les pages ?</p>
+      <span class="message-dialogue__horodatage">01/08/2026 09:17</span>
+    </div>
+    <div class="message-dialogue message-dialogue--agent">
+      <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+      <div class="message-dialogue--agent__corps">
+        <p>Oui, un lien vers les mentions légales doit être accessible depuis n'importe quelle page du site, généralement via le pied de page.</p>
+        <div class="message-dialogue__regles">
+          <div class="carte-regle-citee">
+            <span class="carte-regle-citee__numero">n°12</span>
+            <p class="carte-regle-citee__intitule">Les mentions légales sont accessibles depuis toutes les pages</p>
+          </div>
+        </div>
+        <div class="message-dialogue__retour">
+          <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+            <i class="bi bi-hand-thumbs-up"></i>
+          </button>
+          <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+            <i class="bi bi-hand-thumbs-down"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="echange-dialogue">
+    <div class="message-dialogue message-dialogue--utilisateur">
+      <p>Est-ce grave si une partie de mon site n'est pas en HTTPS ?</p>
+      <span class="message-dialogue__horodatage">01/08/2026 09:21</span>
+    </div>
+    <div class="message-dialogue message-dialogue--agent">
+      <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+      <div class="message-dialogue--agent__corps">
+        <p>Oui : l'ensemble du site, y compris les images et scripts, doit être servi en HTTPS. Un contenu mixte (une ressource chargée en HTTP) expose une faille de confidentialité.</p>
+        <div class="message-dialogue__regles">
+          <div class="carte-regle-citee">
+            <span class="carte-regle-citee__numero">n°44</span>
+            <p class="carte-regle-citee__intitule">Le site est intégralement servi en HTTPS</p>
+          </div>
+        </div>
+        <div class="message-dialogue__retour">
+          <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+            <i class="bi bi-hand-thumbs-up"></i>
+          </button>
+          <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+            <i class="bi bi-hand-thumbs-down"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="echange-dialogue">
+    <div class="message-dialogue message-dialogue--utilisateur">
+      <p>Que dois-je vérifier sur les images de mon site ?</p>
+      <span class="message-dialogue__horodatage">01/08/2026 09:25</span>
+    </div>
+    <div class="message-dialogue message-dialogue--agent">
+      <span class="message-dialogue--agent__avatar"><i class="bi bi-stars"></i></span>
+      <div class="message-dialogue--agent__corps">
+        <p>Deux points à vérifier ici : chaque image porteuse d'information doit avoir une alternative textuelle pertinente, et les dimensions annoncées doivent correspondre à l'affichage réel pour éviter les décalages de mise en page.</p>
+        <div class="message-dialogue__regles">
+          <div class="carte-regle-citee">
+            <span class="carte-regle-citee__numero">n°8</span>
+            <p class="carte-regle-citee__intitule">Chaque image porteuse d'information a une alternative textuelle</p>
+          </div>
+          <div class="carte-regle-citee">
+            <span class="carte-regle-citee__numero">n°23</span>
+            <p class="carte-regle-citee__intitule">Les dimensions des images sont correctement définies</p>
+          </div>
+        </div>
+        <div class="message-dialogue__retour">
+          <button type="button" title="J'apprécie cette réponse" aria-label="J'apprécie cette réponse">
+            <i class="bi bi-hand-thumbs-up"></i>
+          </button>
+          <button type="button" title="Je n'apprécie pas cette réponse" aria-label="Je n'apprécie pas cette réponse">
+            <i class="bi bi-hand-thumbs-down"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

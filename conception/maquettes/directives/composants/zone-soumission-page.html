@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>zone-soumission-page</title>
+<link rel="stylesheet" href="CSS/bootstrap-icons.css" />
+<link rel="stylesheet" href="CSS/variables.css" />
+<link rel="stylesheet" href="CSS/base.css" />
+<link rel="stylesheet" href="CSS/bouton.css" />
+<link rel="stylesheet" href="CSS/champ-texte.css" />
+<link rel="stylesheet" href="CSS/zone-soumission-page.css" />
+</head>
+<body>
+<div style="padding: 2rem; max-width: 36rem;">
+<label class="bouton bouton--contour bouton--neutre" for="toggle-page">
+  <i class="bi bi-plus-lg"></i> Ajouter une page à analyser
+</label>
+
+<input type="checkbox" id="toggle-page" class="zone-soumission-page__case" />
+<label for="toggle-page" class="zone-soumission-page__fond" aria-hidden="true"></label>
+<div class="zone-soumission-page__modale" role="dialog" aria-modal="true" aria-labelledby="titre-soumission-page">
+  <div class="zone-soumission-page__entete">
+    <h2 class="zone-soumission-page__titre" id="titre-soumission-page">Ajouter une page à analyser</h2>
+    <label for="toggle-page" class="zone-soumission-page__fermer" aria-label="Fermer">
+      <i class="bi bi-x-lg"></i>
+    </label>
+  </div>
+  <div class="champ-texte">
+    <label for="page-url">URL de la page</label>
+    <input type="url" id="page-url" placeholder="https://exemple.com/page" />
+  </div>
+  <p class="zone-soumission-page__ou">ou</p>
+  <div class="zone-soumission-page__fichier">
+    <label class="bouton bouton--contour bouton--neutre" for="page-capture">
+      <i class="bi bi-paperclip"></i> Joindre un fichier
+    </label>
+    <input type="file" id="page-capture" accept=".pdf,.png,.webp,.jpg,.jpeg,.txt,.md,application/pdf,image/png,image/webp,image/jpeg,text/plain,text/markdown" class="visually-hidden" />
+    <p class="champ-texte__aide">Formats acceptés : pdf, png, webp, jpg, txt, md</p>
+  </div>
+</div>
+</div>
+</body>
+</html>
