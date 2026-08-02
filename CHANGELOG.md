@@ -9,6 +9,16 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 24)
+
+- **« Le projet » enrichi sur la question libre et l'audit assisté**
+  (`clients/contenus_partages/le-projet.md` + `LeProjet.vue`), question
+  libre présentée en premier (prochain développement). **Jargon interne
+  retiré des pages publiques** : plus aucune mention "US0"/"US1"/"US2" dans
+  `le-projet.md`/`LeProjet.vue` et `politique-des-donnees.md`/
+  `PolitiqueDonnees.vue` — noms de fonctionnalités en clair (revue du
+  référentiel, question libre, audit assisté) à la place
+
 ## 2026-08-02 — Claude Code (Part 23)
 
 - **`LICENCE.md` créé à la racine** : double régime tranché — CC BY-SA 4.0

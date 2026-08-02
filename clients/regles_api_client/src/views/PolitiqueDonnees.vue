@@ -4,7 +4,7 @@
 
     <h2>Quelles données sont traitées aujourd'hui</h2>
     <p>
-      À ce stade, seule la revue du référentiel (US0) est disponible. Elle ne
+      À ce stade, seule la revue du référentiel est disponible. Elle ne
       demande aucune création de compte utilisateur.
     </p>
     <p>
@@ -28,11 +28,10 @@
 
     <h2>Évolution prévue (audit et question libre)</h2>
     <p>
-      Les fonctionnalités à venir (US1 — préparation et suivi d'un audit, US2
-      — question libre) nécessiteront la création d'un compte utilisateur et
-      une gestion dédiée des données personnelles associées. Cette page sera
-      mise à jour en conséquence dès que ces fonctionnalités seront
-      disponibles.
+      Les fonctionnalités à venir (audit assisté, question libre)
+      nécessiteront la création d'un compte utilisateur et une gestion
+      dédiée des données personnelles associées. Cette page sera mise à jour
+      en conséquence dès que ces fonctionnalités seront disponibles.
     </p>
     <p>
       Ces fonctionnalités s'appuieront aussi sur <strong>Langfuse</strong>
