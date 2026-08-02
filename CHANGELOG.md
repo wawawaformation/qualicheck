@@ -9,6 +9,16 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-02 — Claude Code (Part 22)
+
+- **Retour automatique à la règle après renseignement de la clé API**
+  (`regles_api_client`) : la redirection vers `/cle-api` porte désormais
+  `?retour=<numero>` (numéro de la règle qu'on tentait d'annoter),
+  `CleApi.vue` la relit et renvoie vers `/revue?regle=<numero>` une fois la
+  clé enregistrée, `RevueRegles.vue` restaure la sélection au montage.
+  Vérifié : `/revue?regle=28` sélectionne réellement la règle 28
+  (`aria-current`, panneau de détail correspondant)
+
 ## 2026-08-02 — Claude Code (Part 21)
 
 - **Politique des données : mention de Langfuse ajoutée** (section

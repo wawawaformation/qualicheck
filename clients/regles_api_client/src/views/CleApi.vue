@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useCleApi } from '../composables/useCleApi.js'
 
+const route = useRoute()
+const router = useRouter()
 const { hasKey, setKey, clearKey } = useCleApi()
 const saisie = ref('')
 const enModification = ref(false)
@@ -16,6 +19,14 @@ function enregistrer() {
   setKey(saisie.value.trim())
   saisie.value = ''
   enModification.value = false
+
+  // Arrivée ici depuis une tentative d'annotation sans clé valide (RevueRegles.vue
+  // ajoute ?retour=<numero> avant de rediriger) : une fois la clé enregistrée, on
+  // retourne directement sur la règle plutôt que de laisser l'utilisateur y revenir
+  // à la main.
+  if (route.query.retour) {
+    router.push({ path: '/revue', query: { regle: route.query.retour } })
+  }
 }
 </script>
 
