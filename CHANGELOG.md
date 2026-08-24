@@ -9,6 +9,14 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-24 — Claude Code (Part 54)
+
+- **Veille Luciole finalisée intégrée au fonds** (C6) — voir `docs/jury/veille/fonds/luciole_llm_francais_2026-07-29/`
+  - Restitution Mini Manifest du 2026-07-29 : "Pourquoi je ne veux pas de Luciole"
+  - Structure complète : document markdown (13 KB) + présentation ODP + PDF + 8 fiches de recherche + sources.md
+  - Thèse : OpenLLM France/Luciole (juin 2026) répond aux reproches de Lucie (janvier 2025, lancement raté), mais architecture Mamba présente une limitation : prefill lent (134 ms/token vs 32 ms/token Mistral), mesurée sur Ollama/Luciole-8B
+  - Ancien dossier `luciole_llm_francais_2026-07-24/working/` (vide) supprimé, remplacé par la version finalisée datée de la présentation
+
 ## 2026-08-02 — Claude Code (Part 53)
 
 - **Ré-ingestion complète des 245 règles (prompt v6, `contexte` comblé)** —
