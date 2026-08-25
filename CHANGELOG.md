@@ -9,6 +9,32 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-25 — Claude Code (Part 55)
+
+- **Veille "IA, médecine et évolution des paradigmes" rédigée pour restitution
+  Mini Manifest du 2026-08-26** (C6) — voir `docs/jury/veille/fonds/IAMedical/working/`
+  - Document de partage (`ia-medecine-evolution-paradigmes.md`) : 4 cas
+    (Amodei prospective, o1-preview modèle seul, Claude/Mythos système
+    agentique, prédiction vaccinale IA spécialisée) illustrant la coexistence
+    de plusieurs paradigmes d'IA dans le domaine médical, avec section finale
+    "Apports sur mes pratiques" reliant l'observation à des critères de
+    décision d'architecture concrets (coût environnemental du réflexe
+    "agentique par défaut")
+  - Chiffres sourcés dans 4 fiches d'extraction (`sources/extractaction_de_sources/`)
+    à partir des publications primaires (essai Amodei, préprint + *Science*
+    o1-preview, rapport Anthropic Mythos, étude ASU/Cell Press Blue) — le
+    préprint o1-preview a nécessité une extraction manuelle (copié-collé des
+    tableaux), l'extraction automatique du PDF ayant échoué sur l'encodage
+  - Plan de présentation ODP (`plan.md`), distinct du document écrit — script
+    oral à rédiger séparément
+  - **Nouveau style Pandoc dédié à la veille** (`docs/jury/veille/veille.tex`,
+    vert nature `#2E6B3E`) créé à partir de `~/.config/pandoc/styles/formation.tex`,
+    complétant `conception.tex`/`formation.tex` déjà existants côté utilisateur ;
+    compilation vérifiée (`pandoc ... --pdf-engine=xelatex -H veille.tex
+    --shift-heading-level-by=-1`, ce dernier flag nécessaire car le document
+    n'utilise que des `##`/`###`, que Pandoc mappe sinon sur `\subsection`)
+  - Session tracée dans `journal.md` (entrée 2026-08-26)
+
 ## 2026-08-24 — Claude Code (Part 54)
 
 - **Veille Luciole finalisée intégrée au fonds** (C6) — voir `docs/jury/veille/fonds/luciole_llm_francais_2026-07-29/`
