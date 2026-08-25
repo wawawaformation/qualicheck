@@ -12,7 +12,7 @@ Format d'entrée, une ligne par réalisation :
 ## 2026-08-25 — Claude Code (Part 55)
 
 - **Veille "IA, médecine et évolution des paradigmes" rédigée pour restitution
-  Mini Manifest du 2026-08-26** (C6) — voir `docs/jury/veille/fonds/IAMedical/working/`
+  Mini Manifest du 2026-08-26** (C6) — voir `docs/jury/veille/fonds/IAMedical_2026-08-26/working/`
   - Document de partage (`ia-medecine-evolution-paradigmes.md`) : 4 cas
     (Amodei prospective, o1-preview modèle seul, Claude/Mythos système
     agentique, prédiction vaccinale IA spécialisée) illustrant la coexistence
@@ -48,6 +48,44 @@ Format d'entrée, une ligne par réalisation :
   - `checklist.md` : contenu écran (pas juste les images) pour les slides
     2.1/3.1/4.1 (texte court à afficher, distinct du script long de `plan.md`)
     et proposition pour les slides 5 (Dézoom) et 6 (Conclusion)
+
+## 2026-08-25/26 — Claude Code (Part 56)
+
+- **ODP réalisé et script oral rédigé** pour la restitution du 2026-08-26 (C6)
+  — voir `docs/jury/veille/fonds/IAMedical_2026-08-26/working/`
+  - `ia-medecine-evolution-paradigmes.odp` (12 slides) généré via python-pptx
+    (dépendance éphémère `uv run --with`, jamais ajoutée au projet) puis
+    converti en ODP réel via `soffice --headless --convert-to odp` — jamais un
+    simple renommage, conforme à `docs/jury/veille/CLAUDE.md`
+  - Deux bugs de génération corrigés avant validation : chevauchement
+    titre/barre sur la slide de couverture, recadrage "cover" qui tronquait
+    le logo Mythos (passé en mode "contain")
+  - David a ensuite édité l'ODP à la main (titres slides 2/3, remplacement de
+    la slide 3 par la fresque épurée `slide3.png`, slide 11 passée à la
+    fresque complète) — édits repris sans régénération complète pour ne pas
+    écraser le travail manuel : titre de la slide 3 ajouté par retouche XML
+    ciblée (`content.xml` du zip ODP), pas par reconstruction python-pptx
+  - `script_oral.md` : texte oral complet, 12 sections, écrit et resserré par
+    itérations successives avec David (relecture à voix haute), corrections
+    de fond au passage (contexte protéines/vaccination ajouté pour un public
+    non médecin, vocabulaire ML reformulé pour public développeur —
+    "prédiction, pas classification", "pas de poids, pas de dataset à
+    auditer")
+  - **Calibrage du timing** : estimation initiale à 150 mots/min invalidée
+    par un premier passage chronométré (débit réel ~130 mots/min avec
+    improvisation) ; un second passage en lecture stricte, slide par slide,
+    a mesuré le vrai débit (~160 mots/min) et le temps réel total —
+    **9 min 44 s**, dans la cible 9-10 min
+  - Notes de présentateur de l'ODP remplies avec les durées et temps de fin
+    **réellement chronométrés** (pas les estimations), via édition XML
+    directe (zones `presentation:class="notes"` du gabarit, vides à l'origine)
+  - Un ajout non vérifiable écarté puis retenté : "JARA" comme framework
+    cité par David en slide 12, recherché sans résultat (ni web ni
+    connaissances), signalé comme non sourçable — repris malgré tout à la
+    demande explicite de David ("j'assume")
+- **Dossier renommé** `IAMedical/` → `IAMedical_2026-08-26/` pour suivre la
+  convention de datation des autres veilles — références mises à jour dans
+  `docs/jury/veille/README.md`, `journal.md` et ce fichier
 
 ## 2026-08-24 — Claude Code (Part 54)
 
