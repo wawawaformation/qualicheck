@@ -34,6 +34,20 @@ Format d'entrée, une ligne par réalisation :
     --shift-heading-level-by=-1`, ce dernier flag nécessaire car le document
     n'utilise que des `##`/`###`, que Pandoc mappe sinon sur `\subsection`)
   - Session tracée dans `journal.md` (entrée 2026-08-26)
+- **Illustrations de la slide de synthèse retouchées** (`illustrations_slide/`)
+  - Titre corrigé sur deux versions successives (générées hors session, retouche
+    ImageMagick : effacement + réécriture du texte) — la V1 disait « SOMMAIRE –
+    4 CAS », la V2 se contredisait déjà elle-même (titre « 4 CAS » vs sous-titre
+    « trois trajectoires »)
+  - Mot « SOMMAIRE » retiré du titre final : la slide donne déjà Nature/Idée
+    clé/Question par carte, ce n'est pas un sommaire classique — retenu :
+    `slide_une_prediction_trois_cas.png`
+  - Anciennes versions (`slide_sommaire.png`, `slide_sommaire_copie.png`,
+    `slide_sommaire_v2.png`) supprimées, `plan.md` et `checklist.md`
+    (nouveau, dans `illustrations_slide/`) mis à jour en conséquence
+  - `checklist.md` : contenu écran (pas juste les images) pour les slides
+    2.1/3.1/4.1 (texte court à afficher, distinct du script long de `plan.md`)
+    et proposition pour les slides 5 (Dézoom) et 6 (Conclusion)
 
 ## 2026-08-24 — Claude Code (Part 54)
 
