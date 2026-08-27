@@ -42,6 +42,36 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
+- [ ] **Séparer `docs/jury/` (et notamment `veille/`) du dépôt QualiCheck —
+  question soulevée le 2026-08-25** : responsabilités mélangées dans un même
+  dépôt — le **produit** (code QualiCheck), la **veille** (pratique
+  personnelle C6, sans lien avec le produit — ce soir-là : IA et médecine)
+  et le **jury** (preuves de certification RNCP37827 dans leur ensemble :
+  livrets, décisions, RGPD, veille). Que QualiCheck soit le projet fil rouge
+  ne justifie pas que toute preuve de compétence vive dans son dépôt —
+  particulièrement flagrant pour la veille, qui n'a structurellement aucun
+  rapport avec le produit — `D`
+  - **Pourquoi pas fait ce soir-là** : refactor invasif (dizaines de
+    fichiers, chemins croisés à réécrire) à quelques heures d'une
+    présentation — pas le bon moment pour un chantier de cette taille.
+  - **Reste à trancher avant d'agir** :
+    1. Périmètre — seule `veille/`, ou tout `docs/jury/` (livrets +
+       `decisions/` + RGPD aussi) ? Les `decisions/` documentent des choix
+       d'architecture QualiCheck : les séparer du code qu'elles expliquent a
+       un coût différent de séparer la veille, sans rapport avec le produit.
+    2. Destination — `formation_dev_ia_agentique` évoqué, mais **attention** :
+       un renvoi externe vers ce même dossier a déjà existé pour la veille et
+       a été abandonné le 2026-07-23 au profit d'une centralisation complète
+       (raisonnement : `docs/jury/veille/CLAUDE.md`, section « Pièges déjà
+       rencontrés »). Ne pas répéter une duplication ambiguë — un déplacement
+       propre, sans copie résiduelle, un seul exemplaire qui fait foi.
+    3. Découvrabilité côté jury — si la preuve C6 ne vit plus dans le dépôt
+       fil rouge, comment le jury la retrouve ? Un renvoi clair et documenté
+       depuis QualiCheck, pas une simple absence.
+  - À traiter posément, avec une vraie decision doc dans
+    `docs/jury/decisions/` une fois le périmètre tranché — pas dans
+    l'urgence d'une session de veille.
+
 - [x] **Découpage des responsabilités `api_regles` / `api_audit` / `api_business`
   — résolu (2026-07-28)** : une seule base de données et un seul
   `app/models/`, mais **deux services FastAPI distincts** qui l'attaquent
