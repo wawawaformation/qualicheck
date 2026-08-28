@@ -31,8 +31,7 @@ Lecture minimale recommandee (ordre):
 - `docs/jury/` : livrables et preuves de certification
 - `docs/superpowers/` : plans/specs de session, historique de travail
 
-## Archives de veille
+## Veille (hors depot)
 
-- `docs/jury/veille/fonds/` contient des sources longues.
-- A ne pas charger par defaut dans le contexte agent general.
-- A ouvrir seulement si la tache porte explicitement sur la veille C6.
+- La veille (C6) vit desormais dans un depot separe, `/projets/veille`.
+- Hors perimetre de ce depot, rien a charger ici.

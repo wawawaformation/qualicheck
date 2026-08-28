@@ -28,7 +28,6 @@ Objectif: donner un contexte fiable et peu couteux en tokens.
 
 ## Ce qu'il ne faut pas charger par defaut
 
-- `docs/jury/veille/fonds/**` (documents longs)
 - `docs/superpowers/**` (historique de plans)
 
-Ces dossiers restent utiles, mais pas pour le contexte minimal quotidien.
+Ce dossier reste utile, mais pas pour le contexte minimal quotidien.

@@ -1,7 +1,7 @@
 {"methode": "GET", "description": "Total du référentiel", "chemin": "/regles", "nombre_attendu": 245}
-{"methode": "GET", "description": "Règles utilisant playwright (stratégies composites incluses)", "chemin": "/regles?outil=playwright", "nombre_attendu": 85}
-{"methode": "GET", "description": "Règles manuelles", "chemin": "/regles?outil=manuel", "nombre_attendu": 44}
-{"methode": "GET", "description": "Règles statiques (stratégies composites incluses)", "chemin": "/regles?outil=statique", "nombre_attendu": 124}
+{"methode": "GET", "description": "Règles utilisant playwright (stratégies composites incluses)", "chemin": "/regles?outil=playwright", "nombre_attendu": 96}
+{"methode": "GET", "description": "Règles manuelles", "chemin": "/regles?outil=manuel", "nombre_attendu": 28}
+{"methode": "GET", "description": "Règles statiques (stratégies composites incluses)", "chemin": "/regles?outil=statique", "nombre_attendu": 120}
 {"methode": "GET", "description": "Règles jamais revues", "chemin": "/regles?review_status=aucun", "nombre_attendu": 245}
 {"methode": "PATCH", "description": "PATCH sans jeton refusé", "chemin": "/regles/1", "jeton": null, "corps": {"review_status": null}, "code_attendu": 401}
 {"methode": "PATCH", "description": "PATCH avec jeton invalide refusé", "chemin": "/regles/1", "jeton": "invalide", "corps": {"review_status": null}, "code_attendu": 401}

@@ -9,6 +9,141 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-25 — Claude Code (Part 55)
+
+- **Veille "IA, médecine et évolution des paradigmes" rédigée pour restitution
+  Mini Manifest du 2026-08-26** (C6) — voir `docs/jury/veille/fonds/IAMedical_2026-08-26/working/`
+  - Document de partage (`ia-medecine-evolution-paradigmes.md`) : 4 cas
+    (Amodei prospective, o1-preview modèle seul, Claude/Mythos système
+    agentique, prédiction vaccinale IA spécialisée) illustrant la coexistence
+    de plusieurs paradigmes d'IA dans le domaine médical, avec section finale
+    "Apports sur mes pratiques" reliant l'observation à des critères de
+    décision d'architecture concrets (coût environnemental du réflexe
+    "agentique par défaut")
+  - Chiffres sourcés dans 4 fiches d'extraction (`sources/extractaction_de_sources/`)
+    à partir des publications primaires (essai Amodei, préprint + *Science*
+    o1-preview, rapport Anthropic Mythos, étude ASU/Cell Press Blue) — le
+    préprint o1-preview a nécessité une extraction manuelle (copié-collé des
+    tableaux), l'extraction automatique du PDF ayant échoué sur l'encodage
+  - Plan de présentation ODP (`plan.md`), distinct du document écrit — script
+    oral à rédiger séparément
+  - **Nouveau style Pandoc dédié à la veille** (`docs/jury/veille/veille.tex`,
+    vert nature `#2E6B3E`) créé à partir de `~/.config/pandoc/styles/formation.tex`,
+    complétant `conception.tex`/`formation.tex` déjà existants côté utilisateur ;
+    compilation vérifiée (`pandoc ... --pdf-engine=xelatex -H veille.tex
+    --shift-heading-level-by=-1`, ce dernier flag nécessaire car le document
+    n'utilise que des `##`/`###`, que Pandoc mappe sinon sur `\subsection`)
+  - Session tracée dans `journal.md` (entrée 2026-08-26)
+- **Illustrations de la slide de synthèse retouchées** (`illustrations_slide/`)
+  - Titre corrigé sur deux versions successives (générées hors session, retouche
+    ImageMagick : effacement + réécriture du texte) — la V1 disait « SOMMAIRE –
+    4 CAS », la V2 se contredisait déjà elle-même (titre « 4 CAS » vs sous-titre
+    « trois trajectoires »)
+  - Mot « SOMMAIRE » retiré du titre final : la slide donne déjà Nature/Idée
+    clé/Question par carte, ce n'est pas un sommaire classique — retenu :
+    `slide_une_prediction_trois_cas.png`
+  - Anciennes versions (`slide_sommaire.png`, `slide_sommaire_copie.png`,
+    `slide_sommaire_v2.png`) supprimées, `plan.md` et `checklist.md`
+    (nouveau, dans `illustrations_slide/`) mis à jour en conséquence
+  - `checklist.md` : contenu écran (pas juste les images) pour les slides
+    2.1/3.1/4.1 (texte court à afficher, distinct du script long de `plan.md`)
+    et proposition pour les slides 5 (Dézoom) et 6 (Conclusion)
+
+## 2026-08-25/26 — Claude Code (Part 56)
+
+- **ODP réalisé et script oral rédigé** pour la restitution du 2026-08-26 (C6)
+  — voir `docs/jury/veille/fonds/IAMedical_2026-08-26/working/`
+  - `ia-medecine-evolution-paradigmes.odp` (12 slides) généré via python-pptx
+    (dépendance éphémère `uv run --with`, jamais ajoutée au projet) puis
+    converti en ODP réel via `soffice --headless --convert-to odp` — jamais un
+    simple renommage, conforme à `docs/jury/veille/CLAUDE.md`
+  - Deux bugs de génération corrigés avant validation : chevauchement
+    titre/barre sur la slide de couverture, recadrage "cover" qui tronquait
+    le logo Mythos (passé en mode "contain")
+  - David a ensuite édité l'ODP à la main (titres slides 2/3, remplacement de
+    la slide 3 par la fresque épurée `slide3.png`, slide 11 passée à la
+    fresque complète) — édits repris sans régénération complète pour ne pas
+    écraser le travail manuel : titre de la slide 3 ajouté par retouche XML
+    ciblée (`content.xml` du zip ODP), pas par reconstruction python-pptx
+  - `script_oral.md` : texte oral complet, 12 sections, écrit et resserré par
+    itérations successives avec David (relecture à voix haute), corrections
+    de fond au passage (contexte protéines/vaccination ajouté pour un public
+    non médecin, vocabulaire ML reformulé pour public développeur —
+    "prédiction, pas classification", "pas de poids, pas de dataset à
+    auditer")
+  - **Calibrage du timing** : estimation initiale à 150 mots/min invalidée
+    par un premier passage chronométré (débit réel ~130 mots/min avec
+    improvisation) ; un second passage en lecture stricte, slide par slide,
+    a mesuré le vrai débit (~160 mots/min) et le temps réel total —
+    **9 min 44 s**, dans la cible 9-10 min
+  - Notes de présentateur de l'ODP remplies avec les durées et temps de fin
+    **réellement chronométrés** (pas les estimations), via édition XML
+    directe (zones `presentation:class="notes"` du gabarit, vides à l'origine)
+  - Un ajout non vérifiable écarté puis retenté : "JARA" comme framework
+    cité par David en slide 12, recherché sans résultat (ni web ni
+    connaissances), signalé comme non sourçable — repris malgré tout à la
+    demande explicite de David ("j'assume")
+- **Dossier renommé** `IAMedical/` → `IAMedical_2026-08-26/` pour suivre la
+  convention de datation des autres veilles — références mises à jour dans
+  `docs/jury/veille/README.md`, `journal.md` et ce fichier
+
+## 2026-08-24 — Claude Code (Part 54)
+
+- **Veille Luciole finalisée intégrée au fonds** (C6) — voir `docs/jury/veille/fonds/luciole_llm_francais_2026-07-29/`
+  - Restitution Mini Manifest du 2026-07-29 : "Pourquoi je ne veux pas de Luciole"
+  - Structure complète : document markdown (13 KB) + présentation ODP + PDF + 8 fiches de recherche + sources.md
+  - Thèse : OpenLLM France/Luciole (juin 2026) répond aux reproches de Lucie (janvier 2025, lancement raté), mais architecture Mamba présente une limitation : prefill lent (134 ms/token vs 32 ms/token Mistral), mesurée sur Ollama/Luciole-8B
+  - Ancien dossier `luciole_llm_francais_2026-07-24/working/` (vide) supprimé, remplacé par la version finalisée datée de la présentation
+
+## 2026-08-02 — Claude Code (Part 53)
+
+- **Ré-ingestion complète des 245 règles (prompt v6, `contexte` comblé)** —
+  voir `app/ingestion/acquisition.py`, `CHANGELOG.md` Part 7 (2026-07-19)
+  - **Root cause identifié** : le champ `contexte` (texte explicatif
+    `c-rule-hero__subtitle`, scrapé depuis le site Opquast) a été ajouté au
+    pipeline le 2026-07-19 (commit `0f0a6e1`), **après** la seule
+    ingestion complète payante alors existante (prompt V3). Depuis, la
+    politique du projet évite les ré-ingestions complètes coûteuses ;
+    `enrich_again.py` réutilise le `contexte` déjà en base au lieu de le
+    rescraper. Conséquence : `contexte` restait `NULL` sur les 245 lignes,
+    et le prompt d'enrichissement tournait avec le fallback
+    `"(non disponible)"` sur 100 % des règles depuis l'origine
+  - **Décision** : ré-ingestion complète malgré le coût, l'absence de
+    contexte pouvant dégrader la précision de classification du LLM — à
+    faire avant l'ouverture du référentiel enrichi à la revue par des
+    volontaires externes (appel public à venir), pour ne pas leur faire
+    relire une classification déjà connue comme sous-informée
+  - **Validation pré-run** : `make ingestion LIMIT=5` (0,0849 €) — contexte
+    bien peuplé, `review_status`/`review_note`/`reviewed_at` bien remis à
+    `NULL` (le `TRUNCATE ... CASCADE` de `check_existing_data()` s'en
+    charge déjà, aucun code à ajouter)
+  - **Exécuté pour de vrai le 2026-08-02** (`make ingestion`, base `dev`) :
+    245/245 règles avec `contexte` peuplé, prompt_version 6, coût réel
+    4,7169 € (vs ~4,29 € estimé). Distribution `strategie_analyse` :
+    statique 39 %, playwright 33 %, manuel 11 %, vision (+ combinaisons)
+    ~13 % — hausse notable de `manuel` (4 % → 11 %) vs l'ingestion V3,
+    échantillon des 28 lignes `manuel` relu manuellement : classification
+    cohérente à chaque fois (vérification hors navigateur — boîte mail,
+    PDF — ou jugement sémantique/éditorial qu'aucune inspection factuelle
+    ne peut fiabiliser), pas un artefact du prompt v6
+  - **Donnée non répercutée sur `staging`** : `cd-staging.yml` ne fait que
+    des migrations Alembic au déploiement, aucune ré-ingestion. Le dump
+    `backups/20260802_204819.sql` (gitignoré) reste à transférer sur
+    `cloclo` via `make import_sql` avant l'appel public aux volontaires
+
+## 2026-08-02 — Claude Code (Part 52)
+
+- **Premier déploiement réel réussi sur cloclo** : merge `dev → staging`
+  (`f5d197c`), push des deux branches, `cd-staging.yml` exécuté de bout en
+  bout (migrations, build + copie de `clients/regles_api_client`, suite
+  d'acceptance de l'API) sans intervention manuelle
+- **Première annotation réelle faite depuis le client déployé** :
+  David a modifié une revue de règle directement sur
+  `https://regles.qualicheck.koabana.fr/` (pas en local), vérifiée via
+  `GET /regles/2` — confirme toute la chaîne en conditions réelles :
+  chargement du client, appel API same-origin sans CORS, authentification
+  par clé, persistance en base
+
 ## 2026-08-02 — Claude Code (Part 51)
 
 - **Bug corrigé en réel sur cloclo : `/regles` servait le fichier statique

@@ -42,6 +42,36 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
+- [ ] **Séparer `docs/jury/` (et notamment `veille/`) du dépôt QualiCheck —
+  question soulevée le 2026-08-25** : responsabilités mélangées dans un même
+  dépôt — le **produit** (code QualiCheck), la **veille** (pratique
+  personnelle C6, sans lien avec le produit — ce soir-là : IA et médecine)
+  et le **jury** (preuves de certification RNCP37827 dans leur ensemble :
+  livrets, décisions, RGPD, veille). Que QualiCheck soit le projet fil rouge
+  ne justifie pas que toute preuve de compétence vive dans son dépôt —
+  particulièrement flagrant pour la veille, qui n'a structurellement aucun
+  rapport avec le produit — `D`
+  - **Pourquoi pas fait ce soir-là** : refactor invasif (dizaines de
+    fichiers, chemins croisés à réécrire) à quelques heures d'une
+    présentation — pas le bon moment pour un chantier de cette taille.
+  - **Reste à trancher avant d'agir** :
+    1. Périmètre — seule `veille/`, ou tout `docs/jury/` (livrets +
+       `decisions/` + RGPD aussi) ? Les `decisions/` documentent des choix
+       d'architecture QualiCheck : les séparer du code qu'elles expliquent a
+       un coût différent de séparer la veille, sans rapport avec le produit.
+    2. Destination — `formation_dev_ia_agentique` évoqué, mais **attention** :
+       un renvoi externe vers ce même dossier a déjà existé pour la veille et
+       a été abandonné le 2026-07-23 au profit d'une centralisation complète
+       (raisonnement : `docs/jury/veille/CLAUDE.md`, section « Pièges déjà
+       rencontrés »). Ne pas répéter une duplication ambiguë — un déplacement
+       propre, sans copie résiduelle, un seul exemplaire qui fait foi.
+    3. Découvrabilité côté jury — si la preuve C6 ne vit plus dans le dépôt
+       fil rouge, comment le jury la retrouve ? Un renvoi clair et documenté
+       depuis QualiCheck, pas une simple absence.
+  - À traiter posément, avec une vraie decision doc dans
+    `docs/jury/decisions/` une fois le périmètre tranché — pas dans
+    l'urgence d'une session de veille.
+
 - [x] **Découpage des responsabilités `api_regles` / `api_audit` / `api_business`
   — résolu (2026-07-28)** : une seule base de données et un seul
   `app/models/`, mais **deux services FastAPI distincts** qui l'attaquent
@@ -175,23 +205,11 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 
+Dépôt séparé depuis le 2026-08-28 (`/projets/veille`) — les tâches encore
+ouvertes ont été déplacées dans son propre `TODO.md`. Historique conservé
+ci-dessous tel quel.
+
 - [x] **17 flux RSS listés** (export OPML 2026-07-22) → `docs/jury/veille/sources.md` — `D`
-- [ ] **Fréquence de lecture** par flux ou par dossier — `D`
-- [ ] **Étoffer les flux FreshRSS** — outil principal ; RSS écrit privilégié pour
-  des raisons de niveau d'anglais (oral B1, cf. `sources.md`) — `D`
-- [ ] **Créer un compte YouTube dédié à la veille**, séparé du personnel, puis
-  étoffer les abonnements IA / dev agentique — `D`
-- [ ] **Lister les comptes LinkedIn suivis** — veille professionnelle
-  spécifiquement, distincte du RSS technique — `D`
-- [ ] **Évaluer la mise en place d'une newsletter** en complément du dispositif — `D`
-- [ ] **Trier `docs/jury/veille/candidats-sources.md`** — 5 flux RSS vérifiés,
-  3 chaînes YouTube, 5 newsletters (avec distinction RSS/email uniquement) sur le
-  thème développement durable x IA. Ajouter les candidats retenus à `sources.md` — `D`
-- [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que le
-  thème assigné — développement durable x IA — est fortement réglementaire) —
-  RGAA/accessibilité notamment absent alors que central à QualiCheck — `D`
-- [ ] Ranger les 3 flux **« Sans catégorie »** (dont 2 liés directement au projet :
-  LangChain, Azure Foundry) — `D`
 - [x] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — 3 entrées
   réelles ajoutées (2026-05-13 x2, 2026-07-15), antérieures ou concomitantes à la
   création du dossier `jury/` — `D`
@@ -209,8 +227,6 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   (2026-07-23)
 - [x] **Format live converti PPTX → ODP** — conforme à la convention, original
   `.pptx` supprimé (un seul exemplaire) — `A` (2026-07-23)
-- [ ] Confirmer que l'emplacement `final/` pour cette veille est bien
-  définitif — `D`
 - [x] **Veille centralisée dans le dépôt** — `formation_dev_ia_agentique/veille/`
   (5 dossiers) et les 3 fichiers de `~/Téléchargements` déplacés (pas copiés) vers
   `docs/jury/veille/fonds/`, avec une période approximative par dossier dans
@@ -237,10 +253,6 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 - [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
   - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
   - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
-- [ ] **Vérifier l'accessibilité des synthèses passées** (visuels `.png`/`.jpg`,
-  carrousels PDF) — hors périmètre du nouveau format, à traiter si elles sont
-  réutilisées telles quelles — `D`
-  - L'exigence revient aussi sur C8, C11, C18, C19, C20
 
 ## Certification — livrables manquants
 
