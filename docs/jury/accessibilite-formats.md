@@ -9,7 +9,7 @@ Le principe commun à tous les formats : **le contenu doit exister comme texte
 structuré**, pas seulement comme apparence visuelle. Un lecteur d'écran ne voit pas
 une mise en page, il lit une structure.
 
-**Format retenu pour les veilles** (`docs/jury/veille/README.md`) : deux formats à
+**Format retenu pour les veilles** (`/projets/veille/README.md`, dépôt séparé) : deux formats à
 rôles distincts, pas deux copies du même contenu.
 
 - l'**ODP** est un **support de présentation live** (notes du présentateur) — il

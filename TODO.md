@@ -205,23 +205,11 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 
+Dépôt séparé depuis le 2026-08-28 (`/projets/veille`) — les tâches encore
+ouvertes ont été déplacées dans son propre `TODO.md`. Historique conservé
+ci-dessous tel quel.
+
 - [x] **17 flux RSS listés** (export OPML 2026-07-22) → `docs/jury/veille/sources.md` — `D`
-- [ ] **Fréquence de lecture** par flux ou par dossier — `D`
-- [ ] **Étoffer les flux FreshRSS** — outil principal ; RSS écrit privilégié pour
-  des raisons de niveau d'anglais (oral B1, cf. `sources.md`) — `D`
-- [ ] **Créer un compte YouTube dédié à la veille**, séparé du personnel, puis
-  étoffer les abonnements IA / dev agentique — `D`
-- [ ] **Lister les comptes LinkedIn suivis** — veille professionnelle
-  spécifiquement, distincte du RSS technique — `D`
-- [ ] **Évaluer la mise en place d'une newsletter** en complément du dispositif — `D`
-- [ ] **Trier `docs/jury/veille/candidats-sources.md`** — 5 flux RSS vérifiés,
-  3 chaînes YouTube, 5 newsletters (avec distinction RSS/email uniquement) sur le
-  thème développement durable x IA. Ajouter les candidats retenus à `sources.md` — `D`
-- [ ] **Étoffer le dossier Réglementation** (2 flux/17, le plus mince alors que le
-  thème assigné — développement durable x IA — est fortement réglementaire) —
-  RGAA/accessibilité notamment absent alors que central à QualiCheck — `D`
-- [ ] Ranger les 3 flux **« Sans catégorie »** (dont 2 liés directement au projet :
-  LangChain, Azure Foundry) — `D`
 - [x] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — 3 entrées
   réelles ajoutées (2026-05-13 x2, 2026-07-15), antérieures ou concomitantes à la
   création du dossier `jury/` — `D`
@@ -239,8 +227,6 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
   (2026-07-23)
 - [x] **Format live converti PPTX → ODP** — conforme à la convention, original
   `.pptx` supprimé (un seul exemplaire) — `A` (2026-07-23)
-- [ ] Confirmer que l'emplacement `final/` pour cette veille est bien
-  définitif — `D`
 - [x] **Veille centralisée dans le dépôt** — `formation_dev_ia_agentique/veille/`
   (5 dossiers) et les 3 fichiers de `~/Téléchargements` déplacés (pas copiés) vers
   `docs/jury/veille/fonds/`, avec une période approximative par dossier dans
@@ -267,10 +253,6 @@ Le fonds existe et couvre le volet réglementaire. Ne manque que la forme.
 - [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
   - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
   - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
-- [ ] **Vérifier l'accessibilité des synthèses passées** (visuels `.png`/`.jpg`,
-  carrousels PDF) — hors périmètre du nouveau format, à traiter si elles sont
-  réutilisées telles quelles — `D`
-  - L'exigence revient aussi sur C8, C11, C18, C19, C20
 
 ## Certification — livrables manquants
 

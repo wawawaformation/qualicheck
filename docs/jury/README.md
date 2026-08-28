@@ -52,7 +52,7 @@ Légende : ✅ couvert · 🟡 partiel · ⬜ rien à ce stade
 
 | | Compétence | Preuves | État |
 | --- | --- | --- | --- |
-| C6 | Veille technique et réglementaire | `docs/jury/veille/README.md` → fonds dans `formation_dev_ia_agentique/veille/` | 🟡 veille collective réellement menée (thème assigné, restitution toutes les 2-3 semaines, volet réglementaire couvert) ; manquent la cadence datée, la fiabilité des sources et les outils d'agrégation |
+| C6 | Veille technique et réglementaire | Dépôt séparé `/projets/veille` | 🟡 veille collective réellement menée (thème assigné, restitution toutes les 2-3 semaines, volet réglementaire couvert) ; manquent la cadence datée, la fiabilité des sources et les outils d'agrégation |
 | C7 | Identifier des services d'IA préexistants | `F_choix_llm.md` (récupéré) + source des « 16 820 appels » : projet externe `formation_dev_ia_agentique/lab/benchmark-azure/` (dépôt git séparé, spec-driven : specs + plans + `FOUNDRY_NOTES.md`/`FOUNDRY_SI_NOTES.md`) | 🟡 benchmark réel et documenté, mais hors dépôt QualiCheck — un jury lisant uniquement ce dépôt n'y a pas accès ; `annexes/benchmark/` n'en contient qu'un sous-ensemble (4 fichiers, liens de `F_choix_llm.md` non alignés) |
 | C8 | Paramétrer un service d'IA | `app/ingestion/llm_client.py`, `.env.example` + monitorage réel (voir C11) | 🟡 service configuré et opérationnel ; « monitorage disponible opérationnel » désormais couvert par un projet externe, à documenter comme preuve |
 | C9 | API exposant un modèle | — | ⬜ non conçu |
