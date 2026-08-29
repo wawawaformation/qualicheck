@@ -7,6 +7,18 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Prochain gros morceau
 
+- [ ] **Outillage C16/C18/C19 — décisions actées, exécution à faire (2026-08-29)**
+  — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
+  agile, Gitea auto-hébergé sur `cloclo` en remplacement de GitHub pour le
+  dépôt/CI, via un essai non destructif (second remote, sans toucher
+  `origin` tant que non validé). Raisonnement complet et alternatives
+  écartées : `jury/decisions/2026-08-29-outil-pilotage-kanban.md` et
+  `jury/decisions/2026-08-29-hebergement-git-gitea.md` — `D`
+  - Reste à faire : déployer Kanboard pour de vrai (docker-compose + Caddy
+    sur `cloclo`), activer `AgileIndicators`, tester `.gitea/workflows/`
+    (adapter le label de runner de `ci-dev.yml`, vérifier le comportement
+    du bloc `services:` sous `act_runner`)
+
 - [x] **Spec E implémentée** (provenance + manifeste) — `A` (2026-07-25)
   - Plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`,
     exécuté tâche par tâche, mergé sur `feature`. Les 8 critères de validation de

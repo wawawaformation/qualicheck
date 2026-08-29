@@ -73,3 +73,36 @@ Exigences repérées pendant le maquettage, à reprendre lors de l'implémentati
   API), les liens "Accueil" et "Préparer un audit" (destinés à l'utilisateur
   final) sont retirés de `pied-de-page__nav` — seuls restent "Le projet",
   "Mentions légales", "Politique des données".
+
+2. Utilisateur : connexion et profil (`maquettes/utilisateur/ecran-connexion.html`,
+   `maquettes/utilisateur/ecran-profil.html`)
+
+Dossier séparé de `US2/` : le compte utilisateur (connexion, profil,
+suppression) est commun à US1 et US2, pas propre à la question libre — cf.
+`conception/3_autre_us/profil/spec.md`. Chaque écran garde son propre
+`style/` (même convention que `US0/`, `US2/`), pas de dépendance croisée vers
+`US2/style/`.
+
+Basés sur `conception/3_autre_us/us2_question_libre/cas_utilisation_us2.drawio`
+et `scenarios.md` (cas d'utilisation "Se connecter", "Gérer mon profil",
+"Supprimer une discussion"/"Supprimer mon compte"). Réutilisent le pattern
+2 états déjà établi par `ecran-cle-api.html` (US0), adapté : ici le jeton
+identifie un profil (nom/prénom), pas seulement un droit d'écriture.
+
+Exigences repérées pendant le maquettage, à reprendre lors de l'implémentation Vue.js (pas simulées en JS ici, cf. règle ci-dessus) :
+
+- `ecran-connexion.html` : jeton stocké côté client (localStorage, même choix
+  que `ecran-cle-api.html` et déjà utilisé par `regles_api_client`) — envoyé
+  ensuite en `Authorization: Bearer` sur chaque appel `api_business`.
+- `ecran-profil.html`, bouton "Se déconnecter (sur cet appareil)" : efface le
+  jeton du stockage local uniquement — ne supprime rien côté serveur (le
+  jeton reste valide, réutilisable en se reconnectant). Distinct de
+  "Supprimer mon compte".
+- `ecran-profil.html`, "Supprimer mon compte" : nécessite une étape de
+  confirmation explicite (case à cocher + bouton dédié) avant l'appel réel —
+  jamais de suppression au premier clic. Cascade sur **toutes** les données
+  liées au compte — discussions (US2), audits (US1), pas seulement les
+  discussions (cf. `conception/3_autre_us/profil/spec.md`).
+- Le décompte affiché dans le bandeau de confirmation ("vos N discussions et
+  M audits") doit être injecté dynamiquement, pas une valeur figée comme
+  dans la maquette.
