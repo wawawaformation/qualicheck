@@ -2,7 +2,7 @@
 
 Procédure pour déclarer un nouveau client autorisé au `PATCH /regles/{numero}`
 (annotation de revue humaine). Contexte et choix d'architecture :
-`docs/jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md`.
+`jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md`.
 
 Confirmé le 2026-07-28 : le nombre de personnes amenées à faire de la revue
 reste faible (un tiers externe déclaré à la fois) — le clé/valeur dans le

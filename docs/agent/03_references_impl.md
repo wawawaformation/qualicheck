@@ -15,7 +15,7 @@ qu'elle compte pour une décision.
 | Modèle LLM ayant produit une règle donnée | Colonne `regle.llm_model` | — |
 | Schéma de données réellement en place | Migrations Alembic (`app/migration/versions/`) | `conception/1_BDD/MLD_qualicheck.md` et le dictionnaire de données décrivent la **cible**, pas forcément l'état réel courant (convention `X_reel` vs cible, ex. `docs/schemas/`) |
 | Dernière opération d'export/import de backup | Table `etat_donnees` | — |
-| Décisions d'architecture actées et leur justification | `docs/jury/decisions/*.md` | — |
+| Décisions d'architecture actées et leur justification | `jury/decisions/*.md` | — |
 | Avancement détaillé du pipeline d'ingestion (étapes 1-7) | `TODO_PIPELINE_INGESTION.md` | Non dupliqué dans `TODO.md` (transverse) |
 | Historique des réalisations (ce qui a été fait, quand) | `CHANGELOG.md` | Ne décrit que le passé, pas les décisions à venir (`TODO.md`) |
 | Variables d'environnement/secrets réels | `.env` (non versionné) | `.env.example` documente les clés attendues, pas les valeurs réelles |

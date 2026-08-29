@@ -1,10 +1,10 @@
 # Documents jury — livrets à remettre
 
-Contrairement au reste de `docs/jury/` (`veille/`, `decisions/`), qui pointe
+Contrairement au reste de `jury/` (`veille/`, `decisions/`), qui pointe
 vers les preuves sans les recopier, ce dossier contient les **livrets
 finaux** à remettre au jury pour chaque épreuve (E1 à E5,
 `conception/referentiel_competences.md`) : ils synthétisent par nature ce qui
-est dispersé ailleurs (code, specs, décisions, `docs/jury/E1_bloc1_criteres_performance.xlsx`...)
+est dispersé ailleurs (code, specs, décisions, `jury/E1_bloc1_criteres_performance.xlsx`...)
 en un document de restitution autonome.
 
 ## Organisation
@@ -60,12 +60,12 @@ l'emplacement du fichier source (piège rencontré et vérifié en pratique le
 2026-07-29).
 
 ```bash
-pandoc docs/jury/documents_jury/epreuvres/E1/E1.md \
+pandoc jury/documents_jury/epreuvres/E1/E1.md \
   --pdf-engine=xelatex \
-  --include-in-header=docs/jury/documents_jury/working/config/jury-livret.tex \
-  --include-in-header=docs/jury/documents_jury/epreuvres/E1/devise.tex \
+  --include-in-header=jury/documents_jury/working/config/jury-livret.tex \
+  --include-in-header=jury/documents_jury/epreuvres/E1/devise.tex \
   --toc --number-sections \
-  -o docs/jury/documents_jury/epreuvres/E1/E1.pdf
+  -o jury/documents_jury/epreuvres/E1/E1.pdf
 ```
 
 Pour un livret sans devise propre (E2 à E5), omettre le second
@@ -88,6 +88,6 @@ compétences (C1 → C5 pour E1, etc.).
 
 ## Règle
 
-Comme pour `docs/jury/decisions/`, un livret n'est finalisé (`epreuvres/`)
+Comme pour `jury/decisions/`, un livret n'est finalisé (`epreuvres/`)
 que lorsque le contenu source qu'il synthétise existe déjà réellement, pas
 de rédaction anticipée sur un chantier non terminé.

@@ -73,7 +73,7 @@ Deux critères ont tranché, dans cet ordre :
    la licence dont le projet bénéficie.
 2. **La cohérence avec le positionnement du projet.** La veille documentée du
    projet porte sur le pillage du savoir par les acteurs de l'IA
-   (`docs/jury/veille/fonds/britanica_openai_le_pillage_savoir_2026-05-20/`) et
+   (`jury/veille/fonds/britanica_openai_le_pillage_savoir_2026-05-20/`) et
    sur la souveraineté (`.../ia_souverain/`). Produire de la donnée à partir
    d'un commun, puis la fermer, serait difficile à défendre après avoir
    documenté ces sujets. L'ouverture n'est donc pas seulement conforme, elle

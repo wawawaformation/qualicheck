@@ -35,7 +35,7 @@ coup, pas de retour à prévoir. Contre : fictif — US1 n'a pas de spec, ce
 serait documenter une finalité, une base légale et une durée de conservation
 inventées ; contredit la démarche spec-driven du projet et le refus des cases
 artificielles déjà acté pour C1
-(`docs/jury/decisions/2026-07-28-couverture-sources-extraction-c1.md`).
+(`jury/decisions/2026-07-28-couverture-sources-extraction-c1.md`).
 
 **Registre scindé, borné aux traitements réels (retenu)** — couvre ce qui est
 réellement traité aujourd'hui (référentiel Opquast : hors champ RGPD ; jetons

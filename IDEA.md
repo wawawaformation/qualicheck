@@ -2,7 +2,7 @@
 
 Idées non actées, capturées avant d'oublier — pas encore des tâches (voir
 `TODO.md` pour ce qui est décidé) ni des décisions de conception (voir
-`conception/` et `docs/jury/decisions/`). Format libre, à trier/formaliser
+`conception/` et `jury/decisions/`). Format libre, à trier/formaliser
 plus tard si l'idée tient.
 
 ## 2026-07-25
@@ -91,7 +91,7 @@ plus tard si l'idée tient.
   `app/ingestion/rag_acceptance.py::query_top_n_numeros()`.
   - **Volontairement pas construit maintenant** : personne ne le consomme —
     US2 (question libre, RAG sémantique — décision actée
-    `docs/jury/decisions/2026-07-25-rag-us2-petit-corpus.md`) n'est pas
+    `jury/decisions/2026-07-25-rag-us2-petit-corpus.md`) n'est pas
     conçue, et c'est elle qui calculerait la question en vecteur (via un
     appel LLM d'embedding) avant d'appeler ce futur endpoint. `app/CLAUDE.md`
     interdit explicitement d'anticiper une structure avant sa conception —
@@ -118,7 +118,7 @@ plus tard si l'idée tient.
     au-dessus (qui distinguait déjà persona curateur vs persona auditeur).
     Décision retenue : `api_audit` reste un service distinct, pas des
     routers dans `api_regles`/`api_data` — voir
-    `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md`.
+    `jury/decisions/2026-07-28-separation-api-regles-api-audit.md`.
 
 ## 2026-07-28
 
@@ -143,7 +143,7 @@ plus tard si l'idée tient.
 
 - **POC séparés démontrant les 3 sources d'extraction manquantes pour C1**
   (fichier de données, base de données comme source, système big data) — si
-  le temps le permet. Contexte : `docs/jury/decisions/2026-07-28-couverture-sources-extraction-c1.md`
+  le temps le permet. Contexte : `jury/decisions/2026-07-28-couverture-sources-extraction-c1.md`
   acte que QualiCheck reste à 2 sources réelles (API REST + scraping), les 3
   autres n'ayant aucun besoin organique dans le pipeline des 245 règles
   Opquast. Un POC **hors `app/ingestion/`, hors périmètre produit** pourrait

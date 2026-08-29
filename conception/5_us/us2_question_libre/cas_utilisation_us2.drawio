@@ -1,0 +1,99 @@
+<mxfile host="Electron">
+  <diagram name="Cas d&#39;utilisation - US2 Question libre" id="us2-cas-utilisation">
+    <mxGraphModel dx="2311" dy="730" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="boundary" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;fontSize=14;fontStyle=1;fillColor=#EEF3FB;strokeColor=#2F5597;arcSize=2;" value="US2 &#xa;— Question libre (QualiCheck)" vertex="1">
+          <mxGeometry height="640" width="1000" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="acteur-utilisateur" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;labelBackgroundColor=none;verticalAlign=top;html=1;outlineConnect=0;fillColor=#2F5597;strokeColor=#2F5597;fontSize=12;" value="Professionnel du web" vertex="1">
+          <mxGeometry height="80" width="40" x="-90" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="acteur-agent" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;labelBackgroundColor=none;verticalAlign=top;html=1;outlineConnect=0;fillColor=#8C8C8C;strokeColor=#8C8C8C;fontSize=12;" value="Agent IA (LLM)" vertex="1">
+          <mxGeometry height="80" width="40" x="1040" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-connect" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FBEEEE;strokeColor=#A23B2E;fontSize=12;" value="Se connecter&#xa;(jeton API)" vertex="1">
+          <mxGeometry height="70" width="200" x="130" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-profil" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;" value="Gerer mon profil&#xa;(CRUD)" vertex="1">
+          <mxGeometry height="70" width="200" x="250" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-creer" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;" value="Creer une discussion" vertex="1">
+          <mxGeometry height="70" width="200" x="20" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-continuer" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;" value="Continuer une discussion" vertex="1">
+          <mxGeometry height="70" width="200" x="20" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-supprimer" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;" value="Supprimer une discussion" vertex="1">
+          <mxGeometry height="70" width="200" x="160" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-contexte" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;" value="Associer un contexte de page&#xa;(URL/capture, optionnel)" vertex="1">
+          <mxGeometry height="70" width="240" x="460" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-question" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;" value="Poser une question" vertex="1">
+          <mxGeometry height="80" width="240" x="430" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-reponse" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;" value="Recevoir une reponse&#xa;argumentee" vertex="1">
+          <mxGeometry height="70" width="240" x="400" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-guardrails" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FBEEEE;strokeColor=#A23B2E;fontSize=12;" value="Filtrer les questions&#xa;hors perimetre (Guardrails)" vertex="1">
+          <mxGeometry height="70" width="260" x="740" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-memoire" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FBEEEE;strokeColor=#A23B2E;fontSize=12;" value="Maintenir le contexte de&#xa;la discussion" vertex="1">
+          <mxGeometry height="70" width="260" x="730" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="uc-rag" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#FBEEEE;strokeColor=#A23B2E;fontSize=12;" value="Rechercher les regles pertinentes&#xa;(RAG semantique pur)" vertex="1">
+          <mxGeometry height="70" width="260" x="730" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="e-connect" edge="1" parent="1" source="acteur-utilisateur" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#2F5597;" target="uc-connect">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-profil" edge="1" parent="1" source="acteur-utilisateur" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#2F5597;" target="uc-profil">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-creer" edge="1" parent="1" source="acteur-utilisateur" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#2F5597;" target="uc-creer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-continuer" edge="1" parent="1" source="acteur-utilisateur" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#2F5597;" target="uc-continuer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-supprimer" edge="1" parent="1" source="acteur-utilisateur" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#2F5597;" target="uc-supprimer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-question" edge="1" parent="1" source="acteur-utilisateur" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#2F5597;" target="uc-question">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-agent-reponse" edge="1" parent="1" source="acteur-agent" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#8C8C8C;" target="uc-reponse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-agent-rag" edge="1" parent="1" source="acteur-agent" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;strokeColor=#8C8C8C;" target="uc-rag">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="i-guardrails" edge="1" parent="1" source="uc-question" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=open;strokeColor=#A23B2E;fontColor=#A23B2E;fontSize=11;" target="uc-guardrails" value="«include»">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="870" y="230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="i-memoire" edge="1" parent="1" source="uc-question" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=open;strokeColor=#A23B2E;fontColor=#A23B2E;fontSize=11;" target="uc-memoire" value="«include»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="i-reponse" edge="1" parent="1" source="uc-question" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=open;strokeColor=#2F5597;fontColor=#2F5597;fontSize=11;" target="uc-reponse" value="«include»">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="410" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="i-rag" edge="1" parent="1" source="uc-reponse" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=open;strokeColor=#A23B2E;fontColor=#A23B2E;fontSize=11;" target="uc-rag" value="«include»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="x-contexte" edge="1" parent="1" source="uc-contexte" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=open;strokeColor=#2F5597;fontColor=#2F5597;fontSize=11;" target="uc-question" value="«extend»">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

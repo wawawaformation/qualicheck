@@ -2,7 +2,7 @@
 
 État au 2026-07-29. Tenu au sens de l'article 30 du RGPD : il couvre les
 traitements **réellement mis en œuvre**, pas les traitements envisagés — voir
-`docs/jury/decisions/2026-07-29-perimetre-registre-rgpd.md` pour le
+`jury/decisions/2026-07-29-perimetre-registre-rgpd.md` pour le
 raisonnement qui justifie ce périmètre.
 
 ## Traitement 1 — Référentiel Opquast (`theme`/`regle`/`objectif`/`phase`/`tag`)
@@ -25,7 +25,7 @@ raisonnement qui justifie ce périmètre.
 - **Finalité** : traçabilité des annotations de revue
   (`PATCH /regles/{numero}`) — savoir quel expert a produit quelle
   annotation, sans construire de table Postgres dédiée (voir
-  `docs/jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md`)
+  `jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md`)
 - **Données traitées** : nom associé à un jeton (`app/api_regles/manifest.yml`
   → `clients: nom`), le jeton lui-même (`.env`, non versionné)
 - **Personnes concernées** : David Legrand, Élie Sloïm (expert externe), le

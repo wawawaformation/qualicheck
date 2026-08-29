@@ -11,5 +11,5 @@ Dossier de contexte compact pour les sessions agent.
 
 ## Principe
 
-Le detail historique est conserve ailleurs (`CHANGELOG.md`, `docs/superpowers/`, `docs/jury/`).
+Le detail historique est conserve ailleurs (`CHANGELOG.md`, `docs/superpowers/`, `jury/`).
 Ici, on garde uniquement ce qui est necessaire au demarrage rapide d'une session.

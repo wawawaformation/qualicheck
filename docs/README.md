@@ -28,7 +28,7 @@ Lecture minimale recommandee (ordre):
 ## Documents utiles mais non prioritaires en contexte agent
 
 - `docs/problemes_rencontres/` : analyses detaillees apres incidents
-- `docs/jury/` : livrables et preuves de certification
+- `jury/` : livrables et preuves de certification
 - `docs/superpowers/` : plans/specs de session, historique de travail
 
 ## Veille (hors depot)

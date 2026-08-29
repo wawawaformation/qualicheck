@@ -63,7 +63,7 @@ uv run python scripts/ingestion.py
 
 ## API de revue du référentiel (`api_regles`)
 
-Service **séparé** du produit d'audit (US0-US2) : pas une fonctionnalité de plus, un étage de données à part, avec son propre persona (un expert Opquast qui corrige une classification), sa propre frontière de service et sa propre authentification. Justification complète : `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md`.
+Service **séparé** du produit d'audit (US0-US2) : pas une fonctionnalité de plus, un étage de données à part, avec son propre persona (un expert Opquast qui corrige une classification), sa propre frontière de service et sa propre authentification. Justification complète : `jury/decisions/2026-07-28-separation-api-regles-api-audit.md`.
 
 Permet à un tiers externe (le formateur, Élie Sloïm — fondateur d'Opquast) d'annoter la classification `strategie_analyse` du référentiel enrichi sans passer par `psql` :
 
@@ -71,7 +71,7 @@ Permet à un tiers externe (le formateur, Élie Sloïm — fondateur d'Opquast) 
 - `PATCH /regles/{numero}` — pose ou retire une annotation de revue (`review_status`/`review_note`), protégé par jeton Bearer
 - Documentation interactive : `http://localhost:8880/docs`
 
-**Authentification** — un jeton par client nommé (pas un compte utilisateur complet), déclaré dans `app/api_regles/manifest.yml` et lu depuis `.env` : `dev`, `elie-sloim`, `david-legrand`, `formateur`. Solution volontairement provisoire et manuelle — détail et justification : `docs/jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md`.
+**Authentification** — un jeton par client nommé (pas un compte utilisateur complet), déclaré dans `app/api_regles/manifest.yml` et lu depuis `.env` : `dev`, `elie-sloim`, `david-legrand`, `formateur`. Solution volontairement provisoire et manuelle — détail et justification : `jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md`.
 
 **Exécution** — tourne en permanence via `docker compose up -d` (service `api-regles`, port `8880`), pas de commande séparée à retenir. Logs dans `logs/api_regles.log` (démarrage, authentifications refusées, annotations avec le nom du client). Suite d'acceptance sur données réelles : `make api-regles-acceptance` (API démarrée requise).
 

@@ -1,0 +1,123 @@
+<mxfile host="Electron">
+  <diagram name="Sequence - Authentification api_business" id="seq-auth-api-business">
+    <mxGraphModel dx="1450" dy="765" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1240" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="hdr-client" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;fontStyle=1;" value="Client&#xa;(jeton dans l'en-tete)" vertex="1">
+          <mxGeometry height="50" width="200" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr-business" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEF3FB;strokeColor=#2F5597;fontSize=12;fontStyle=1;" value="api_business" vertex="1">
+          <mxGeometry height="50" width="200" x="340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr-config" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FBEEEE;strokeColor=#A23B2E;fontSize=12;fontStyle=1;" value=".env / manifest.yml&#xa;(jetons connus)" vertex="1">
+          <mxGeometry height="50" width="220" x="640" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="hdr-bdd" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EAF4EA;strokeColor=#3F7D4A;fontSize=12;fontStyle=1;" value="BDD&#xa;(table utilisateur)" vertex="1">
+          <mxGeometry height="50" width="200" x="960" y="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="life-client" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#2F5597;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="90" as="sourcePoint" />
+            <mxPoint x="140" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="life-business" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#2F5597;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="90" as="sourcePoint" />
+            <mxPoint x="440" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="life-config" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#A23B2E;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="90" as="sourcePoint" />
+            <mxPoint x="750" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="life-bdd" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#3F7D4A;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1060" y="90" as="sourcePoint" />
+            <mxPoint x="1060" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="m1" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;strokeColor=#333333;" edge="1" value="requete HTTP&#xa;Authorization: Bearer &lt;jeton&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="120" as="sourcePoint" />
+            <mxPoint x="440" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;strokeColor=#333333;" edge="1" value="compare_digest(jeton, jetons connus)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="180" as="sourcePoint" />
+            <mxPoint x="750" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;fontSize=11;strokeColor=#333333;" edge="1" value="nom du client resolu&#xa;(ex. david-legrand) ou aucun match">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="240" as="sourcePoint" />
+            <mxPoint x="440" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="alt-frame" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=1;verticalAlign=top;align=left;fontSize=1;" value="" vertex="1">
+          <mxGeometry height="420" width="1140" x="60" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="alt-tag" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;" value="alt" vertex="1">
+          <mxGeometry height="24" width="46" x="60" y="280" as="geometry" />
+        </mxCell>
+
+        <mxCell id="guard1" parent="1" style="text;html=1;fontSize=11;fontStyle=2;fontColor=#A23B2E;align=left;" value="[jeton invalide]" vertex="1">
+          <mxGeometry height="20" width="160" x="120" y="284" as="geometry" />
+        </mxCell>
+        <mxCell id="m4" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;fontSize=11;strokeColor=#A23B2E;" edge="1" value="401 - Token Bearer absent ou invalide">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="350" as="sourcePoint" />
+            <mxPoint x="140" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="alt-divider" parent="1" style="endArrow=none;dashed=1;html=1;strokeColor=#666666;" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="400" as="sourcePoint" />
+            <mxPoint x="1200" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="guard2" parent="1" style="text;html=1;fontSize=11;fontStyle=2;fontColor=#3F7D4A;align=left;" value="[jeton valide]" vertex="1">
+          <mxGeometry height="20" width="160" x="120" y="404" as="geometry" />
+        </mxCell>
+        <mxCell id="m5" parent="1" style="endArrow=block;endFill=1;html=1;fontSize=11;strokeColor=#333333;" edge="1" value="chercher utilisateur&#xa;(nom_client = ...)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="450" as="sourcePoint" />
+            <mxPoint x="1060" y="450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m6" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;fontSize=11;strokeColor=#333333;" edge="1" value="trouve, ou absent">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1060" y="500" as="sourcePoint" />
+            <mxPoint x="440" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="note-create" parent="1" style="shape=note;whiteSpace=wrap;html=1;size=12;fillColor=#FFF2CC;strokeColor=#A68A00;fontSize=10;align=left;" value="Si absent : creer la ligne&#xa;utilisateur (nom_client),&#xa;nom/prenom a completer&#xa;plus tard (CRUD profil)" vertex="1">
+          <mxGeometry height="70" width="220" x="480" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="m7" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;fontSize=11;strokeColor=#333333;" edge="1" value="(si absent) creer utilisateur (nom_client)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="620" as="sourcePoint" />
+            <mxPoint x="1060" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m8" parent="1" style="endArrow=block;endFill=1;dashed=1;html=1;fontSize=11;strokeColor=#333333;" edge="1" value="200 - reponse (profil resolu)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="440" y="680" as="sourcePoint" />
+            <mxPoint x="140" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

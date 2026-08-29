@@ -42,7 +42,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
-- [ ] **Séparer `docs/jury/` (et notamment `veille/`) du dépôt QualiCheck —
+- [ ] **Séparer `jury/` (et notamment `veille/`) du dépôt QualiCheck —
   question soulevée le 2026-08-25** : responsabilités mélangées dans un même
   dépôt — le **produit** (code QualiCheck), la **veille** (pratique
   personnelle C6, sans lien avec le produit — ce soir-là : IA et médecine)
@@ -55,21 +55,21 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     fichiers, chemins croisés à réécrire) à quelques heures d'une
     présentation — pas le bon moment pour un chantier de cette taille.
   - **Reste à trancher avant d'agir** :
-    1. Périmètre — seule `veille/`, ou tout `docs/jury/` (livrets +
+    1. Périmètre — seule `veille/`, ou tout `jury/` (livrets +
        `decisions/` + RGPD aussi) ? Les `decisions/` documentent des choix
        d'architecture QualiCheck : les séparer du code qu'elles expliquent a
        un coût différent de séparer la veille, sans rapport avec le produit.
     2. Destination — `formation_dev_ia_agentique` évoqué, mais **attention** :
        un renvoi externe vers ce même dossier a déjà existé pour la veille et
        a été abandonné le 2026-07-23 au profit d'une centralisation complète
-       (raisonnement : `docs/jury/veille/CLAUDE.md`, section « Pièges déjà
+       (raisonnement : `jury/veille/CLAUDE.md`, section « Pièges déjà
        rencontrés »). Ne pas répéter une duplication ambiguë — un déplacement
        propre, sans copie résiduelle, un seul exemplaire qui fait foi.
     3. Découvrabilité côté jury — si la preuve C6 ne vit plus dans le dépôt
        fil rouge, comment le jury la retrouve ? Un renvoi clair et documenté
        depuis QualiCheck, pas une simple absence.
   - À traiter posément, avec une vraie decision doc dans
-    `docs/jury/decisions/` une fois le périmètre tranché — pas dans
+    `jury/decisions/` une fois le périmètre tranché — pas dans
     l'urgence d'une session de veille.
 
 - [x] **Découpage des responsabilités `api_regles` / `api_audit` / `api_business`
@@ -79,7 +79,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   `api_data` et implémenté le 2026-07-28) et `app/api_audit` (tables métier de
   l'audit, à concevoir avec la spec US1). `app/api_business` reste l'étage
   d'orchestration, sans jamais toucher Postgres. Raisonnement complet et
-  options écartées : `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md` — `D`
+  options écartées : `jury/decisions/2026-07-28-separation-api-regles-api-audit.md` — `D`
   - Reste ouvert, hors périmètre de cette décision : la frontière CRUD
     (`api_audit`) vs orchestration (`api_business`) — ex. « créer un audit »
     est-il un simple CRUD ou déclenche-t-il déjà une action métier (crawl) ?
@@ -92,7 +92,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 - [ ] **Licence du code et des étages applicatif/présentation** — non arrêtée.
   L'étage données est sous licence libre (CC BY-SA 4.0 s'imposant au jeu de
   données par partage à l'identique — décision actée
-  `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`), mais CC BY-SA
+  `jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`), mais CC BY-SA
   porte sur le contenu, pas sur le code : la séparation n-tiers laisse donc le
   choix libre pour `app/api_business/`, `app/api_audit/` et le front — `D`
 - [x] **Valeurs `KIMI_PRICE_*`** — reconstruites depuis la facture réelle du 19/07
@@ -103,7 +103,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   (spec E §6) — `D`
 - [x] **`ia_souverain/synthese.md` — question résolue par la centralisation
   de la veille** — le fichier vit désormais dans le dépôt
-  (`docs/jury/veille/fonds/ia_souverain/synthese.md`), plus besoin de choisir
+  (`jury/veille/fonds/ia_souverain/synthese.md`), plus besoin de choisir
   entre copier et pointer vers l'extérieur — `A` (2026-07-23)
   - Reste ouvert si souhaité : `F_choix_llm.md` cite ce fichier comme annexe
     (argumentation souveraineté, Bayart, Cloud Act) — copier spécifiquement
@@ -209,8 +209,8 @@ Dépôt séparé depuis le 2026-08-28 (`/projets/veille`) — les tâches encore
 ouvertes ont été déplacées dans son propre `TODO.md`. Historique conservé
 ci-dessous tel quel.
 
-- [x] **17 flux RSS listés** (export OPML 2026-07-22) → `docs/jury/veille/sources.md` — `D`
-- [x] **Démarrer les entrées datées** de `docs/jury/veille/journal.md` — 3 entrées
+- [x] **17 flux RSS listés** (export OPML 2026-07-22) → `jury/veille/sources.md` — `D`
+- [x] **Démarrer les entrées datées** de `jury/veille/journal.md` — 3 entrées
   réelles ajoutées (2026-05-13 x2, 2026-07-15), antérieures ou concomitantes à la
   création du dossier `jury/` — `D`
   - Seule exigence du référentiel qu'on ne peut pas produire rétroactivement
@@ -229,7 +229,7 @@ ci-dessous tel quel.
   `.pptx` supprimé (un seul exemplaire) — `A` (2026-07-23)
 - [x] **Veille centralisée dans le dépôt** — `formation_dev_ia_agentique/veille/`
   (5 dossiers) et les 3 fichiers de `~/Téléchargements` déplacés (pas copiés) vers
-  `docs/jury/veille/fonds/`, avec une période approximative par dossier dans
+  `jury/veille/fonds/`, avec une période approximative par dossier dans
   `README.md` (basée sur les dates de modification au moment du déplacement) — `A`
   (2026-07-23)
 - [x] **Exploration complète du fonds de veille (forme + fond)** — `A` (2026-07-23) :
@@ -252,18 +252,18 @@ ci-dessous tel quel.
     (confirmé par comparaison de pages/contenu) — `D`
 - [x] **Format retenu pour les futures veilles** (Valentin Haüy / AcceDe) — `D`
   - Double format systématique : ODP + notes (oral) et MD/ODT (lecture autonome)
-  - Aide-mémoire de construction : `docs/jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
+  - Aide-mémoire de construction : `jury/accessibilite-formats.md` (PDF, ODP, MD/ODT)
 
 ## Certification — livrables manquants
 
-Repérés en construisant l'index `docs/jury/README.md`.
+Repérés en construisant l'index `jury/README.md`.
 
 - [x] **Registre des traitements de données personnelles — résolu (2026-07-29)**
   (C4) : `docs/rgpd/registre_traitements.md`, scindé entre traitements réels
   (référentiel Opquast : hors champ RGPD ; jetons API nominatifs) et volet
   audit anticipé mais non actif (`utilisateur`/`audit`/`constat`, à compléter
   avec la spec US1) — raisonnement dans
-  `docs/jury/decisions/2026-07-29-perimetre-registre-rgpd.md` — `A`
+  `jury/decisions/2026-07-29-perimetre-registre-rgpd.md` — `A`
 - [x] **Procédures de tri RGPD — résolues (2026-07-29)** (C4) : couvertes dans
   `docs/rgpd/registre_traitements.md` §Procédures de tri (rien à purger côté
   référentiel, révocation manuelle des jetons API, volet audit à définir avec
@@ -279,7 +279,7 @@ Repérés en construisant l'index `docs/jury/README.md`.
   réel de déploiements Azure LLM (cron 30 min, taux d'erreur/latence par modèle,
   rapport HTML, incident HTTP 401 identifié). Couvre C11 mieux que QualiCheck ne le
   pourra jamais (batch anecdotique vs flux réel à surveiller) — `D`
-  - Documenter comme preuve externe renvoyée depuis `docs/jury/README.md` (comme la
+  - Documenter comme preuve externe renvoyée depuis `jury/README.md` (comme la
     veille), ou en dossier de certification autonome ?
   - Si retenu : rédiger la résolution de l'incident HTTP 401 selon les critères C21
     (cause, reproduction, solution) — actuellement seulement constaté, pas résolu

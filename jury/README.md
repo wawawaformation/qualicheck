@@ -92,7 +92,7 @@ Deux manques ne se rattraperont pas tout seuls :
 `formation_dev_ia_agentique/lab/benchmark-azure/` (dépôt git séparé, monitorage
 réel des déploiements Azure LLM, spec-driven) couvre C11 nettement mieux que
 QualiCheck ne pourrait le faire seul — l'ingestion y est un batch lancé 2-3 fois,
-sans rien à surveiller en continu (cf. `docs/jury/decisions/2026-07-21-perimetre-mlops-ingestion.md`,
+sans rien à surveiller en continu (cf. `jury/decisions/2026-07-21-perimetre-mlops-ingestion.md`,
 qui avait explicitement renvoyé C11 vers US1). Ce projet en est une preuve plus
 directe que ne le sera jamais US1. Reste à décider : le documenter comme preuve
 externe de QualiCheck (renvoi, comme pour la veille), ou en faire un dossier de

@@ -63,7 +63,7 @@ défend parce que `api_regles` n'est pas un CRUD passe-plat — elle porte
 elle-même ses invariants (note obligatoire sur un marquage `a_revoir`,
 `reviewed_at` toujours serveur, 3 colonnes de revue traitées comme un bloc).
 Contrepartie assumée : `api_regles` doit être joignable depuis Internet en
-production (cf. `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`).
+production (cf. `jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`).
 
 `app/api_business/` (à venir) consommera `api_regles` en HTTP, jamais
 PostgreSQL directement — `app/db.py` reste réservé à l'étage données.
@@ -75,8 +75,8 @@ PostgreSQL directement — `app/db.py` reste réservé à l'étage données.
 | Périmètre | 3 endpoints `regles` + `/health` + `/docs` | US1/US2 non conçues ; tout endpoint pour elles serait spéculatif |
 | Sémantique du `PATCH` | Écrit **uniquement** `review_status`/`review_note`/`reviewed_at` | Le référent annote, il ne réécrit pas l'enrichissement (pas de provenance/re-vectorisation à trancher) |
 | `reviewed_at` | Horodaté par le serveur, jamais accepté du client | Un client ne peut ni le falsifier ni l'oublier |
-| Utilisateurs/rôles en base | Aucun — un jeton par client nommé (`manifest.yml`) | Aucune US ne demande une table `utilisateur` pour ce besoin ; cf. `docs/jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md` |
-| Lecture (`GET`) | Aucune authentification | Référentiel Opquast sous CC BY-SA 4.0 (partage à l'identique) — fermer la lecture travaillerait contre la licence. Décision actée : `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md` |
+| Utilisateurs/rôles en base | Aucun — un jeton par client nommé (`manifest.yml`) | Aucune US ne demande une table `utilisateur` pour ce besoin ; cf. `jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md` |
+| Lecture (`GET`) | Aucune authentification | Référentiel Opquast sous CC BY-SA 4.0 (partage à l'identique) — fermer la lecture travaillerait contre la licence. Décision actée : `jury/decisions/2026-07-26-lecture-ouverte-api-regles.md` |
 | Attribution CC BY-SA sur les `GET` | **Obligatoire, pas une politesse** | La base reproduit littéralement le contenu Opquast : chaque réponse `GET` en diffuse une reproduction/adaptation. CC BY-SA 4.0 impose crédit + lien de licence sur toute diffusion, que l'enrichissement pris isolément soit ou non une œuvre dérivée au sens strict (question de droit non tranchée par le projet — la conclusion pratique n'en dépend pas) |
 | Périmètre de l'ouverture | **Limitée au référentiel Opquast** — pas un principe général du projet | L'ouverture (lecture libre + CC BY-SA) suit le contenu, pas l'étage : elle vaut pour `regle`/`theme`/`objectif`/`phase`/`tag`, qui sont la donnée Opquast elle-même. Tout ce qui touche `utilisateur`/`audit`/`page`/`constat` (données personnelles et données d'audit, futur `app/api_audit/`) sera **fermé** — authentification requise, aucune obligation de licence ne s'y applique. Cf. `docs/rgpd/registre_traitements.md` (le volet audit reste hors du registre RGPD tant qu'il n'est pas peuplé, mais sera un traitement de données personnelles à part entière une fois actif) |
 | Écriture (`PATCH`) | `Authorization: Bearer <token>`, un jeton par client nommé | Traçabilité de la revue sans table `utilisateur` |

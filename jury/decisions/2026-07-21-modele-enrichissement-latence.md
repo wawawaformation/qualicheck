@@ -46,7 +46,7 @@ en ajoutant une ligne Kimi sans retirer l'ancienne, jusqu'à une ligne dupliqué
 l'identique. Corrigé le 2026-07-21.
 
 **Comment elle a été détectée** : en construisant l'index compétences → preuves de
-`docs/jury/README.md`. Vérifier qu'une preuve existe réellement, plutôt que la
+`jury/README.md`. Vérifier qu'une preuve existe réellement, plutôt que la
 supposer, a fait apparaître la contradiction entre le document de conception et le
 code. C'est le *spec drift* que le `CLAUDE.md` du projet identifie comme risque
 principal — ici confirmé en conditions réelles, et sur un document central.

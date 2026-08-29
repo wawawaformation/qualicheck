@@ -91,7 +91,7 @@ qui ne touche jamais Postgres et consomme les deux API précédentes en HTTP.
   `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`,
   `conception/annexes/flux_api_donnees.drawio`), ainsi que le document de
   décision sur la lecture ouverte
-  (`docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`, lui aussi
+  (`jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`, lui aussi
   renommé), utilisaient tous `app/api_data/`. Fait avant que l'implémentation
   ne commence — aucune ligne de code n'existait encore, le coût du
   renommage était nul.

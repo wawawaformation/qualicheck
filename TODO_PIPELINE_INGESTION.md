@@ -11,8 +11,8 @@ Référence : `conception/2_ingestion/ingestion.md`
   (`make api-regles-acceptance`). 64 tests verts. Spec
   `docs/superpowers/specs/2026-07-26-api-fastapi-regles-design.md`, plan
   `docs/superpowers/plans/2026-07-26-api-regles-implementation.md`, décision de
-  lecture ouverte `docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`,
-  séparation des services `docs/jury/decisions/2026-07-28-separation-api-regles-api-audit.md`
+  lecture ouverte `jury/decisions/2026-07-26-lecture-ouverte-api-regles.md`,
+  séparation des services `jury/decisions/2026-07-28-separation-api-regles-api-audit.md`
 - [ ] **API audit** — `app/api_audit/` pour les tables métier de l'audit
   (`Audit`/`Page`/`AuditPage`/`AuditRegle`/`Constat`/`Utilisateur`), à
   concevoir avec la spec US1
