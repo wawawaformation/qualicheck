@@ -1,6 +1,6 @@
 # Pipeline d'Ingestion — État d'avancement
 
-Référence : `conception/2_ingestion/ingestion.md`
+Référence : `conception/2_us0/ingestion/ingestion.md`
 
 ## Prochain gros morceau
 
@@ -22,7 +22,7 @@ Référence : `conception/2_ingestion/ingestion.md`
 
 ## Étapes du pipeline
 
-- [x] **Étape 1 — Acquisition** — scraping corrigé (chantier 1, voir `conception/2_ingestion/D_chantier1_scraping_contexte.md`)
+- [x] **Étape 1 — Acquisition** — scraping corrigé (chantier 1, voir `conception/2_us0/ingestion/D_chantier1_scraping_contexte.md`)
   - [x] `build_rule_url(slug)` — construction URL scraping
   - [x] `fetch_api()` — récupération API Opquast
   - [x] `scrape_rule(slug)` — extraction bornée à `div.c-rule-content` + classes `c-emoji-tools`/`c-emoji-check`, capture `<p>`/`<ul>`/`<div>`/texte direct — **2 bugs initiaux corrigés (footer, `<ul>` ignoré) + 2 variantes supplémentaires découvertes sur les 245 vraies règles (nœud texte direct, contenu en `<div>`)**

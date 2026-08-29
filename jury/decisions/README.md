@@ -54,7 +54,7 @@ d'origine. L'index ci-dessous y renvoie.
 | Souveraineté, éco-conception, éthique de l'IA | `conception/conception.md` §Positionnement éthique et technique | oui |
 | Itérations du prompt d'enrichissement V1 → V3 | `docs/problemes_rencontres/ingestion/1_prompt_engineering.md` | oui — avec les chiffres qui ont motivé chaque révision |
 | Dimensionnement des colonnes textuelles | `docs/problemes_rencontres/ingestion/2_schema_text_columns.md` | oui — trois approches comparées |
-| Bornage du scraping, sérialisation des listes, champ `contexte` | `conception/2_ingestion/D_chantier1_scraping_contexte.md` §3 | oui — dont le refus d'une sentinelle mot-clé |
+| Bornage du scraping, sérialisation des listes, champ `contexte` | `conception/2_us0/ingestion/D_chantier1_scraping_contexte.md` §3 | oui — dont le refus d'une sentinelle mot-clé |
 | Méthodologie spec-driven, `CHANGELOG.md` comme continuité entre outils | `CLAUDE.md` | oui |
 
 **Lecture de la troisième colonne** : là où elle indique « non », seul le choix

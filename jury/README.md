@@ -42,9 +42,9 @@ Légende : ✅ couvert · 🟡 partiel · ⬜ rien à ce stade
 
 | | Compétence | Preuves | État |
 | --- | --- | --- | --- |
-| C1 | Automatiser l'extraction de données | `app/ingestion/acquisition.py` (API REST Opquast + scraping), `conception/2_ingestion/D_chantier1_scraping_contexte.md` | 🟡 API + scraping faits ; le critère demande aussi fichier de données, BDD et big data |
+| C1 | Automatiser l'extraction de données | `app/ingestion/acquisition.py` (API REST Opquast + scraping), `conception/2_us0/ingestion/D_chantier1_scraping_contexte.md` | 🟡 API + scraping faits ; le critère demande aussi fichier de données, BDD et big data |
 | C2 | Requêtes SQL d'extraction | `app/ingestion/stockage.py::load_enriched_rules_from_db()` (hook `--resume`) | 🟡 requêtes SQL réelles avec jointures (`objectif_regle`, `phase_regle`, `regle_tag`) déjà fonctionnelles ; documentation des choix de sélection/jointures/optimisations à rédiger. Renforcé plus tard par les requêtes SQL directes de C5/US1 ("SQL déterministe", `conception.md`) |
-| C3 | Règles d'agrégation | `app/ingestion/aggregation.py`, `conception/2_ingestion/ingestion.md` | 🟡 agrégation et validation faites ; documentation des choix de nettoyage à formaliser |
+| C3 | Règles d'agrégation | `app/ingestion/aggregation.py`, `conception/2_us0/ingestion/ingestion.md` | 🟡 agrégation et validation faites ; documentation des choix de nettoyage à formaliser |
 | C4 | Créer une base de données | `conception/1_BDD/bdd.md`, `conception/1_BDD/MLD_qualicheck.md`, `conception/annexes/B_MCD_qualicheck.drawio`, `app/migration/versions/`, `docs/rgpd/registre_traitements.md` | ✅ Merise et schéma faits ; registre RGPD et procédures de tri résolus le 2026-07-29 |
 | C5 | API de mise à disposition | — | ⬜ non conçu |
 
@@ -66,7 +66,7 @@ Légende : ✅ couvert · 🟡 partiel · ⬜ rien à ce stade
 | | Compétence | Preuves | État |
 | --- | --- | --- | --- |
 | C14 | Analyser le besoin | `conception/conception.md` (US0/US1/US2, personas, MCD) | 🟡 user stories et modélisation faites ; critères d'acceptation et objectifs d'accessibilité à expliciter |
-| C15 | Concevoir le cadre technique | `conception/conception.md`, `docker-compose.yml`, `conception/2_ingestion/C_pipeline_ingestion.drawio` | 🟡 |
+| C15 | Concevoir le cadre technique | `conception/conception.md`, `docker-compose.yml`, `conception/2_us0/ingestion/C_pipeline_ingestion.drawio` | 🟡 |
 | C16 | Coordonner la réalisation | `CHANGELOG.md`, `TODO_PIPELINE_INGESTION.md`, `docs/superpowers/plans/` | 🟡 méthode incrémentale documentée ; outils de pilotage agile à formaliser |
 | C17 | Développer composants et interfaces | — | ⬜ backend et frontend non démarrés |
 | C18 | Automatiser les tests | `.github/workflows/ci.yml` | ✅ lint, migrations et tests déclenchés à chaque push hors `main` |

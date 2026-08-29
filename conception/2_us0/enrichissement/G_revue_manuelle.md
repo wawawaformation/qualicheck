@@ -99,7 +99,7 @@ révélés visuellement et fonctionnellement indiscernables pour l'usage réel
 ne les traite différemment). Vocabulaire simplifié à `valide`/`a_revoir`,
 sans perte de comportement. Répercuté sur `app/api_regles/schemas.py`
 (énums `ReviewStatus`/`ReviewStatusFiltre`), `app/ingestion/enrich_again.py`
-(docstring), `conception/4_api_regles/api_regles.md` et
+(docstring), `conception/2_us0/api_regles/api_regles.md` et
 `conception/1_BDD/MLD_qualicheck.md`.
 
 ## 6. Validation

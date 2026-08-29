@@ -154,7 +154,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   désormais explicitement vers les deux — `A` (2026-07-23)
 - [x] **`B_MCD_qualicheck.drawio` — flèche incorrecte — résolue** — `endArrow=
   block;endFill=1` retiré (seule ligne du fichier à en porter un, tout le reste
-  du MCD est sans flèche). Le doublon dans `conception/2_ingestion/` — identique
+  du MCD est sans flèche). Le doublon dans `conception/2_us0/ingestion/` — identique
   avant correctif, aurait divergé sinon — a été supprimé, non référencé par aucun
   document — `A` (2026-07-23)
 - [x] **Références `annexes/*.jpg` → `.png`** — `conception.md` et

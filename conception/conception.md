@@ -283,15 +283,8 @@ Lors de la re-ingestion, le RAG joue un troisième rôle : détecter des **patte
 
 ### US0 — Pipeline d'ingestion
 
-Le pipeline d'ingestion est un script autonome exécuté en dehors de l'interface web. Il prépare le référentiel Opquast pour qu'il soit exploitable par les agents IA lors des audits. Il se déroule en 7 étapes séquentielles, depuis l'acquisition des données jusqu'à l'indexation vectorielle dans PostgreSQL.
-
-![Pipeline d'ingestion QualiCheck](annexes/C_pipeline_ingestion.png)
-
-*cf. [Annexe C — Pipeline d'ingestion](annexes/C_pipeline_ingestion.png)*
-
-Les données Opquast sont acquises depuis deux sources complémentaires : l'API REST publique pour les champs structurés, et un scraping des pages publiques pour les champs `solution` et `contrôle` non encore exposés par l'API. Un agent LLM enrichit chaque règle en une seule inférence, produisant la stratégie d'analyse, le score de confiance et le `guide_analyse`. Les règles sont ensuite stockées en PostgreSQL, chunkées avec tous leurs champs dénormalisés, vectorisées via All MiniLM L12 v2, et indexées dans pgvector.
-
-En post-MVP, le même script pourra être lancé avec `--mode reingest` pour la re-ingestion avec injection des feedbacks terrain.
+Détail complet (étapes, prompts, choix techniques) déplacé dans
+[`2_us0/spec.md`](2_us0/spec.md).
 
 ### US1 — Flux d'audit
 
@@ -501,67 +494,8 @@ L'ensemble des services (FastAPI, PostgreSQL + pgvector, Vue.js) est conteneuris
 
 ## Pipeline d'ingestion
 
-### Vue d'ensemble
-
-Le pipeline d'ingestion est un **script Python autonome**, exécutable en ligne de commande, rejouable à tout moment. Il traite les 245 règles du référentiel Opquast en séquence et ne nécessite aucune intervention humaine pendant l'exécution.
-
-```text
-Acquisition → Agrégation → Enrichissement LLM → Stockage PostgreSQL
-→ Chunking → Embedding → Indexation pgvector
-```
-
-### Étape 1 — Acquisition
-
-- **API REST Opquast** (publique) : intitulé, objectifs, tags, thématiques, phases projet
-- **Scraping complémentaire** (BeautifulSoup / Playwright) : champs `solution` et `contrôle`
-
-Ce mix API + scraping répond directement à l'exigence C1 du référentiel RNCP37827.
-
-### Étape 2 — Agrégation
-
-Fusion en mémoire des données issues des deux sources. Les règles incomplètes sont loggées et exclues sans bloquer les autres.
-
-### Étape 3 — Enrichissement par agent LLM
-
-Un **agent unique** traite chaque règle en un seul appel LLM. Le prompt demande une réponse en JSON strict :
-
-```json
-{
-  "strategie_analyse": "statique | playwright | manuel",
-  "strategie_justification": "explication courte",
-  "guide_analyse": "instruction précise pour l'agent d'audit"
-}
-```
-
-Un seul appel réduit de moitié la consommation de tokens (68 appels au lieu de 136).
-
-**Sur le score de confiance** — le LLM évalue lui-même sa certitude sur chaque classification. Les règles sous 0.70 sont flaggées dans un log dédié, sans bloquer l'ingestion. Ce signal priorise les règles à surveiller lors des premiers audits.
-
-**En post-MVP (`--mode reingest`)**, le prompt sera enrichi avec les feedbacks terrain accumulés pour que le LLM révise sa classification et son `guide_analyse`.
-
-### Étape 4 — Stockage PostgreSQL
-
-Insertion dans `regle` et tables associées. En mode reingest : mise à jour ciblée des règles sous le seuil uniquement.
-
-### Étape 5 — Chunking
-
-```text
-intitulé + solution + contrôle + guide_analyse + tags + phases
-```
-
-Texte dénormalisé : le vecteur capture la sémantique complète, sans jointures SQL au retrieval.
-
-### Étape 6 — Embedding
-
-Appel à **All MiniLM L12 v2** via Infomaniak — vecteur de 384 dimensions. **Gratuit** sur toutes les phases.
-
-### Étape 7 — Indexation pgvector
-
-```sql
-UPDATE regle SET embedding = [...] WHERE id = x
-```
-
-Pas de base vectorielle externe — PostgreSQL joue les deux rôles.
+Détail complet (vue d'ensemble, étapes 1 à 7) déplacé dans
+[`2_us0/spec.md`](2_us0/spec.md).
 
 ---
 

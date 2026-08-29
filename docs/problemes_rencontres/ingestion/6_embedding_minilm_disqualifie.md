@@ -17,7 +17,7 @@ existe pour éviter.
 
 Fichiers concernés : `app/ingestion/embedding.py`, `app/ingestion/manifest.yml`,
 `app/migration/versions/0011_widen_embedding_dimension.py`,
-`conception/2_ingestion/L_chunking_embedding_indexation.md`.
+`conception/2_us0/ingestion/L_chunking_embedding_indexation.md`.
 
 ## Hypothèse de départ
 
@@ -62,7 +62,7 @@ existe pour documenter honnêtement plutôt que dissimuler.
 Pivot vers **Azure `text-embedding-3-small`**, dimension **native 1536**
 (aucune troncature — le coût de stockage/calcul supplémentaire est
 négligeable sur 245 lignes). Détail technique et migration de schéma :
-`conception/2_ingestion/L_chunking_embedding_indexation.md`. Exécuté pour de
+`conception/2_us0/ingestion/L_chunking_embedding_indexation.md`. Exécuté pour de
 vrai le 2026-07-26 (`make embed-rules`, 245/245 règles vectorisées,
 0,0016 €).
 
@@ -104,7 +104,7 @@ pour la bascule production du volet LLM (`conception.md` §Scénario nominal),
 ## Ce qui reste volontairement incohérent, et pourquoi
 
 `conception.md`, `conception/annexes/F_choix_llm.md` et les MLD
-(`conception/2_ingestion/MLD_qualicheck.md`,
+(`conception/2_us0/ingestion/MLD_qualicheck.md`,
 `conception/annexes/MLD_qualicheck.md`) continuent de décrire MiniLM et
 `vector(384)` comme le choix actif, à plusieurs endroits. Ce n'est **pas un
 oubli à corriger** : c'est la trace de ce qui était cru vrai au moment où ces

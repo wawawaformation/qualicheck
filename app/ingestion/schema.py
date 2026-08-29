@@ -1,7 +1,7 @@
 """
 Schémas Pydantic pour le pipeline d'ingestion.
 
-Détail : conception/2_ingestion/ingestion.md
+Détail : conception/2_us0/ingestion/ingestion.md
 """
 
 from pydantic import BaseModel, Field, field_validator

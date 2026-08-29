@@ -65,7 +65,7 @@ regle (
 **Règle de nommage des colonnes** : le vocabulaire du domaine reste en français,
 le vocabulaire technique en anglais (principe de langage omniprésent, DDD). Test :
 un auditeur qualité prononcerait-il ce mot en parlant de son métier ? Détail :
-`conception/3_enrichissement/E_provenance_manifeste.md` §7.
+`conception/2_us0/enrichissement/E_provenance_manifeste.md` §7.
 
 ### objectif
 

@@ -4,7 +4,7 @@
 Récupère les 245 règles Opquast via l'API REST publique,
 puis complète les champs manquants par scraping du site Opquast.
 
-Détail : conception/2_ingestion/ingestion.md
+Détail : conception/2_us0/ingestion/ingestion.md
 """
 
 import logging

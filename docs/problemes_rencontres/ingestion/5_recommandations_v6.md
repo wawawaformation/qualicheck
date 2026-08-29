@@ -9,7 +9,7 @@ lang: fr-FR
 ## Objectif de ce document
 
 Après la ré-ingestion réelle des 245 règles Opquast avec le prompt V5
-(chantier `conception/2_ingestion/H_chantier_prompt_v5.md`), un balayage
+(chantier `conception/2_us0/ingestion/H_chantier_prompt_v5.md`), un balayage
 complet des 245 règles par 5 agents en parallèle a été mené pour vérifier la
 cohérence des diagnostics produits, complété par des vérifications SQL
 ciblées sur les règles visées par les correctifs V5. Ce document consolide
@@ -56,7 +56,7 @@ ailleurs dans le référentiel (ex. règles 116, 156, 159, 187, 224, 235, 245 :
 le volet 2 dépend du résultat du volet 1).
 
 **Diagnostic** : la grammaire `&` a été introduite en V5 **uniquement en
-prose** (`conception/2_ingestion/H_chantier_prompt_v5.md` §5.3), sans aucun
+prose** (`conception/2_us0/ingestion/H_chantier_prompt_v5.md` §5.3), sans aucun
 few-shot qui la démontre concrètement. Les 8 exemples du prompt V5 utilisent
 tous `+`. Principe bien documenté en prompt engineering : un LLM suit plus
 fidèlement un exemple concret qu'une règle énoncée en prose seule — une
@@ -180,7 +180,7 @@ par non-régression lors de la correction ciblée :
 
 ## 7. Résultat de la correction ciblée (exécutée le 2026-07-26)
 
-`enrich_again` (spec `conception/2_ingestion/J_chantier_enrich_again.md`) a
+`enrich_again` (spec `conception/2_us0/ingestion/J_chantier_enrich_again.md`) a
 été lancé pour de vrai le 2026-07-26 sur les 11 règles confirmées de ce
 document (§1-3). Coût réel : **0,1610 €** (contre ~4,29 € pour une
 ré-ingestion complète des 245 règles) — 245 lignes n'ont donc pas eu à être

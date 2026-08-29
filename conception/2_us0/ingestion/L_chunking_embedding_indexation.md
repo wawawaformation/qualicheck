@@ -11,7 +11,7 @@
 ## 1. Problème
 
 Les Étapes 5 (chunking), 6 (embedding) et 7 (indexation) du pipeline
-d'ingestion (`conception/2_ingestion/ingestion.md` §Étapes 5-7) n'ont
+d'ingestion (`conception/2_us0/ingestion/ingestion.md` §Étapes 5-7) n'ont
 jamais été implémentées. Conséquence directe : `regle.embedding` est
 `NULL` sur les 245 lignes réelles déjà en base — aucune recherche
 sémantique (US2, question libre) n'est possible aujourd'hui.
@@ -58,7 +58,7 @@ découle.
 | --- | --- |
 | Contenu du chunk | `intitulé + contexte + solution + controle + guide_analyse + tags + phases` — `contexte` inclus (absent sur ~la moitié des règles, omis proprement si `NULL`), conformément à l'intention notée au chantier 1 |
 | Format du chunk | Structuré avec labels (`Intitulé : ...\nContexte : ...\nSolution : ...\nControle : ...\nGuide d'analyse : ...\nTags : ...\nPhases : ...`) — aide la qualité sémantique de l'embedding, coût négligeable en tokens |
-| "1 règle = 1 chunk" | Non négociable — pas de découpage sémantique, pas de chevauchement. **Référence** : déjà décidé et justifié dans `conception/2_ingestion/ingestion.md` §Étape 5 — "la granularité métier de la règle correspond exactement à la granularité de recherche RAG souhaitée pour l'audit". Une règle Opquast (intitulé, solution, controle, guide_analyse) forme un tout actionnable : solution et controle n'ont de sens que lus ensemble pour une même règle, et un futur agent d'audit (US1/US2) a besoin de la règle complète pour appliquer ou expliquer un contrôle — retrouver un fragment isolé (ex. juste le `controle`, sans le `guide_analyse` associé) serait inexploitable. Ce principe tient même avec un chunk plus riche qu'à l'origine (ajout de `contexte`) : la taille du texte a changé, pas l'unité métier qu'il représente |
+| "1 règle = 1 chunk" | Non négociable — pas de découpage sémantique, pas de chevauchement. **Référence** : déjà décidé et justifié dans `conception/2_us0/ingestion/ingestion.md` §Étape 5 — "la granularité métier de la règle correspond exactement à la granularité de recherche RAG souhaitée pour l'audit". Une règle Opquast (intitulé, solution, controle, guide_analyse) forme un tout actionnable : solution et controle n'ont de sens que lus ensemble pour une même règle, et un futur agent d'audit (US1/US2) a besoin de la règle complète pour appliquer ou expliquer un contrôle — retrouver un fragment isolé (ex. juste le `controle`, sans le `guide_analyse` associé) serait inexploitable. Ce principe tient même avec un chunk plus riche qu'à l'origine (ajout de `contexte`) : la taille du texte a changé, pas l'unité métier qu'il représente |
 | Modèle d'embedding (solution actuelle) | Azure `text-embedding-3-small` (`AZURE_MODEL_TEXT_EMBEDDING_SMALL`, déjà dans `.env`) |
 | **Dimension du vecteur** | **1536, native — pas de troncature.** `dimensions=384` rejeté : sur un chunk riche (jusqu'à ~950 tokens), tronquer perd significativement plus d'information relative qu'un texte court dans la même dimension ; le corpus (245 lignes) est trop petit pour que le coût de stockage/calcul justifie une troncature. `dimensions=1536` passé explicitement à l'appel (natif, mais explicite plutôt qu'implicite) |
 | **Migration de schéma** | `regle.embedding` : `vector(384)` → `vector(1536)`. Faite **maintenant**, pas différée : aucune donnée réelle n'existe encore sur cette colonne (`NULL` partout), c'est le moment le moins cher possible. Index HNSW (`regle_embedding_idx`) supprimé puis recréé après le changement de type (lié à la dimension) |

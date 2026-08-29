@@ -28,9 +28,9 @@ qu'elle compte pour une décision.
 - conception/1_BDD/bdd.md
 - conception/1_BDD/MLD_qualicheck.md
 - conception/1_BDD/A_dictionnaire_donnees_qualicheck.xlsx
-- conception/2_ingestion/ingestion.md
-- conception/3_enrichissement/E_provenance_manifeste.md
-- conception/4_api_regles/api_regles.md
+- conception/2_us0/ingestion/ingestion.md
+- conception/2_us0/enrichissement/E_provenance_manifeste.md
+- conception/2_us0/api_regles/api_regles.md
 
 ## Exécution et commandes
 

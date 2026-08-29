@@ -9,7 +9,7 @@ lang: fr-FR
 ## Objectif de ce document
 
 Après la ré-ingestion réelle des 245 règles Opquast avec le prompt V4
-(chantier 2, `conception/2_ingestion/F_chantier2_prompt_v4.md`), une revue
+(chantier 2, `conception/2_us0/ingestion/F_chantier2_prompt_v4.md`), une revue
 manuelle ciblée (David) et un balayage complet des 245 règles par 5 agents en
 parallèle ont été menés pour vérifier la cohérence des diagnostics produits.
 Ce document consolide les observations — le **quoi** et le **pourquoi**, pas
@@ -44,7 +44,7 @@ Décisions déjà actées avec David (2026-07-25) :
 ## 1. Format composite insuffisant (O1)
 
 **Contexte** : le format `strategieA+strategieB` (spec
-`conception/2_ingestion/F_chantier2_prompt_v4.md` §4) n'encode que l'**ordre**
+`conception/2_us0/ingestion/F_chantier2_prompt_v4.md` §4) n'encode que l'**ordre**
 ("l'ordre = séquence d'exécution") — implicitement toujours une sémantique
 **PUIS** (séquentiel, B dépend du résultat de A).
 

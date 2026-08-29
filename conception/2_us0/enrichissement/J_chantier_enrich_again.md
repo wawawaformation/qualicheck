@@ -4,7 +4,7 @@
 > (`docs/problemes_rencontres/ingestion/5_recommandations_v6.md`), qui a
 > marqué 11 règles `review_status = a_revoir` avec un `review_note` détaillé
 > chacune. Différé explicitement depuis la spec G
-> (`conception/3_enrichissement/G_revue_manuelle.md` §5) jusqu'à disposer de
+> (`conception/2_us0/enrichissement/G_revue_manuelle.md` §5) jusqu'à disposer de
 > vraies données de revue — c'est fait. À valider avant implémentation.
 >
 > Date : 2026-07-26

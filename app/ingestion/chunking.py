@@ -2,8 +2,8 @@
 Construction du texte de chunk pour l'embedding.
 
 Une règle = un chunk (décision actée, cf.
-conception/2_ingestion/L_chunking_embedding_indexation.md §3 et
-conception/2_ingestion/ingestion.md §Étape 5) : le texte assemble tous les
+conception/2_us0/ingestion/L_chunking_embedding_indexation.md §3 et
+conception/2_us0/ingestion/ingestion.md §Étape 5) : le texte assemble tous les
 champs pertinents d'une règle, structuré avec des labels par champ.
 """
 

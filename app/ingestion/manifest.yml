@@ -16,7 +16,7 @@ enrichissement:
   # Prix (€ pour 1M tokens) reconstruit à partir de la facture Azure réelle du
   # 19/07/2026 (9,13 €), pas un tarif publié : le ratio entrée/sortie du tarif
   # public Moonshot/OpenRouter est supposé correct, seule l'échelle est recalée.
-  # Détail : conception/3_enrichissement/E_provenance_manifeste.md §6
+  # Détail : conception/2_us0/enrichissement/E_provenance_manifeste.md §6
   prix_entree_par_million: 0.8008
   prix_sortie_par_million: 3.3875
 

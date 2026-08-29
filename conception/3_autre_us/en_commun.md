@@ -17,12 +17,14 @@ même application — pas deux produits séparés. Le front (Vue.js) ne doit
 appeler qu'une seule API pour les deux : `app/api_business/`, l'étage
 d'orchestration déjà prévu dans
 `jury/decisions/2026-07-28-separation-api-regles-api-audit.md` et dans
-`conception/4_api_regles/api_regles.md` (schéma « Place dans l'architecture »).
+`conception/2_us0/api_regles/api_regles.md` (schéma « Place dans l'architecture »).
 
 Ce document couvre ce qui est **commun** aux deux US côté API — domaine,
 organisation des endpoints, forme du service. Les contrats d'API propres à
 chaque US restent dans leurs specs respectives
-(`5_us/us2_question_libre/`, `5_us/us1_audit/` à venir).
+(`3_autre_us/us2_question_libre/`, `3_autre_us/us1_audit/` à venir). Le
+profil utilisateur (données, rétention) a sa propre spec :
+[`profil/spec.md`](profil/spec.md).
 
 ## Place dans l'architecture
 
@@ -64,3 +66,4 @@ chaque US restent dans leurs specs respectives
   qualité web), pas de construire un modèle économique. Noté ici pour ne pas
   perdre l'intention, mais l'authentification MVP ne doit pas anticiper de
   mécanique de crédits/quotas — juste verrouiller l'accès (point ci-dessus).
+  Détail du profil utilisateur concerné : [`profil/spec.md`](profil/spec.md).

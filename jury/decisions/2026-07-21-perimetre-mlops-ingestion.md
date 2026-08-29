@@ -92,7 +92,7 @@ Le pipeline d'ingestion reçoit une **traçabilité de la donnée**, et rien de 
 quatre colonnes de provenance sur `regle`, un manifeste des décisions courantes lu
 par le code, une version de prompt dans le fichier de prompt lui-même.
 
-Spec complète : `conception/2_ingestion/E_provenance_manifeste.md`.
+Spec complète : `conception/2_us0/ingestion/E_provenance_manifeste.md`.
 
 **Le critère qui a tranché**, et qui a servi aux sept arbitrages ci-dessus :
 
@@ -143,4 +143,4 @@ compétences C11 et C20 s'y démontreront, pas ici.
 **Résolu (2026-07-25).** L'emplacement des tarifs `KIMI_PRICE_*` est désormais
 `app/ingestion/manifest.yml`, pas `.env` : ce sont des données de référence du
 projet, pas des secrets, et le manifeste versionné donne un historique gratuit
-via git, contrairement à `.env`. Détail : `conception/2_ingestion/E_provenance_manifeste.md` §6.
+via git, contrairement à `.env`. Détail : `conception/2_us0/ingestion/E_provenance_manifeste.md` §6.
