@@ -9,6 +9,77 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-08-30 — Claude Code (Part 58)
+
+- **Essai Gitea validé de bout en bout** : dépôt miroir `david/qualicheck`
+  créé, branches `dev`/`staging` protégées (PR obligatoire), `tea` (CLI
+  Gitea) configuré et utilisé pour piloter secrets/PR/runs.
+- **`ci-dev.yml` opérationnel sur Gitea Actions** (`.gitea/workflows/`) :
+  fallback de compatibilité Gitea vers `.github/workflows/` découvert et
+  neutralisé (ancien dossier déplacé vers `archive_github/`) ; correction
+  `POSTGRES_HOST: postgres` (le job tourne en conteneur docker, `localhost`
+  ne joint pas le service voisin, contrairement à un runner GitHub-hébergé).
+- **`cd-staging.yml` réécrit en pipeline image** : job `build` (test, build,
+  push vers le registre OCI Gitea, tag = SHA du commit) puis job `deploy` en
+  **SSH-push vers un hôte générique** (secrets `DEPLOY_HOST`/`DEPLOY_USER`/
+  `DEPLOY_SSH_KEY`) plutôt qu'un runner attaché à `cloclo` — conception dans
+  `conception/4_deploiement/api_regles/cd_staging_gitea.md`, schéma associé.
+  Décision de conception : runner Gitea conteneurisé écarté pour le job de
+  déploiement (aurait nécessité une image personnalisée et des montages
+  spécifiques à `cloclo`, incompatible avec le besoin réel de pouvoir
+  déployer sur n'importe quel hôte).
+- **Déploiement réel validé** sur `cloclo` via ce nouveau pipeline (image
+  tirée, migrations rejouées, conteneur `api-regles` sain, API répondant en
+  HTTP 200) après correction de 3 incidents réels documentés dans
+  `docs/problemes_rencontres/deploiement/1_ssh_deploy_gitea.md` (stdin
+  avalé par `docker compose exec`, `PATH` absent pour `uv` en SSH
+  non-interactif, secrets `POSTGRES_*`/`FASTAPI_API_KEY*` désynchronisés de
+  la base réelle de staging).
+
+## 2026-08-29 — Claude Code (Part 57)
+
+- **Kanboard déployé réellement** sur `kanban.david-legrand.fr` (auto-hébergé
+  sur `cloclo`, Docker + Caddy avec en-têtes de sécurité alignés sur les
+  autres domaines) — outil de pilotage agile pour C16, décision et
+  alternatives écartées (Notion, Trello, Planka) dans
+  `jury/decisions/2026-08-29-outil-pilotage-kanban.md`. Connexion admin
+  confirmée. Plugin `AgileIndicators` restant à activer.
+- **Décision actée** de basculer l'hébergement Git/CI vers Gitea
+  auto-hébergé sur `cloclo`, en remplacement de GitHub, via un essai non
+  destructif — cohérence avec le positionnement souveraineté numérique déjà
+  affiché dans `conception/conception.md` — voir
+  `jury/decisions/2026-08-29-hebergement-git-gitea.md`. Pas encore exécuté.
+- **`jury/avancees_competences/`** créé : une fiche par compétence (C1 à
+  C21), front matter avec critères d'évaluation, section "Avancées"
+  alimentée par une passe rétroactive ancrée sur `jury/README.md` et
+  `jury/decisions/*.md`, à compléter au fil des livraisons futures.
+- **`docs/developpement/ci.md`** : documente explicitement pourquoi `main`
+  n'a aucun workflow CI/CD (réservé à la bascule de production Infomaniak,
+  pas un oubli) — répond à une vérification de C19.
+- **`conception/maquettes/utilisateur/`** : écrans de connexion et de profil
+  (jeton, nom/prénom, suppression de compte avec confirmation en cascade sur
+  discussions et audits) pour US1/US2, sortis de `US2/` car le compte est
+  commun aux deux US.
+- **`conception/2_us0/`** créé, regroupant `ingestion/`, `enrichissement/`,
+  `api_regles/` (auparavant 3 dossiers numérotés indépendants) ; `conception/5_us/`
+  renommé `conception/3_autre_us/`, avec un nouveau `profil/spec.md` séparé
+  de `en_commun.md`. `conception/conception.md` allégé de ~85 lignes (détail
+  du pipeline d'ingestion déplacé), corrigeant au passage trois erreurs de
+  contenu jamais relues depuis l'écriture initiale (modèle d'embedding
+  périmé, un ratio non vérifiable, un score de confiance jamais implémenté).
+- **`jury/` déplacé à la racine** (depuis `docs/jury/`) et la veille (C6)
+  externalisée vers un dépôt séparé (`/projets/veille`) — toutes les
+  références vivantes mises à jour, historique (`CHANGELOG.md`,
+  `docs/superpowers/`) laissé intact.
+- **Historique git nettoyé** : purge des blobs de veille (vidéos/sons/ODP,
+  ~213 Mo) de l'historique de `dev`/`main`/`staging` via `git filter-repo`,
+  après sauvegarde miroir complète — `.git` passé de 194 Mo à 8,3 Mo.
+- **Spec US2 détaillée** : cas d'utilisation (`cas_utilisation_us2.drawio`),
+  scénarios nominaux/alternatifs, architecture `api_business` commune US1/US2
+  (`en_commun.md` : domaine, authentification par jeton réutilisant
+  `api_regles`, endpoints par ressource plutôt que par numéro d'US),
+  diagramme de séquence d'authentification.
+
 ## 2026-08-25 — Claude Code (Part 55)
 
 - **Veille "IA, médecine et évolution des paradigmes" rédigée pour restitution
