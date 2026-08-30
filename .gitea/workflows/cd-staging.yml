@@ -83,6 +83,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_deploy "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" bash -s <<'REMOTE'
           set -e
+          # session non-interactive : ~/.bashrc n'est pas source, donc
+          # ~/.local/bin (uv) n'est pas dans le PATH sans cet export explicite
+          export PATH="$HOME/.local/bin:$PATH"
           DEPLOY_DIR=/srv/docker/qualicheck-staging-deploy/qualicheck
 
           if [ ! -d "$DEPLOY_DIR/.git" ]; then
