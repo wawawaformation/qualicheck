@@ -1,6 +1,6 @@
 ---
 title: "Mise au point du déploiement SSH-push sur Gitea Actions"
-subtitle: "cd-staging.yml — trois échecs successifs, cause identifiée à chaque fois par les logs réels"
+subtitle: "cd-staging.yml — échecs successifs, cause identifiée à chaque fois par les logs réels"
 author: "David LEGRAND"
 date: "Août 2026"
 lang: fr-FR
@@ -9,9 +9,9 @@ lang: fr-FR
 ## Objectif de ce document
 
 Le passage de `cd-staging.yml` à un déploiement SSH-push (voir
-`conception/4_deploiement/api_regles/cd_staging_gitea.md`) a nécessité trois
-itérations avant un run réellement réussi, chacune diagnostiquée à partir des
-logs du run précédent plutôt que supposée. Ce document trace ces trois
+`conception/4_deploiement/api_regles/cd_staging_gitea.md`) a nécessité
+plusieurs itérations avant un run réellement réussi, chacune diagnostiquée à
+partir des logs du run précédent plutôt que supposée. Ce document trace ces
 incidents pour qu'ils ne se reproduisent pas silencieusement ailleurs (le
 premier, en particulier, produisait un job marqué **réussi** alors que le
 déploiement n'avait pas eu lieu).
@@ -101,9 +101,46 @@ vérifier leur valeur contre l'état réel du système qu'ils authentifient
 (une base déjà initialisée, ici), pas seulement de recréer une entrée du
 même nom avec une valeur plausible.
 
+## Incident 4 — `upload-artifact@v4`/`download-artifact@v4` non supportés par Gitea Actions
+
+**Contexte** : ajout du déploiement du client `regles_api_client` (statique,
+transmis du job `build` au job `deploy` via un artefact de workflow — voir
+`conception/4_deploiement/api_regles/cd_staging_gitea.md`).
+
+**Symptôme** : l'étape `actions/upload-artifact@v4` échoue immédiatement :
+
+```text
+::error::@actions/artifact v2.0.0+, upload-artifact@v4+ and
+download-artifact@v4+ are not currently supported on GHES.
+```
+
+**Cause** : à partir de la v4, ces actions utilisent une nouvelle API
+d'artefacts (basée sur Twirp) qui détecte si elle tourne sur github.com ou
+sur un serveur tiers (GHES — GitHub Enterprise Server — ou toute plateforme
+qui imite son API, dont Gitea) et refuse explicitement de fonctionner hors
+de github.com. Ce n'était pas couvert par la vérification empirique
+préalable (le risque identifié portait sur `services:`, pas sur les
+artefacts).
+
+**Correction** : verrouiller sur la version précédente, qui utilise
+l'ancienne API compatible :
+
+```yaml
+uses: actions/upload-artifact@v3   # pas @v4
+uses: actions/download-artifact@v3 # pas @v4
+```
+
+**Leçon** : la compatibilité « ~90 % avec la syntaxe GitHub Actions » de
+Gitea Actions ne dit rien des versions précises des actions tierces — une
+action `uses: owner/repo@vX` peut avoir des versions majeures qui cessent
+volontairement de fonctionner hors de github.com, indépendamment de la
+syntaxe du workflow.
+
 ## Résultat
 
-Après ces trois corrections, le run complet (`build` puis `deploy`) réussit
-de bout en bout : image poussée au registre, base migrée avec les bons
-identifiants, conteneur `api-regles` sain avec la nouvelle image, API
-répondant en HTTP 200 sur `https://regles.qualicheck.koabana.fr/regles`.
+Après ces corrections, le pipeline complet (image `api-regles` + client
+`regles_api_client`) réussit de bout en bout : image poussée au registre,
+base migrée avec les bons identifiants, conteneur `api-regles` sain avec la
+nouvelle image, API répondant en HTTP 200 sur
+`https://regles.qualicheck.koabana.fr/regles`, client statique publié via
+artefact + `scp`.

@@ -98,10 +98,17 @@ cas sur `cloclo`, hérité de l'ancien runner GitHub natif.
 
 **Client `regles_api_client`** : construit dans le job `build` (qui dispose
 déjà de Node pour d'autres raisons), publié comme artefact de workflow
-(`actions/upload-artifact`), puis récupéré et transféré par `scp` dans le
-job `deploy` (`actions/download-artifact` + `scp` + bascule atomique dans
+(`actions/upload-artifact@v3`), puis récupéré et transféré par `scp` dans le
+job `deploy` (`actions/download-artifact@v3` + `scp` + bascule atomique dans
 `/srv/www/regles.qualicheck.koabana.fr/`) — pas de registre d'images
 impliqué, ce n'est pas un contenu conteneurisé.
+
+> **Correction du 2026-08-30** : `actions/upload-artifact@v4`/
+> `download-artifact@v4` échouent explicitement sous Gitea Actions
+> (`GHESNotSupportedError` — ces versions utilisent une nouvelle API
+> d'artefacts que Gitea, détecté comme un serveur type GHES, ne supporte pas
+> encore). Verrouillé sur `@v3` (ancienne API, compatible), confirmé par un
+> run réel réussi.
 
 **Tag** : SHA du commit (`${{ github.sha }}`) uniquement — pas de tag
 flottant `staging`. Traçabilité exacte de ce qui tourne, rollback possible

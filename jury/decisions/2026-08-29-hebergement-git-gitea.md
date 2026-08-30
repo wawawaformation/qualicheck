@@ -83,3 +83,15 @@ aujourd'hui.
   de registre), mais utile si le modèle de déploiement évolue plus tard.
 - Décision indépendante de celle sur Kanboard : chacune reste valable même
   si l'autre était révisée séparément.
+
+> **Précision du 2026-08-30** : la compatibilité `uses:` de Gitea Actions
+> (constatée en fonctionnement réel sur `ci-dev.yml`/`cd-staging.yml`) ne
+> réimplémente pas les actions tierces — elle va chercher leur code là où
+> elles sont réellement hébergées, c'est-à-dire `github.com` pour la quasi-
+> totalité de l'écosystème (`actions/checkout`, `astral-sh/setup-uv`,
+> `actions/setup-node`, `actions/upload-artifact`...). La bascule élimine
+> la dépendance à GitHub pour l'hébergement du code, de l'historique et du
+> CI/CD lui-même, **mais pas** pour ces briques tierces récupérées à
+> l'exécution de chaque run — un accès réseau à `github.com` reste
+> nécessaire. Alternative possible (non retenue ici) : miroirer ces actions
+> sur Gitea, ou n'utiliser que des actions `docker://` autonomes.

@@ -75,7 +75,7 @@ jobs:
           npm run build
 
       - name: Publier le build du client comme artefact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: client-dist
           path: clients/regles_api_client/dist
@@ -146,7 +146,7 @@ jobs:
           REMOTE
 
       - name: Télécharger l'artefact du client
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: client-dist
           path: client-dist
