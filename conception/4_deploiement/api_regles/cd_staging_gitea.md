@@ -91,13 +91,17 @@ générique, pas de label attaché à un hôte précis) :
      (nouvelle cible, sans `--build`), attente de santé de l'API, `make
      api-regles-acceptance`
 
-Aucun outil autre que `ssh` n'est requis sur le runner lui-même — tout ce
-dont dépendent les commandes de déploiement (`docker`, `make`, `uv`, `curl`)
-doit exister sur l'hôte **cible**, pas sur le runner. C'est déjà le cas sur
-`cloclo`, hérité de l'ancien runner GitHub natif.
+Aucun outil autre que `ssh`/`scp` n'est requis sur le runner lui-même — tout
+ce dont dépendent les commandes de déploiement (`docker`, `make`, `uv`,
+`curl`) doit exister sur l'hôte **cible**, pas sur le runner. C'est déjà le
+cas sur `cloclo`, hérité de l'ancien runner GitHub natif.
 
-Build et publication du client `regles_api_client` : voir section « Hors
-périmètre ».
+**Client `regles_api_client`** : construit dans le job `build` (qui dispose
+déjà de Node pour d'autres raisons), publié comme artefact de workflow
+(`actions/upload-artifact`), puis récupéré et transféré par `scp` dans le
+job `deploy` (`actions/download-artifact` + `scp` + bascule atomique dans
+`/srv/www/regles.qualicheck.koabana.fr/`) — pas de registre d'images
+impliqué, ce n'est pas un contenu conteneurisé.
 
 **Tag** : SHA du commit (`${{ github.sha }}`) uniquement — pas de tag
 flottant `staging`. Traçabilité exacte de ce qui tourne, rollback possible
@@ -161,12 +165,3 @@ vers n'importe quel commit passé en repointant `API_REGLES_IMAGE`.
   dédié par service, chacun avec un filtre `on: push: paths:` restreint à
   son propre périmètre (ex. `app/api_regles/**`), plutôt que d'étendre ce
   fichier pour couvrir plusieurs services.
-- **Build et publication du client `regles_api_client`** : retirés de
-  `cd-staging.yml` le 2026-08-30 (étaient hérités tel quel de l'ancien
-  pipeline GitHub, dans le job `deploy`). Ce n'est pas un abandon — le
-  déploiement du client n'est simplement pas prioritaire à ce stade, et sa
-  présence dans `deploy` était en tension avec le principe du job allégé
-  (orchestration Docker uniquement, sans Node ni npm). À réintroduire plus
-  tard, probablement dans le job `build` (qui dispose déjà de Node), avec le
-  résultat transmis à `deploy` via un artefact de workflow plutôt que
-  reconstruit sur place — non implémenté pour l'instant.

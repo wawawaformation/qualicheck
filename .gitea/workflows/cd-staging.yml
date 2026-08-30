@@ -63,6 +63,23 @@ jobs:
       - name: Pousser l'image vers le registre
         run: docker push git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
 
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Construire le client regles_api_client
+        working-directory: clients/regles_api_client
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publier le build du client comme artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-dist
+          path: clients/regles_api_client/dist
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -128,8 +145,21 @@ jobs:
           make api-regles-acceptance
           REMOTE
 
-      # Build + publication du client regles_api_client volontairement retires
-      # de ce pipeline (2026-08-30) : pas urgent, et le job deploy allege ne
-      # doit garder que l'orchestration Docker de l'API. Voir
-      # conception/4_deploiement/api_regles/cd_staging_gitea.md, section
-      # "Hors perimetre".
+      - name: Télécharger l'artefact du client
+        uses: actions/download-artifact@v4
+        with:
+          name: client-dist
+          path: client-dist
+
+      - name: Publier le client sur l'hôte cible
+        run: |
+          ssh -i ~/.ssh/id_deploy "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "rm -rf /tmp/client-dist-incoming && mkdir -p /tmp/client-dist-incoming"
+          scp -i ~/.ssh/id_deploy -r client-dist/* "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/client-dist-incoming/"
+          ssh -i ~/.ssh/id_deploy "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" bash -s <<'REMOTE'
+          set -e
+          mkdir -p /srv/www/regles.qualicheck.koabana.fr
+          rm -rf /srv/www/regles.qualicheck.koabana.fr/*
+          cp -r /tmp/client-dist-incoming/* /srv/www/regles.qualicheck.koabana.fr/
+          rm -rf /tmp/client-dist-incoming
+          REMOTE
