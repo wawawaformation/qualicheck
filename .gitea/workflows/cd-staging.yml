@@ -65,15 +65,34 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [self-hosted, cloclo]
+    runs-on: ubuntu-latest
     environment: staging
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Écrire .env depuis les secrets de l'environnement staging
+      - name: Configurer l'accès SSH à l'hôte de déploiement
         run: |
-          cat > .env << 'EOF'
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      # Job générique (ubuntu-latest), aucun accès direct au filesystem de
+      # l'hôte cible : tout se joue via SSH, pour rester transposable sur
+      # n'importe quel hôte (cloclo aujourd'hui, Infomaniak plus tard) sans
+      # rien changer à ce pipeline — seuls les secrets DEPLOY_* changeraient.
+      - name: Déployer l'API et la BDD sur l'hôte cible
+        run: |
+          ssh -i ~/.ssh/id_deploy "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" bash -s <<'REMOTE'
+          set -e
+          DEPLOY_DIR=/srv/docker/qualicheck-staging-deploy/qualicheck
+
+          if [ ! -d "$DEPLOY_DIR/.git" ]; then
+            git clone https://git.david-legrand.fr/david/qualicheck.git "$DEPLOY_DIR"
+          fi
+          cd "$DEPLOY_DIR"
+          git fetch origin
+          git reset --hard ${{ github.sha }}
+
+          cat > .env <<ENVEOF
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
@@ -85,54 +104,28 @@ jobs:
           FASTAPI_API_KEY_FORMATEUR=${{ secrets.FASTAPI_API_KEY_FORMATEUR }}
           API_REGLES_IMAGE=git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
           COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml
-          EOF
+          ENVEOF
 
-      - name: Installer uv et les dépendances (migrations + acceptance)
-        run: uv sync
+          echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.david-legrand.fr -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+          docker compose pull api-regles
 
-      - name: Connexion au registre Gitea
-        run: echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.david-legrand.fr -u "${{ secrets.REGISTRY_USER }}" --password-stdin
-
-      - name: Tirer l'image api-regles depuis le registre
-        run: docker compose pull api-regles
-
-      - name: Démarrer Postgres et attendre qu'il accepte les connexions
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-        run: |
           make up-db
-          until docker compose exec -T postgres pg_isready -U "$POSTGRES_USER"; do
+          until docker compose exec -T postgres pg_isready -U "${{ secrets.POSTGRES_USER }}"; do
             sleep 1
           done
 
-      - name: Appliquer les migrations Alembic
-        run: make migration
+          make migration
+          make up-staging
 
-      - name: (Re)démarrer les conteneurs avec l'image tirée du registre
-        run: make up-staging
-
-      - name: Attendre que l'API réponde
-        run: |
           until curl -sf http://localhost:8880/health; do
             sleep 1
           done
 
-      - name: Rejouer la suite d'acceptance (garde-fou post-déploiement)
-        run: make api-regles-acceptance
+          make api-regles-acceptance
+          REMOTE
 
-      - name: Installer Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Construire le client regles_api_client
-        working-directory: clients/regles_api_client
-        run: |
-          npm ci
-          npm run build
-
-      - name: Publier le build sur le chemin servi par Caddy
-        run: |
-          mkdir -p /srv/www/regles.qualicheck.koabana.fr
-          rm -rf /srv/www/regles.qualicheck.koabana.fr/*
-          cp -r clients/regles_api_client/dist/* /srv/www/regles.qualicheck.koabana.fr/
+      # Build + publication du client regles_api_client volontairement retires
+      # de ce pipeline (2026-08-30) : pas urgent, et le job deploy allege ne
+      # doit garder que l'orchestration Docker de l'API. Voir
+      # conception/4_deploiement/api_regles/cd_staging_gitea.md, section
+      # "Hors perimetre".

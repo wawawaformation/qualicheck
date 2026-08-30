@@ -31,6 +31,30 @@ machines distinctes (aucun raccourci qui profiterait de leur colocalisation
 actuelle, ex. réutilisation du cache de build local) : c'est ce qui le rend
 directement réutilisable pour la bascule Infomaniak plus tard.
 
+> **Correction du 2026-08-30** : la section Architecture ci-dessous décrivait
+> initialement un job `deploy` en `runs-on: [self-hosted, cloclo]`, en
+> partant de l'hypothèse que ce label exécute le job directement sur la
+> machine physique `cloclo` (comme le faisait l'ancien runner GitHub, un
+> processus natif). Épreuve des faits : le runner Gitea (`act_runner`) est
+> lui-même déployé comme conteneur Docker, donc son mode « host » exécute en
+> réalité le job **dans ce conteneur** (Alpine minimal, presque aucun outil
+> présent), pas sur l'hôte physique — d'où des échecs en cascade (Node
+> absent pour `actions/checkout@v4`, puis `docker`/`curl`/`make` absents,
+> puis des chemins hôte comme `/srv/docker/qualicheck-staging-override/`
+> injoignables sans montages explicites). Une image de runner personnalisée
+> a été construite pour combler ces manques, mais elle recréait par
+> configuration ce qu'un runner natif a nativement — et surtout, elle
+> attachait le déploiement à une seule machine (`cloclo`), alors que le
+> besoin réel exprimé est de **pouvoir déployer sur n'importe quel hôte**
+> (`cloclo` aujourd'hui, Infomaniak demain, potentiellement d'autres).
+> Décision révisée : le job `deploy` tourne sur un runner générique
+> (`ubuntu-latest`, le même que `build`) et se contente d'un **SSH vers
+> l'hôte cible** pour y exécuter les commandes Docker — changer d'hôte
+> devient un changement de secrets (`DEPLOY_HOST`/`DEPLOY_USER`/
+> `DEPLOY_SSH_KEY`), pas une reconfiguration de runner. L'image de runner
+> personnalisée a été annulée (retour à `gitea/act_runner:latest` tel quel).
+> Section Architecture mise à jour en conséquence.
+
 ## Schéma
 
 ![Pipeline CD staging — build, registre, déploiement](cd_staging_gitea_pipeline.png)
@@ -51,17 +75,29 @@ conteneur — ne reconstruit jamais l'image lui-même.*
 3. `docker build -t git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }} .`
 4. `docker push git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}`
 
-**Job `deploy`** (`needs: build`, `runs-on: [self-hosted, cloclo]`) — reprend
-les étapes de l'actuel `cd-staging.yml`, avec ces changements :
+**Job `deploy`** (`needs: build`, `runs-on: ubuntu-latest` — runner
+générique, pas de label attaché à un hôte précis) :
 
-- Le `.env` écrit depuis les secrets reçoit une ligne de plus :
-  `API_REGLES_IMAGE=git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}`
-- `docker login` (même registre) avant toute manipulation d'image
-- `docker compose pull api-regles` puis `make up-staging` (nouvelle cible,
-  sans `--build`) remplace `make up`
-- Migrations Alembic, attente de santé de l'API, rejeu de la suite
-  d'acceptance, build et publication du client `regles_api_client` :
-  inchangés
+1. Écrit la clé SSH dédiée au déploiement (secret `DEPLOY_SSH_KEY`) dans le
+   runner éphémère, référence l'hôte cible via `DEPLOY_HOST`/`DEPLOY_USER`
+2. Ouvre une session SSH vers l'hôte cible et y exécute, à distance :
+   - Clone (si absent) ou `fetch` + `reset --hard ${{ github.sha }}` d'un
+     dossier de déploiement dédié (`/srv/docker/qualicheck-staging-deploy/`
+     sur `cloclo`) — **pas** de réutilisation de l'ancien checkout laissé
+     par le runner GitHub, pour repartir d'un état maîtrisé
+   - Écrit le `.env` (mêmes secrets qu'avant, + `API_REGLES_IMAGE`)
+   - `docker login` puis `docker compose pull api-regles`
+   - `make up-db`, attente Postgres, `make migration`, `make up-staging`
+     (nouvelle cible, sans `--build`), attente de santé de l'API, `make
+     api-regles-acceptance`
+
+Aucun outil autre que `ssh` n'est requis sur le runner lui-même — tout ce
+dont dépendent les commandes de déploiement (`docker`, `make`, `uv`, `curl`)
+doit exister sur l'hôte **cible**, pas sur le runner. C'est déjà le cas sur
+`cloclo`, hérité de l'ancien runner GitHub natif.
+
+Build et publication du client `regles_api_client` : voir section « Hors
+périmètre ».
 
 **Tag** : SHA du commit (`${{ github.sha }}`) uniquement — pas de tag
 flottant `staging`. Traçabilité exacte de ce qui tourne, rollback possible
@@ -78,9 +114,13 @@ vers n'importe quel commit passé en repointant `API_REGLES_IMAGE`.
   `/srv/docker/qualicheck-staging-override/`) : le service `api-regles`
   reçoit `image: ${API_REGLES_IMAGE}` en plus du réseau `cloudnet` déjà
   présent.
+- Paire de clés SSH dédiée au déploiement CI (générée le 2026-08-30,
+  distincte des clés personnelles) : clé publique ajoutée aux
+  `authorized_keys` de l'utilisateur de déploiement sur `cloclo`.
 - Secrets Actions Gitea du dépôt `qualicheck` : `REGISTRY_USER`,
-  `REGISTRY_TOKEN` (nouveaux, en plus des secrets déjà en place pour
-  `ci-dev.yml`).
+  `REGISTRY_TOKEN` (registre d'images), `DEPLOY_HOST`, `DEPLOY_USER`,
+  `DEPLOY_SSH_KEY` (déploiement SSH) — nouveaux, en plus des secrets déjà en
+  place pour `ci-dev.yml`.
 
 ## Gestion des erreurs
 
@@ -94,6 +134,11 @@ vers n'importe quel commit passé en repointant `API_REGLES_IMAGE`.
 - Le garde-fou existant (rejeu de la suite d'acceptance après démarrage)
   reste inchangé et continue de couvrir les régressions fonctionnelles,
   indépendamment de l'origine de l'image (build local vs image tirée).
+- Si la connexion SSH vers l'hôte cible échoue (`DEPLOY_HOST` injoignable,
+  clé refusée) : le job `deploy` échoue avant toute action sur l'hôte,
+  `set -e` dans le script distant garantit aussi qu'une commande en échec
+  interrompt la suite (pas de migration lancée sur un pull raté, par
+  exemple).
 
 ## Hors périmètre
 
@@ -116,3 +161,12 @@ vers n'importe quel commit passé en repointant `API_REGLES_IMAGE`.
   dédié par service, chacun avec un filtre `on: push: paths:` restreint à
   son propre périmètre (ex. `app/api_regles/**`), plutôt que d'étendre ce
   fichier pour couvrir plusieurs services.
+- **Build et publication du client `regles_api_client`** : retirés de
+  `cd-staging.yml` le 2026-08-30 (étaient hérités tel quel de l'ancien
+  pipeline GitHub, dans le job `deploy`). Ce n'est pas un abandon — le
+  déploiement du client n'est simplement pas prioritaire à ce stade, et sa
+  présence dans `deploy` était en tension avec le principe du job allégé
+  (orchestration Docker uniquement, sans Node ni npm). À réintroduire plus
+  tard, probablement dans le job `build` (qui dispose déjà de Node), avec le
+  résultat transmis à `deploy` via un artefact de workflow plutôt que
+  reconstruit sur place — non implémenté pour l'instant.
