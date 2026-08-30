@@ -30,6 +30,14 @@ PORT: int = _MANIFEST["api"]["port"]
 CORS_ALLOWED_ORIGINS: list[str] = _MANIFEST["cors"]["allowed_origins"]
 REVIEW_NOTE_MAX_LENGTH: int = _MANIFEST["validation"]["review_note_max_length"]
 
+# Identifie le code et le moment reellement en cours d'execution — sert a
+# verifier qu'un deploiement CD a bien pris effet. GIT_SHA est fige dans
+# l'image au build (voir Dockerfile), DEPLOYED_AT est ecrit dans .env au
+# moment du deploiement (voir .gitea/workflows/cd-staging.yml). Absents en
+# developpement local, d'ou la valeur par defaut.
+GIT_SHA: str = os.getenv("GIT_SHA", "inconnu")
+DEPLOYED_AT: str = os.getenv("DEPLOYED_AT", "inconnu")
+
 # Attribution CC BY-SA 4.0 : obligation de la licence du référentiel Opquast,
 # que cette API distribue. Voir
 # docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md

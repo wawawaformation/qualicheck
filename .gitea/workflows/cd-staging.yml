@@ -58,7 +58,7 @@ jobs:
         run: echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.david-legrand.fr -u "${{ secrets.REGISTRY_USER }}" --password-stdin
 
       - name: Construire l'image api-regles
-        run: docker build -t git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }} .
+        run: docker build --build-arg GIT_SHA=${{ github.sha }} -t git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }} .
 
       - name: Pousser l'image vers le registre
         run: docker push git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
@@ -106,6 +106,7 @@ jobs:
           FASTAPI_API_KEY_DAVID=${{ secrets.FASTAPI_API_KEY_DAVID }}
           FASTAPI_API_KEY_FORMATEUR=${{ secrets.FASTAPI_API_KEY_FORMATEUR }}
           API_REGLES_IMAGE=git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
+          DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml
           ENVEOF
 

@@ -144,6 +144,14 @@ def test_health_repond_503_quand_la_base_est_injoignable(session):
     assert reponse.json()["base"] == "injoignable"
 
 
+def test_version_expose_le_commit_et_la_date_de_deploiement(client):
+    reponse = client.get("/version")
+
+    assert reponse.status_code == 200
+    assert reponse.json()["commit"]
+    assert reponse.json()["deployed_at"]
+
+
 def test_la_documentation_openapi_est_servie(client):
     assert client.get("/docs").status_code == 200
     assert client.get("/openapi.json").status_code == 200

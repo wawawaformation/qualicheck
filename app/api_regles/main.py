@@ -86,3 +86,15 @@ def health(session: Session = Depends(get_session)):
             content={"status": "degraded", "base": "injoignable"},
         )
     return {"status": "ok", "base": "ok", "version": config.VERSION}
+
+
+@app.get("/version", tags=["infrastructure"])
+def version():
+    """
+    Identifie le commit et le moment du dernier déploiement effectif.
+
+    Distinct de la version du contrat d'API (`/health`) : sert à vérifier
+    depuis l'extérieur qu'un déploiement CD (staging ou main) a bien pris
+    effet, pas à documenter l'API elle-même.
+    """
+    return {"commit": config.GIT_SHA, "deployed_at": config.DEPLOYED_AT}
