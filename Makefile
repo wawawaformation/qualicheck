@@ -1,4 +1,4 @@
-.PHONY: up up-db down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -12,6 +12,11 @@ up:
 ## neuf où le reste de la stack n'a jamais tourné (ex. premier déploiement staging)
 up-db:
 	docker compose up -d postgres
+
+## Démarre les conteneurs sans reconstruire — utilise l'image déjà tirée du
+## registre (CD staging uniquement, jamais en développement local)
+up-staging:
+	docker compose up -d
 
 ## Éteint tous les conteneurs Docker
 down:

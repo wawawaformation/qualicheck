@@ -1,0 +1,138 @@
+name: CD — Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_TEST_DB: ${{ secrets.POSTGRES_DB }}
+      # job en conteneur docker (label ubuntu-latest) : le service postgres est
+      # joignable par son nom, pas par localhost (cf. ci-dev.yml)
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Installer les dépendances
+        run: uv sync
+
+      - name: Appliquer les migrations
+        run: uv run python scripts/migration.py
+
+      - name: Tests unitaires et d'intégration (garde-fou avant déploiement staging)
+        run: uv run pytest tests/unit tests/integration -v
+
+      - name: Connexion au registre Gitea
+        run: echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.david-legrand.fr -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+
+      - name: Construire l'image api-regles
+        run: docker build -t git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }} .
+
+      - name: Pousser l'image vers le registre
+        run: docker push git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted, cloclo]
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Écrire .env depuis les secrets de l'environnement staging
+        run: |
+          cat > .env << 'EOF'
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_HOST=localhost
+          POSTGRES_PORT=8832
+          FASTAPI_API_KEY=${{ secrets.FASTAPI_API_KEY }}
+          FASTAPI_API_KEY_ELIE=${{ secrets.FASTAPI_API_KEY_ELIE }}
+          FASTAPI_API_KEY_DAVID=${{ secrets.FASTAPI_API_KEY_DAVID }}
+          FASTAPI_API_KEY_FORMATEUR=${{ secrets.FASTAPI_API_KEY_FORMATEUR }}
+          API_REGLES_IMAGE=git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
+          COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml
+          EOF
+
+      - name: Installer uv et les dépendances (migrations + acceptance)
+        run: uv sync
+
+      - name: Connexion au registre Gitea
+        run: echo "${{ secrets.REGISTRY_TOKEN }}" | docker login git.david-legrand.fr -u "${{ secrets.REGISTRY_USER }}" --password-stdin
+
+      - name: Tirer l'image api-regles depuis le registre
+        run: docker compose pull api-regles
+
+      - name: Démarrer Postgres et attendre qu'il accepte les connexions
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        run: |
+          make up-db
+          until docker compose exec -T postgres pg_isready -U "$POSTGRES_USER"; do
+            sleep 1
+          done
+
+      - name: Appliquer les migrations Alembic
+        run: make migration
+
+      - name: (Re)démarrer les conteneurs avec l'image tirée du registre
+        run: make up-staging
+
+      - name: Attendre que l'API réponde
+        run: |
+          until curl -sf http://localhost:8880/health; do
+            sleep 1
+          done
+
+      - name: Rejouer la suite d'acceptance (garde-fou post-déploiement)
+        run: make api-regles-acceptance
+
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Construire le client regles_api_client
+        working-directory: clients/regles_api_client
+        run: |
+          npm ci
+          npm run build
+
+      - name: Publier le build sur le chemin servi par Caddy
+        run: |
+          mkdir -p /srv/www/regles.qualicheck.koabana.fr
+          rm -rf /srv/www/regles.qualicheck.koabana.fr/*
+          cp -r clients/regles_api_client/dist/* /srv/www/regles.qualicheck.koabana.fr/

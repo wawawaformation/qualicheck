@@ -46,8 +46,8 @@ conteneur — ne reconstruit jamais l'image lui-même.*
 `act_runner`) :
 
 1. Checkout
-2. `docker login git.david-legrand.fr` (secrets `GITEA_REGISTRY_USER` /
-   `GITEA_REGISTRY_TOKEN` — jeton Gitea scope `package: écriture`)
+2. `docker login git.david-legrand.fr` (secrets `REGISTRY_USER` /
+   `REGISTRY_TOKEN` — jeton Gitea scope `package: écriture`)
 3. `docker build -t git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }} .`
 4. `docker push git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}`
 
@@ -78,8 +78,8 @@ vers n'importe quel commit passé en repointant `API_REGLES_IMAGE`.
   `/srv/docker/qualicheck-staging-override/`) : le service `api-regles`
   reçoit `image: ${API_REGLES_IMAGE}` en plus du réseau `cloudnet` déjà
   présent.
-- Secrets Actions Gitea du dépôt `qualicheck` : `GITEA_REGISTRY_USER`,
-  `GITEA_REGISTRY_TOKEN` (nouveaux, en plus des secrets déjà en place pour
+- Secrets Actions Gitea du dépôt `qualicheck` : `REGISTRY_USER`,
+  `REGISTRY_TOKEN` (nouveaux, en plus des secrets déjà en place pour
   `ci-dev.yml`).
 
 ## Gestion des erreurs
@@ -102,3 +102,17 @@ vers n'importe quel commit passé en repointant `API_REGLES_IMAGE`.
 - Politique de rétention/nettoyage des images poussées sur le registre
   Gitea (une image par commit, jamais purgée) : à traiter si l'espace disque
   devient un problème réel, pas avant.
+- **Séparation des déploiements par service** : dès que la stack accueillera
+  un second service applicatif construit (ex. `api_business` pour US1/US2,
+  éventuellement un conteneur ChromaDB), il faudra éviter qu'un push sur
+  `staging` touchant uniquement ce second service ne redéploie inutilement
+  `api-regles` (et inversement). Préoccupation identifiée le 2026-08-30, pas
+  traitée maintenant faute de second service réel à filtrer contre — un
+  filtre `paths:` ajouté sans cible concrète serait spéculatif. Le socle
+  actuel (image nommée `qualicheck-api-regles`, dossier de conception dédié,
+  `docker compose pull api-regles` déjà ciblé sur ce seul service plutôt que
+  sur toute la stack) est déjà pensé pour permettre cette séparation le
+  moment venu : ajouter un fichier `.gitea/workflows/cd-staging-<service>.yml`
+  dédié par service, chacun avec un filtre `on: push: paths:` restreint à
+  son propre périmètre (ex. `app/api_regles/**`), plutôt que d'étendre ce
+  fichier pour couvrir plusieurs services.
