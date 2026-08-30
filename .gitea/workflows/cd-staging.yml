@@ -110,7 +110,7 @@ jobs:
           docker compose pull api-regles
 
           make up-db
-          until docker compose exec -T postgres pg_isready -U "${{ secrets.POSTGRES_USER }}"; do
+          until docker compose exec -T postgres pg_isready -U "${{ secrets.POSTGRES_USER }}" < /dev/null; do
             sleep 1
           done
 
