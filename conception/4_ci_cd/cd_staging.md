@@ -129,13 +129,6 @@ Détail complet (cause, reproduction, correction) dans
 
 - Bascule effective de `main`/Infomaniak sur ce même modèle : pas traitée
   ici, seulement préparée (le pipeline sera transposable tel quel).
-- **Politique de rétention des images du registre / espace disque sur
-  `cloclo`** : la partition racine (`/dev/sdb2`, 55 Go) est à 90 % pleine,
-  presque entièrement à cause de Docker (~48 Go). `/srv` (`/dev/sdb5`) a
-  110 Go libres. Plan retenu (pas encore exécuté, volontairement reporté
-  après une sauvegarde complète de `cloclo`) : bind mount
-  `/srv/docker-data` → `/var/lib/docker`, sans repartitionnement ni
-  changement de `daemon.json` — voir `TODO.md`.
 - **Séparation des déploiements par service** : dès qu'un second service
   applicatif construit arrivera (ex. `api_business` pour US1/US2), il
   faudra éviter qu'un push touchant uniquement ce service ne redéploie

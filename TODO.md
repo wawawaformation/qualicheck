@@ -23,17 +23,6 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     SSH-push vers hôte générique, API/BDD + client Vue.js) tournent de bout
     en bout sur `git.david-legrand.fr` — `A`
 
-- [x] **Migrer `/var/lib/docker` vers `/srv` sur `cloclo`** (2026-08-31) —
-  bind mount `/srv/docker-data` → `/var/lib/docker` (`/etc/fstab`), chemin
-  Docker inchangé. `rsync -aHAX` (liens durs préservés — confirmé par une
-  taille identique source/destination), ancien contenu supprimé après
-  vérification (piège rencontré : `sudo rm -rf /var/lib/docker/*` développe
-  le `*` avec les droits de l'utilisateur non-root avant `sudo`, échoue
-  silencieusement avec `-f` si le dossier n'est pas listable — corrigé via
-  `sudo sh -c 'rm -rf ...'`). Partition racine passée de 5,9 Go à 30 Go
-  libres. Tous les services (Gitea, runner, Kanboard, Caddy, staging
-  QualiCheck, autres projets) vérifiés opérationnels après coup — `D`
-
 - [x] **Spec E implémentée** (provenance + manifeste) — `A` (2026-07-25)
   - Plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`,
     exécuté tâche par tâche, mergé sur `feature`. Les 8 critères de validation de
