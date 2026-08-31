@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Jeton en cookie HttpOnly face a une XSS" id="jeton-cookie-httponly-xss">
+    <mxGraphModel dx="1000" dy="700" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Titre -->
+        <mxCell id="titre" value="Jeton en cookie HttpOnly — la même XSS échoue à le lire" style="text;html=1;align=center;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="160" y="20" width="580" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Acteurs -->
+        <mxCell id="actor-script" value="Script injecté (XSS)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="70" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-cookie" value="Cookie HttpOnly&#10;(invisible pour JavaScript)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="360" y="70" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="actor-attaquant" value="Serveur de l'attaquant" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="660" y="70" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Lignes de vie -->
+        <mxCell id="lv-script" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="120" as="sourcePoint" />
+            <mxPoint x="170" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lv-cookie" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="460" y="120" as="sourcePoint" />
+            <mxPoint x="460" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lv-attaquant" style="endArrow=none;dashed=1;html=1;strokeColor=#999999;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="750" y="120" as="sourcePoint" />
+            <mxPoint x="750" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="msg1" value="1. document.cookie" style="html=1;endArrow=block;endFill=1;strokeColor=#333333;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="180" as="sourcePoint" />
+            <mxPoint x="460" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" value="2. (rien — flag HttpOnly, invisible pour JS)" style="html=1;endArrow=block;endFill=1;dashed=1;strokeColor=#82b366;fontColor=#82b366;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="460" y="250" as="sourcePoint" />
+            <mxPoint x="170" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Croix bloquante -->
+        <mxCell id="croix" value="✕" style="text;html=1;align=center;fontSize=28;fontColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="300" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Résultat -->
+        <mxCell id="resultat" value="✔ Jeton protégé (le CSRF reste un sujet à traiter à part)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontColor=#4a7a3d;" vertex="1" parent="1">
+          <mxGeometry x="250" y="410" width="400" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -7,17 +7,35 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Prochain gros morceau
 
-- [ ] **Outillage C16/C18/C19 — décisions actées, exécution à faire (2026-08-29)**
+- [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
   agile, Gitea auto-hébergé sur `cloclo` en remplacement de GitHub pour le
   dépôt/CI, via un essai non destructif (second remote, sans toucher
   `origin` tant que non validé). Raisonnement complet et alternatives
   écartées : `jury/decisions/2026-08-29-outil-pilotage-kanban.md` et
   `jury/decisions/2026-08-29-hebergement-git-gitea.md` — `D`
-  - Reste à faire : déployer Kanboard pour de vrai (docker-compose + Caddy
-    sur `cloclo`), activer `AgileIndicators`, tester `.gitea/workflows/`
-    (adapter le label de runner de `ci-dev.yml`, vérifier le comportement
-    du bloc `services:` sous `act_runner`)
+  - [x] **Kanboard déployé pour de vrai** (2026-08-29) — `kanban.david-legrand.fr`,
+    Docker + Caddy (en-têtes de sécurité alignés sur les autres domaines de
+    `cloclo`), connexion admin confirmée — `D`
+  - [ ] Activer le plugin `AgileIndicators`
+  - [x] **`.gitea/workflows/` validé réellement** (2026-08-30) —
+    `ci-dev.yml` et `cd-staging.yml` (image + registre OCI + déploiement
+    SSH-push vers hôte générique, API/BDD + client Vue.js) tournent de bout
+    en bout sur `git.david-legrand.fr` — `A`
+
+- [ ] **Migrer `/var/lib/docker` vers `/srv` sur `cloclo`** — la partition
+  racine (`/dev/sdb2`, 55 Go) est à 90 % pleine, presque entièrement à
+  cause de Docker (~48 Go : images/volumes/cache), alors que `/srv`
+  (`/dev/sdb5`, partition différente) a 110 Go libres. Plan retenu : bind
+  mount (`/srv/docker-data` → `/var/lib/docker`), pas de repartitionnement
+  ni de changement de `daemon.json` — le chemin `/var/lib/docker` reste
+  inchangé, seul l'emplacement physique des données change. Nécessite un
+  arrêt bref de Docker (coupe Gitea, le runner, Kanboard, Caddy et le
+  staging QualiCheck le temps du `rsync` de ~48 Go) — reporté
+  volontairement : à faire après une sauvegarde complète de `cloclo`, pas
+  dans l'urgence. Détail du plan et diagnostic complet dans
+  `conception/4_ci_cd/cd_staging.md`, section « Hors
+  périmètre » — `D`
 
 - [x] **Spec E implémentée** (provenance + manifeste) — `A` (2026-07-25)
   - Plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`,

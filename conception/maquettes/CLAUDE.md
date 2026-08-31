@@ -91,9 +91,31 @@ identifie un profil (nom/prénom), pas seulement un droit d'écriture.
 
 Exigences repérées pendant le maquettage, à reprendre lors de l'implémentation Vue.js (pas simulées en JS ici, cf. règle ci-dessus) :
 
-- `ecran-connexion.html` : jeton stocké côté client (localStorage, même choix
-  que `ecran-cle-api.html` et déjà utilisé par `regles_api_client`) — envoyé
+- `ecran-connexion.html` : jeton stocké côté client (`localStorage`) — envoyé
   ensuite en `Authorization: Bearer` sur chaque appel `api_business`.
+  `localStorage` expose le jeton à un vol via XSS (tout script exécuté dans
+  la page, y compris injecté, peut le lire) — alternative plus robuste :
+  cookie `HttpOnly` (invisible pour JS, au prix d'une protection CSRF à
+  ajouter). Choix maintenu pour l'US1/US2 avec sa propre justification
+  (pas seulement "même choix que `regles_api_client`") :
+  - Échelle MVP : population réelle restreinte et connue (pas les ~20 000
+    certifiés Opquast visés à terme), profil de risque proche de l'outil
+    admin qui a fait ce choix en premier.
+  - Le client Vue.js n'utilise pas `v-html` sur du contenu externe — tout
+    passage par le templating Vue échappe par défaut, fermant le vecteur
+    XSS le plus commun (contenu utilisateur/API mal échappé).
+  - Risque résiduel assumé : une dépendance npm compromise (supply chain)
+    contournerait cette protection — risque générique à toute app JS
+    moderne, non spécifique à ce choix, non traité à part.
+  - À réévaluer si le produit dépasse l'échelle MVP (population large et
+    anonyme) : reconsidérer un cookie `HttpOnly` à ce moment-là.
+  - Schémas illustrant le compromis (fonctionnement normal, puis la faille
+    XSS pour chaque mécanisme) : `conception/3_autre_us/profil/`.
+
+    ![Fonctionnement normal — jeton en localStorage](../3_autre_us/profil/jeton_localstorage_fonctionnement.png)
+    ![La faille — un script XSS lit le jeton en localStorage](../3_autre_us/profil/jeton_localstorage_xss.png)
+    ![Fonctionnement normal — jeton en cookie HttpOnly](../3_autre_us/profil/jeton_cookie_httponly_fonctionnement.png)
+    ![La mitigation — le même script XSS échoue à lire le cookie HttpOnly](../3_autre_us/profil/jeton_cookie_httponly_xss.png)
 - `ecran-profil.html`, bouton "Se déconnecter (sur cet appareil)" : efface le
   jeton du stockage local uniquement — ne supprime rien côté serveur (le
   jeton reste valide, réutilisable en se reconnectant). Distinct de

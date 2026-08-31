@@ -9,7 +9,7 @@ lang: fr-FR
 ## Objectif de ce document
 
 Le passage de `cd-staging.yml` à un déploiement SSH-push (voir
-`conception/4_deploiement/api_regles/cd_staging_gitea.md`) a nécessité
+`conception/4_ci_cd/cd_staging.md`) a nécessité
 plusieurs itérations avant un run réellement réussi, chacune diagnostiquée à
 partir des logs du run précédent plutôt que supposée. Ce document trace ces
 incidents pour qu'ils ne se reproduisent pas silencieusement ailleurs (le
@@ -105,7 +105,7 @@ même nom avec une valeur plausible.
 
 **Contexte** : ajout du déploiement du client `regles_api_client` (statique,
 transmis du job `build` au job `deploy` via un artefact de workflow — voir
-`conception/4_deploiement/api_regles/cd_staging_gitea.md`).
+`conception/4_ci_cd/cd_staging.md`).
 
 **Symptôme** : l'étape `actions/upload-artifact@v4` échoue immédiatement :
 
