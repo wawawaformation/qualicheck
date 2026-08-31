@@ -23,19 +23,16 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     SSH-push vers hôte générique, API/BDD + client Vue.js) tournent de bout
     en bout sur `git.david-legrand.fr` — `A`
 
-- [ ] **Migrer `/var/lib/docker` vers `/srv` sur `cloclo`** — la partition
-  racine (`/dev/sdb2`, 55 Go) est à 90 % pleine, presque entièrement à
-  cause de Docker (~48 Go : images/volumes/cache), alors que `/srv`
-  (`/dev/sdb5`, partition différente) a 110 Go libres. Plan retenu : bind
-  mount (`/srv/docker-data` → `/var/lib/docker`), pas de repartitionnement
-  ni de changement de `daemon.json` — le chemin `/var/lib/docker` reste
-  inchangé, seul l'emplacement physique des données change. Nécessite un
-  arrêt bref de Docker (coupe Gitea, le runner, Kanboard, Caddy et le
-  staging QualiCheck le temps du `rsync` de ~48 Go) — reporté
-  volontairement : à faire après une sauvegarde complète de `cloclo`, pas
-  dans l'urgence. Détail du plan et diagnostic complet dans
-  `conception/4_ci_cd/cd_staging.md`, section « Hors
-  périmètre » — `D`
+- [x] **Migrer `/var/lib/docker` vers `/srv` sur `cloclo`** (2026-08-31) —
+  bind mount `/srv/docker-data` → `/var/lib/docker` (`/etc/fstab`), chemin
+  Docker inchangé. `rsync -aHAX` (liens durs préservés — confirmé par une
+  taille identique source/destination), ancien contenu supprimé après
+  vérification (piège rencontré : `sudo rm -rf /var/lib/docker/*` développe
+  le `*` avec les droits de l'utilisateur non-root avant `sudo`, échoue
+  silencieusement avec `-f` si le dossier n'est pas listable — corrigé via
+  `sudo sh -c 'rm -rf ...'`). Partition racine passée de 5,9 Go à 30 Go
+  libres. Tous les services (Gitea, runner, Kanboard, Caddy, staging
+  QualiCheck, autres projets) vérifiés opérationnels après coup — `D`
 
 - [x] **Spec E implémentée** (provenance + manifeste) — `A` (2026-07-25)
   - Plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`,
