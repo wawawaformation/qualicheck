@@ -72,9 +72,11 @@ ingestion:
 clear:
 	uv run python scripts/clear_opquast_tables.py
 
-## Exporte les données réelles (pg_dump --data-only, hors alembic_version)
-## dans backups/YYYYMMDD_HHMMSS.sql — à lancer avant toute ré-ingestion
-## réelle coûteuse
+## Exporte les données du RÉFÉRENTIEL uniquement — le domaine audit a sa
+## propre base et n'est pas couvert ici. Avant la scission du 2026-09-08,
+## cette cible dumpait toute la base : « sauvegarder le référentiel »
+## sauvegardait aussi les audits, et une restauration les ramenait en
+## arrière. Voir jury/decisions/2026-09-08-deux-bases-referentiel-audit.md
 export_sql:
 	mkdir -p backups
 	@FILE="backups/$$(date +%Y%m%d_%H%M%S).sql"; \
@@ -82,10 +84,9 @@ export_sql:
 	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" -c "INSERT INTO etat_donnees (id, fichier_backup, type_operation, horodatage) VALUES (1, '$$FILE', 'export', now()) ON CONFLICT (id) DO UPDATE SET fichier_backup = EXCLUDED.fichier_backup, type_operation = EXCLUDED.type_operation, horodatage = EXCLUDED.horodatage;" > /dev/null; \
 	echo "Export terminé : $$FILE"
 
-## Importe un dump généré par make export_sql dans la base réelle.
-## FILE=backups/xxx.sql obligatoire. Ne vide rien avant restauration : si des
-## lignes existent déjà, psql échoue sur les conflits de clé primaire — lancer
-## make clear avant si besoin.
+## Importe un dump de RÉFÉRENTIEL généré par make export_sql. Ne vide rien
+## avant restauration : si des lignes existent déjà, les conflits de clé
+## primaire remontent. Ne concerne pas le domaine audit.
 import_sql:
 	@test -n "$(FILE)" || (echo "Usage : make import_sql FILE=backups/xxx.sql" && exit 1)
 	docker exec -i qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" < $(FILE)
