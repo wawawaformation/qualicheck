@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code
+
+- **Documentation de l'installation réelle de Kanboard et Gitea sur `cloclo`**
+  (`docker-compose.yml`, config Caddy, réseau `cloudnet`, secrets référencés
+  sans valeur) ajoutée en section "Installation" des décisions déjà actées —
+  voir `jury/decisions/2026-08-29-outil-pilotage-kanban.md`,
+  `jury/decisions/2026-08-29-hebergement-git-gitea.md`. Constat au passage :
+  le plugin Kanboard `AgileIndicators` est présent sur disque
+  (`/srv/docker/kanboard/plugins/AgileIndicators`) mais pas encore activé
+  dans l'interface — cohérent avec la case ouverte de `TODO.md`.
+
 ## 2026-08-30 — Claude Code (Part 58)
 
 - **Essai Gitea validé de bout en bout** : dépôt miroir `david/qualicheck`

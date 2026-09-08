@@ -94,3 +94,70 @@ déjà ailleurs.
   peut combler.
 - Décision indépendante de `2026-08-29-hebergement-git-gitea.md` : Kanboard
   reste pertinent que le dépôt Git reste sur GitHub ou bascule vers Gitea.
+
+## Installation
+
+Déployé réellement le 2026-08-29 sur `cloclo`, `/srv/docker/kanboard/`.
+
+`docker-compose.yml` :
+
+```yaml
+services:
+  app:
+    image: kanboard/kanboard:latest
+    container_name: kanboard
+    restart: unless-stopped
+    volumes:
+      - data:/var/www/app/data
+      - ./plugins:/var/www/app/plugins
+    environment:
+      - PLUGIN_INSTALLER=false
+      - DEBUG=true
+      - LOG_DRIVER=stdout
+      - MAIL_TRANSPORT=smtp
+      - MAIL_SMTP_HOSTNAME=mail.infomaniak.com
+      - MAIL_SMTP_PORT=587
+      - MAIL_SMTP_USERNAME=contact@david-legrand.fr
+      - MAIL_SMTP_PASSWORD=${KANBOARD_SMTP_PASSWORD}
+      - MAIL_SMTP_ENCRYPTION=tls
+      - MAIL_FROM=contact@david-legrand.fr
+    networks:
+      - cloudnet
+volumes:
+  data:
+networks:
+  cloudnet:
+    external: true
+```
+
+`PLUGIN_INSTALLER=false` empêchant toute installation de plugin depuis
+l'interface, **AgileIndicators** est copié manuellement dans
+`./plugins/AgileIndicators` (monté en volume) plutôt qu'installé via
+l'annuaire intégré. État réel constaté sur `cloclo` : le plugin est présent
+sur disque mais **pas encore activé** dans l'interface Kanboard — la
+formulation « activé » dans la section Décision ci-dessus anticipait l'état
+cible, pas l'état constaté à date (suivi : `TODO.md`).
+
+Config Caddy (`/srv/docker/reverse-proxy/Caddyfile`), même gabarit d'en-têtes
+de sécurité que les autres domaines de `cloclo` (dont
+`regles.qualicheck.koabana.fr`, cf. `docs/developpement/deploiement_staging.md`) :
+
+```caddyfile
+kanban.david-legrand.fr {
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Permissions-Policy "interest-cohort=()"
+    }
+
+    reverse_proxy kanboard:80
+}
+```
+
+Secret réel (`KANBOARD_SMTP_PASSWORD`) dans `/srv/docker/kanboard/.env`,
+non versionné, non reproduit ici.

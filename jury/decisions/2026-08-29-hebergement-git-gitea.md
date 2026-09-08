@@ -95,3 +95,125 @@ aujourd'hui.
 > l'exécution de chaque run — un accès réseau à `github.com` reste
 > nécessaire. Alternative possible (non retenue ici) : miroirer ces actions
 > sur Gitea, ou n'utiliser que des actions `docker://` autonomes.
+
+## Installation
+
+Déployé réellement sur `cloclo`, `/srv/docker/gitea/` — configuration
+initiale le 2026-08-29, finalisée le 2026-08-30. Trois services dans un seul
+`docker-compose.yml` : `app` (Gitea), `db` (sa base Postgres dédiée, séparée
+de celle de QualiCheck), `runner` (`act_runner`, exécuteur des Actions) :
+
+```yaml
+services:
+  app:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__server__ROOT_URL=https://git.david-legrand.fr/
+      - GITEA__server__DOMAIN=git.david-legrand.fr
+      - GITEA__server__SSH_DOMAIN=git.david-legrand.fr
+      - GITEA__server__SSH_PORT=2222
+      - GITEA__server__SSH_LISTEN_PORT=22
+      - GITEA__database__DB_TYPE=postgres
+      - GITEA__database__HOST=db:5432
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=gitea
+      - GITEA__database__PASSWD=${GITEA_DB_PASSWORD}
+      - GITEA__mailer__ENABLED=true
+      - GITEA__mailer__PROTOCOL=smtp+starttls
+      - GITEA__mailer__SMTP_ADDR=mail.infomaniak.com
+      - GITEA__mailer__SMTP_PORT=587
+      - GITEA__mailer__USER=contact@david-legrand.fr
+      - GITEA__mailer__PASSWD=${GITEA_SMTP_PASSWORD}
+      - GITEA__mailer__FROM=contact@david-legrand.fr
+      - GITEA__service__ENABLE_NOTIFY_MAIL=true
+    volumes:
+      - data:/data
+    ports:
+      - "2222:22"
+    networks:
+      - cloudnet
+
+  db:
+    image: postgres:17-alpine
+    container_name: gitea-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=${GITEA_DB_PASSWORD}
+      - POSTGRES_DB=gitea
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - cloudnet
+
+  runner:
+    image: gitea/act_runner:latest
+    container_name: gitea-runner
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      - GITEA_INSTANCE_URL=https://git.david-legrand.fr
+      - GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_REGISTRATION_TOKEN}
+      - GITEA_RUNNER_NAME=cloclo
+      - GITEA_RUNNER_LABELS=ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,ubuntu-24.04:docker://docker.gitea.com/runner-images:ubuntu-24.04,ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04,self-hosted:host,cloclo:host
+    volumes:
+      - runner-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - cloudnet
+
+volumes:
+  data:
+  db-data:
+  runner-data:
+networks:
+  cloudnet:
+    external: true
+```
+
+Points notables :
+
+- Port SSH Git publié en `2222:22` — le `22` de l'hôte reste réservé à
+  l'accès SSH classique à `cloclo` — d'où `SSH_PORT=2222` côté config Gitea
+  pour que les URLs `git clone ssh://...` générées par l'interface soient
+  correctes.
+- Le runner reçoit le socket Docker (`/var/run/docker.sock`) pour builder et
+  exécuter les jobs. Labels multiples déclarés : images
+  `docker://docker.gitea.com/runner-images:*` pour les jobs déclarant
+  `runs-on: ubuntu-latest`/`ubuntu-24.04`/`ubuntu-22.04` (compatibilité
+  directe avec la syntaxe GitHub Actions), plus `self-hosted:host` et
+  `cloclo:host` pour les jobs qui doivent tourner directement sur l'hôte
+  (cas de `cd-staging.yml`, qui a besoin d'accéder à Docker Compose et au
+  réseau `cloudnet` de `cloclo` — un exécuteur en conteneur isolé ne le
+  permettrait pas).
+
+Config Caddy (`/srv/docker/reverse-proxy/Caddyfile`), même gabarit d'en-têtes
+de sécurité que les autres domaines de `cloclo` :
+
+```caddyfile
+git.david-legrand.fr {
+    encode zstd gzip
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Permissions-Policy "interest-cohort=()"
+    }
+
+    reverse_proxy gitea:3000
+}
+```
+
+Secrets réels (`GITEA_DB_PASSWORD`, `GITEA_SMTP_PASSWORD`,
+`GITEA_RUNNER_REGISTRATION_TOKEN`) dans `/srv/docker/gitea/.env`, non
+versionnés, non reproduits ici.
