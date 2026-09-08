@@ -1,9 +1,9 @@
 from sqlalchemy import CheckConstraint, Column, DateTime, SmallInteger, String
 
-from app.models.base import Base
+from app.models.base import BaseReferentiel
 
 
-class EtatDonnees(Base):
+class EtatDonnees(BaseReferentiel):
     """Ligne unique traçant le dernier export/import de backup appliqué à la base.
 
     Mise à jour par les cibles Makefile export_sql/import_sql (docker exec

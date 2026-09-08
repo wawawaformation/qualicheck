@@ -9,10 +9,10 @@ from sqlalchemy import (
     Text,
 )
 
-from app.models.base import Base
+from app.models.base import BaseAudit
 
 
-class Utilisateur(Base):
+class Utilisateur(BaseAudit):
     __tablename__ = "utilisateur"
 
     id = Column(Integer, primary_key=True)
@@ -20,7 +20,7 @@ class Utilisateur(Base):
     prenom = Column(String(64), nullable=False)
 
 
-class Audit(Base):
+class Audit(BaseAudit):
     __tablename__ = "audit"
 
     id = Column(Integer, primary_key=True)
@@ -31,7 +31,7 @@ class Audit(Base):
     date_modification = Column(DateTime)
 
 
-class Page(Base):
+class Page(BaseAudit):
     __tablename__ = "page"
 
     id = Column(Integer, primary_key=True)
@@ -39,7 +39,7 @@ class Page(Base):
     titre = Column(String(255))
 
 
-class AuditPage(Base):
+class AuditPage(BaseAudit):
     __tablename__ = "audit_page"
 
     audit_id = Column(Integer, ForeignKey("audit.id"), nullable=False)
@@ -53,7 +53,7 @@ class AuditPage(Base):
     )
 
 
-class AuditRegle(Base):
+class AuditRegle(BaseAudit):
     __tablename__ = "audit_regle"
 
     audit_id = Column(Integer, ForeignKey("audit.id"), nullable=False)
@@ -64,7 +64,7 @@ class AuditRegle(Base):
     )
 
 
-class Constat(Base):
+class Constat(BaseAudit):
     __tablename__ = "constat"
 
     audit_id = Column(Integer, ForeignKey("audit.id"), nullable=False)

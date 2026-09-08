@@ -16,11 +16,13 @@ sys.path.insert(0, str(ROOT))
 load_dotenv(ROOT / ".env")
 
 # -- Import des modèles (nécessaire pour target_metadata) --------------------
-import app.models.metier  # noqa: E402, F401 — enregistre les tables dans Base
-import app.models.referentiel  # noqa: E402, F401 — enregistre les tables dans Base
-from app.models.base import Base  # noqa: E402
+# Seul le domaine du référentiel : les tables métier vivent dans une base
+# distincte, avec sa propre chaîne (app/migration_audit/).
+import app.models.etat  # noqa: E402, F401 — enregistre etat_donnees
+import app.models.referentiel  # noqa: E402, F401 — enregistre les tables du référentiel
+from app.models.base import BaseReferentiel  # noqa: E402
 
-target_metadata = Base.metadata
+target_metadata = BaseReferentiel.metadata
 
 # -- Construction de l'URL de connexion --------------------------------------
 def get_url() -> str:

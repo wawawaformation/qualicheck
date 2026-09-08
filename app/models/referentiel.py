@@ -10,17 +10,17 @@ from sqlalchemy import (
     Text,
 )
 
-from app.models.base import Base
+from app.models.base import BaseReferentiel
 
 
-class Theme(Base):
+class Theme(BaseReferentiel):
     __tablename__ = "theme"
 
     id = Column(Integer, primary_key=True)
     theme = Column(String(64), nullable=False, unique=True)
 
 
-class Regle(Base):
+class Regle(BaseReferentiel):
     __tablename__ = "regle"
 
     id = Column(Integer, primary_key=True)
@@ -45,28 +45,28 @@ class Regle(Base):
     embedding = Column(Vector(1536))
 
 
-class Objectif(Base):
+class Objectif(BaseReferentiel):
     __tablename__ = "objectif"
 
     id = Column(Integer, primary_key=True)
     objectif = Column(String(512), nullable=False)
 
 
-class Phase(Base):
+class Phase(BaseReferentiel):
     __tablename__ = "phase"
 
     id = Column(Integer, primary_key=True)
     phase = Column(String(64), nullable=False)
 
 
-class Tag(Base):
+class Tag(BaseReferentiel):
     __tablename__ = "tag"
 
     id = Column(Integer, primary_key=True)
     tag = Column(String(50), nullable=False)
 
 
-class ObjectifRegle(Base):
+class ObjectifRegle(BaseReferentiel):
     __tablename__ = "objectif_regle"
 
     objectif_id = Column(Integer, ForeignKey("objectif.id"), nullable=False)
@@ -77,7 +77,7 @@ class ObjectifRegle(Base):
     )
 
 
-class PhaseRegle(Base):
+class PhaseRegle(BaseReferentiel):
     __tablename__ = "phase_regle"
 
     phase_id = Column(Integer, ForeignKey("phase.id"), nullable=False)
@@ -88,7 +88,7 @@ class PhaseRegle(Base):
     )
 
 
-class RegleTag(Base):
+class RegleTag(BaseReferentiel):
     __tablename__ = "regle_tag"
 
     regle_id = Column(Integer, ForeignKey("regle.id"), nullable=False)
