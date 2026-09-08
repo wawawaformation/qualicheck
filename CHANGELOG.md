@@ -9,6 +9,43 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 7)
+
+- **Scission en deux bases (référentiel / audit) — implémentée, plan à 9
+  tâches exécuté de bout en bout** — voir
+  `docs/superpowers/plans/2026-09-08-scission-bases-implementation.md` et
+  `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`. Résultat :
+  deux bases PostgreSQL (`qualicheck` référentiel avec les 245 règles,
+  `qualicheck_audit` avec les 6 tables métier, sans FK entre elles), deux
+  chaînes Alembic (`app/migration/`, `app/migration_audit/`), `app/db.py`
+  exposant `get_session_referentiel`/`get_session_audit`, CI créant et
+  migrant les deux bases (run 26 = succès)
+  - Task 1 (`e5de368`) : scission de la base déclarative SQLAlchemy en deux
+    (référentiel / métier)
+  - Task 2 (`18a7ea0`) : `audit_regle`/`constat` référencent désormais
+    `regle.numero` (clé métier) au lieu de `regle.id`, pour traverser la
+    frontière inter-bases sans FK
+  - Task 3 (`7133b7d`) : création idempotente de `qualicheck_audit`
+    (`scripts/create_db_audit.py`, `make create-db-audit`)
+  - Task 4 (`a807b65`) : chaîne de migrations Alembic du domaine audit
+  - Task 5 (`c598a38`) : suppression des tables métier de la base
+    référentiel
+  - Task 6 (`fa25a07`) : un moteur SQLAlchemy nommé par base — **périmètre
+    élargi en cours de tâche** à `app/api_regles/main.py` (route `/health`,
+    oubliée par le plan initial, utilisait aussi `get_session`)
+  - Task 7 (`2c82931`) : sauvegarde SQL (`export_sql`/`import_sql`) recentrée
+    sur le seul domaine référentiel
+  - Fix hors plan (`6235908`), détecté après la Task 7 : `grep POSTGRES_DB
+    .env` non ancré dans le Makefile matchait aussi `POSTGRES_DB_AUDIT`
+    (ajoutée en Task 3), cassant `export_sql`/`import_sql`/`psql`/
+    `migration-test`
+  - Task 8 (`3679330`) : CI Gitea créant et migrant `qualicheck_audit`,
+    poussée après confirmation explicite ; run CI 26 vert
+  - Task 9 (cette entrée) : documents de conception alignés sur l'état à
+    deux bases — voir `conception/1_BDD/bdd.md`,
+    `conception/1_BDD/MLD_qualicheck.md`,
+    `docs/rgpd/registre_traitements.md` — et contrôle anti-dérive passé
+
 ## 2026-09-08 — Claude Code (Part 6)
 
 - **Limite de sécurité de la scission identifiée et tracée, non traitée** —

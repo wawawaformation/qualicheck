@@ -21,9 +21,15 @@ numbersections: true
 - Les types SERIAL correspondent à COUNTER (auto-incrémenté)
 - **Ce document décrit le schéma réellement en place** (vérifié contre la base
   le 2026-09-08), pas une cible. En cas de doute, la source de vérité reste les
-  migrations Alembic (`app/migration/versions/`) — voir
+  migrations Alembic (`app/migration/versions/` pour le référentiel,
+  `app/migration_audit/versions/` pour le domaine audit) — voir
   `docs/agent/03_references_impl.md`. La table `etat_donnees` n'y figure pas :
   bookkeeping opérationnel, hors modèle métier (cf. `app/CLAUDE.md`)
+- **Deux bases de données distinctes** depuis le 2026-09-08 : `qualicheck`
+  (référentiel Opquast) et `qualicheck_audit` (cœur métier QualiCheck). Aucune
+  FK ni jointure ne traverse la frontière — voir
+  `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`. Chaque section
+  ci-dessous indique sa base d'accueil.
 
 ---
 
@@ -45,12 +51,22 @@ ingérées — et non sur une intuition de modélisation.
 | | regle | **0,n** | **64 des 245 règles n'ont aucun tag** — vérifié à la source, pas seulement en base (voir ci-dessous) |
 | utilisateur — DF — audit | utilisateur | 0,n | Un compte peut n'avoir lancé aucun audit |
 | | audit | 1,1 | `audit.utilisateur_id` NOT NULL |
-| regle — audit_regle — audit | regle | 0,n | Une règle peut n'être retenue dans aucun audit |
-| | audit | 0,n | Cycle de vie : `statut = en_cours` avant sélection des règles |
+| audit — audit_regle | audit | 0,n | Cycle de vie : `statut = en_cours` avant sélection des règles |
 | audit — audit_page — page | audit | 0,n | Cycle de vie : audit créé avant le crawl |
 | | page | 1,n | Une page n'existe que découverte par au moins un crawl |
-| audit_page — constat — regle | audit_page | 0,n | Une page retenue peut n'avoir encore aucun constat |
-| | regle | 0,n | Une règle peut n'avoir aucun constat |
+| audit_page — constat | audit_page | 0,n | Une page retenue peut n'avoir encore aucun constat |
+
+**Frontière inter-bases : `regle — audit_regle` et `regle — constat` ne sont
+plus des relations d'un même modèle.** Depuis le 2026-09-08, `regle` vit dans
+la base référentiel (`qualicheck`), tandis que `audit_regle` et `constat`
+vivent dans la base audit (`qualicheck_audit`) — voir
+`jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`. Aucune FK ni
+jointure SQL ne peut traverser cette frontière : `audit_regle.regle_numero`
+et `constat.regle_numero` référencent `regle.numero` par **clé métier**
+(le `numero` Opquast, stable et public), pas par la clé de substitution
+`regle.id`. La cohérence de cette référence n'est plus garantie par une
+contrainte de schéma mais par une vérification applicative, côté `api_audit`
+(hors périmètre de ce document).
 
 **Sur le `0,n` des tags — pourquoi la mesure locale ne suffisait pas.** Constater
 64 règles sans tag en base ne dit pas si c'est une règle métier ou un trou
@@ -77,13 +93,15 @@ Deux remarques de notation, à trancher si le MCD est présenté tel quel :
   portent aucune.
 - `constat` est rattaché à `audit_page`, qui est elle-même une association.
   En Merise strict, une association relie des entités. La clé réelle
-  (`PK (audit_id, page_id, regle_id)`) en fait une association **ternaire**
+  (`PK (audit_id, page_id, regle_numero)`) en fait une association **ternaire**
   entre `audit`, `page` et `regle` — la représenter ainsi supposerait de
   redessiner cette partie du schéma, non fait à ce stade.
 
 ---
 
 ## Référentiel Opquast
+
+*Base d'accueil : `qualicheck`.*
 
 ### theme
 
@@ -215,6 +233,8 @@ regle_tag (
 
 ## Cœur métier QualiCheck
 
+*Base d'accueil : `qualicheck_audit`.*
+
 ### utilisateur
 
 ```
@@ -268,10 +288,12 @@ audit_page (
 
 ```
 audit_regle (
-  audit_id    INT   FK → audit.id, NN
-  regle_id    INT   FK → regle.id, NN
-  PK (audit_id, regle_id)
-  U  (audit_id, regle_id)
+  audit_id      INT           FK → audit.id, NN
+  regle_numero  INT           NN    -- clé métier, pas de FK : regle.numero
+                                    -- vit dans qualicheck (référentiel),
+                                    -- audit_regle dans qualicheck_audit
+  PK (audit_id, regle_numero)
+  U  (audit_id, regle_numero)
 )
 ```
 
@@ -281,14 +303,16 @@ audit_regle (
 constat (
   audit_id           INT             FK → audit.id, NN
   page_id            INT             FK → page.id, NN
-  regle_id           INT             FK → regle.id, NN
+  regle_numero       INT             NN    -- clé métier, pas de FK : regle.numero
+                                           -- vit dans qualicheck (référentiel),
+                                           -- constat dans qualicheck_audit
   statut             VARCHAR(32)     NN    -- conforme | non_conforme | non_applicable
   commentaire        VARCHAR(512)
   recommandation     VARCHAR(512)
   preuve             VARCHAR(512)
   validation_humaine BOOLEAN               -- true | false | null (non traité)
   feedback_auditeur  TEXT                  -- commentaire qualitatif — post-MVP : alimente strategie_score
-  PK (audit_id, page_id, regle_id)        -- porte à elle seule l'unicité composite
+  PK (audit_id, page_id, regle_numero)    -- porte à elle seule l'unicité composite
                                           -- notée sur le MCD : un seul constat par
                                           -- (audit, page, règle). Pas de contrainte
                                           -- UNIQUE séparée en base, elle serait redondante
@@ -327,7 +351,10 @@ CREATE INDEX ON audit_regle (audit_id);
 | audit_page | audit_id | audit.id |
 | audit_page | page_id | page.id |
 | audit_regle | audit_id | audit.id |
-| audit_regle | regle_id | regle.id |
 | constat | audit_id | audit.id |
 | constat | page_id | page.id |
-| constat | regle_id | regle.id |
+
+`audit_regle.regle_numero` et `constat.regle_numero` ne figurent pas dans ce
+tableau : ce ne sont pas des FK Postgres mais des références par clé métier
+vers `regle.numero`, dans l'autre base (`qualicheck`) — voir la note
+« Frontière inter-bases » dans la section Cardinalités du MCD ci-dessus.

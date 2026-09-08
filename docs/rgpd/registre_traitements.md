@@ -51,6 +51,13 @@ Postgres (migrations Alembic) mais **ne sont peuplées par aucun code à ce
 jour** — l'US1 (dialogue et validation des constats) qui les rendrait
 opérationnelles n'est pas encore conçue.
 
+Depuis le 2026-09-08, ces tables vivent dans une base distincte du
+référentiel : **`qualicheck_audit`**. Le périmètre des données personnelles
+potentielles de QualiCheck se limite donc à cette base — le référentiel
+Opquast (`qualicheck`) reste hors champ RGPD (Traitement 1 ci-dessus). C'est
+l'un des quatre critères qui motivent la scission ; détail dans
+`jury/decisions/2026-09-08-deux-bases-referentiel-audit.md` (§3).
+
 Aucun traitement n'étant réellement mis en œuvre, ce volet reste hors du
 présent registre au sens de l'article 30 du RGPD. Il sera complété au moment
 de la spec US1, avec au minimum :

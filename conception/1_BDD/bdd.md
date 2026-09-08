@@ -13,9 +13,9 @@ numbersections: true
 
 ## Contexte et objectif
 
-Ce document couvre l'étape désignée `1_BDD` dans le dossier de conception — **prérequis** à toute autre brique de QualiCheck, y compris l'ingestion (`2_ingestion` / `ingestion.md`). Côté code, cette étape correspond au point d'entrée `scripts/migration.py` (cf. section Organisation technique). Elle ne peuple aucune donnée : elle crée le schéma complet, vide, prêt à être rempli.
+Ce document couvre l'étape désignée `1_BDD` dans le dossier de conception — **prérequis** à toute autre brique de QualiCheck, y compris l'ingestion (`2_ingestion` / `ingestion.md`). Côté code, cette étape correspond au point d'entrée `scripts/migration.py` (cf. section Organisation technique), commun aux deux chaînes de migrations (`scripts/migration.py` pour le référentiel, `scripts/migration.py audit` pour le domaine audit). Elle ne peuple aucune donnée : elle crée les schémas, vides, prêts à être remplis.
 
-Contrairement à `ingestion.md` qui ne concerne que le référentiel Opquast, ce document couvre **l'intégralité du schéma** : le référentiel Opquast (`theme`, `regle`, `objectif`, `phase`, `tag` + tables d'association) et le cœur métier QualiCheck (`utilisateur`, `audit`, `page`, `audit_page`, `audit_regle`, `constat`), qui ne sera peuplé que plus tard, au fil des audits.
+Contrairement à `ingestion.md` qui ne concerne que le référentiel Opquast, ce document couvre **deux bases de données distinctes** : `qualicheck` pour le référentiel Opquast (`theme`, `regle`, `objectif`, `phase`, `tag` + tables d'association) et `qualicheck_audit` pour le cœur métier QualiCheck (`utilisateur`, `audit`, `page`, `audit_page`, `audit_regle`, `constat`), qui ne sera peuplé que plus tard, au fil des audits. Raisonnement de la scission : `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`.
 
 Ce document ne redéfinit pas le détail des champs — c'est le rôle de `MLD_qualicheck.md`, qui reste la source de vérité pour la structure des tables, contraintes et clés. Ici, on décrit **comment** ce modèle logique devient une base réelle, et avec quels outils.
 
@@ -27,7 +27,7 @@ Le schéma est géré via un outil de migration (Alembic, cohérent avec la stac
 - **Réversibilité** : une migration Alembic porte une procédure de montée (`upgrade`) et de retour arrière (`downgrade`), utile en développement pour itérer sur le schéma sans tout recréer à la main.
 - **Cohérence avec le backend** : FastAPI + SQLAlchemy sont déjà les choix techniques du projet ; Alembic s'intègre nativement à ce couple, sans outil supplémentaire à apprendre.
 
-La première migration crée le schéma complet dans son état initial (toutes les tables du MLD). Les migrations suivantes, si elles existent, porteront les évolutions futures (nouvelles valeurs `strategie_analyse`, ajustements post-MVP...).
+Le schéma est porté par **deux chaînes de migrations Alembic distinctes**, une par base : la chaîne référentiel (`qualicheck`) crée les tables du référentiel Opquast, la chaîne audit (`qualicheck_audit`) crée les tables du cœur métier. Chaque chaîne a sa première migration créant l'état initial de son propre domaine. Les migrations suivantes, si elles existent, porteront les évolutions futures (nouvelles valeurs `strategie_analyse`, ajustements post-MVP...).
 
 ## Extension pgvector
 
@@ -43,9 +43,15 @@ Comme pour l'ingestion, l'exécution des migrations est **manuelle**, lancée pa
 
 Ordre d'exécution du projet, maintenant explicite :
 
-1. `scripts/migration.py` — le conteneur PostgreSQL démarre, les migrations sont appliquées : le schéma existe, vide.
+1. `scripts/migration.py` — le conteneur PostgreSQL démarre, la chaîne de
+   migrations du référentiel est appliquée sur `qualicheck` : le schéma
+   référentiel existe, vide.
 2. `scripts/ingestion.py` — le référentiel Opquast est chargé dans ce schéma.
-3. Reste de l'application (audits, dialogue, question libre).
+3. `make create-db-audit` — crée `qualicheck_audit` si elle est absente
+   (idempotent), préalable à sa migration.
+4. `scripts/migration.py audit` — applique la chaîne de migrations du
+   domaine audit sur `qualicheck_audit` : le schéma métier existe, vide.
+5. Reste de l'application (audits, dialogue, question libre).
 
 ## Organisation technique
 

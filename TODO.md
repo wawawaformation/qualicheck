@@ -7,28 +7,31 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Prochain gros morceau
 
-- [ ] **Scission en deux bases (référentiel / audit)** — décidée le
-  2026-09-08, spec et plan validés, **exécution reportée** — `D`/`A`
+- [x] **Scission en deux bases (référentiel / audit)** — décidée le
+  2026-09-08, **plan à 9 tâches exécuté et poussé (CI verte, run 26)** — `D`/`A`
   - Décision et critères observables :
     `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`
     (révise partiellement celle du 2026-07-28)
   - Conception et étapes vérifiables :
     `docs/superpowers/specs/2026-09-08-scission-bases-design.md` — **validée
     le 2026-09-08**
-  - **Plan d'implémentation prêt à exécuter** :
+  - **Plan d'implémentation exécuté** :
     `docs/superpowers/plans/2026-09-08-scission-bases-implementation.md`
-    (9 tâches, chacune avec son cycle de test et son commit). Exécution
-    reportée à une prochaine session, avec **un seul agent**.
-  - **Pourquoi maintenant** : les six tables métier sont vides (0 ligne) et
-    seules 2 FK traversent la frontière — la scission est gratuite
-    aujourd'hui, ce sera une migration de données après le premier audit
+    (9 tâches, chacune avec son cycle de test et son commit) — détail
+    tâche par tâche dans `CHANGELOG.md` (2026-09-08, Part 7)
+  - **Pourquoi maintenant** : les six tables métier étaient vides (0 ligne)
+    et seules 2 FK traversaient la frontière — la scission était gratuite à
+    ce moment-là, ce sera une migration de données après le premier audit
     réel.
-  - Périmètre : deux bases dans la même instance, `regle_numero` à la place
-    de `regle_id`, deux bases déclaratives, deux chaînes Alembic, sauvegarde
-    ramenée au domaine, `tests/migration/` scindé, CI/staging adaptés.
-  - Hors périmètre : `GET /dense` (désigné, construit avec US2) et
-    `app/api_audit` (avec US1). Rien d'autre à ajouter à l'API — `GET /regles`
-    renvoie déjà les 245 règles en un appel, sans pagination.
+  - Résultat : deux bases dans la même instance (`qualicheck` référentiel,
+    `qualicheck_audit` métier), `regle_numero` à la place de `regle_id` sur
+    la frontière, deux bases déclaratives, deux chaînes Alembic, sauvegarde
+    ramenée au référentiel, CI créant et migrant les deux bases. Documents
+    de conception (`conception/1_BDD/bdd.md`,
+    `conception/1_BDD/MLD_qualicheck.md`, `docs/rgpd/registre_traitements.md`)
+    alignés sur ce résultat.
+  - Hors périmètre, non traité par ce chantier : `GET /dense` (désigné,
+    construit avec US2), `app/api_audit` (avec US1).
   - **Rôle PostgreSQL scopé pour `api_audit`, à décider avec US1, pas
     maintenant** (2026-09-08) — `qualicheck` (le rôle admin) est
     **superutilisateur** (`rolsuper=t`, vérifié), créé ainsi par l'image
@@ -40,7 +43,6 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     d'administration (migrations). Non traité dans le chantier de scission :
     aucun service ne consomme encore ce rôle, même principe que `GET /dense`
     et le filtre par numéros — `D`/`A`
-  - Prochaine étape : exécuter le plan (tâches 1 à 9).
 
 - [ ] **Retrieval US2 — mesurer avant d'ajouter des mécanismes** (plan arrêté
   le 2026-09-08) — `D`/`A`
