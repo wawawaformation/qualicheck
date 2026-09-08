@@ -46,6 +46,17 @@ migration-test:
 		docker exec qualicheck-postgres createdb -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" "$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)"
 	POSTGRES_DB="$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)" uv run python scripts/migration.py
 
+## Migre la base du domaine audit (la crée si absente)
+migration-audit: create-db-audit
+	uv run python scripts/migration.py audit
+
+## Crée (si absente) et migre la base de test du domaine audit
+migration-audit-test:
+	POSTGRES_DB_AUDIT="$$(grep POSTGRES_TEST_DB_AUDIT .env | cut -d= -f2)" \
+		uv run python scripts/create_db_audit.py
+	POSTGRES_DB_AUDIT="$$(grep POSTGRES_TEST_DB_AUDIT .env | cut -d= -f2)" \
+		uv run python scripts/migration.py audit
+
 # ============================================================
 # Ingestion et données réelles
 # ============================================================
