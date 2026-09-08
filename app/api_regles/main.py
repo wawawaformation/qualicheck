@@ -16,7 +16,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.api_regles import config, regles
-from app.db import get_session
+from app.db import get_session_referentiel
 from app.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ app.include_router(regles.router)
 
 
 @app.get("/health", tags=["infrastructure"])
-def health(session: Session = Depends(get_session)):
+def health(session: Session = Depends(get_session_referentiel)):
     """
     Sonde de santé : vérifie que la base répond, pas seulement le processus.
 

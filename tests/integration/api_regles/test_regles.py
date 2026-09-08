@@ -19,7 +19,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.api_regles.main import app
-from app.db import get_session
+from app.db import get_session_referentiel
 from app.ingestion.stockage import clear_opquast_tables
 from app.models.referentiel import Regle, Theme
 
@@ -55,7 +55,7 @@ def client(session, monkeypatch):
     monkeypatch.setenv("FASTAPI_API_KEY_ELIE", "jeton-elie-test")
     monkeypatch.setenv("FASTAPI_API_KEY_DAVID", "jeton-david-test")
     monkeypatch.setenv("FASTAPI_API_KEY_FORMATEUR", "jeton-formateur-test")
-    app.dependency_overrides[get_session] = lambda: session
+    app.dependency_overrides[get_session_referentiel] = lambda: session
     yield TestClient(app)
     app.dependency_overrides.clear()
 
@@ -134,7 +134,7 @@ def test_health_repond_503_quand_la_base_est_injoignable(session):
         def execute(self, *args, **kwargs):
             raise RuntimeError("base injoignable")
 
-    app.dependency_overrides[get_session] = lambda: SessionEnEchec()
+    app.dependency_overrides[get_session_referentiel] = lambda: SessionEnEchec()
     try:
         reponse = TestClient(app).get("/health")
     finally:

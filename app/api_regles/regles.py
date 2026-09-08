@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.api_regles.auth import require_bearer
 from app.api_regles.schemas import OutilFiltre, ReglePatch, RegleRead, ReviewStatusFiltre
-from app.db import get_session
+from app.db import get_session_referentiel
 from app.models.referentiel import (
     Objectif,
     ObjectifRegle,
@@ -98,7 +98,7 @@ def _charger_regles(session: Session, requete: OrmQuery) -> list[RegleRead]:
 
 @router.get("", response_model=list[RegleRead])
 def lister_regles(
-    session: Session = Depends(get_session),
+    session: Session = Depends(get_session_referentiel),
     outil: list[OutilFiltre] = Query(default=[]),
     review_status: list[ReviewStatusFiltre] = Query(default=[]),
 ) -> list[RegleRead]:
@@ -138,7 +138,7 @@ def lister_regles(
 @router.get("/{numero}", response_model=RegleRead)
 def lire_regle(
     numero: int,
-    session: Session = Depends(get_session),
+    session: Session = Depends(get_session_referentiel),
 ) -> RegleRead:
     """Une règle enrichie, désignée par son numéro Opquast."""
     requete = session.query(Regle, Theme.theme).filter(
@@ -158,7 +158,7 @@ def lire_regle(
 def annoter_regle(
     numero: int,
     annotation: ReglePatch,
-    session: Session = Depends(get_session),
+    session: Session = Depends(get_session_referentiel),
     client_nom: str = Depends(require_bearer),
 ) -> RegleRead:
     """
