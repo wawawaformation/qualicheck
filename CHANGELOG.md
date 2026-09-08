@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 9)
+
+- **Syntaxe de recherche façon Google sur `GET /regles?q=`** — commit
+  `7cc4033` — mots = ET implicite, `"phrase exacte"` entre guillemets,
+  `-mot` = exclusion, `mot1 OR mot2` = union chaînable sans parenthèses.
+  Grammaire validée avec David (carte Kanboard #7). Bug trouvé et corrigé :
+  `contexte` nullable cassait l'exclusion via propagation de `NULL` dans
+  l'`OR` SQL — corrigé avec `coalesce(champ, "")`. 14 tests unitaires du
+  parseur pur (`app/api_regles/recherche.py`) + 9 tests d'intégration.
+  Vérifié contre les vraies données via l'image Docker reconstruite.
+
 ## 2026-09-08 — Claude Code (Part 8)
 
 - **`GET /regles?q=` (recherche interne)** — commit `81f25c3` — ILIKE
