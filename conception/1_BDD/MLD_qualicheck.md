@@ -108,7 +108,7 @@ regle (
   controle                TEXT            NN        -- source scraping : idem
   contexte                TEXT                      -- texte explicatif Opquast (absent sur ~la moitié des règles)
   -- Champs générés par l'agent LLM à l'ingestion
-  strategie_analyse *     VARCHAR(32)     NN        -- statique | playwright | vision | manuel, ou une paire (ex. vision+statique)
+  strategie_analyse *     VARCHAR(32)     NN        -- statique | playwright | vision | manuel, ou une paire composite (voir ci-dessous)
   strategie_justification * TEXT
   strategie_source *      VARCHAR(32)     NN        -- ia_import | ia_reingest | admin
   strategie_score *       DECIMAL(3,2)              -- calculé depuis constat.validation_humaine
@@ -123,6 +123,25 @@ regle (
   embedding *             vector(1536)              -- text-embedding-3-small (dimension native), index HNSW
 )
 ```
+
+**Grammaire de `strategie_analyse`** — quatre valeurs simples
+(`statique`, `playwright`, `vision`, `manuel`) ou une paire composite, jamais
+trois, jamais avec `manuel`. **Deux opérateurs, de sens différent**, définis
+par le prompt d'enrichissement (`app/ingestion/prompts/enrich_rule.md` §1) :
+
+| Forme | Sens | Conséquence |
+| --- | --- | --- |
+| `A+B` | **PUIS** — B dépend du résultat de A | **L'ordre est la séquence d'exécution** : `statique+playwright` et `playwright+statique` sont deux classements distincts, pas deux orthographes. Le `guide_analyse` est alors structuré en étapes numérotées |
+| `A&B` | **ET** — les deux vérifications sont indépendantes, sans dépendance causale | Le `guide_analyse` les présente sans ordre imposé |
+
+Ne jamais normaliser l'ordre d'une paire `+` ni confondre les deux
+séparateurs : ce serait détruire de l'information que le pipeline produit
+délibérément, et dont un futur agent d'audit a besoin pour savoir s'il peut
+mener les deux vérifications en parallèle ou doit les enchaîner.
+
+Distribution réelle au 2026-09-08 : 96 `statique`, 81 `playwright`,
+28 `manuel`, 10 `vision`, 28 paires en `+` (six combinaisons, les deux ordres
+observés) et 2 en `&` (`vision&statique`).
 
 **Règle de nommage des colonnes** : le vocabulaire du domaine reste en français,
 le vocabulaire technique en anglais (principe de langage omniprésent, DDD). Test :

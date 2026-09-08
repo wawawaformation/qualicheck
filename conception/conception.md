@@ -338,7 +338,7 @@ Les champs suivants sont ajoutés sur la table `regle` pour supporter le pipelin
 
 | Champ | Type | Rôle |
 | --- | --- | --- |
-| `strategie_analyse` | VARCHAR(32) | Méthode de vérification : `statique`, `playwright`, `vision`, `manuel`, ou une paire (ex. `vision+statique`) |
+| `strategie_analyse` | VARCHAR(32) | Méthode de vérification : `statique`, `playwright`, `vision`, `manuel`, ou une paire composite. Deux opérateurs de sens distinct : `A+B` (PUIS, B dépend de A — l'ordre est significatif) et `A&B` (ET, vérifications indépendantes). Grammaire complète : `MLD_qualicheck.md` |
 | `strategie_justification` | TEXT | Explication du choix produite par le LLM |
 | `strategie_source` | VARCHAR(32) | Origine : `ia_import`, `ia_reingest`, `admin` |
 | `strategie_score` | DECIMAL(3,2) | Score agrégé des feedbacks terrain (calculé depuis `constat`) |
