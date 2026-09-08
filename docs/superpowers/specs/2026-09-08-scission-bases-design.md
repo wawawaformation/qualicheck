@@ -53,7 +53,8 @@ premier audit réel.
 | Sauvegarde | `export_sql`/`import_sql` deviennent explicitement référentiel (`-d qualicheck`). Le domaine audit n'a pas encore de données ni de cible de sauvegarde : à traiter avec US1, pas ici |
 | Bases de test | Une par domaine. La règle existante ne change pas : aucun test destructeur ne cible une base de développement. `tests/migration/` (lecture seule) continue de viser les bases de développement |
 | `pgvector` / HNSW | Restent sur la base référentiel uniquement |
-| `/dense`, lecture par lot | **Hors périmètre.** Désignés par la décision, construits avec leur consommateur (US2, `api_audit`) |
+| Lecture du référentiel par le métier | **Rien à construire.** `GET /regles` renvoie déjà les 245 règles en un appel, sans pagination (corpus figé, choix acté), avec les filtres `outil` et `review_status` ; `GET /regles/{numero}` pour une règle précise. Contrat : `https://regles.qualicheck.koabana.fr/docs` |
+| `GET /dense` | **Hors périmètre.** Seule capacité manquante ; désignée par la décision, construite avec son consommateur (US2) |
 | `api_audit` | **Hors périmètre.** Cette spec crée sa base et son schéma, pas son service — à concevoir avec US1 |
 
 ## 4. Modifications
@@ -200,8 +201,9 @@ Chaque étape est vérifiable indépendamment.
 
 ## 6. Hors périmètre (YAGNI)
 
-- **`GET /dense`** et **`GET /regles?numeros=`** — désignés par la décision,
-  construits avec leur consommateur.
+- **`GET /dense`** — désigné par la décision, construit avec son consommateur
+  (US2). Seule capacité que l'API n'expose pas encore : la lecture du
+  référentiel est déjà couverte par `GET /regles` en un appel.
 - **`app/api_audit`** — service à concevoir avec la spec US1.
 - **Deux instances PostgreSQL** (au lieu de deux bases dans une instance) —
   évolution naturelle si le besoin apparaît, rendue peu coûteuse par cette

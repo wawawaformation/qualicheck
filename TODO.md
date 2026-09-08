@@ -21,8 +21,9 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - Périmètre : deux bases dans la même instance, `regle_numero` à la place
     de `regle_id`, deux bases déclaratives, deux chaînes Alembic, sauvegarde
     ramenée au domaine, `tests/migration/` scindé, CI/staging adaptés.
-  - Hors périmètre, désignés seulement : `GET /dense`,
-    `GET /regles?numeros=`, et `app/api_audit` (avec US1).
+  - Hors périmètre : `GET /dense` (désigné, construit avec US2) et
+    `app/api_audit` (avec US1). Rien d'autre à ajouter à l'API — `GET /regles`
+    renvoie déjà les 245 règles en un appel, sans pagination.
   - Prochaine étape : plan d'implémentation, après validation de la spec.
 
 - [ ] **Retrieval US2 — mesurer avant d'ajouter des mécanismes** (plan arrêté

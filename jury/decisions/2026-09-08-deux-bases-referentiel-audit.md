@@ -206,14 +206,20 @@ forme d'origine — FK comprises — et cette trace.
 
 ## Conséquences
 
-- **`GET /dense` et la lecture par lot (`GET /regles?numeros=`) sont
-  désignés, pas construits.** Puisque le métier ne peut plus lire `regle` en
-  base, ces deux routes sont le chemin prévu — `/dense` recevant un vecteur
-  **déjà calculé** (`{"vecteur": [...], "top_n": 3}`) pour qu'`api_regles`
-  reste sans aucun appel LLM, conformément à sa contrainte d'origine. Elles
-  seront construites **avec leur consommateur** (US2 pour `/dense`,
-  `api_audit` pour la lecture par lot), pas avant : du code sans appelant est
-  précisément ce que le projet s'interdit.
+- **L'API couvre déjà le besoin de lecture du métier.** `GET /regles` renvoie
+  les 245 règles en un seul appel (~500 kB), sans pagination — choix déjà
+  acté, le corpus Opquast étant figé — avec les filtres `outil` et
+  `review_status`, et `GET /regles/{numero}` pour une règle précise. Aucun
+  filtre supplémentaire par numéros n'est donc nécessaire : `api_audit`
+  charge le référentiel en un appel. Contrat exposé publiquement sur
+  `https://regles.qualicheck.koabana.fr/docs`.
+- **Seul `GET /dense` manque, et il est désigné sans être construit.** La
+  recherche vectorielle est la seule capacité que l'API n'expose pas, alors
+  qu'`api_business` ne peut plus l'obtenir en base. La forme prévue reçoit un
+  vecteur **déjà calculé** (`{"vecteur": [...], "top_n": 3}`), pour
+  qu'`api_regles` reste sans aucun appel LLM conformément à sa contrainte
+  d'origine. Construite **avec son consommateur** (US2), pas avant : du code
+  sans appelant est précisément ce que le projet s'interdit.
 - **Deux nouveaux modes de défaillance, assumés.** `api_regles` devient une
   dépendance de **disponibilité** pour un audit en cours (plus d'affichage de
   règles si elle est en panne). Et l'intégrité des deux liens passe du SGBD à

@@ -38,9 +38,11 @@ Format d'entrée, une ligne par réalisation :
   `docs/superpowers/specs/2026-09-08-scission-bases-design.md` : état actuel
   vérifié, décisions de conception, modifications fichier par fichier et 8
   étapes de validation (dont la preuve d'isolation : un `SELECT` sur `regle`
-  doit **échouer** depuis la base d'audit). `GET /dense` et la lecture par
-  lot restent hors périmètre, désignés mais non construits — pas de code sans
-  appelant
+  doit **échouer** depuis la base d'audit). Seul `GET /dense` reste hors
+  périmètre, désigné mais non construit — pas de code sans appelant. **Aucun
+  filtre par numéros n'est nécessaire** : `GET /regles` renvoie déjà les 245
+  règles en un appel, sans pagination (corpus figé, choix acté) — correction
+  d'un besoin que la première version de la spec avait inventé
 - `TODO.md` : nouvelle entrée en tête de « Prochain gros morceau », et l'item
   « Découpage des responsabilités » mis à jour pour ne plus enregistrer
   l'ancienne architecture comme définitive
