@@ -50,7 +50,7 @@ d'origine. L'index ci-dessous y renvoie.
 | Index HNSW, création avant remplissage | `conception/1_BDD/bdd.md` | partiellement |
 | Choix des modèles LLM par usage | `conception/annexes/benchmark/` (16 820 appels, `benchmark.py`, `analyse_models_azure.pdf`) | oui — benchmark comparatif complet |
 | Backend FastAPI, frontend Vue.js, Docker | `conception/conception.md` §Choix techniques | non — seule la justification du choix retenu figure |
-| Embedding All MiniLM L12 v2, `vector(384)` figé | `conception/conception.md` | non |
+| Embedding — pivot de All MiniLM L12 v2 vers `text-embedding-3-small` (`vector(1536)`) | `conception/conception.md` §Embedding, et `conception/2_us0/ingestion/L_chunking_embedding_indexation.md` pour le raisonnement complet | oui — MiniLM disqualifié par sa fenêtre de 128 tokens, troncature à 384 dimensions rejetée |
 | Souveraineté, éco-conception, éthique de l'IA | `conception/conception.md` §Positionnement éthique et technique | oui |
 | Itérations du prompt d'enrichissement V1 → V3 | `docs/problemes_rencontres/ingestion/1_prompt_engineering.md` | oui — avec les chiffres qui ont motivé chaque révision |
 | Dimensionnement des colonnes textuelles | `docs/problemes_rencontres/ingestion/2_schema_text_columns.md` | oui — trois approches comparées |
@@ -62,7 +62,7 @@ retenu est documenté, pas ce qui a été écarté. Ce n'est pas rattrapable de 
 fiable aujourd'hui — mais c'est précisément ce que ce dossier évite de reproduire
 pour les décisions à venir.
 
-**Une synthèse manque** : `conception/conception.md` renvoie deux fois à
-`annexes/F_choix_llm.md`, qui n'existe pas dans le dépôt. Le matériau du benchmark
-est bien là, sa rédaction ne l'est pas — c'est du contenu directement exploitable
-pour C7 qui reste invisible pour qui lirait le dépôt.
+**Correction du 2026-09-08** : ce paragraphe affirmait que
+`conception/annexes/F_choix_llm.md` n'existait pas dans le dépôt et que la synthèse
+du benchmark restait invisible. Le fichier est bien présent (318 lignes) — le
+constat est levé.

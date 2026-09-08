@@ -46,15 +46,15 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - [x] **Étape 0+1 — passe de cohérence des documents de données**
     (2026-09-08) : récit embedding, types/tailles réels, cardinalités du MCD —
     voir `CHANGELOG.md` — `A`
-  - [ ] **Étape A — décision jury « mesurer avant d'ajouter »** (~1 h, 0 €) — `A`
-    - Écarter la variante proposée **sur mesure** ; garder l'hybride *en
-      général* ouvert, avec une condition de réouverture testable (rappel
-      insuffisant sur la famille « termes exacts ») ; nommer la source
-      (Gemini) et l'audit qui l'a réfutée — c'est la preuve de compétence
-      attendue, pas une gêne à masquer.
-    - Ne **pas** y écrire « pas de FTS / pas de RRF » au fond : ça exige la
-      mesure de l'étape 3, sinon c'est un document qui ressemble à une
-      décision et repose sur une conversation avec un LLM.
+  - [x] **Étape A — décision jury écrite** (2026-09-08) —
+    `jury/decisions/2026-09-08-mesurer-avant-mecanismes-retrieval.md` — `A`
+    - Variante proposée écartée **sur mesure** ; hybride gardé ouvert *en
+      général* avec une condition de réouverture testable (rappel
+      insuffisant sur la famille « termes exacts » → FTS sur le **texte
+      complet**, jamais sur `intitule/objectifs/tags`) ; source (Gemini) et
+      audit nommés.
+    - Volontairement **pas** de « pas de FTS / pas de RRF » au fond : ça
+      exige la mesure de l'étape 3.
   - [ ] **Étape 2 — cas d'acceptance durs = amorce de spec US2** — `D`/`A`
     - Pourquoi ce n'est pas de l'outillage : les 17 cas actuels sont des
       paraphrases d'intitulés, à cible unique, sujets disjoints — le 100 %

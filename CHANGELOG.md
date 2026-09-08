@@ -9,6 +9,37 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 4)
+
+- **Décision : mesurer avant d'ajouter des mécanismes de retrieval (US2)** —
+  voir `jury/decisions/2026-09-08-mesurer-avant-mecanismes-retrieval.md`.
+  C'était l'étape A du plan retrieval, planifiée le matin puis laissée de
+  côté au profit de la décision sur les deux bases : les arbitrages ne
+  vivaient que dans le `TODO.md`, pas dans un document de décision
+  - Audit d'une fiche d'architecture RAG issue d'une conversation avec Gemini
+    (parent-child, FTS + RRF, reformulation, décomposition, `doc_type`
+    multi-sources), confrontée au schéma et aux 245 règles réelles
+  - Le mécanisme de dilution décrit est **réel** (l'intitulé pèse 77 car. sur
+    ~1 620, le `guide_analyse` 648), mais le remède est **auto-réfutant** :
+    ARIA 0/15/10/32 selon les champs, « SIRET » uniquement dans
+    `guide_analyse` — la fiche justifie le FTS par les termes exacts puis
+    l'indexe là où ils sont absents
+  - Et l'instrument de mesure ne voit pas le phénomène débattu : 15 ou 16 des
+    17 cas d'acceptance sont des paraphrases de l'intitulé, à cible unique —
+    le 100 % à `top_n=3` ne falsifie rien
+  - Décidé : variante écartée **sur mesure**, hybride gardé ouvert avec
+    condition de réouverture testable, ordre d'intervention du moins cher au
+    plus cher (`top_n` → variantes de chunk → FTS sur texte complet), et
+    RRF/décomposition/HyDE/reformulation/VPTCS non construits
+  - Source nommée délibérément : avoir confronté une recommandation d'IA à
+    ses propres données est la compétence attendue, pas une gêne à masquer
+- **Deux dérives corrigées dans `jury/decisions/README.md`** : la ligne
+  d'index « Embedding All MiniLM L12 v2, `vector(384)` figé » (devenue fausse
+  le matin même) devient le pivot vers `text-embedding-3-small`, avec ses
+  alternatives écartées ; et le paragraphe affirmant que
+  `conception/annexes/F_choix_llm.md` n'existait pas — il fait 318 lignes —
+  est remplacé par une correction datée, le constat sur C7 est levé
+
 ## 2026-09-08 — Claude Code (Part 3)
 
 - **Décision : deux bases de données (référentiel Opquast / données d'audit)**
