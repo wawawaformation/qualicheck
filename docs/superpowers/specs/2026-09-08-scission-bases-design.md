@@ -143,6 +143,34 @@ déclarer une seconde (ou créer la base d'audit dans une étape préalable), et
 bloc `services:` sous `act_runner` étant un point déjà identifié comme
 sensible.
 
+### 4.10 Documents de conception — source de vérité durable
+
+Cette spec vit dans `docs/superpowers/specs/`, que
+`docs/agent/04_contexte_actif.md` classe en « historique de plans, à ne pas
+charger par défaut ». Elle est donc le **compte rendu de conception de ce
+chantier**, pas la référence permanente. Sans les mises à jour ci-dessous, on
+recrée exactement la dérive spec/réel corrigée le 2026-09-08 sur
+`conception.md` : la source de vérité référencée continuerait de décrire une
+seule base.
+
+- **`conception/1_BDD/bdd.md`** — désigné par `docs/README.md` comme source de
+  vérité « schéma et migrations ». Trois affirmations à corriger : couvrir
+  « l'intégralité du schéma » en un seul modèle (§ Contexte) ; « la première
+  migration crée le schéma complet » (§ Choix technique) ; l'ordre
+  d'exécution à un seul `scripts/migration.py` (§ Déclenchement). À réécrire
+  pour décrire deux bases, deux chaînes, et la frontière HTTP.
+- **`conception/1_BDD/MLD_qualicheck.md`** — indiquer, par table, la base
+  d'accueil ; mettre à jour la table des cardinalités (les deux relations
+  traversantes ne sont plus des relations du même modèle) ; refléter
+  `regle_numero`.
+- **`conception/annexes/B_MCD_qualicheck.drawio`** — matérialiser la
+  frontière entre les deux bases. À traiter avec les deux points de notation
+  déjà ouverts dans `TODO.md` (association ternaire de `constat`, colonnes
+  absentes), pour un seul passage sur le schéma plutôt que trois.
+- **`docs/rgpd/registre_traitements.md`** — le périmètre des données
+  personnelles devient une base, c'est l'un des quatre critères qui motivent
+  la décision : il doit s'y lire.
+
 ## 5. Validation
 
 Chaque étape est vérifiable indépendamment.
@@ -163,6 +191,12 @@ Chaque étape est vérifiable indépendamment.
 7. `pytest` et `ruff` verts ; l'API `api_regles` répond toujours sur ses cinq
    routes (`/health` inclus).
 8. Un run CI réel vert avant de considérer l'étape 4.9 faite.
+9. **Anti-dérive** : relire `conception/1_BDD/bdd.md`,
+   `MLD_qualicheck.md` et `docs/rgpd/registre_traitements.md` en cherchant
+   « une seule base », « schéma complet » et `regle_id` — aucune occurrence
+   ne doit subsister qui décrive le présent. Le chantier n'est pas fini tant
+   que la source de vérité référencée par `docs/README.md` décrit l'ancienne
+   architecture.
 
 ## 6. Hors périmètre (YAGNI)
 
