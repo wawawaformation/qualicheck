@@ -7,8 +7,30 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Prochain gros morceau
 
+- [ ] **Scission en deux bases (référentiel / audit)** — décidée le
+  2026-09-08, **spec écrite, en attente de validation** — `D`/`A`
+  - Décision et critères observables :
+    `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`
+    (révise partiellement celle du 2026-07-28)
+  - Conception et étapes vérifiables :
+    `docs/superpowers/specs/2026-09-08-scission-bases-design.md`
+  - **Pourquoi maintenant** : les six tables métier sont vides (0 ligne) et
+    seules 2 FK traversent la frontière — la scission est gratuite
+    aujourd'hui, ce sera une migration de données après le premier audit
+    réel.
+  - Périmètre : deux bases dans la même instance, `regle_numero` à la place
+    de `regle_id`, deux bases déclaratives, deux chaînes Alembic, sauvegarde
+    ramenée au domaine, `tests/migration/` scindé, CI/staging adaptés.
+  - Hors périmètre, désignés seulement : `GET /dense`,
+    `GET /regles?numeros=`, et `app/api_audit` (avec US1).
+  - Prochaine étape : plan d'implémentation, après validation de la spec.
+
 - [ ] **Retrieval US2 — mesurer avant d'ajouter des mécanismes** (plan arrêté
   le 2026-09-08) — `D`/`A`
+  - **Dépendance** : si `/dense` devient le seul accès au retrieval pour
+    `api_business` (cf. scission ci-dessus), les étapes 3 et 4 de ce plan
+    mesurent toujours en SQL direct — c'est l'outil de mesure, pas le
+    chemin de production. À garder distinct.
   - **Déclencheur** : une fiche d'architecture RAG issue d'une conversation
     avec Gemini (parent-child retrieval, FTS hybride + RRF, décomposition de
     la requête, `doc_type` multi-sources). Auditée contre le schéma et les
@@ -155,13 +177,13 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     l'urgence d'une session de veille.
 
 - [x] **Découpage des responsabilités `api_regles` / `api_audit` / `api_business`
-  — résolu (2026-07-28)** : une seule base de données et un seul
-  `app/models/`, mais **deux services FastAPI distincts** qui l'attaquent
-  chacun directement — `app/api_regles` (référentiel + revue, renommé depuis
-  `api_data` et implémenté le 2026-07-28) et `app/api_audit` (tables métier de
-  l'audit, à concevoir avec la spec US1). `app/api_business` reste l'étage
-  d'orchestration, sans jamais toucher Postgres. Raisonnement complet et
-  options écartées : `jury/decisions/2026-07-28-separation-api-regles-api-audit.md` — `D`
+  — résolu (2026-07-28), partiellement révisé le 2026-09-08** : le découpage
+  en trois étages tient — `app/api_regles` (référentiel + revue, implémenté),
+  `app/api_audit` (tables métier, à concevoir avec US1), `app/api_business`
+  (orchestration, sans jamais toucher Postgres). **Ce qui a changé le
+  2026-09-08** : deux bases de données au lieu d'une, et `api_audit` n'accède
+  plus au référentiel en base mais en HTTP. Voir
+  `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md` — `D`
   - Reste ouvert, hors périmètre de cette décision : la frontière CRUD
     (`api_audit`) vs orchestration (`api_business`) — ex. « créer un audit »
     est-il un simple CRUD ou déclenche-t-il déjà une action métier (crawl) ?

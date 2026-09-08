@@ -1,6 +1,22 @@
 # Séparation `api_regles` / `api_audit`, même base de données
 
-2026-07-28 · retenu
+2026-07-28 · **partiellement révisé le 2026-09-08** — voir
+`2026-09-08-deux-bases-referentiel-audit.md`
+
+> **Précision du 2026-09-08** : le découpage en trois étages
+> (`api_regles` / `api_audit` / `api_business`) décidé ici **tient**. Deux
+> points ont en revanche été révisés : l'option « deux bases séparées »,
+> écartée ci-dessous, a été **retenue** ; et la lecture directe de `regle` en
+> base par `api_audit`, décidée ici, est **abandonnée** au profit d'un accès
+> HTTP via `api_regles`.
+>
+> Ce qui a changé : le motif du refus reposait sur des contraintes FK
+> « migrées et actives » vers `regle.id`. Elles le sont, mais sur des tables
+> **vides** (0 ligne sur les six tables métier, mesuré le 2026-09-08), et
+> seules **deux** FK traversent la frontière. Le côté métier référence
+> désormais le `numero` Opquast — clé métier stable — plutôt que
+> l'auto-incrément privé du référentiel. Raisonnement complet et critères
+> observables : `2026-09-08-deux-bases-referentiel-audit.md`.
 
 ## Contexte
 

@@ -9,6 +9,42 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 3)
+
+- **Décision : deux bases de données (référentiel Opquast / données d'audit)**
+  — voir `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`, qui
+  **révise partiellement** `2026-07-28-separation-api-regles-api-audit.md`
+  (note de renvoi ajoutée sur celle-ci)
+  - Ce qui a fait bouger la décision de juillet : son motif de refus reposait
+    sur des FK « migrées et actives » vers `regle.id`. Mesuré le 2026-09-08 :
+    elles le sont, mais sur **six tables métier vides** (0 ligne), et seules
+    **2 FK** traversent la frontière. Même logique que la migration 0011 —
+    c'est le moment le moins coûteux possible, la fenêtre se referme au
+    premier audit réel
+  - Quatre critères **observables** retenus à la place de l'argument
+    esthétique de départ : frontière contrainte plutôt que promise (la
+    convention `POSTGRES_TEST_DB` avait déjà cédé le 2026-07-25) ;
+    granularité de sauvegarde alignée sur le domaine (`make export_sql` dumpe
+    aujourd'hui toute la base) ; périmètre RGPD borné à une chaîne de
+    connexion ; deux régimes de licence séparés (CC BY-SA vs données de
+    l'auditeur)
+  - La FK perdue est requalifiée : le métier référencera le `numero` Opquast
+    (clé métier stable, déjà le langage des frontières du système) plutôt que
+    l'auto-incrément privé du référentiel
+  - Options écartées et pourquoi : statu quo, deux schémas PostgreSQL dans
+    une base (frontière restée conventionnelle, sauvegarde inchangée), deux
+    instances PostgreSQL (non proportionné à 245 règles et un auditeur)
+- **Conception de la scission écrite** — voir
+  `docs/superpowers/specs/2026-09-08-scission-bases-design.md` : état actuel
+  vérifié, décisions de conception, modifications fichier par fichier et 8
+  étapes de validation (dont la preuve d'isolation : un `SELECT` sur `regle`
+  doit **échouer** depuis la base d'audit). `GET /dense` et la lecture par
+  lot restent hors périmètre, désignés mais non construits — pas de code sans
+  appelant
+- `TODO.md` : nouvelle entrée en tête de « Prochain gros morceau », et l'item
+  « Découpage des responsabilités » mis à jour pour ne plus enregistrer
+  l'ancienne architecture comme définitive
+
 ## 2026-09-08 — Claude Code (Part 2)
 
 - **Passe de cohérence des documents de données** (schéma réel vérifié contre
