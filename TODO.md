@@ -8,7 +8,9 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 ## Prochain gros morceau
 
 - [x] **Scission en deux bases (référentiel / audit)** — décidée le
-  2026-09-08, **plan à 9 tâches exécuté et poussé (CI verte, run 26)** — `D`/`A`
+  2026-09-08, **plan à 9 tâches exécuté, poussé et déployé en staging**
+  (CI dev verte run 26, PR #9 mergée, CD staging run 28 vert,
+  `regles.qualicheck.koabana.fr/version` confirmé) — `D`/`A`
   - Décision et critères observables :
     `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`
     (révise partiellement celle du 2026-07-28)
@@ -43,6 +45,21 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     d'administration (migrations). Non traité dans le chantier de scission :
     aucun service ne consomme encore ce rôle, même principe que `GET /dense`
     et le filtre par numéros — `D`/`A`
+
+- [x] **`GET /regles?q=` — recherche interne, implémentée** (2026-09-08) —
+  `D`/`A`
+  - Étape 1 (ILIKE simple) puis étape 2 (grammaire façon Google, décidée
+    dans la foulée : ET implicite entre mots, `"phrase exacte"`,
+    `-exclusion`, `mot1 OR mot2` chaîné) — les deux poussées et déployées
+    sur staging le jour même (`regles.qualicheck.koabana.fr`), vérifiées en
+    conditions réelles. Détail : `CHANGELOG.md` (2026-09-08, Parts 8-9),
+    parseur testé isolément dans `app/api_regles/recherche.py`.
+  - Bug trouvé et corrigé en cours de route : `contexte` (nullable)
+    propageait `NULL` dans l'`OR` SQL et cassait l'exclusion — corrigé avec
+    `coalesce(champ, "")`.
+  - Suivi Kanboard : cartes #6 et #7 (projet QualiCheck, colonne
+    « Terminé ») — première utilisation de durées estimées/réelles pour
+    calibrer les futures cartes.
 
 - [ ] **Retrieval US2 — mesurer avant d'ajouter des mécanismes** (plan arrêté
   le 2026-09-08) — `D`/`A`
