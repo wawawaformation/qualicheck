@@ -214,7 +214,7 @@ Le numérique représente une part croissante de la consommation énergétique m
 
 QualiCheck applique ce principe à plusieurs niveaux :
 
-- **Modèle d'embedding léger** : All MiniLM L12 v2 (33M paramètres) plutôt qu'un modèle surdimensionné — gratuit, rapide, efficace pour le volume traité
+- **Modèle d'embedding léger** : un petit modèle d'embedding plutôt qu'un modèle surdimensionné. All MiniLM L12 v2 (33M paramètres, gratuit via Infomaniak) était visé, mais sa fenêtre d'entrée de 128 tokens s'est révélée incompatible avec la granularité « 1 règle = 1 chunk » (~319 tokens en moyenne, jusqu'à 952 sur la règle 164). Le pipeline tourne donc sur `text-embedding-3-small` (Azure, phase de développement), qui reste un modèle léger — coût réel mesuré : 0,0016 € pour les 245 règles. Modèle souverain de production à évaluer (BGE Multilingual Gemma2 candidat) — détail : `conception/2_us0/ingestion/L_chunking_embedding_indexation.md`
 - **Infrastructure Infomaniak** : énergie 100% renouvelable, chaleur des serveurs revalorisée
 - **Pas de base vectorielle externe** : pgvector évite de déployer un service supplémentaire (Chroma, Pinecone) et réduit l'empreinte opérationnelle
 
@@ -338,13 +338,14 @@ Les champs suivants sont ajoutés sur la table `regle` pour supporter le pipelin
 
 | Champ | Type | Rôle |
 | --- | --- | --- |
-| `strategie_analyse` | VARCHAR(20) | Méthode de vérification : `statique`, `playwright`, `manuel` |
+| `strategie_analyse` | VARCHAR(32) | Méthode de vérification : `statique`, `playwright`, `vision`, `manuel`, ou une paire (ex. `vision+statique`) |
 | `strategie_justification` | TEXT | Explication du choix produite par le LLM |
-| `strategie_source` | VARCHAR(20) | Origine : `ia_import`, `ia_reingest`, `admin` |
+| `strategie_source` | VARCHAR(32) | Origine : `ia_import`, `ia_reingest`, `admin` |
 | `strategie_score` | DECIMAL(3,2) | Score agrégé des feedbacks terrain (calculé depuis `constat`) |
 | `guide_analyse` | TEXT | Instruction pour l'agent d'audit, générée et révisée à chaque ingestion |
-| `llm_provider` | VARCHAR(20) | Modèle LLM utilisé pour la génération (benchmark) |
-| `embedding` | vector(384) | Vecteur pgvector — All MiniLM L12 v2, 384 dimensions |
+| `llm_model` | VARCHAR(64) | Nom logique du modèle LLM ayant produit la règle (provenance, benchmark) |
+| `prompt_version` | INT | Version du prompt d'enrichissement ayant produit la règle (provenance) |
+| `embedding` | vector(1536) | Vecteur pgvector — `text-embedding-3-small`, dimension native 1536 |
 
 Et sur la table `constat` :
 
@@ -427,7 +428,8 @@ Cette architecture constitue une implémentation des pratiques MLOps attendues e
 | LLM fallback | gpt-oss:20b via Ollama Cloud | Gratuit, limites session/semaine |
 | LLM enrichissement (prod) | Mistral Small via Infomaniak | Souverain, économique, JSON fiable |
 | LLM audit (prod) | Apertus-70B via Infomaniak | Souverain, éthique, conforme AI Act |
-| Embedding | All MiniLM L12 v2 (Infomaniak) | Gratuit, multilingue, 384 dimensions, toutes phases |
+| Embedding (dev) | `text-embedding-3-small` via Azure | 1536 dimensions natives, 8191 tokens d'entrée — compatible avec « 1 règle = 1 chunk » |
+| Embedding (prod) | À évaluer chez Infomaniak | All MiniLM L12 v2 disqualifié (128 tokens d'entrée) ; BGE Multilingual Gemma2 candidat |
 | Déploiement | Docker + docker-compose | Reproductibilité, portabilité |
 
 Le benchmark complet, l'argumentation des choix et le tableau comparatif des modèles sont détaillés dans le document dédié
@@ -480,11 +482,17 @@ FREE_QUESTION_LLM  = "gpt54"        # US2 — question libre
 > passe dans un manifeste versionné, le `.env` ne portant plus qu'un annuaire des
 > modèles joignables.
 
-Le champ `llm_provider` est tracé en base sur chaque règle générée — un benchmark en conditions réelles intégré au projet.
+Le champ `llm_model` est tracé en base sur chaque règle générée, avec `prompt_version` — un benchmark en conditions réelles intégré au projet.
 
-### Embedding — All MiniLM L12 v2 via Infomaniak
+### Embedding — pivot de MiniLM vers `text-embedding-3-small`
 
-Le modèle d'embedding retenu est **All MiniLM L12 v2**, disponible **gratuitement** via Infomaniak AI Services sur toutes les phases du projet. 33M paramètres, 384 dimensions, multilingue, très faible latence. La colonne pgvector reste `vector(384)` du début à la fin — aucune migration de schéma.
+Le modèle initialement retenu était **All MiniLM L12 v2**, gratuit via Infomaniak AI Services (33M paramètres, 384 dimensions, multilingue) — l'hypothèse étant que la colonne pgvector resterait `vector(384)` du début à la fin, sans migration.
+
+**Cette hypothèse n'a pas tenu.** MiniLM plafonne à **128 tokens d'entrée**, incompatible avec la granularité « 1 règle = 1 chunk » actée pour le RAG : mesurés sur les 245 règles réelles, les chunks font ~319 tokens en moyenne et jusqu'à ~952 (règle 164). Tronquer aurait vidé le chunk de sa solution et de son contrôle.
+
+Le pipeline tourne donc sur **`text-embedding-3-small`** via Azure (phase de développement) : 8191 tokens d'entrée, dimension **native 1536** — non tronquée, faute de raison de le faire sur un corpus de 245 lignes. La colonne est passée de `vector(384)` à `vector(1536)` par la **migration 0011**, exécutée au moment le moins coûteux possible : la colonne était encore `NULL` partout, aucune donnée réelle à préserver. Coût réel du calcul des 245 vecteurs : **0,0016 €**.
+
+Le modèle d'embedding souverain de production reste **à évaluer** (BGE Multilingual Gemma2 candidat) ; un changement de modèle impliquerait probablement une nouvelle migration de dimension. Raisonnement complet : `conception/2_us0/ingestion/L_chunking_embedding_indexation.md`.
 
 ### Déploiement — Docker + docker-compose
 
@@ -543,7 +551,7 @@ L'hébergement de production est assuré par Infomaniak (Suisse), dont la politi
 - **20 runs d'ingestion** pendant le développement (tests, ajustements de prompts, re-runs)
 - 20 sessions de test d'audit (6 pages, ~10 règles par session)
 - 20 sessions de dialogue US2 (validation des constats, ~3 échanges par constat)
-- Embedding All MiniLM L12 v2 : **gratuit sur toutes les phases**
+- Embedding : **négligeable, mais plus gratuit** — l'hypothèse « MiniLM gratuit sur toutes les phases » est tombée avec le pivot vers `text-embedding-3-small` (cf. § Embedding). Coût réel mesuré : 0,0016 € pour les 245 règles, soit sous la précision d'affichage des tableaux ci-dessous
 
 ### Sources de financement
 
@@ -572,7 +580,7 @@ cette déduction.
 | Audit US1 — sortants (Apertus) | 20 sessions × 50 échanges × 500 tok. | 500K | 1.25 |
 | Dialogue US2 — entrants | 20 sessions × 10 constats × 3 échanges × 2 000 tok. | 1.2M | 0.84 |
 | Dialogue US2 — sortants (Apertus) | 20 sessions × 30 échanges × 400 tok. | 240K | 0.60 |
-| Embedding (All MiniLM L12 v2) | 68 chunks × 20 runs | — | **Gratuit** |
+| Embedding (`text-embedding-3-small`) | 245 chunks (1 règle = 1 chunk), mesuré | ~78K | **~0.002** |
 | **Coût réel estimé** | | | **CHF ~4.74** |
 
 > La phase de développement (Azure + Ollama Cloud) est à coût nul pour le projet.
@@ -587,7 +595,7 @@ cette déduction.
 | Audit US1 — sortants (Apertus) | 20 sessions × 50 échanges × 500 tok. | 500K | 1.25 |
 | Dialogue US2 — entrants | 20 sessions × 10 constats × 3 échanges × 2 000 tok. | 1.2M | 0.84 |
 | Dialogue US2 — sortants (Apertus) | 20 sessions × 30 échanges × 400 tok. | 240K | 0.60 |
-| Embedding (All MiniLM L12 v2) | — | — | **Gratuit** |
+| Embedding (modèle Infomaniak à évaluer) | 245 chunks, ordre de grandeur mesuré sur Azure | ~78K | **~0.002** |
 | **Coût réel scénario catastrophe** | | | **CHF ~4.74** |
 
 Même dans ce scénario défavorable, le coût reste sous le budget plafond de 20€.

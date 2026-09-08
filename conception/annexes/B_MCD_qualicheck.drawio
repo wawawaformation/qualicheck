@@ -25,13 +25,13 @@
         <mxCell id="df_theme" parent="1" style="ellipse;fillColor=#00CCFF;strokeColor=#0099CC;fontSize=10;html=0;fontStyle=1;" value="DF" vertex="1">
           <mxGeometry height="30" width="44" x="258" y="320" as="geometry" />
         </mxCell>
-        <mxCell id="regle" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" value="regle&#xa;&#xa;id   COUNTER&#xa;numero   INT&#xa;intitule   VARCHAR(512)&#xa;solution   VARCHAR(512)&#xa;controle   VARCHAR(512)" vertex="1">
+        <mxCell id="regle" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" value="regle&#xa;&#xa;id   COUNTER&#xa;numero   INT&#xa;intitule   VARCHAR(255)&#xa;solution   TEXT&#xa;controle   TEXT" vertex="1">
           <mxGeometry height="140" width="220" x="350" y="340" as="geometry" />
         </mxCell>
-        <mxCell id="regle_ia" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE6CC;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=8;verticalAlign=top;" value="— champs générés par QualiCheck —&#xa;&#xa;strategie_analyse   VARCHAR(20)&#xa;strategie_justification   TEXT&#xa;strategie_source   VARCHAR(20)&#xa;strategie_score   DECIMAL(3,2)&#xa;guide_analyse   TEXT&#xa;llm_provider   VARCHAR(20)&#xa;embedding   vector(384)" vertex="1">
+        <mxCell id="regle_ia" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE6CC;strokeColor=#d79b00;fontSize=10;align=left;spacingLeft=8;verticalAlign=top;" value="— champs générés par QualiCheck —&#xa;&#xa;strategie_analyse   VARCHAR(32)&#xa;strategie_justification   TEXT&#xa;strategie_source   VARCHAR(32)&#xa;strategie_score   DECIMAL(3,2)&#xa;guide_analyse   TEXT&#xa;llm_model   VARCHAR(64)&#xa;embedding   vector(1536)" vertex="1">
           <mxGeometry height="150" width="220" x="350" y="150" as="geometry" />
         </mxCell>
-        <mxCell id="objectif" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" value="objectif&#xa;&#xa;id   COUNTER&#xa;objectif   VARCHAR(256)" vertex="1">
+        <mxCell id="objectif" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" value="objectif&#xa;&#xa;id   COUNTER&#xa;objectif   VARCHAR(512)" vertex="1">
           <mxGeometry height="80" width="140" x="40" y="390" as="geometry" />
         </mxCell>
         <mxCell id="phase" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#FFE680;strokeColor=#666666;fontSize=11;fontStyle=1;align=center;verticalAlign=top;" value="phase&#xa;&#xa;id   COUNTER&#xa;phase   VARCHAR(64)" vertex="1">
@@ -73,54 +73,54 @@
         <mxCell id="unicite" parent="1" style="rounded=1;fillColor=#FFFACD;strokeColor=#999900;fontSize=10;html=0;dashed=1;" value="unicité" vertex="1">
           <mxGeometry height="24" width="80" x="1000" y="820" as="geometry" />
         </mxCell>
-        <mxCell id="l_theme_df" edge="1" parent="1" source="theme" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="df_theme">
+        <mxCell id="l_theme_df" edge="1" parent="1" source="theme" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;endArrow=none;" target="df_theme">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_theme_df_src" value="1,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_theme_df"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_df_regle" edge="1" parent="1" source="df_theme" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;endArrow=block;endFill=1;" target="regle">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_df_regle_tgt" value="1,1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_df_regle"><mxGeometry x="0.72" y="0" relative="1" as="geometry"><mxPoint x="-28" y="-22" as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_regle_ia" edge="1" parent="1" source="regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;dashed=1;strokeWidth=2;endArrow=none;" target="regle_ia">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="l_obj_assoc" edge="1" parent="1" source="objectif" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="objectif_regle">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_obj_assoc_src" value="1,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_obj_assoc"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_assoc_regle" edge="1" parent="1" source="objectif_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="regle">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_assoc_regle_tgt" value="1,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_assoc_regle"><mxGeometry x="0.72" y="0" relative="1" as="geometry"><mxPoint x="0" y="20" as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_phase_assoc" edge="1" parent="1" source="phase" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="phase_regle">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_phase_assoc_src" value="1,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_phase_assoc"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_passoc_regle" edge="1" parent="1" source="phase_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="regle">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_passoc_regle_tgt" value="1,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_passoc_regle"><mxGeometry x="0.72" y="0" relative="1" as="geometry"><mxPoint x="-14" y="-12" as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_tag_assoc" edge="1" parent="1" source="tag" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="regle_tag">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_tag_assoc_src" value="1,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_tag_assoc"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_rassoc_regle" edge="1" parent="1" source="regle_tag" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="regle">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="l_user_df" edge="1" parent="1" source="utilisateur" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;" target="df_user">
+        </mxCell><mxCell id="card_l_rassoc_regle_tgt" value="0,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_rassoc_regle"><mxGeometry x="0.72" y="0" relative="1" as="geometry"><mxPoint x="-14" y="12" as="offset"/></mxGeometry></mxCell>
+        <mxCell id="l_user_df" edge="1" parent="1" source="utilisateur" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;endArrow=none;" target="df_user">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="l_df_audit" edge="1" parent="1" source="df_user" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;" target="audit">
+        </mxCell><mxCell id="card_l_user_df_src" value="0,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_user_df"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
+        <mxCell id="l_df_audit" edge="1" parent="1" source="df_user" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;endArrow=block;endFill=1;" target="audit">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_df_audit_tgt" value="1,1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_df_audit"><mxGeometry x="0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_regle_ar" edge="1" parent="1" source="regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="audit_regle">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_regle_ar_src" value="0,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_regle_ar"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_ar_audit" edge="1" parent="1" source="audit_regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="audit">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_ar_audit_tgt" value="0,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_ar_audit"><mxGeometry x="0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_audit_ap" edge="1" parent="1" source="audit" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;endArrow=none;" target="audit_page">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_audit_ap_src" value="0,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_audit_ap"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_page_ap" edge="1" parent="1" source="page" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007733;endArrow=none;" target="audit_page">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_page_ap_src" value="1,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_page_ap"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_ap_constat" edge="1" parent="1" source="audit_page" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="constat">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
+        </mxCell><mxCell id="card_l_ap_constat_src" value="0,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_ap_constat"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_regle_constat" edge="1" parent="1" source="regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#0099CC;endArrow=none;" target="constat">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
@@ -128,11 +128,11 @@
               <mxPoint x="1050" y="730" />
             </Array>
           </mxGeometry>
-        </mxCell>
+        </mxCell><mxCell id="card_l_regle_constat_src" value="0,n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;" vertex="1" connectable="0" parent="l_regle_constat"><mxGeometry x="-0.72" y="0" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry></mxCell>
         <mxCell id="l_unicite" edge="1" parent="1" source="unicite" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#999900;dashed=1;endArrow=none;" target="constat">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="sOOIc7AcAw-XD6byBoH0-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="review_at&lt;div&gt;review_status&lt;/div&gt;&lt;div&gt;review_note&lt;/div&gt;" vertex="1">
+        <mxCell id="sOOIc7AcAw-XD6byBoH0-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="reviewed_at&lt;div&gt;review_status&lt;/div&gt;&lt;div&gt;review_note&lt;/div&gt;" vertex="1">
           <mxGeometry height="60" width="120" x="630" y="510" as="geometry" />
         </mxCell>
         <mxCell id="sOOIc7AcAw-XD6byBoH0-3" edge="1" parent="1" source="regle" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#d79b00;dashed=1;strokeWidth=2;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;" target="sOOIc7AcAw-XD6byBoH0-2">

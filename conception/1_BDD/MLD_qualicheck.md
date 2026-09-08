@@ -19,6 +19,67 @@ numbersections: true
 - **U** : UNIQUE
 - `*` : champ généré par l'agent IA à l'ingestion
 - Les types SERIAL correspondent à COUNTER (auto-incrémenté)
+- **Ce document décrit le schéma réellement en place** (vérifié contre la base
+  le 2026-09-08), pas une cible. En cas de doute, la source de vérité reste les
+  migrations Alembic (`app/migration/versions/`) — voir
+  `docs/agent/03_references_impl.md`. La table `etat_donnees` n'y figure pas :
+  bookkeeping opérationnel, hors modèle métier (cf. `app/CLAUDE.md`)
+
+---
+
+## Cardinalités du MCD
+
+Portées sur `annexes/B_MCD_qualicheck.drawio`. Chacune est établie sur une
+preuve — contrainte de schéma, ou comptage sur les 245 règles réellement
+ingérées — et non sur une intuition de modélisation.
+
+| Relation | Côté | Card. | Sur quoi elle repose |
+| --- | --- | --- | --- |
+| theme — DF — regle | theme | 1,n | Aucun thème sans règle (mesuré) |
+| | regle | 1,1 | `regle.theme_id` NOT NULL |
+| objectif — objectif_regle — regle | objectif | 1,n | Aucun objectif sans règle (mesuré) |
+| | regle | 1,n | Aucune règle sans objectif, jusqu'à 6 (mesuré) |
+| phase — phase_regle — regle | phase | 1,n | Aucune phase sans règle (mesuré) |
+| | regle | 1,n | Aucune règle sans phase, jusqu'à 3 (mesuré) |
+| tag — regle_tag — regle | tag | 1,n | Aucun tag sans règle (mesuré) |
+| | regle | **0,n** | **64 des 245 règles n'ont aucun tag** — vérifié à la source, pas seulement en base (voir ci-dessous) |
+| utilisateur — DF — audit | utilisateur | 0,n | Un compte peut n'avoir lancé aucun audit |
+| | audit | 1,1 | `audit.utilisateur_id` NOT NULL |
+| regle — audit_regle — audit | regle | 0,n | Une règle peut n'être retenue dans aucun audit |
+| | audit | 0,n | Cycle de vie : `statut = en_cours` avant sélection des règles |
+| audit — audit_page — page | audit | 0,n | Cycle de vie : audit créé avant le crawl |
+| | page | 1,n | Une page n'existe que découverte par au moins un crawl |
+| audit_page — constat — regle | audit_page | 0,n | Une page retenue peut n'avoir encore aucun constat |
+| | regle | 0,n | Une règle peut n'avoir aucun constat |
+
+**Sur le `0,n` des tags — pourquoi la mesure locale ne suffisait pas.** Constater
+64 règles sans tag en base ne dit pas si c'est une règle métier ou un trou
+d'ingestion : les deux produisent le même comptage. La vérification a donc été
+refaite contre l'API Opquast (`metadata.Tags`) pour les 245 règles : **aucun
+écart** entre la source et la base, et les 64 règles concernées sont exactement
+les mêmes de part et d'autre (règles 2, 6, 9, 10, 11, 13, 28, 31, 32, 33…). Le
+`0,n` est donc bien une propriété du référentiel, et non un défaut du pipeline
+— lequel se trouve validé au passage sur la fidélité des tags.
+
+L'explication tient à la nature des deux champs : une règle porte toujours
+exactement une **Thématique** (d'où `theme` en `1,1`), tandis que les **Tags**
+forment un vocabulaire contrôlé de 6 valeurs transverses (`Accessibilité`,
+`Basics`, `SEO`, `Écoconception`, `Privacy`, `Mobile`) qu'une règle peut
+légitimement ne pas porter.
+
+Deux remarques de notation, à trancher si le MCD est présenté tel quel :
+
+- Les deux liens **DF** (`theme → regle`, `utilisateur → audit`) portent une
+  flèche vers l'entité dépendante. C'est un écart assumé à la notation Merise
+  stricte (traits simples), retenu parce qu'il rend le sens de la dépendance
+  fonctionnelle immédiatement lisible sur une relation 1-n sans table
+  d'association. Les relations passant par une table d'association n'en
+  portent aucune.
+- `constat` est rattaché à `audit_page`, qui est elle-même une association.
+  En Merise strict, une association relie des entités. La clé réelle
+  (`PK (audit_id, page_id, regle_id)`) en fait une association **ternaire**
+  entre `audit`, `page` et `regle` — la représenter ainsi supposerait de
+  redessiner cette partie du schéma, non fait à ce stade.
 
 ---
 
@@ -42,13 +103,14 @@ regle (
   id                      SERIAL          PK, NN
   theme_id                INT             FK → theme.id, NN
   numero                  INT             NN, U
-  intitule                VARCHAR(512)    NN
-  solution                VARCHAR(512)    NN
-  controle                VARCHAR(512)    NN
+  intitule                VARCHAR(255)    NN        -- source API, longueur contractuelle (max réel 167)
+  solution                TEXT            NN        -- source scraping : voir docs/problemes_rencontres/ingestion/2_schema_text_columns.md
+  controle                TEXT            NN        -- source scraping : idem
+  contexte                TEXT                      -- texte explicatif Opquast (absent sur ~la moitié des règles)
   -- Champs générés par l'agent LLM à l'ingestion
-  strategie_analyse *     VARCHAR(20)     NN        -- statique | playwright | manuel
+  strategie_analyse *     VARCHAR(32)     NN        -- statique | playwright | vision | manuel, ou une paire (ex. vision+statique)
   strategie_justification * TEXT
-  strategie_source *      VARCHAR(20)     NN        -- ia_import | ia_reingest | admin
+  strategie_source *      VARCHAR(32)     NN        -- ia_import | ia_reingest | admin
   strategie_score *       DECIMAL(3,2)              -- calculé depuis constat.validation_humaine
   guide_analyse *         TEXT            NN
   llm_model *             VARCHAR(64)     -- nom logique du modèle (manifest.yml), pas un nom de déploiement
@@ -58,7 +120,7 @@ regle (
   reviewed_at *           TIMESTAMP                 -- NULL = pas encore revue manuellement
   review_status *         VARCHAR(16)               -- valide | a_revoir
   review_note *           TEXT                      -- notes de revue, matière pour un futur script de réécriture ciblée
-  embedding *             vector(384)               -- All MiniLM L12 v2, index HNSW
+  embedding *             vector(1536)              -- text-embedding-3-small (dimension native), index HNSW
 )
 ```
 
@@ -72,7 +134,7 @@ un auditeur qualité prononcerait-il ce mot en parlant de son métier ? Détail 
 ```
 objectif (
   id        SERIAL          PK, NN
-  objectif  VARCHAR(256)    NN
+  objectif  VARCHAR(512)    NN
 )
 ```
 
@@ -207,8 +269,10 @@ constat (
   preuve             VARCHAR(512)
   validation_humaine BOOLEAN               -- true | false | null (non traité)
   feedback_auditeur  TEXT                  -- commentaire qualitatif — post-MVP : alimente strategie_score
-  PK (audit_id, page_id, regle_id)
-  U  (audit_id, page_id, regle_id)        -- unicité composite (cf. MCD)
+  PK (audit_id, page_id, regle_id)        -- porte à elle seule l'unicité composite
+                                          -- notée sur le MCD : un seul constat par
+                                          -- (audit, page, règle). Pas de contrainte
+                                          -- UNIQUE séparée en base, elle serait redondante
 )
 ```
 

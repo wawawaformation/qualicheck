@@ -9,6 +9,75 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 2)
+
+- **Passe de cohérence des documents de données** (schéma réel vérifié contre
+  la base, 245 règles en place) — voir `conception/conception.md`,
+  `conception/1_BDD/MLD_qualicheck.md`,
+  `conception/1_BDD/A_dictionnaire_donnees_qualicheck.xlsx`,
+  `conception/annexes/B_MCD_qualicheck.drawio` + `.png`,
+  `docs/problemes_rencontres/ingestion/2_schema_text_columns.md`,
+  `app/ingestion/manifest.yml`
+  - **Récit embedding corrigé** : `conception.md` affirmait encore All MiniLM
+    L12 v2 / `vector(384)` / « gratuit sur toutes les phases » / « aucune
+    migration de schéma ». Remplacé par le pivot réel et sa cause mesurée
+    (MiniLM plafonne à 128 tokens d'entrée vs ~319 tokens de chunk en
+    moyenne), `text-embedding-3-small` en 1536 natif, migration 0011, coût
+    réel 0,0016 €, modèle souverain de production à évaluer
+  - **Lignes de budget** : l'embedding n'est plus compté comme gratuit
+    (~0.002 CHF mesuré, sous la précision d'affichage — totaux inchangés)
+  - **Types et tailles alignés sur le réel** dans MLD, dictionnaire et MCD :
+    `intitule` VARCHAR(255), `solution`/`controle` TEXT, `objectif`
+    VARCHAR(512), `strategie_analyse`/`strategie_source` VARCHAR(32),
+    `llm_provider` → `llm_model` VARCHAR(64), `review_at` → `reviewed_at`,
+    `vector(384)` → `vector(1536)` ; ajout de la colonne `contexte`
+    (migration 0006), absente du MLD
+  - **Notation Merise préservée** : `COUNTER`/`LOGICAL`/`DATETIME` laissés
+    tels quels dans le MCD — ce sont les types conceptuels corrects, la
+    correspondance vers SERIAL/BOOLEAN est déjà documentée dans les
+    conventions du MLD. `strategie_score DECIMAL(3,2)` vérifié conforme au
+    réel (`numeric(3,2)`), donc inchangé
+  - **`2_schema_text_columns.md` complété** : le document s'arrêtait sur la
+    migration 0005 et présentait comme « choisi » un calibrage abandonné
+    depuis. Suite documentée (0007 puis 0008) avec sa cause réelle — les
+    maxima avaient été mesurés sur des données tronquées par deux bugs de
+    scraping, et `TEXT`/`VARCHAR(n)` ont de toute façon le même coût sous
+    PostgreSQL. Principe « recalibrer à la baisse » révisé en conséquence
+  - **16 cardinalités ajoutées au MCD**, chacune établie sur une preuve
+    (contrainte NOT NULL ou comptage sur les 245 règles) et non sur une
+    intuition — dont une surprise : **64 des 245 règles n'ont aucun tag**,
+    donc `regle — regle_tag` est en `0,n` et pas `1,n`. Ce point a été
+    contre-vérifié contre l'API Opquast (`metadata.Tags`) sur les 245 règles,
+    une mesure en base ne permettant pas de distinguer une règle métier d'un
+    trou d'ingestion : **aucun écart** source/base, mêmes 64 règles de part
+    et d'autre — ce qui valide au passage la fidélité du pipeline sur les
+    tags. Table justificative
+    ajoutée au MLD (§ Cardinalités du MCD), avec deux écarts de notation
+    assumés et documentés : flèche conservée sur les deux liens DF (1-n sans
+    table d'association), et `constat` rattaché à `audit_page` alors que sa
+    clé réelle en fait une association ternaire
+  - **PNG du MCD régénéré** (drawio headless, 1504x807 comme l'origine) et
+    contrôlé visuellement à deux reprises — le premier rendu superposait
+    `1,1` et `1,n` en « 11,n » sur le bord de `regle`, corrigé par décalage
+    des libellés ; classeur xlsx revalidé par ouverture réelle (LibreOffice
+    headless), copies de sauvegarde dans `tmp/backup_dico/`
+  - Référence cassée corrigée : `docs/jury/decisions/` → `jury/decisions/`
+    dans `manifest.yml` (celles de `docs/superpowers/**` sont des archives de
+    session, laissées telles quelles)
+- **Plan « Retrieval US2 — mesurer avant d'ajouter des mécanismes » écrit** —
+  voir `TODO.md` § Prochain gros morceau : 5 étapes ordonnées (passe de
+  cohérence faite, décision jury, cas d'acceptance durs = amorce de spec US2,
+  mesure `recall@k`, puis action seulement sur échec mesuré), la liste
+  explicite de ce qu'il ne faut **pas** construire, et les preuves chiffrées
+  qui justifient cet ordre
+- **Deux items de `TODO.md` corrigés au passage** — voir `TODO.md`
+  - `contexte` vide en base : **périmé**, le champ est renseigné sur 245/245
+    règles (294 car. en moyenne), donc bien présent dans le chunk vectorisé
+  - Règle sur les flèches du MCD : l'item du 2026-07-23 les déclarait
+    incorrectes, l'arbitrage du 2026-09-08 les **accepte sur les liens DF**
+    (1-n sans table d'association). Révision tracée explicitement pour éviter
+    qu'une prochaine session ne les retire à nouveau
+
 ## 2026-09-08 — Claude Code
 
 - **Documentation de l'installation réelle de Kanboard et Gitea sur `cloclo`**

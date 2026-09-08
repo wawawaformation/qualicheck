@@ -35,5 +35,5 @@ rag_acceptance:
   top_n: 3
   # Proportion minimale de cas réussis pour que la suite soit globalement
   # acceptable — le rappel imparfait du RAG est déjà assumé, voir
-  # docs/jury/decisions/2026-07-25-rag-us2-petit-corpus.md
+  # jury/decisions/2026-07-25-rag-us2-petit-corpus.md
   taux_reussite_minimum: 0.8

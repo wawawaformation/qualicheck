@@ -201,6 +201,34 @@ intitule               167        255         88 ✓
 
 **Résultat** : ✓ Stockage de 245 règles sans erreur avec le schéma calibré.
 
+## Suite — les limites calibrées n'ont pas tenu (migrations 0007 et 0008)
+
+> Ajouté le 2026-09-08. Ce document s'arrêtait sur le résultat de la migration
+> 0005 ; deux migrations ultérieures ont invalidé le calibrage des colonnes
+> issues du scraping. L'« Approche 3 — Hybride » ci-dessus n'est donc plus le
+> schéma en place pour `solution`/`controle`.
+
+**Migration 0007 — `solution`/`controle` : `VARCHAR(1024)` → `VARCHAR(2048)`.**
+Les maxima mesurés plus haut (solution 569, controle 573) avaient été relevés
+sur des données **elles-mêmes tronquées par deux bugs de scraping** (pied de
+page Opquast capturé à la place du contenu sur 43 règles ; contenu en `<ul>`
+ignoré sur ~34 règles — plus de 25 % du corpus). Une fois `scrape_rule()`
+corrigée, le contenu réellement complet dépasse l'ancienne limite : solution
+1880, controle 1156 sur les 245 règles.
+
+**Migration 0008 — `solution`/`controle` : `VARCHAR(2048)` → `TEXT`.** Décidée
+en revue de branche, sur deux constats : éviter un troisième recalibrage si
+Opquast allonge encore son contenu, et surtout **PostgreSQL stocke `TEXT` et
+`VARCHAR(n)` de façon identique** — la limite n'apportait aucun gain de
+stockage ni de performance, seulement un mode de défaillance supplémentaire.
+
+**Ce qui a résisté au recalibrage** : les champs issus de l'**API** Opquast
+(`intitule` VARCHAR(255), `objectif` VARCHAR(512)) sont toujours en place
+aujourd'hui. Seuls les champs issus du **scraping** ont dû passer en `TEXT`.
+La distinction utile n'est donc pas « données métier stables vs LLM
+imprévisible » comme énoncé plus haut, mais **source contractuelle (API) vs
+source extraite d'une page HTML**.
+
 ## Résumé du processus — De l'erreur à la donnée
 
 **Ce qui a permis une solution robuste** :
@@ -215,9 +243,13 @@ intitule               167        255         88 ✓
 
 ## Principe retenu pour la suite
 
-Tout dimensionnement de colonne doit être basé sur une **observation des données réelles**, pas sur une intuition de "ce qui devrait suffire" :
+> Révisé le 2026-09-08. La version initiale de ce principe recommandait le
+> recalibrage à la baisse — que la suite (migrations 0007 puis 0008) a
+> invalidé pour les colonnes issues du scraping.
 
-1. Utiliser d'abord `TEXT` pour les colonnes au source incertaine (scraping, enrichissement LLM)
-2. Une fois les données réelles peuplées, mesurer les max réels
-3. Recalibrer à la baisse les colonnes dont la limite réelle est bien inférieure à `TEXT`
-4. Documenter ici la décision et les chiffres exacts qui l'ont motivée
+Tout dimensionnement de colonne doit être basé sur une **observation des données réelles**, pas sur une intuition de "ce qui devrait suffire" — mais l'observation ne suffit pas, encore faut-il qu'elle porte sur des données fiables et que la limite serve à quelque chose :
+
+1. Utiliser `TEXT` pour toute colonne dont la source n'est pas contractuelle (scraping, enrichissement LLM) — et **y rester**. Sous PostgreSQL, `TEXT` et `VARCHAR(n)` ont le même coût de stockage : une limite ne se justifie que si elle exprime une **contrainte métier** réelle, pas une longueur observée.
+2. Ne calibrer une colonne que sur des données dont la **chaîne d'acquisition a elle-même été validée**. Un maximum mesuré sur des données tronquées par un bug produit une limite fausse qui a toutes les apparences du fondé — c'est exactement ce qui s'est passé en migration 0005.
+3. Réserver le `VARCHAR(n)` calibré aux champs issus d'une source contractuelle (API), où la longueur est stable et l'écart à la limite vérifiable — ceux-là ont tenu.
+4. Documenter ici la décision, les chiffres exacts qui l'ont motivée, **et ses révisions ultérieures** : ce document a présenté un calibrage déjà abandonné par le code pendant plusieurs semaines.

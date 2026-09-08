@@ -7,6 +7,72 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Prochain gros morceau
 
+- [ ] **Retrieval US2 — mesurer avant d'ajouter des mécanismes** (plan arrêté
+  le 2026-09-08) — `D`/`A`
+  - **Déclencheur** : une fiche d'architecture RAG issue d'une conversation
+    avec Gemini (parent-child retrieval, FTS hybride + RRF, décomposition de
+    la requête, `doc_type` multi-sources). Auditée contre le schéma et les
+    données réelles avant toute décision.
+  - **Ce que l'audit a établi** : le mécanisme de dilution décrit est réel
+    (l'intitulé ne pèse que ~5 % du texte vectorisé — 77 car. sur ~1 620),
+    mais le remède proposé est **auto-réfutant** : les termes techniques
+    qu'il prétend capter ne vivent pas dans les champs qu'il indexe (ARIA :
+    0 occurrence en `intitule`, 15 en `solution`, 10 en `controle`, 32 en
+    `guide_analyse` ; « SIRET » uniquement en `guide_analyse` ; `alt=` : 0 en
+    `intitule`). Détail : `jury/decisions/` (étape A ci-dessous).
+  - [x] **Étape 0+1 — passe de cohérence des documents de données**
+    (2026-09-08) : récit embedding, types/tailles réels, cardinalités du MCD —
+    voir `CHANGELOG.md` — `A`
+  - [ ] **Étape A — décision jury « mesurer avant d'ajouter »** (~1 h, 0 €) — `A`
+    - Écarter la variante proposée **sur mesure** ; garder l'hybride *en
+      général* ouvert, avec une condition de réouverture testable (rappel
+      insuffisant sur la famille « termes exacts ») ; nommer la source
+      (Gemini) et l'audit qui l'a réfutée — c'est la preuve de compétence
+      attendue, pas une gêne à masquer.
+    - Ne **pas** y écrire « pas de FTS / pas de RRF » au fond : ça exige la
+      mesure de l'étape 3, sinon c'est un document qui ressemble à une
+      décision et repose sur une conversation avec un LLM.
+  - [ ] **Étape 2 — cas d'acceptance durs = amorce de spec US2** — `D`/`A`
+    - Pourquoi ce n'est pas de l'outillage : les 17 cas actuels sont des
+      paraphrases d'intitulés, à cible unique, sujets disjoints — le 100 %
+      obtenu ne mesure pas ce dont on débat. Écrire ces cas, c'est spécifier
+      le comportement attendu d'US2 en BDD ; c'est le chemin critique.
+    - 4 familles : vocabulaire vivant uniquement dans
+      `guide_analyse`/`controle` (ARIA, SIRET, `alt=`) ; questions
+      multi-sujets (seul vrai cas d'usage du découpage LLM) ; questions
+      méthodologiques sans réponse dans le corpus (teste le « je ne sais
+      pas » honnête, cf. `IDEA.md`) ; règles voisines concurrentes (teste la
+      précision, que le recall@3 à cible unique ne mesure jamais).
+    - **Prérequis de format** : le JSONL actuel
+      `{question, numero_regle_attendue}` ne sait exprimer ni plusieurs
+      cibles acceptables, ni « aucune réponse attendue ». À étendre avant
+      d'écrire les cas.
+    - Demande le jugement métier de David (même schéma que les 17 initiaux :
+      proposition puis validation).
+  - [ ] **Étape 3 — mesurer `recall@3/5/10/15`, pipeline inchangé** (quelques
+    centimes) — `A`
+    - Il y a une vraie chance que ça referme le débat : si le rappel couvre
+      les cas durs, la fiche devient sans objet, mesure à l'appui.
+  - [ ] **Étape 4 — agir uniquement sur échec mesuré**, dans cet ordre, en
+    s'arrêtant dès que ça passe — `A`
+    1. augmenter `top_n` (`manifest.yml`, zéro code) ;
+    2. A/B des variantes de chunk (complet / sans `guide_analyse` /
+       intitulé+tags) — `embed_rules.py` recalcule les 245 pour 0,0016 € par
+       variante, séquentiellement, sans colonne supplémentaire ;
+    3. FTS hybride en dernier recours, et alors sur le **texte complet** de
+       la règle — pas sur `intitule/objectifs/tags`, où les termes exacts ne
+       sont pas.
+  - **Ne pas construire** : RRF, décomposition de sous-requêtes, HyDE,
+    reformulation LLM, `doc_type`/écosystème VPTCS. Aucun n'est démontrable
+    comme amélioration avant l'étape 3 ; l'écosystème Opquast est un projet
+    d'acquisition de corpus (sources, droits, chunking d'une autre nature) et
+    reste dans `IDEA.md`, hors périmètre certification.
+  - **Détail technique à ne pas oublier** : `objectifs` n'est pas une colonne
+    de `regle` (table `objectif` + `objectif_regle`), et
+    `build_chunk_text()` ne les reçoit pas. La proposition « vectoriser
+    intitulé + objectifs + thématique + tags » demande une jointure
+    supplémentaire, pas une modification de concaténation.
+
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
   agile, Gitea auto-hébergé sur `cloclo` en remplacement de GitHub pour le
@@ -100,11 +166,12 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     (`api_audit`) vs orchestration (`api_business`) — ex. « créer un audit »
     est-il un simple CRUD ou déclenche-t-il déjà une action métier (crawl) ?
     À trancher avec la spec US1, pas avant.
-- [ ] **Champ `contexte` vide en base** — `NULL` sur les 245 règles alors que le
-  correctif de code existe (migration 0006 et correction du round-trip du
-  2026-07-26) : aucune ingestion réelle ne l'a alimenté depuis. L'API données
-  l'expose donc systématiquement vide. À arbitrer : ré-ingestion ciblée du seul
-  champ `contexte` (scraping, sans appel LLM) ou statu quo — `D`
+- [x] **Champ `contexte` vide en base — résolu, constaté le 2026-09-08** :
+  `contexte` est aujourd'hui renseigné sur **245/245 règles** (294 caractères
+  en moyenne), une ingestion réelle l'a donc alimenté depuis la rédaction de
+  cet item. Aucune ré-ingestion ciblée nécessaire. Conséquence pour le RAG :
+  `build_chunk_text()` inclut bien la section `Contexte` dans le chunk
+  vectorisé — `A`
 - [ ] **Licence du code et des étages applicatif/présentation** — non arrêtée.
   L'étage données est sous licence libre (CC BY-SA 4.0 s'imposant au jeu de
   données par partage à l'identique — décision actée
@@ -173,6 +240,31 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   du MCD est sans flèche). Le doublon dans `conception/2_us0/ingestion/` — identique
   avant correctif, aurait divergé sinon — a été supprimé, non référencé par aucun
   document — `A` (2026-07-23)
+- [x] **Règle sur les flèches du MCD — révisée le 2026-09-08, remplace l'item
+  ci-dessus** : une flèche est **acceptée sur les liens DF** (dépendance
+  fonctionnelle 1-n sans table d'association), parce qu'elle rend le sens de
+  la dépendance immédiatement lisible — arbitrage de David. Les relations
+  passant par une table d'association restent sans flèche. État appliqué :
+  une flèche par DF, orientée vers l'entité dépendante (`theme → regle`,
+  `utilisateur → audit`) ; les flèches par défaut de draw.io sur les branches
+  entrantes (`theme → DF`, `utilisateur → DF`) ont été explicitement
+  neutralisées. **Ne pas « re-corriger » en retirant ces flèches** — `D`/`A`
+- [ ] **MCD — `constat` rattaché à une association** : `constat` pend de
+  `audit_page`, qui est elle-même une association. En Merise strict, une
+  association relie des entités ; sa clé réelle
+  (`PK (audit_id, page_id, regle_id)`) en fait une association **ternaire**
+  entre `audit`, `page` et `regle`. La représenter correctement suppose de
+  redessiner cette partie du schéma. Écart documenté dans
+  `conception/1_BDD/MLD_qualicheck.md` (§ Cardinalités du MCD). À trancher si
+  le MCD passe devant le jury : c'est la remarque la plus probable après les
+  cardinalités — `D`
+- [ ] **MCD et dictionnaire — 3 colonnes réelles absentes** : `contexte`
+  (migration 0006), `created_at` et `updated_at` (migration 0009) ne figurent
+  ni dans `B_MCD_qualicheck.drawio` ni dans le dictionnaire xlsx (elles sont
+  au MLD). Non ajoutées lors de la passe du 2026-09-08 : les boîtes du MCD
+  sont dimensionnées au plus juste (140 px pour 5 lignes) et insérer une
+  ligne dans le xlsx décale les références de cellules — deux gestes qui
+  changent la mise en page, à valider visuellement — `D`/`A`
 - [x] **Références `annexes/*.jpg` → `.png`** — `conception.md` et
   `F_choix_llm.md` passés en `.png` (`sed 's/jpg/png/g'`, 2026-07-23), cohérent
   avec `markdown-pandoc` (« format PNG ou SVG recommandé »). Doublon
