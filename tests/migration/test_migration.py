@@ -45,7 +45,7 @@ def test_extension_vector_activee(conn):
 TABLES_ATTENDUES = [
     "theme", "regle", "objectif", "phase", "tag",
     "objectif_regle", "phase_regle", "regle_tag",
-    "utilisateur", "audit", "page", "audit_page", "audit_regle", "constat",
+    "etat_donnees",
 ]
 
 def test_toutes_les_tables_existent(conn):
@@ -73,28 +73,6 @@ def test_index_hnsw_regle_embedding(conn):
         """)
         count = cur.fetchone()[0]
     assert count == 1, "Index HNSW absent sur regle.embedding"
-
-
-def test_index_btree_constat_audit_id(conn):
-    """L'index B-tree ix_constat_audit_id doit exister."""
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT COUNT(*) FROM pg_indexes
-            WHERE indexname = 'ix_constat_audit_id';
-        """)
-        count = cur.fetchone()[0]
-    assert count == 1, "Index ix_constat_audit_id absent"
-
-
-def test_index_btree_audit_regle_audit_id(conn):
-    """L'index B-tree ix_audit_regle_audit_id doit exister."""
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT COUNT(*) FROM pg_indexes
-            WHERE indexname = 'ix_audit_regle_audit_id';
-        """)
-        count = cur.fetchone()[0]
-    assert count == 1, "Index ix_audit_regle_audit_id absent"
 
 
 # -- Contraintes NOT NULL critiques ------------------------------------------
@@ -160,21 +138,6 @@ def test_colonne_llm_provider_absente(conn):
     assert count == 0, "llm_provider encore présente — devrait être renommée llm_model"
 
 
-def test_colonnes_not_null_audit(conn):
-    """Les colonnes critiques de audit doivent être NOT NULL."""
-    colonnes_nn = ["utilisateur_id", "url_depart", "statut", "date_creation"]
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT column_name, is_nullable
-            FROM information_schema.columns
-            WHERE table_name = 'audit'
-            AND column_name = ANY(%s);
-        """, (colonnes_nn,))
-        rows = {row[0]: row[1] for row in cur.fetchall()}
-    nullable = [col for col in colonnes_nn if rows.get(col) != "NO"]
-    assert not nullable, f"Colonnes audit incorrectement nullable : {nullable}"
-
-
 # -- Contraintes UNIQUE -------------------------------------------------------
 
 def test_contrainte_unique_intitule_regle(conn):
@@ -190,44 +153,6 @@ def test_contrainte_unique_intitule_regle(conn):
         """)
         count = cur.fetchone()[0]
     assert count == 1, "Contrainte UNIQUE absente sur regle.intitule"
-
-
-# -- Clés primaires composites -----------------------------------------------
-
-def test_pk_composite_constat(conn):
-    """La table constat doit avoir une PK composite (audit_id, page_id, regle_id)."""
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT COUNT(*) FROM information_schema.table_constraints
-            WHERE table_name = 'constat'
-            AND constraint_type = 'PRIMARY KEY';
-        """)
-        count = cur.fetchone()[0]
-    assert count == 1, "PK absente sur constat"
-
-
-def test_pk_composite_audit_page(conn):
-    """La table audit_page doit avoir une PK composite (audit_id, page_id)."""
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT COUNT(*) FROM information_schema.table_constraints
-            WHERE table_name = 'audit_page'
-            AND constraint_type = 'PRIMARY KEY';
-        """)
-        count = cur.fetchone()[0]
-    assert count == 1, "PK absente sur audit_page"
-
-
-def test_pk_composite_audit_regle(conn):
-    """La table audit_regle doit avoir une PK composite (audit_id, regle_id)."""
-    with conn.cursor() as cur:
-        cur.execute("""
-            SELECT COUNT(*) FROM information_schema.table_constraints
-            WHERE table_name = 'audit_regle'
-            AND constraint_type = 'PRIMARY KEY';
-        """)
-        count = cur.fetchone()[0]
-    assert count == 1, "PK absente sur audit_regle"
 
 
 def test_colonne_embedding_dimension_1536(conn):
@@ -275,3 +200,34 @@ def test_table_etat_donnees(conn):
         contraintes = {row[0] for row in cur.fetchall()}
     assert "etat_donnees_singleton" in contraintes
     assert "etat_donnees_type_operation_check" in contraintes
+
+
+# -- Isolation du domaine audit -----------------------------------------------
+
+TABLES_DU_DOMAINE_AUDIT = [
+    "utilisateur", "audit", "page", "audit_page", "audit_regle", "constat",
+]
+
+
+def test_le_domaine_audit_est_absent_de_cette_base(conn):
+    """Preuve d'isolation : les tables métier ont quitté le référentiel."""
+    with conn.cursor() as curseur:
+        curseur.execute(
+            "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+        )
+        tables = {ligne[0] for ligne in curseur.fetchall()}
+
+    restantes = set(TABLES_DU_DOMAINE_AUDIT) & tables
+    assert not restantes, f"Tables métier encore présentes : {restantes}"
+
+
+def test_les_245_regles_sont_intactes(conn):
+    """Garde-fou : aucune migration de ce chantier ne touche aux données."""
+    with conn.cursor() as curseur:
+        curseur.execute(
+            "SELECT count(*), count(*) FILTER (WHERE embedding IS NOT NULL) FROM regle;"
+        )
+        total, vectorisees = curseur.fetchone()
+
+    assert total == 245
+    assert vectorisees == 245
