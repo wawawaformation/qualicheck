@@ -101,12 +101,13 @@ def lister_regles(
     session: Session = Depends(get_session_referentiel),
     outil: list[OutilFiltre] = Query(default=[]),
     review_status: list[ReviewStatusFiltre] = Query(default=[]),
+    q: str | None = Query(default=None),
 ) -> list[RegleRead]:
     """
     Les règles enrichies, triées par numéro.
 
     Sans paramètre : les 245 règles (~500 kB). Aucune pagination — le corpus
-    Opquast est figé. Les deux filtres sont des OU en interne, un ET entre eux.
+    Opquast est figé. Les trois filtres sont des OU en interne, un ET entre eux.
     """
     requete = (
         session.query(Regle, Theme.theme)
@@ -131,6 +132,21 @@ def lister_regles(
             for statut in review_status
         ]
         requete = requete.filter(or_(*conditions))
+
+    if q:
+        # Entrée libre, pas un Enum comme outil/review_status : autoescape=True
+        # échappe % et _ pour que la saisie utilisateur ne se comporte pas comme
+        # un joker ILIKE. icontains() plutôt que contains() : recherche interne
+        # insensible à la casse.
+        requete = requete.filter(
+            or_(
+                Regle.intitule.icontains(q, autoescape=True),
+                Regle.contexte.icontains(q, autoescape=True),
+                Regle.solution.icontains(q, autoescape=True),
+                Regle.controle.icontains(q, autoescape=True),
+                Regle.guide_analyse.icontains(q, autoescape=True),
+            )
+        )
 
     return _charger_regles(session, requete)
 

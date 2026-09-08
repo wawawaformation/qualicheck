@@ -217,6 +217,45 @@ def test_les_deux_criteres_se_combinent_en_et(client, jeu_de_regles):
     assert numeros == [2, 3]
 
 
+def test_recherche_q_filtre_sur_lintitule(client, jeu_de_regles):
+    numeros = [r["numero"] for r in client.get("/regles?q=playwright").json()]
+
+    assert numeros == [2]
+
+
+def test_recherche_q_filtre_sur_le_guide_analyse(client, jeu_de_regles):
+    numeros = [r["numero"] for r in client.get("/regles?q=Guide 3").json()]
+
+    assert numeros == [3]
+
+
+def test_recherche_q_est_insensible_a_la_casse(client, jeu_de_regles):
+    numeros = [r["numero"] for r in client.get("/regles?q=PLAYWRIGHT").json()]
+
+    assert numeros == [2]
+
+
+def test_recherche_q_se_combine_avec_outil_en_et(client, jeu_de_regles):
+    numeros = [
+        r["numero"] for r in client.get("/regles?q=Règle&outil=playwright").json()
+    ]
+
+    assert numeros == [2, 3]
+
+
+def test_recherche_q_echappe_les_jokers_like(client, jeu_de_regles):
+    """Sans échappement, q=%% matcherait tout : la preuve que autoescape=True agit."""
+    numeros = [r["numero"] for r in client.get("/regles?q=%25%25").json()]
+
+    assert numeros == []
+
+
+def test_recherche_q_vide_ne_filtre_rien(client, jeu_de_regles):
+    numeros = [r["numero"] for r in client.get("/regles?q=").json()]
+
+    assert numeros == [1, 2, 3, 4]
+
+
 def test_valeur_de_filtre_hors_enumeration_est_refusee(client, jeu_de_regles):
     assert client.get("/regles?outil=valeurinvalide").status_code == 422
 
