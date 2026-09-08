@@ -4,11 +4,12 @@ import logging
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import or_
+from sqlalchemy import func, not_, or_
 from sqlalchemy.orm import Query as OrmQuery
 from sqlalchemy.orm import Session
 
 from app.api_regles.auth import require_bearer
+from app.api_regles.recherche import parse_recherche
 from app.api_regles.schemas import OutilFiltre, ReglePatch, RegleRead, ReviewStatusFiltre
 from app.db import get_session_referentiel
 from app.models.referentiel import (
@@ -25,6 +26,33 @@ from app.models.referentiel import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/regles", tags=["regles"])
+
+# Champs interrogés par q= — pas strategie_analyse/strategie_source, couverts
+# par le filtre outil dédié.
+CHAMPS_RECHERCHABLES = (
+    Regle.intitule,
+    Regle.contexte,
+    Regle.solution,
+    Regle.controle,
+    Regle.guide_analyse,
+)
+
+
+def _terme_matche_un_champ(terme: str):
+    """
+    OR sur les 5 champs recherchables, insensible à la casse, entrée échappée.
+
+    coalesce(champ, "") : contexte est nullable. Sans lui, NULL se propage dans
+    l'OR (ni vrai ni faux) — anodin pour la correspondance positive (un seul
+    champ vrai suffit), mais casse not_() : NOT(OR(False, NULL, ...)) vaut
+    NULL, exclu par WHERE au lieu d'être conservé par l'exclusion.
+    """
+    return or_(
+        *[
+            func.coalesce(champ, "").icontains(terme, autoescape=True)
+            for champ in CHAMPS_RECHERCHABLES
+        ]
+    )
 
 
 def _libelles_par_regle(
@@ -134,19 +162,18 @@ def lister_regles(
         requete = requete.filter(or_(*conditions))
 
     if q:
-        # Entrée libre, pas un Enum comme outil/review_status : autoescape=True
-        # échappe % et _ pour que la saisie utilisateur ne se comporte pas comme
-        # un joker ILIKE. icontains() plutôt que contains() : recherche interne
-        # insensible à la casse.
-        requete = requete.filter(
-            or_(
-                Regle.intitule.icontains(q, autoescape=True),
-                Regle.contexte.icontains(q, autoescape=True),
-                Regle.solution.icontains(q, autoescape=True),
-                Regle.controle.icontains(q, autoescape=True),
-                Regle.guide_analyse.icontains(q, autoescape=True),
+        # Grammaire façon moteur de recherche : mots = ET, "phrase" = un terme,
+        # -mot = exclusion, mot1 OR mot2 = union (chaînable). Voir
+        # app/api_regles/recherche.py pour la grammaire complète et son parseur.
+        recherche = parse_recherche(q)
+
+        for groupe in recherche.groupes:
+            requete = requete.filter(
+                or_(*[_terme_matche_un_champ(terme) for terme in groupe])
             )
-        )
+
+        for terme in recherche.exclusions:
+            requete = requete.filter(not_(_terme_matche_un_champ(terme)))
 
     return _charger_regles(session, requete)
 

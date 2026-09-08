@@ -217,16 +217,46 @@ def test_les_deux_criteres_se_combinent_en_et(client, jeu_de_regles):
     assert numeros == [2, 3]
 
 
-def test_recherche_q_filtre_sur_lintitule(client, jeu_de_regles):
+def test_recherche_q_un_mot_matche_nimporte_quel_champ(client, jeu_de_regles):
     numeros = [r["numero"] for r in client.get("/regles?q=playwright").json()]
 
     assert numeros == [2]
 
 
-def test_recherche_q_filtre_sur_le_guide_analyse(client, jeu_de_regles):
-    numeros = [r["numero"] for r in client.get("/regles?q=Guide 3").json()]
+def test_recherche_q_et_implicite_entre_mots(client, jeu_de_regles):
+    """« Règle » (tous) et « 3 » (solution/contrôle/guide de la 3) : l'ET ne garde que la 3."""
+    numeros = [r["numero"] for r in client.get("/regles?q=Règle 3").json()]
 
     assert numeros == [3]
+
+
+def test_recherche_q_phrase_entre_guillemets_est_plus_stricte_que_lET(
+    client, jeu_de_regles
+):
+    """« Règle Guide » (ET) matche tout ; entre guillemets, aucune règle ne porte cette phrase."""
+    sans_guillemets = [r["numero"] for r in client.get("/regles?q=Règle Guide").json()]
+    avec_guillemets = [
+        r["numero"] for r in client.get('/regles?q="Règle Guide"').json()
+    ]
+
+    assert sans_guillemets == [1, 2, 3, 4]
+    assert avec_guillemets == []
+
+
+def test_recherche_q_exclusion(client, jeu_de_regles):
+    numeros = [
+        r["numero"] for r in client.get("/regles?q=Règle -playwright").json()
+    ]
+
+    assert numeros == [1, 3, 4]
+
+
+def test_recherche_q_union_or(client, jeu_de_regles):
+    numeros = [
+        r["numero"] for r in client.get("/regles?q=statique OR marquée").json()
+    ]
+
+    assert numeros == [1, 4]
 
 
 def test_recherche_q_est_insensible_a_la_casse(client, jeu_de_regles):
