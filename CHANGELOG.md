@@ -9,6 +9,17 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 8)
+
+- **`GET /regles?q=` (recherche interne)** — commit `81f25c3` — ILIKE
+  (`icontains(q, autoescape=True)`, insensible à la casse) sur
+  intitule+contexte+solution+controle+guide_analyse, OR entre champs, AND
+  avec `outil`/`review_status` existants. 6 tests d'intégration, dont la
+  preuve d'échappement (`q=%%` ne renvoie rien plutôt que tout). Vérifié
+  contre les vraies données via l'image Docker reconstruite (`q=SIRET` → 1
+  résultat) — voir `app/api_regles/regles.py`,
+  `tests/integration/api_regles/test_regles.py`.
+
 ## 2026-09-08 — Claude Code (Part 7)
 
 - **Scission en deux bases (référentiel / audit) — implémentée, plan à 9
