@@ -43,3 +43,32 @@ def test_le_domaine_audit_ne_declare_que_ses_tables():
 def test_les_deux_metadata_sont_disjointes():
     communes = set(BaseReferentiel.metadata.tables) & set(BaseAudit.metadata.tables)
     assert communes == set(), f"tables déclarées deux fois : {communes}"
+
+
+def test_audit_regle_reference_le_numero_sans_fk():
+    """La frontière entre bases interdit une FK : on référence la clé métier."""
+    table = BaseAudit.metadata.tables["audit_regle"]
+
+    assert "regle_numero" in table.c
+    assert "regle_id" not in table.c
+    assert [fk.target_fullname for fk in table.foreign_keys] == ["audit.id"]
+    assert [colonne.name for colonne in table.primary_key] == [
+        "audit_id",
+        "regle_numero",
+    ]
+
+
+def test_constat_reference_le_numero_sans_fk():
+    table = BaseAudit.metadata.tables["constat"]
+
+    assert "regle_numero" in table.c
+    assert "regle_id" not in table.c
+    assert sorted(fk.target_fullname for fk in table.foreign_keys) == [
+        "audit.id",
+        "page.id",
+    ]
+    assert [colonne.name for colonne in table.primary_key] == [
+        "audit_id",
+        "page_id",
+        "regle_numero",
+    ]

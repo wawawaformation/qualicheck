@@ -57,10 +57,12 @@ class AuditRegle(BaseAudit):
     __tablename__ = "audit_regle"
 
     audit_id = Column(Integer, ForeignKey("audit.id"), nullable=False)
-    regle_id = Column(Integer, ForeignKey("regle.id"), nullable=False)
+    # Clé métier Opquast, pas la clé de substitution du référentiel : une FK
+    # ne traverse pas deux bases. Intégrité validée à la frontière API.
+    regle_numero = Column(Integer, nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint("audit_id", "regle_id"),
+        PrimaryKeyConstraint("audit_id", "regle_numero"),
     )
 
 
@@ -69,7 +71,7 @@ class Constat(BaseAudit):
 
     audit_id = Column(Integer, ForeignKey("audit.id"), nullable=False)
     page_id = Column(Integer, ForeignKey("page.id"), nullable=False)
-    regle_id = Column(Integer, ForeignKey("regle.id"), nullable=False)
+    regle_numero = Column(Integer, nullable=False)
     statut = Column(String(32), nullable=False)
     commentaire = Column(String(512))
     recommandation = Column(String(512))
@@ -78,5 +80,5 @@ class Constat(BaseAudit):
     feedback_auditeur = Column(Text)
 
     __table_args__ = (
-        PrimaryKeyConstraint("audit_id", "page_id", "regle_id"),
+        PrimaryKeyConstraint("audit_id", "page_id", "regle_numero"),
     )
