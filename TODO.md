@@ -8,7 +8,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 ## Prochain gros morceau
 
 - [ ] **Scission en deux bases (référentiel / audit)** — décidée le
-  2026-09-08, **spec écrite, en attente de validation** — `D`/`A`
+  2026-09-08, spec et plan validés, **exécution reportée** — `D`/`A`
   - Décision et critères observables :
     `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`
     (révise partiellement celle du 2026-07-28)
@@ -29,7 +29,18 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - Hors périmètre : `GET /dense` (désigné, construit avec US2) et
     `app/api_audit` (avec US1). Rien d'autre à ajouter à l'API — `GET /regles`
     renvoie déjà les 245 règles en un appel, sans pagination.
-  - Prochaine étape : plan d'implémentation, après validation de la spec.
+  - **Rôle PostgreSQL scopé pour `api_audit`, à décider avec US1, pas
+    maintenant** (2026-09-08) — `qualicheck` (le rôle admin) est
+    **superutilisateur** (`rolsuper=t`, vérifié), créé ainsi par l'image
+    Docker officielle : un `REVOKE CONNECT ON DATABASE qualicheck` sur ce
+    rôle ne changerait rien, un superutilisateur contourne toute
+    vérification de privilège. Frontière crédible seulement si `api_audit`
+    se connecte via un **second rôle, non-superutilisateur**, propriétaire
+    de `qualicheck_audit` uniquement — `POSTGRES_USER` resterait le rôle
+    d'administration (migrations). Non traité dans le chantier de scission :
+    aucun service ne consomme encore ce rôle, même principe que `GET /dense`
+    et le filtre par numéros — `D`/`A`
+  - Prochaine étape : exécuter le plan (tâches 1 à 9).
 
 - [ ] **Retrieval US2 — mesurer avant d'ajouter des mécanismes** (plan arrêté
   le 2026-09-08) — `D`/`A`

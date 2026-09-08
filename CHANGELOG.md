@@ -9,6 +9,28 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 6)
+
+- **Limite de sécurité de la scission identifiée et tracée, non traitée** —
+  voir `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md` (nouvelle
+  conséquence) et `TODO.md`
+  - Le rôle `qualicheck` utilisé pour se connecter aux deux bases est
+    **superutilisateur** (`rolsuper=t`, vérifié via `pg_roles` — créé ainsi
+    par l'image Docker officielle au premier démarrage). Conséquence : un
+    `REVOKE CONNECT ON DATABASE qualicheck` sur un futur rôle scopé à l'audit
+    ne suffirait pas si ce rôle reste superutilisateur — la vérification de
+    privilège est contournée. La frontière posée par la scission (tâches 1-9)
+    empêche les jointures et les FK, pas une connexion directe avec les mêmes
+    identifiants
+  - Discuté avec David en confrontant l'option « juste un `REVOKE CONNECT` »
+    au fait mesuré, ce qui a changé la réponse : il faut un **second rôle
+    PostgreSQL, non-superutilisateur**, propriétaire de `qualicheck_audit`
+    uniquement, utilisé par `api_audit`
+  - **Décidé de ne pas le construire maintenant** : `api_audit` n'existe pas,
+    aucun service ne consommerait ce rôle — même principe déjà appliqué à
+    `GET /dense` et au filtre par numéros. Reporté à la conception d'`api_audit`
+    avec US1, tracé pour ne pas être oublié
+
 ## 2026-09-08 — Claude Code (Part 5)
 
 - **Runner GitHub self-hosted désinscrit, `staging` retiré de `origin`** —

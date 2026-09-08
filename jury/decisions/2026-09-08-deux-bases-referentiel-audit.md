@@ -246,3 +246,16 @@ forme d'origine — FK comprises — et cette trace.
   assumée.
 - **Deux bases de test**, une par domaine, en conservant la règle existante :
   aucun test destructeur ne cible une base de développement.
+- **La frontière reste applicative, pas encore une frontière d'identifiants.**
+  Le rôle `qualicheck` utilisé pour se connecter aux deux bases est
+  **superutilisateur** (créé ainsi par l'image Docker officielle via
+  `POSTGRES_USER`, vérifié : `rolsuper=t`). Un superutilisateur contourne
+  toute vérification de privilège, y compris un `REVOKE CONNECT` — la
+  scission empêche les jointures et les FK, mais pas une connexion directe
+  d'un service compromis à l'autre base avec les mêmes identifiants. Rendre
+  ce critère vrai au sens fort demanderait un second rôle PostgreSQL,
+  non-superutilisateur, propriétaire de `qualicheck_audit` uniquement,
+  utilisé par `api_audit` (jamais `POSTGRES_USER`, réservé à
+  l'administration). Non traité ici : aucun service ne consomme encore ce
+  rôle — même principe que `GET /dense`, différé à la conception d'`api_audit`
+  avec US1, pas ajouté au chantier de scission sans consommateur.
