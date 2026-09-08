@@ -134,6 +134,76 @@ déjà payé une fois pour avoir fait confiance à une convention. Le moment est
 choisi parce que les tables concernées sont vides : c'est aujourd'hui gratuit,
 ce sera une migration de données après le premier audit.
 
+## Trace du schéma avant scission
+
+Relevé sur la base réelle le 2026-09-08, **avant toute implémentation**.
+Conservé ici parce que la migration `0013` fera disparaître ces six tables
+de la base du référentiel : après elle, reconstituer l'état d'avant
+demanderait de relire l'historique des migrations. Cette trace rend l'écart
+lisible directement.
+
+Les deux tables effectivement modifiées par la décision :
+
+```sql
+CREATE TABLE audit_regle (
+    audit_id integer NOT NULL,
+    regle_id integer NOT NULL
+);
+
+CREATE TABLE constat (
+    audit_id integer NOT NULL,
+    page_id integer NOT NULL,
+    regle_id integer NOT NULL,
+    statut character varying(32) NOT NULL,
+    commentaire character varying(512),
+    recommandation character varying(512),
+    preuve character varying(512),
+    validation_humaine boolean,
+    feedback_auditeur text
+);
+```
+
+Inventaire complet des contraintes du domaine métier. Les deux dernières
+sont celles qui traversent la frontière et disparaissent :
+
+```sql
+-- Clés primaires
+audit_pkey        PRIMARY KEY (id)
+page_pkey         PRIMARY KEY (id)
+utilisateur_pkey  PRIMARY KEY (id)
+audit_page_pkey   PRIMARY KEY (audit_id, page_id)
+audit_regle_pkey  PRIMARY KEY (audit_id, regle_id)
+constat_pkey      PRIMARY KEY (audit_id, page_id, regle_id)
+
+-- Clés étrangères internes au domaine (conservées telles quelles)
+audit_utilisateur_id_fkey   FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id)
+audit_page_audit_id_fkey    FOREIGN KEY (audit_id)       REFERENCES audit(id)
+audit_page_page_id_fkey     FOREIGN KEY (page_id)        REFERENCES page(id)
+audit_regle_audit_id_fkey   FOREIGN KEY (audit_id)       REFERENCES audit(id)
+constat_audit_id_fkey       FOREIGN KEY (audit_id)       REFERENCES audit(id)
+constat_page_id_fkey        FOREIGN KEY (page_id)        REFERENCES page(id)
+
+-- Clés étrangères traversant la frontière (abandonnées par cette décision)
+audit_regle_regle_id_fkey   FOREIGN KEY (regle_id)       REFERENCES regle(id)
+constat_regle_id_fkey       FOREIGN KEY (regle_id)       REFERENCES regle(id)
+```
+
+Ce que la décision change, et rien d'autre :
+
+| | Avant | Après |
+| --- | --- | --- |
+| Colonne de liaison | `regle_id INT` (FK vers `regle.id`) | `regle_numero INT` (aucune FK) |
+| PK `audit_regle` | `(audit_id, regle_id)` | `(audit_id, regle_numero)` |
+| PK `constat` | `(audit_id, page_id, regle_id)` | `(audit_id, page_id, regle_numero)` |
+| Base d'accueil | `qualicheck`, avec le référentiel | `qualicheck_audit` |
+
+Les quatre autres tables (`audit`, `page`, `audit_page`, `utilisateur`)
+changent de base sans changer de forme.
+
+Deux chemins permettront de retrouver cet état si nécessaire : le
+`downgrade()` de la migration `0013`, qui recrée les six tables sous leur
+forme d'origine — FK comprises — et cette trace.
+
 ## Conséquences
 
 - **`GET /dense` et la lecture par lot (`GET /regles?numeros=`) sont
