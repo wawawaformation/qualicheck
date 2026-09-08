@@ -26,6 +26,10 @@ down:
 # Migrations (Alembic)
 # ============================================================
 
+## Crée la base du domaine audit si elle est absente (idempotent)
+create-db-audit:
+	uv run python scripts/create_db_audit.py
+
 ## Applique les migrations Alembic (crée le schéma BDD)
 migration:
 	uv run python scripts/migration.py
