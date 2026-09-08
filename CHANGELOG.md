@@ -9,6 +9,32 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-08 — Claude Code (Part 5)
+
+- **Runner GitHub self-hosted désinscrit, `staging` retiré de `origin`** —
+  voir précision ajoutée à
+  `jury/decisions/2026-08-29-hebergement-git-gitea.md`
+  - Constat : `origin/staging` (GitHub) était resté sur son état
+    pré-migration Gitea — `.github/workflows/cd-staging.yml` encore présent,
+    `runs-on: [self-hosted, cloclo]`, et **le runner
+    `wawawaformation-qualicheck.cloclo` était toujours en ligne** (vérifié
+    via `gh api .../actions/runners`). Un push `staging -> origin` aurait
+    redéclenché ce pipeline en parallèle du `cd-staging.yml` Gitea désormais
+    utilisé, sur le même hôte de déploiement
+  - Runner désinscrit proprement (`config.sh remove`, exécuté par David sur
+    `cloclo` — sudo non joignable en SSH non interactif depuis cette
+    session) ; confirmé 0 runner restant via l'API
+  - `.github/workflows/` retiré de `origin/staging` par un commit dédié
+    (`63d41bd`), après quoi les push de `staging` vers `origin` sont
+    arrêtés — `gitea/staging` (déjà divergent d'une PR mergée, `42f6e24`,
+    jamais reportée sur GitHub) devient la seule branche vivante pour ce
+    domaine. `dev` et `main` continuent d'être poussés sur les deux remotes,
+    sans changement : ce n'est pas la bascule définitive complète, seulement
+    le point qui présentait un risque opérationnel réel
+- `TODO.md` mis à jour : l'item outillage C16/C18/C19 gagne cette résolution
+  et un nouvel item ouvert (bascule définitive de `dev`/`main`, toujours pas
+  tranchée)
+
 ## 2026-09-08 — Claude Code (Part 4)
 
 - **Décision : mesurer avant d'ajouter des mécanismes de retrieval (US2)** —

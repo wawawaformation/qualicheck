@@ -217,3 +217,30 @@ git.david-legrand.fr {
 Secrets réels (`GITEA_DB_PASSWORD`, `GITEA_SMTP_PASSWORD`,
 `GITEA_RUNNER_REGISTRATION_TOKEN`) dans `/srv/docker/gitea/.env`, non
 versionnés, non reproduits ici.
+
+> **Précision du 2026-09-08 — `staging` ne se pousse plus vers `origin`.**
+> `origin/staging` (GitHub) était resté sur son état pré-migration : le
+> nettoyage `.github/workflows/` → `.gitea/workflows/` du 2026-08-29 avait
+> atteint `dev` et `main`, mais pas `staging`, qui n'avait pas été repoussé
+> depuis. Son `cd-staging.yml` GitHub pointait vers `runs-on: [self-hosted,
+> cloclo]` — le runner (`wawawaformation-qualicheck.cloclo`) était **toujours
+> en ligne** au moment du constat. Un `git push origin staging` (résultat
+> naturel d'une fusion `dev → staging`) aurait redéclenché ce pipeline en
+> parallèle du `cd-staging.yml` Gitea désormais utilisé, sur le même hôte de
+> déploiement.
+>
+> Deux actions : le runner GitHub self-hosted a été désinscrit (confirmé via
+> l'API, 0 runner restant) — l'urgence immédiate est levée, plus aucun
+> pipeline GitHub ne peut s'exécuter nulle part. Et `.github/workflows/` a
+> été retiré de `origin/staging` par un commit dédié (`63d41bd`), pour que
+> l'incohérence ne se reproduise pas si le runner était un jour recréé.
+>
+> **Décision** : `staging` ne se pousse plus vers `origin`. `gitea/staging`
+> est la seule branche vivante pour ce domaine — elle avait d'ailleurs déjà
+> divergé (`42f6e24`, une PR mergée sur Gitea et jamais reportée sur GitHub)
+> avant même ce constat, signe que la bascule s'était déjà faite dans les
+> faits. `origin/staging` reste accessible en lecture, gelé à `63d41bd`,
+> sans être maintenu. `dev` et `main` continuent d'être poussés sur les deux
+> remotes, sans changement — ce n'est pas la bascule définitive complète
+> (DNS, `git remote set-url`, invitation des collaborateurs) évoquée
+> ci-dessus, seulement le point qui présentait un risque opérationnel réel.

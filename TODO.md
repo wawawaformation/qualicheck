@@ -116,6 +116,16 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     `ci-dev.yml` et `cd-staging.yml` (image + registre OCI + déploiement
     SSH-push vers hôte générique, API/BDD + client Vue.js) tournent de bout
     en bout sur `git.david-legrand.fr` — `A`
+  - [x] **`staging` ne se pousse plus vers `origin`** (2026-09-08) —
+    `origin/staging` était resté sur son état pré-migration (`.github/`
+    encore présent, runner self-hosted `cloclo` toujours en ligne : risque
+    réel de double déploiement). Runner désinscrit, `.github/` retiré de
+    `origin/staging`, puis arrêt des push. `dev`/`main` inchangés. Détail :
+    précision ajoutée à `jury/decisions/2026-08-29-hebergement-git-gitea.md`
+    — `D`/`A`
+  - [ ] **Bascule définitive complète** (DNS, `git remote set-url`,
+    invitation des collaborateurs) — toujours pas tranchée pour `dev`/`main`,
+    seul le risque opérationnel sur `staging` a été traité — `D`
 
 - [x] **Spec E implémentée** (provenance + manifeste) — `A` (2026-07-25)
   - Plan `docs/superpowers/plans/2026-07-25-provenance-manifeste-implementation.md`,
