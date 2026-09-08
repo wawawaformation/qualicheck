@@ -13,7 +13,12 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     `jury/decisions/2026-09-08-deux-bases-referentiel-audit.md`
     (révise partiellement celle du 2026-07-28)
   - Conception et étapes vérifiables :
-    `docs/superpowers/specs/2026-09-08-scission-bases-design.md`
+    `docs/superpowers/specs/2026-09-08-scission-bases-design.md` — **validée
+    le 2026-09-08**
+  - **Plan d'implémentation prêt à exécuter** :
+    `docs/superpowers/plans/2026-09-08-scission-bases-implementation.md`
+    (9 tâches, chacune avec son cycle de test et son commit). Exécution
+    reportée à une prochaine session, avec **un seul agent**.
   - **Pourquoi maintenant** : les six tables métier sont vides (0 ligne) et
     seules 2 FK traversent la frontière — la scission est gratuite
     aujourd'hui, ce sera une migration de données après le premier audit
