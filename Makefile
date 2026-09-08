@@ -42,9 +42,9 @@ downgrade:
 ## destructeurs (jamais la base de dev réelle)
 migration-test:
 	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d postgres -tc \
-		"SELECT 1 FROM pg_database WHERE datname = '$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)'" | grep -q 1 || \
-		docker exec qualicheck-postgres createdb -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" "$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)"
-	POSTGRES_DB="$$(grep POSTGRES_TEST_DB .env | cut -d= -f2)" uv run python scripts/migration.py
+		"SELECT 1 FROM pg_database WHERE datname = '$$(grep '^POSTGRES_TEST_DB=' .env | cut -d= -f2)'" | grep -q 1 || \
+		docker exec qualicheck-postgres createdb -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" "$$(grep '^POSTGRES_TEST_DB=' .env | cut -d= -f2)"
+	POSTGRES_DB="$$(grep '^POSTGRES_TEST_DB=' .env | cut -d= -f2)" uv run python scripts/migration.py
 
 ## Migre la base du domaine audit (la crée si absente)
 migration-audit: create-db-audit
@@ -80,8 +80,8 @@ clear:
 export_sql:
 	mkdir -p backups
 	@FILE="backups/$$(date +%Y%m%d_%H%M%S).sql"; \
-	docker exec qualicheck-postgres pg_dump -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" --data-only --exclude-table=alembic_version --exclude-table=etat_donnees > "$$FILE"; \
-	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" -c "INSERT INTO etat_donnees (id, fichier_backup, type_operation, horodatage) VALUES (1, '$$FILE', 'export', now()) ON CONFLICT (id) DO UPDATE SET fichier_backup = EXCLUDED.fichier_backup, type_operation = EXCLUDED.type_operation, horodatage = EXCLUDED.horodatage;" > /dev/null; \
+	docker exec qualicheck-postgres pg_dump -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep '^POSTGRES_DB=' .env | cut -d= -f2)" --data-only --exclude-table=alembic_version --exclude-table=etat_donnees > "$$FILE"; \
+	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep '^POSTGRES_DB=' .env | cut -d= -f2)" -c "INSERT INTO etat_donnees (id, fichier_backup, type_operation, horodatage) VALUES (1, '$$FILE', 'export', now()) ON CONFLICT (id) DO UPDATE SET fichier_backup = EXCLUDED.fichier_backup, type_operation = EXCLUDED.type_operation, horodatage = EXCLUDED.horodatage;" > /dev/null; \
 	echo "Export terminé : $$FILE"
 
 ## Importe un dump de RÉFÉRENTIEL généré par make export_sql. Ne vide rien
@@ -89,8 +89,8 @@ export_sql:
 ## primaire remontent. Ne concerne pas le domaine audit.
 import_sql:
 	@test -n "$(FILE)" || (echo "Usage : make import_sql FILE=backups/xxx.sql" && exit 1)
-	docker exec -i qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" < $(FILE)
-	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)" -c "INSERT INTO etat_donnees (id, fichier_backup, type_operation, horodatage) VALUES (1, '$(FILE)', 'import', now()) ON CONFLICT (id) DO UPDATE SET fichier_backup = EXCLUDED.fichier_backup, type_operation = EXCLUDED.type_operation, horodatage = EXCLUDED.horodatage;" > /dev/null
+	docker exec -i qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep '^POSTGRES_DB=' .env | cut -d= -f2)" < $(FILE)
+	docker exec qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep '^POSTGRES_DB=' .env | cut -d= -f2)" -c "INSERT INTO etat_donnees (id, fichier_backup, type_operation, horodatage) VALUES (1, '$(FILE)', 'import', now()) ON CONFLICT (id) DO UPDATE SET fichier_backup = EXCLUDED.fichier_backup, type_operation = EXCLUDED.type_operation, horodatage = EXCLUDED.horodatage;" > /dev/null
 	@echo "Import terminé depuis $(FILE)"
 
 ## Relance le LLM sur les règles marquées review_status = a_revoir,
@@ -177,4 +177,4 @@ test-migration:
 
 ## Ouvre une session psql interactive dans le conteneur Postgres
 psql:
-	docker exec -it qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep POSTGRES_DB .env | cut -d= -f2)"
+	docker exec -it qualicheck-postgres psql -U "$$(grep POSTGRES_USER .env | cut -d= -f2)" -d "$$(grep '^POSTGRES_DB=' .env | cut -d= -f2)"
