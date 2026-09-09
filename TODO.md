@@ -135,6 +135,43 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     - **Reste ouvert** : traiter ces 3 cas précis avec l'Étape 4.2/4.3
       ci-dessous (variantes de chunk), ou les accepter comme limite
       assumée du rappel — décision non prise à ce stade.
+  - [x] **Recommandation 1 — chunk enrichi `theme`+`objectifs`** (2026-09-09)
+    — `D`/`A`, suite à
+    `jury/decisions/2026-09-09-recommandations-suite-mesure-retrieval.md`
+    - `build_chunk_text()` (`app/ingestion/chunking.py`) reçoit `Thème` et
+      `Objectifs` ; `EnrichedRule` portait déjà ces deux champs (chargés par
+      `load_enriched_rules_from_db`), aucune jointure supplémentaire
+      nécessaire — la note technique ci-dessous (ligne « objectifs n'est pas
+      une colonne... ») était donc caduque dès l'Étape 2.
+    - `make embed-rules` (245 règles, 0,0023 €) puis `make rag-acceptance` +
+      `make rag-dense-acceptance` rejoués — rapport mis à jour :
+      `docs/eval/rag_dense_acceptance_2026-09-09.md`.
+    - **Résultat mesuré, contraire à l'hypothèse** : aucune amélioration —
+      `vocabulaire_genere_llm` (règle 185) et `multi_sujets` (2 `PARTIEL`,
+      règles 106/107) inchangés à `top_n=15`. Une **régression** apparaît :
+      `vocabulaire_source_opquast` passe de 100% à 90% (nouvel échec, règle
+      167 — « ordre de parcours des champs... avec des numéros », `tabindex`
+      absent du top-15).
+    - **Décision (David, 2026-09-09)** : gardé quand même — `objectif` sera
+      requis pour de futures questions US2 basées sur cet axe, indépendamment
+      du seul critère recall mesuré ici. Régression sur la règle 167
+      documentée comme limite connue à surveiller, pas corrigée à la volée.
+    - Carte Kanboard #8 déplacée en « Terminé ».
+  - [x] **Nouvelle famille d'acceptance `vocabulaire_objectif`** (2026-09-09,
+    carte Kanboard #12) — `D`/`A`
+    - Extraction automatique des objectifs mono-règle dont le vocabulaire
+      est absent de tous les autres champs (`tmp/extract_vocab_objectif.py`) :
+      normalisation nécessaire (491 objectifs bruts → 474, la déduplication
+      en base est exacte sur la chaîne — espace/point final suffisent à
+      créer un faux "objectif rare"). 281 candidats trouvés, 15 retenus
+      (proposition Opus, validation David) — écarté les objectifs à gros
+      paquet (référencement, accessibilité, impact énergétique : 12 à 64
+      règles, oracle incomplet par construction).
+    - 15 cas ajoutés à `tests/acceptance/rag_acceptance.jsonl` (71 cas au
+      total). Résultat mesuré : 14/15 (93%), 1 échec isolé (règle 236,
+      « interprétation hasardeuse du DOM » — noyée parmi des règles de
+      sécurité/en-têtes HTTP proches sémantiquement). Au-dessus du seuil,
+      signal à garder pour un futur chantier vocabulaire.
   - [ ] **Étape 4.2/4.3 — agir uniquement sur échec mesuré**, dans cet ordre,
     en s'arrêtant dès que ça passe — `A`
     1. ~~augmenter `top_n`~~ fait (ci-dessus) ;
@@ -149,11 +186,10 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     comme amélioration avant l'étape 3 ; l'écosystème Opquast est un projet
     d'acquisition de corpus (sources, droits, chunking d'une autre nature) et
     reste dans `IDEA.md`, hors périmètre certification.
-  - **Détail technique à ne pas oublier** : `objectifs` n'est pas une colonne
-    de `regle` (table `objectif` + `objectif_regle`), et
-    `build_chunk_text()` ne les reçoit pas. La proposition « vectoriser
-    intitulé + objectifs + thématique + tags » demande une jointure
-    supplémentaire, pas une modification de concaténation.
+  - **Détail technique historique (caduc, résolu à la recommandation 1
+    ci-dessus)** : on pensait `objectifs` absent de `build_chunk_text()` par
+    manque de jointure — en fait `EnrichedRule` les portait déjà via
+    `load_enriched_rules_from_db()`, seule la concaténation manquait.
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage

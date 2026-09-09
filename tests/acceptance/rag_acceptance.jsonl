@@ -54,3 +54,18 @@
 {"question": "Comment doit-on rédiger les liens d'un site ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [117, 134, 137]}
 {"question": "Les liens doivent-ils se distinguer visuellement ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [140, 141]}
 {"question": "Que doit permettre une page de résultats de recherche ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [13, 169, 170]}
+{"question": "Un utilisateur qui n'a qu'un bouton poussoir comme périphérique d'entrée peut-il interagir avec tous les services du site ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [166]}
+{"question": "Que se passe-t-il si le navigateur ne reçoit pas l'information du jeu de caractères et doit le deviner lui-même ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [232]}
+{"question": "Sur un réseau mobile de qualité variable, qu'est-ce qui risque d'interrompre la lecture et de faire consommer des données non désirées ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [239]}
+{"question": "À quels endroits (FAI, proxy, historique du navigateur) des données sensibles risquent-elles de se retrouver stockées en clair ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [28]}
+{"question": "Comment éviter de dépendre d'un acteur tiers dont la stratégie commerciale ou technique peut évoluer, pour accéder à un service ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [17]}
+{"question": "Comment éviter qu'un utilisateur croie à tort que son action a réussi alors qu'il y a eu un problème ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [85]}
+{"question": "Faut-il avertir l'internaute qu'il est sur le point de quitter le service en ligne qu'il consulte ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [142]}
+{"question": "Qu'est-ce qui provoque une interprétation hasardeuse du DOM d'une page selon les agents utilisateurs ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [236]}
+{"question": "Comment éviter à un utilisateur en mode vocal de devoir défiler toute la page avant d'atteindre le contenu ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [164]}
+{"question": "Comment éviter qu'un client s'aperçoive tardivement, en pleine commande, que ce qu'il voulait n'est pas disponible ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [65]}
+{"question": "Comment éviter à un client des démarches inutiles et une perte de temps s'il n'est pas dans une zone desservie ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [47]}
+{"question": "En quoi l'ouverture d'une nouvelle fenêtre désoriente-t-elle un utilisateur d'aide technique et perturbe-t-elle son historique de navigation ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [146, 154]}
+{"question": "En navigateur texte ou avec les images désactivées, comment l'utilisateur comprend-il le sens des images et des images-liens ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [117, 118]}
+{"question": "Comment permettre à l'utilisateur de décider en connaissance de cause avant de lancer ou de télécharger un média ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [123]}
+{"question": "Que prévoir pour un utilisateur désorienté qui veut repartir de zéro sur le site ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [155]}

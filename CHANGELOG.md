@@ -9,6 +9,32 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-09 — Claude Code (Part 5)
+
+- **Nouvelle famille d'acceptance `vocabulaire_objectif`** (carte Kanboard #12)
+  — 15 cas ajoutés à `tests/acceptance/rag_acceptance.jsonl` (71 cas au
+  total), construits à partir des objectifs mono-règle dont le vocabulaire
+  est absent de tous les autres champs (`tmp/extract_vocab_objectif.py`,
+  normalisation nécessaire : 491 objectifs bruts → 474 distincts, la
+  déduplication en base est exacte sur la chaîne). Résultat mesuré :
+  14/15 (93%), 1 échec isolé (règle 236, « DOM ») — voir `TODO.md`.
+
+## 2026-09-09 — Claude Code (Part 4)
+
+- **Recommandation 1 (chunk enrichi `theme`+`objectifs`)** — `build_chunk_text()`
+  (`app/ingestion/chunking.py`) vectorise désormais `Thème` et `Objectifs` en
+  plus des champs existants ; `EnrichedRule` les portait déjà, pas de jointure
+  supplémentaire. `make embed-rules` (245 règles, 0,0023 €) puis
+  `make rag-acceptance`/`make rag-dense-acceptance` rejoués —
+  `docs/eval/rag_dense_acceptance_2026-09-09.md` mis à jour.
+- **Résultat mesuré** : aucune amélioration sur les échecs connus
+  (`vocabulaire_genere_llm` règle 185, `multi_sujets` règles 106/107,
+  inchangés), et une régression mesurée sur `vocabulaire_source_opquast`
+  (100%→90%, nouvel échec règle 167, `tabindex`). Gardé quand même —
+  `objectif` anticipé comme nécessaire pour de futures questions US2 basées
+  sur cet axe — voir `TODO.md` (Retrieval US2, recommandation 1).
+- Carte Kanboard #8 déplacée en « Terminé ».
+
 ## 2026-09-09 — Claude Code (Part 3)
 
 - **Étape 3 (mesure recall) + Étape 4.1 (augmenter top_n) du plan retrieval
