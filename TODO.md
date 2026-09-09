@@ -190,6 +190,14 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     ci-dessus)** : on pensait `objectifs` absent de `build_chunk_text()` par
     manque de jointure — en fait `EnrichedRule` les portait déjà via
     `load_enriched_rules_from_db()`, seule la concaténation manquait.
+  - **Point de vigilance avant la prochaine synchro staging** (constaté
+    2026-09-09) : `.gitea/workflows/cd-staging.yml` applique les migrations
+    (`make migration`) mais ne relance jamais l'ingestion ni l'embedding.
+    Tant que `dev` (chunk enrichi `theme`+`objectifs`, recalculé localement)
+    n'est pas mergé sur `staging`, les deux bases divergent déjà sur les
+    **embeddings**, pas seulement sur le code. Au moment de pousser :
+    prévoir un `make embed-rules` manuel sur l'hôte staging après
+    déploiement, pas seulement le merge git.
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
