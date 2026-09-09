@@ -239,6 +239,13 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       mono-sujet/multi-sujets décidée par le LLM est plus floue en
       pratique que dans le prompt — pas un défaut bloquant, à recreuser
       si un cas futur montre un sur-découpage nuisible.
+    - **Optimisation identifiée, pas prioritaire** : le prompt complet
+      (avec few-shot) est renvoyé en entier à chaque appel de
+      `DecompositionClient` (35 368 tokens d'entrée pour 99 questions,
+      0,0073 € — pas cher, mais pas optimisé). Piste : mise en cache de
+      préfixe / system prompt plutôt que de reconcaténer le prompt en
+      texte brut à chaque appel. À reprendre si le volume d'appels
+      augmente significativement (US2 en usage réel).
   - **Point de vigilance avant la prochaine synchro staging** (constaté
     2026-09-09) : `.gitea/workflows/cd-staging.yml` applique les migrations
     (`make migration`) mais ne relance jamais l'ingestion ni l'embedding.
