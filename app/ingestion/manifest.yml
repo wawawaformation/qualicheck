@@ -30,9 +30,12 @@ embedding:
   prix_entree_par_million: 0.0184
 
 rag_acceptance:
-  # Nombre de résultats pgvector considérés par cas (marge par rapport au
-  # top 2 observé lors des vérifications manuelles du 2026-07-26)
-  top_n: 3
+  # Augmenté de 3 à 15 le 2026-09-09 après mesure réelle sur les 56 cas
+  # d'acceptance (docs/eval/rag_dense_acceptance_2026-09-09.md) : seule
+  # valeur qui fait passer multi_sujets et vocabulaire_source_opquast à
+  # 100%. 3 cas restent en échec/PARTIEL même à top_n=15 (règle 185,
+  # cas multi-sujets 106/107) — signal de dilution réelle, pas de top_n.
+  top_n: 15
   # Proportion minimale de cas réussis pour que la suite soit globalement
   # acceptable — le rappel imparfait du RAG est déjà assumé, voir
   # jury/decisions/2026-07-25-rag-us2-petit-corpus.md

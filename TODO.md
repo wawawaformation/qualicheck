@@ -110,13 +110,34 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     - Carte Kanboard #8 créée séparément : `theme` absent du chunk vectorisé
       sans justification documentée — non urgent, conditionnel à un échec
       mesuré à l'Étape 4 ci-dessous.
-  - [ ] **Étape 3 — mesurer `recall@3/5/10/15`, pipeline inchangé** (quelques
-    centimes) — `A`
-    - Il y a une vraie chance que ça referme le débat : si le rappel couvre
-      les cas durs, la fiche devient sans objet, mesure à l'appui.
-  - [ ] **Étape 4 — agir uniquement sur échec mesuré**, dans cet ordre, en
-    s'arrêtant dès que ça passe — `A`
-    1. augmenter `top_n` (`manifest.yml`, zéro code) ;
+  - [x] **Étape 3 — mesurer `recall@3/5/10/15`, pipeline inchangé** (2026-09-09,
+    tokens quasi gratuits) — `D`/`A`
+    - `scripts/rag_dense_acceptance.py` (spec
+      `docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md`,
+      plan associé) : une seule requête pgvector par question à `LIMIT 15`,
+      troncature locale pour 3/5/10/15. Rapport :
+      `docs/eval/rag_dense_acceptance_2026-09-09.md`.
+    - Résultat mesuré à `top_n=3` (config d'origine) : `multi_sujets` sous
+      le seuil (67%). La fiche Gemini n'est donc **pas** sans objet à ce
+      stade — mesure à l'appui, comme prévu.
+  - [x] **Étape 4.1 — augmenter `top_n`** (2026-09-09) — `D`/`A`
+    - `top_n` porté de 3 à 15 dans `manifest.yml` (zéro code) : résout
+      `vocabulaire_source_opquast` (80→100%) et `multi_sujets` (67→100% au
+      sens du taux — voir réserve ci-dessous). `regles_concurrentes` était
+      déjà à 100% dès `top_n=10`.
+    - **3 cas persistent même à `top_n=15`**, jamais résolus par ce levier
+      seul : règle 185 (`aria-expanded`, famille `vocabulaire_genere_llm`,
+      jamais retrouvée) ; 2 cas `multi_sujets` où une des deux cibles
+      (règles 106 et 107) n'apparaît jamais, même dans le top 15. Le taux
+      « 100% » de `multi_sujets` masque ces 2 `PARTIEL` (exclus du calcul
+      par construction — voir Étape 2). Signal de dilution réelle, pas un
+      problème de `top_n`.
+    - **Reste ouvert** : traiter ces 3 cas précis avec l'Étape 4.2/4.3
+      ci-dessous (variantes de chunk), ou les accepter comme limite
+      assumée du rappel — décision non prise à ce stade.
+  - [ ] **Étape 4.2/4.3 — agir uniquement sur échec mesuré**, dans cet ordre,
+    en s'arrêtant dès que ça passe — `A`
+    1. ~~augmenter `top_n`~~ fait (ci-dessus) ;
     2. A/B des variantes de chunk (complet / sans `guide_analyse` /
        intitulé+tags) — `embed_rules.py` recalcule les 245 pour 0,0016 € par
        variante, séquentiellement, sans colonne supplémentaire ;

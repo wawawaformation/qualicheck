@@ -9,6 +9,35 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-09 — Claude Code (Part 3)
+
+- **Étape 3 (mesure recall) + Étape 4.1 (augmenter top_n) du plan retrieval
+  US2** — spec/plan
+  `docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md`,
+  `docs/superpowers/plans/2026-09-09-rag-dense-acceptance-implementation.md`.
+  - `scripts/rag_dense_acceptance.py` (nouveau, `make rag-dense-acceptance`) :
+    compare le recall du jeu d'acceptance (56 cas) sur `top_n` 3/5/10/15 en
+    une seule exécution (1 seul appel embeddings, troncature locale de la
+    requête pgvector `LIMIT 15`) — aucune modification de
+    `app/ingestion/rag_acceptance.py` ni `check_rag_acceptance.py`.
+  - Rapport réel : `docs/eval/rag_dense_acceptance_2026-09-09.md`. À
+    `top_n=3` (config d'origine), `multi_sujets` était sous le seuil (67%) —
+    la mesure confirme que la question posée par la fiche Gemini n'était
+    pas sans objet.
+  - **`manifest.yml` : `top_n` porté de 3 à 15**, décision de David après
+    lecture du rapport — résout `vocabulaire_source_opquast` (80→100%) et
+    fait passer `multi_sujets` au sens du taux (67→100%, avec réserve
+    ci-dessous). `regles_concurrentes` était déjà à 100% dès `top_n=10`.
+  - **3 cas persistent même à `top_n=15`** (documentés dans le rapport et
+    `TODO.md`) : règle 185 (`aria-expanded`) jamais retrouvée ; 2 cas
+    `multi_sujets` où une cible sur deux (règles 106, 107) n'apparaît
+    jamais. Le taux agrégé de `multi_sujets` les masque (exclus du calcul
+    par construction, `PARTIEL`) — signalé explicitement, pas de décision
+    prise sur la suite (variantes de chunk ou limite assumée).
+  - Environnement `uv run` réparé au passage (voir Part 2 ci-dessous),
+    nécessaire pour lancer les scripts sans le contournement
+    `.venv/bin/python`.
+
 ## 2026-09-09 — Claude Code (Part 2)
 
 - **Environnement `uv run` réparé** — le shebang cassé constaté le
