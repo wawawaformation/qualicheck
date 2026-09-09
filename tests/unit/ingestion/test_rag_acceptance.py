@@ -1,7 +1,7 @@
 """
 Tests unitaires pour app/ingestion/rag_acceptance.py
 
-Logique pure (load_cases, evaluate_case, compute_taux_reussite,
+Logique pure (load_cases, evaluate_case, compute_taux_par_famille,
 is_acceptable, format_dataset_versions) — aucun appel réseau ni BDD
 réelle. query_top_n_numeros et summarize_dataset_versions ne sont pas
 testées ici (nécessitent une base réellement vectorisée), validées par
@@ -9,7 +9,7 @@ exécution réelle via `make rag-acceptance`.
 """
 
 from app.ingestion.rag_acceptance import (
-    compute_taux_reussite,
+    compute_taux_par_famille,
     evaluate_case,
     format_dataset_versions,
     is_acceptable,
@@ -92,16 +92,70 @@ def test_evaluate_case_fail_sans_reponse_attendue():
     assert result["verdict"] == "FAIL"
 
 
-def test_compute_taux_reussite_ratio():
-    """Le taux de réussite est le ratio cas réussis / total."""
+def test_compute_taux_par_famille_un_seul_groupe():
+    """Le taux d'une famille est le ratio PASS / (total - PARTIEL)."""
     evaluations = [
-        {"reussi": True},
-        {"reussi": True},
-        {"reussi": False},
-        {"reussi": True},
+        {"famille": "vocabulaire_source_opquast", "verdict": "PASS"},
+        {"famille": "vocabulaire_source_opquast", "verdict": "PASS"},
+        {"famille": "vocabulaire_source_opquast", "verdict": "FAIL"},
     ]
 
-    assert compute_taux_reussite(evaluations) == 0.75
+    resultat = compute_taux_par_famille(evaluations)
+
+    assert resultat["vocabulaire_source_opquast"] == {
+        "taux": 2 / 3,
+        "reussis": 2,
+        "total": 3,
+        "partiels": 0,
+    }
+
+
+def test_compute_taux_par_famille_exclut_les_partiels():
+    """Les cas PARTIEL sont retirés du dénominateur, comptés à part."""
+    evaluations = [
+        {"famille": "regles_concurrentes", "verdict": "PASS"},
+        {"famille": "regles_concurrentes", "verdict": "PARTIEL"},
+        {"famille": "regles_concurrentes", "verdict": "FAIL"},
+    ]
+
+    resultat = compute_taux_par_famille(evaluations)
+
+    assert resultat["regles_concurrentes"] == {
+        "taux": 1 / 2,
+        "reussis": 1,
+        "total": 2,
+        "partiels": 1,
+    }
+
+
+def test_compute_taux_par_famille_groupes_independants():
+    """Chaque famille a son propre taux, indépendant des autres."""
+    evaluations = [
+        {"famille": "vocabulaire_source_opquast", "verdict": "PASS"},
+        {"famille": "sans_reponse", "verdict": "FAIL"},
+        {"famille": "sans_reponse", "verdict": "FAIL"},
+    ]
+
+    resultat = compute_taux_par_famille(evaluations)
+
+    assert resultat["vocabulaire_source_opquast"]["taux"] == 1.0
+    assert resultat["sans_reponse"]["taux"] == 0.0
+
+
+def test_compute_taux_par_famille_uniquement_partiels_donne_zero():
+    """Une famille entièrement composée de PARTIEL a un taux de 0.0 (pas de division par zéro)."""
+    evaluations = [
+        {"famille": "regles_concurrentes", "verdict": "PARTIEL"},
+    ]
+
+    resultat = compute_taux_par_famille(evaluations)
+
+    assert resultat["regles_concurrentes"] == {
+        "taux": 0.0,
+        "reussis": 0,
+        "total": 0,
+        "partiels": 1,
+    }
 
 
 def test_is_acceptable_true_when_taux_above_seuil():

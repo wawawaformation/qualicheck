@@ -60,9 +60,28 @@ def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
     }
 
 
-def compute_taux_reussite(evaluations: list[dict]) -> float:
-    """Calcule la proportion de cas réussis parmi les évaluations."""
-    return sum(1 for e in evaluations if e["reussi"]) / len(evaluations)
+def compute_taux_par_famille(evaluations: list[dict]) -> dict[str, dict]:
+    """Calcule le taux de réussite par famille, en excluant les PARTIEL.
+
+    Un cas PARTIEL ne compte ni comme succès ni comme échec : il est
+    retiré du dénominateur pour ne pas fausser le taux binaire, mais son
+    nombre est conservé (partiels) pour rester visible dans les logs.
+    Une famille sans aucun cas PASS/FAIL (uniquement des PARTIEL) a un
+    taux de 0.0 par convention — pas de division par zéro.
+    """
+    par_famille: dict[str, list[dict]] = {}
+    for evaluation in evaluations:
+        par_famille.setdefault(evaluation["famille"], []).append(evaluation)
+
+    resultat = {}
+    for famille, evals in par_famille.items():
+        partiels = sum(1 for e in evals if e["verdict"] == "PARTIEL")
+        non_partiels = [e for e in evals if e["verdict"] != "PARTIEL"]
+        reussis = sum(1 for e in non_partiels if e["verdict"] == "PASS")
+        total = len(non_partiels)
+        taux = reussis / total if total > 0 else 0.0
+        resultat[famille] = {"taux": taux, "reussis": reussis, "total": total, "partiels": partiels}
+    return resultat
 
 
 def is_acceptable(taux: float, seuil: float) -> bool:
