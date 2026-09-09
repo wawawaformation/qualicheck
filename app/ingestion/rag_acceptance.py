@@ -84,9 +84,19 @@ def compute_taux_par_famille(evaluations: list[dict]) -> dict[str, dict]:
     return resultat
 
 
-def is_acceptable(taux: float, seuil: float) -> bool:
-    """Le taux de réussite global atteint-il le seuil minimum déclaré dans le manifest ?"""
-    return taux >= seuil
+def is_acceptable(taux_par_famille: dict[str, dict], seuil: float) -> bool:
+    """Le jeu est acceptable si chaque famille à cible normale atteint le seuil.
+
+    La famille "sans_reponse" est toujours ignorée : son taux est nul par
+    construction (aucun mécanisme de refus), ce n'est pas un défaut du
+    retrieval mesuré par les autres familles.
+    """
+    for famille, stats in taux_par_famille.items():
+        if famille == "sans_reponse":
+            continue
+        if stats["taux"] < seuil:
+            return False
+    return True
 
 
 def summarize_dataset_versions(session: Session) -> list[dict]:

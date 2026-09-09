@@ -158,14 +158,34 @@ def test_compute_taux_par_famille_uniquement_partiels_donne_zero():
     }
 
 
-def test_is_acceptable_true_when_taux_above_seuil():
-    """is_acceptable est vrai si le taux atteint ou dépasse le seuil."""
-    assert is_acceptable(taux=0.8, seuil=0.8) is True
+def test_is_acceptable_true_when_all_familles_above_seuil():
+    """Le jeu est acceptable si toutes les familles atteignent le seuil."""
+    taux_par_famille = {
+        "vocabulaire_source_opquast": {"taux": 0.8, "reussis": 4, "total": 5, "partiels": 0},
+        "regles_concurrentes": {"taux": 1.0, "reussis": 3, "total": 3, "partiels": 0},
+    }
+
+    assert is_acceptable(taux_par_famille, seuil=0.8) is True
 
 
-def test_is_acceptable_false_when_taux_below_seuil():
-    """is_acceptable est faux si le taux est strictement sous le seuil."""
-    assert is_acceptable(taux=0.7, seuil=0.8) is False
+def test_is_acceptable_false_when_one_famille_below_seuil():
+    """Le jeu échoue si au moins une famille est sous le seuil."""
+    taux_par_famille = {
+        "vocabulaire_source_opquast": {"taux": 0.5, "reussis": 2, "total": 4, "partiels": 0},
+        "regles_concurrentes": {"taux": 1.0, "reussis": 3, "total": 3, "partiels": 0},
+    }
+
+    assert is_acceptable(taux_par_famille, seuil=0.8) is False
+
+
+def test_is_acceptable_ignores_sans_reponse_famille():
+    """La famille sans_reponse n'entre jamais dans le calcul, même à 0%."""
+    taux_par_famille = {
+        "vocabulaire_source_opquast": {"taux": 1.0, "reussis": 4, "total": 4, "partiels": 0},
+        "sans_reponse": {"taux": 0.0, "reussis": 0, "total": 2, "partiels": 0},
+    }
+
+    assert is_acceptable(taux_par_famille, seuil=0.8) is True
 
 
 def test_format_dataset_versions_single_version():
