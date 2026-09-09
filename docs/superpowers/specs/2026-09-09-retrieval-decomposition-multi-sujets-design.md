@@ -85,6 +85,18 @@ class DecompositionClient:
         """
 ```
 
+Timeout explicite : **2s** (paramètre `timeout` du client `ChatOpenAI`),
+volontairement différent du rôle `enrichissement` (aucun timeout explicite
+aujourd'hui, appels batch offline où personne n'attend) et du 30s
+recommandé par le benchmark (`conception/annexes/F_choix_llm.md`), qui
+suppose lui aussi un contexte batch. Ici, un utilisateur attend une
+réponse en direct (US2), et la décomposition n'est qu'une étape parmi
+d'autres avant la réponse finale (embedding, pgvector, puis un futur appel
+LLM de génération de réponse, pas encore construit) : elle doit occuper le
+moins de budget possible sur le temps de réponse total. Pas de repère
+chiffré existant pour ce cas d'usage interactif — valeur choisie, à
+corriger avec une vraie mesure de latence une fois le mécanisme construit.
+
 Le nombre de sous-questions (N) est décidé par le LLM au cas par cas, pas
 fixé à l'avance — la famille `multi_sujets` du jeu d'acceptance ne
 contient que des exemples à 2 sujets, mais le mécanisme doit rester
