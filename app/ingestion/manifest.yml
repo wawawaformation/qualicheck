@@ -40,3 +40,15 @@ rag_acceptance:
   # acceptable — le rappel imparfait du RAG est déjà assumé, voir
   # jury/decisions/2026-07-25-rag-us2-petit-corpus.md
   taux_reussite_minimum: 0.8
+
+decomposition:
+  modele: gpt-5.4-mini
+  env_var: AZURE_MODEL_GPT_MINI
+  # Timeout applicatif distinct (2s, pas 30s comme le benchmark) : appel
+  # dans le chemin d'une requête utilisateur en direct (US2), pas un
+  # traitement batch offline. Voir docs/superpowers/specs/
+  # 2026-09-09-retrieval-decomposition-multi-sujets-design.md.
+  # Tarifs non vérifiés (pas de facture Azure réelle pour ce modèle) —
+  # à corriger dès le premier run réel, même logique que le rôle embedding.
+  prix_entree_par_million: 0.15
+  prix_sortie_par_million: 0.60
