@@ -39,7 +39,12 @@ rag_acceptance:
   # Proportion minimale de cas réussis pour que la suite soit globalement
   # acceptable — le rappel imparfait du RAG est déjà assumé, voir
   # jury/decisions/2026-07-25-rag-us2-petit-corpus.md
-  taux_reussite_minimum: 0.8
+  # Seuil de 0.8 à 0.9 le 2026-09-09 : rôle de garde-fou de non-régression
+  # technique (pas une barre de qualité produit), calé sur les taux réels
+  # mesurés à ce moment (92-100% par famille sur 99 cas). L'ancien 0.8
+  # n'avait jamais été dérivé, juste choisi par défaut. Détail :
+  # jury/decisions/2026-09-09-seuil-acceptance-rag-90-pourcent.md
+  taux_reussite_minimum: 0.9
 
 decomposition:
   modele: gpt-5.4-mini
