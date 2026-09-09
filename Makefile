@@ -112,6 +112,10 @@ embed-rules:
 rag-acceptance:
 	uv run python scripts/check_rag_acceptance.py
 
+## Compare le recall du RAG sur plusieurs top_n (3/5/10/15), rapport Markdown
+rag-dense-acceptance:
+	uv run python scripts/rag_dense_acceptance.py
+
 # ============================================================
 # API données
 # ============================================================
