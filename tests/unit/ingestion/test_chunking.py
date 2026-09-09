@@ -27,10 +27,12 @@ def test_build_chunk_text_includes_all_labeled_sections():
     chunk = build_chunk_text(rule)
 
     assert "Intitulé : Les images ont un attribut alt" in chunk
+    assert "Thème : Contenus" in chunk
     assert "Contexte : Les images décoratives n'ont pas besoin d'alt." in chunk
     assert "Solution : Ajouter alt descriptif" in chunk
     assert "Controle : Vérifier alt présent" in chunk
     assert "Guide d'analyse : Parcourez le DOM et vérifiez l'attribut alt." in chunk
+    assert "Objectifs : Accessibilité" in chunk
     assert "Tags : HTML, Images" in chunk
     assert "Phases : Intégration" in chunk
 
