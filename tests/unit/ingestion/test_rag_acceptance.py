@@ -34,25 +34,62 @@ def test_load_cases_parses_jsonl(tmp_path):
     ]
 
 
-def test_evaluate_case_success_when_expected_in_results():
-    """Un cas réussit si numero_regle_attendue figure dans les résultats."""
-    case = {"question": "Q1", "numero_regle_attendue": 139}
+def test_evaluate_case_pass_single_cible():
+    """Un cas à cible unique réussit (PASS) si sa cible figure dans les résultats."""
+    case = {"question": "Q1", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [139]}
 
     result = evaluate_case(case, numeros_retournes=[42, 139, 7])
 
-    assert result["reussi"] is True
+    assert result["verdict"] == "PASS"
+    assert result["famille"] == "vocabulaire_source_opquast"
+    assert result["numeros_regle_attendus"] == [139]
     assert result["numeros_retournes"] == [42, 139, 7]
     assert result["question"] == "Q1"
-    assert result["numero_regle_attendue"] == 139
 
 
-def test_evaluate_case_failure_when_expected_absent():
-    """Un cas échoue si numero_regle_attendue est absent des résultats."""
-    case = {"question": "Q1", "numero_regle_attendue": 139}
+def test_evaluate_case_fail_single_cible_absente():
+    """Un cas à cible unique échoue (FAIL) si sa cible est absente des résultats."""
+    case = {"question": "Q1", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [139]}
 
     result = evaluate_case(case, numeros_retournes=[42, 7, 8])
 
-    assert result["reussi"] is False
+    assert result["verdict"] == "FAIL"
+
+
+def test_evaluate_case_pass_toutes_cibles_multiples_trouvees():
+    """Un cas à cibles multiples réussit (PASS) si toutes les cibles sont retrouvées."""
+    case = {"question": "Q1", "famille": "regles_concurrentes", "numeros_regle_attendus": [58, 79]}
+
+    result = evaluate_case(case, numeros_retournes=[58, 79, 152])
+
+    assert result["verdict"] == "PASS"
+
+
+def test_evaluate_case_partiel_certaines_cibles_trouvees():
+    """Un cas à cibles multiples est PARTIEL si certaines cibles manquent."""
+    case = {"question": "Q1", "famille": "regles_concurrentes", "numeros_regle_attendus": [58, 79, 152]}
+
+    result = evaluate_case(case, numeros_retournes=[58, 152])
+
+    assert result["verdict"] == "PARTIEL"
+
+
+def test_evaluate_case_fail_aucune_cible_multiple_trouvee():
+    """Un cas à cibles multiples échoue (FAIL) si aucune cible n'est retrouvée."""
+    case = {"question": "Q1", "famille": "regles_concurrentes", "numeros_regle_attendus": [58, 79]}
+
+    result = evaluate_case(case, numeros_retournes=[1, 2, 3])
+
+    assert result["verdict"] == "FAIL"
+
+
+def test_evaluate_case_fail_sans_reponse_attendue():
+    """Un cas sans_reponse (numeros_regle_attendus vide) est toujours FAIL."""
+    case = {"question": "Q1", "famille": "sans_reponse", "numeros_regle_attendus": []}
+
+    result = evaluate_case(case, numeros_retournes=[1, 2, 3])
+
+    assert result["verdict"] == "FAIL"
 
 
 def test_compute_taux_reussite_ratio():

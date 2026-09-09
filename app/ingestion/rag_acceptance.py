@@ -33,12 +33,30 @@ def query_top_n_numeros(session: Session, vector: list[float], top_n: int) -> li
 
 
 def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
-    """Évalue un cas : la règle attendue figure-t-elle dans les résultats retournés ?"""
+    """Évalue un cas : verdict PASS/FAIL/PARTIEL selon les cibles retrouvées.
+
+    Un cas sans cible attendue (numeros_regle_attendus vide, famille
+    sans_reponse) est toujours FAIL : aucun mécanisme de refus n'existe
+    aujourd'hui dans le pipeline de retrieval.
+    """
+    attendus = case["numeros_regle_attendus"]
+    trouves = [n for n in attendus if n in numeros_retournes]
+
+    if not attendus:
+        verdict = "FAIL"
+    elif len(trouves) == len(attendus):
+        verdict = "PASS"
+    elif len(trouves) == 0:
+        verdict = "FAIL"
+    else:
+        verdict = "PARTIEL"
+
     return {
         "question": case["question"],
-        "numero_regle_attendue": case["numero_regle_attendue"],
+        "famille": case["famille"],
+        "numeros_regle_attendus": attendus,
         "numeros_retournes": numeros_retournes,
-        "reussi": case["numero_regle_attendue"] in numeros_retournes,
+        "verdict": verdict,
     }
 
 
