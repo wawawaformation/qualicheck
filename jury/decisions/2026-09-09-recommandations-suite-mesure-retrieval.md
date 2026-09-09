@@ -98,10 +98,15 @@ comme brique autonome — même logique que le jeu d'acceptance et
   `canonical`, ne figurait dans aucun top-15) — un reranker ne fait que
   réordonner ce qui est déjà récupéré.
 - **RRF, HyDE en production, reformulation LLM générique, FTS hybride** :
-  toujours hors périmètre à ce stade, pour les mêmes raisons qu'actées le
-  2026-09-08 — aucun n'a de signal mesuré à ce jour qui les justifie
-  (HyDE pourrait devenir un candidat si la recommandation 2 révèle
-  plusieurs échecs du même type que la règle 185, pas avant).
+  toujours hors périmètre. **Condition de réouverture testée et non
+  déclenchée** (2026-09-09, suite recommandation 2) : les 28 cas
+  supplémentaires ciblant spécifiquement du vocabulaire exact/jargon
+  n'ont révélé aucun nouvel échec du même type que les règles 185/236 —
+  97% de réussite sur les 70 cas `vocabulaire_*`/`vocabulaire_objectif`.
+  Ces 2 échecs restent isolés et sont acceptés comme limite connue du
+  RAG sémantique (cohérent avec le rappel imparfait déjà assumé,
+  `jury/decisions/2026-07-25-rag-us2-petit-corpus.md`) plutôt que de
+  justifier un mécanisme construit pour 2 cas précis.
 - **Corriger l'indicateur de `regles_concurrentes` en dehors d'une vraie
   refonte** : noté comme limite connue de `compute_taux_par_famille`, pas
   une correction à faire à la volée — à traiter comme son propre petit

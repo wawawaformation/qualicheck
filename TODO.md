@@ -206,8 +206,12 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       technique**, pas de la dilution vectorielle. Règle 236 (`vocabulaire_
       objectif`, « interprétation hasardeuse du DOM ») reste isolée (1/24),
       aucun cas comparable trouvé — statut inchangé pour celle-là.
-    - Voir aussi `docs/eval/` (mesure rejouée) et la question ouverte
-      HyDE/reformulation à trancher avec David à la lumière de ce résultat.
+    - **Question HyDE/reformulation tranchée (2026-09-09)** : condition
+      de réouverture testée, non déclenchée — les 28 cas n'ont révélé
+      aucun nouvel échec du même type. Règles 185/236 acceptées comme
+      limite connue du RAG sémantique, fermé sans construire de
+      mécanisme. Détail :
+      `jury/decisions/2026-09-09-recommandations-suite-mesure-retrieval.md`.
   - [x] **Recommandation 3 — mécanisme de décomposition LLM pour
     `multi_sujets`** (2026-09-09, carte Kanboard #10) — `D`/`A`
     - `app/retrieval/` (`decomposition.py`, `retrieval.py`) — un appel LLM
