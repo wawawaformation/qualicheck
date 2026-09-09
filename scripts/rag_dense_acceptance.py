@@ -1,11 +1,16 @@
 """Compare le recall du RAG sur plusieurs top_n (3/5/10/15) en une exécution.
 
-Rejoue tests/acceptance/rag_acceptance.jsonl une seule fois (un seul appel
-API embeddings, une seule requête pgvector par question à LIMIT 15), puis
-tronque localement pour chaque top_n de TOP_NS. Produit un rapport Markdown
-horodaté dans docs/eval/. Exploration ponctuelle, distincte de l'instrument
-de mesure officiel de l'Étape 3 (scripts/check_rag_acceptance.py, inchangé)
-— voir docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md.
+Rejoue tests/acceptance/rag_acceptance.jsonl une seule fois par question
+(une seule décomposition, un seul appel API embeddings pour ses
+sous-questions, une seule requête pgvector par sous-question à LIMIT 15),
+puis tronque localement chaque sous-question pour chaque top_n de TOP_NS
+avant de fusionner. Produit un rapport Markdown horodaté dans docs/eval/.
+
+Passe par app.retrieval (décomposition + union), comme l'instrument de
+mesure officiel (scripts/check_rag_acceptance.py) depuis le 2026-09-09 —
+seule différence : compare plusieurs top_n en un run au lieu d'un seul.
+Voir docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md et
+docs/superpowers/specs/2026-09-09-retrieval-decomposition-multi-sujets-design.md.
 """
 
 import logging
@@ -29,6 +34,7 @@ from app.ingestion.rag_acceptance import (  # noqa: E402
     query_top_n_numeros,
 )
 from app.logging_config import setup_logging  # noqa: E402
+from app.retrieval.decomposition import DecompositionClient  # noqa: E402
 
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
@@ -48,6 +54,42 @@ def get_engine():
         f"{os.environ['POSTGRES_PORT']}/{os.environ['POSTGRES_DB']}"
     )
     return create_engine(url)
+
+
+def retrieve_numeros_par_top_n(
+    session: Session,
+    question: str,
+    top_ns: list[int],
+    decomposition_client: DecompositionClient,
+    embedding_client: EmbeddingClient,
+) -> dict[int, list[int]]:
+    """Retrouve les numéros de règle pour une question, pour chaque top_n.
+
+    Décompose et vectorise une seule fois (indépendant de top_n), interroge
+    pgvector une seule fois par sous-question à LIMIT max(top_ns), puis
+    pour chaque top_n : tronque le résultat de chaque sous-question à ce
+    top_n avant de fusionner (union dédoublonnée, ordre de première
+    apparition) — même logique de fusion que app.retrieval.retrieve(),
+    sans repayer la décomposition/l'embedding à chaque top_n.
+    """
+    top_n_max = max(top_ns)
+    sous_questions = decomposition_client.decomposer(question)
+    vectors = embedding_client.embed_batch(sous_questions)
+    numeros_max_par_sous_question = [
+        query_top_n_numeros(session, vector, top_n_max) for vector in vectors
+    ]
+
+    resultats: dict[int, list[int]] = {}
+    for top_n in top_ns:
+        numeros: list[int] = []
+        vus: set[int] = set()
+        for numeros_max in numeros_max_par_sous_question:
+            for numero in numeros_max[:top_n]:
+                if numero not in vus:
+                    vus.add(numero)
+                    numeros.append(numero)
+        resultats[top_n] = numeros
+    return resultats
 
 
 def build_report(
@@ -96,15 +138,21 @@ def main() -> None:
     progress_logger.info("=== rag_dense_acceptance : démarrage ===")
 
     cases = load_cases(CASES_PATH)
-    client = EmbeddingClient()
-    vectors = client.embed_batch([case["question"] for case in cases])
+    embedding_client = EmbeddingClient()
+    decomposition_client = DecompositionClient()
 
     resultats_par_top_n: dict[int, list[dict]] = {n: [] for n in TOP_NS}
     with Session(engine) as session:
-        for case, vector in zip(cases, vectors, strict=True):
-            numeros_retournes_max = query_top_n_numeros(session, vector, top_n_max)
+        for case in cases:
+            numeros_par_top_n = retrieve_numeros_par_top_n(
+                session=session,
+                question=case["question"],
+                top_ns=TOP_NS,
+                decomposition_client=decomposition_client,
+                embedding_client=embedding_client,
+            )
             for n in TOP_NS:
-                evaluation = evaluate_case(case, numeros_retournes_max[:n])
+                evaluation = evaluate_case(case, numeros_par_top_n[n])
                 resultats_par_top_n[n].append(evaluation)
                 progress_logger.info(
                     f"rag_dense_acceptance — « {case['question']} » "
@@ -113,10 +161,25 @@ def main() -> None:
 
     taux_par_top_n = {n: compute_taux_par_famille(resultats_par_top_n[n]) for n in TOP_NS}
 
-    role = load_manifest()["embedding"]
-    cost = client.total_tokens * role["prix_entree_par_million"] / 1_000_000
+    manifest = load_manifest()
+    embedding_role = manifest["embedding"]
+    decomposition_role = manifest["decomposition"]
+    embedding_cost = (
+        embedding_client.total_tokens * embedding_role["prix_entree_par_million"] / 1_000_000
+    )
+    decomposition_cost = (
+        decomposition_client.input_tokens
+        * decomposition_role["prix_entree_par_million"]
+        / 1_000_000
+        + decomposition_client.output_tokens
+        * decomposition_role["prix_sortie_par_million"]
+        / 1_000_000
+    )
+    cost = embedding_cost + decomposition_cost
     progress_logger.info(
-        f"rag_dense_acceptance — tokens : {client.total_tokens}, coût estimé : {cost:.4f} €"
+        f"rag_dense_acceptance — tokens embedding : {embedding_client.total_tokens}, "
+        f"tokens décomposition : {decomposition_client.input_tokens}+"
+        f"{decomposition_client.output_tokens}, coût estimé : {cost:.4f} €"
     )
 
     horodatage = datetime.now()

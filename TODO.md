@@ -221,6 +221,20 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     - Résultat mesuré : `multi_sujets` passe de 2/4 PASS + 2 PARTIEL à
       **4/4 (100%)**, aucune régression sur les 95 autres cas. Coût du
       run complet : 0,0073 €.
+    - `scripts/rag_dense_acceptance.py` mis à jour à l'identique (bascule
+      sur `retrieve()`, une seule décomposition/embedding par question
+      pour les 4 `top_n`) — `multi_sujets` est désormais à 100% dès
+      `top_n=3`, plus besoin de `top_n` élevé pour cette famille.
+    - **Observation à surveiller** : le LLM de décomposition sur-découpe
+      parfois une question mono-règle en fragments (constaté sur le cas
+      règle 167 — « ordre de parcours des champs, avec des numéros »
+      scindé en 2 sous-questions alors qu'une seule règle est visée),
+      contrairement à l'exemple few-shot du prompt qui vise à l'éviter.
+      Effet bénéfique ici par hasard (un fragment se rapproche du jargon
+      `tabindex`, la règle 167 passe désormais), mais la frontière
+      mono-sujet/multi-sujets décidée par le LLM est plus floue en
+      pratique que dans le prompt — pas un défaut bloquant, à recreuser
+      si un cas futur montre un sur-découpage nuisible.
   - **Point de vigilance avant la prochaine synchro staging** (constaté
     2026-09-09) : `.gitea/workflows/cd-staging.yml` applique les migrations
     (`make migration`) mais ne relance jamais l'ingestion ni l'embedding.
