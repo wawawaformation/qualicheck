@@ -1,0 +1,80 @@
+<mxfile host="Electron">
+  <diagram id="RetrievalDecompositionMultiSujets" name="Page-1">
+    <mxGraphModel dx="1740" dy="926" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="b0" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="Entrée" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="question" parent="b0" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" value="Question utilisateur&#xa;(API regles/dense)" vertex="1">
+          <mxGeometry height="50" width="300" x="350" y="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b1" parent="1" style="swimlane;startSize=25;fillColor=#e1d5e7;strokeColor=#9673a6;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="Décomposition — decomposition.py (gpt-5.4-mini)" vertex="1">
+          <mxGeometry height="150" width="1000" x="40" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="decompose" parent="b1" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;html=0;" value="Appel LLM structuré&#xa;question → sous_questions (N variable)&#xa;retry 3x (backoff 2s/4s/8s)" vertex="1">
+          <mxGeometry height="60" width="420" x="80" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="failopen" parent="b1" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;html=0;" value="3 échecs → fail-open&#xa;sous_questions = [question]" vertex="1">
+          <mxGeometry height="60" width="420" x="80" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="fewshot" parent="b1" style="rounded=1;dashed=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontStyle=0;html=0;" value="prompt informé du corpus Opquast&#xa;few-shot : 1 règle = 1 sujet" vertex="1">
+          <mxGeometry height="60" width="420" x="560" y="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b2" parent="1" style="swimlane;startSize=25;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="Recherche vectorielle — retrieval.py" vertex="1">
+          <mxGeometry height="150" width="1000" x="40" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="embed" parent="b2" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" value="embed_batch(sous_questions)&#xa;1 seul appel API embeddings" vertex="1">
+          <mxGeometry height="60" width="420" x="80" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="pgvector" parent="b2" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;html=0;" value="query_top_n_numeros() par sous-question&#xa;(réutilisé, app.ingestion.rag_acceptance)" vertex="1">
+          <mxGeometry height="60" width="420" x="560" y="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b3" parent="1" style="swimlane;startSize=25;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="Fusion" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="union" parent="b3" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;html=0;" value="Union simple + dédoublonnage&#xa;pas de RRF, pas de plafond après fusion" vertex="1">
+          <mxGeometry height="50" width="500" x="250" y="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="b4" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="Sortie" vertex="1">
+          <mxGeometry height="90" width="1000" x="40" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="numeros" parent="b4" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;html=0;" value="list[int] — numéros de règle&#xa;taille variable (union, pas de N fixe)" vertex="1">
+          <mxGeometry height="50" width="400" x="350" y="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" edge="1" parent="1" source="question" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="decompose">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="decompose" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;" target="failopen">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="245" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="decompose" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="embed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="failopen" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;" target="embed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="embed" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="pgvector">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="pgvector" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="union">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="union" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="numeros">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
