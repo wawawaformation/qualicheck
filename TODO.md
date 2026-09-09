@@ -90,23 +90,26 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       audit nommés.
     - Volontairement **pas** de « pas de FTS / pas de RRF » au fond : ça
       exige la mesure de l'étape 3.
-  - [ ] **Étape 2 — cas d'acceptance durs = amorce de spec US2** — `D`/`A`
-    - Pourquoi ce n'est pas de l'outillage : les 17 cas actuels sont des
-      paraphrases d'intitulés, à cible unique, sujets disjoints — le 100 %
-      obtenu ne mesure pas ce dont on débat. Écrire ces cas, c'est spécifier
-      le comportement attendu d'US2 en BDD ; c'est le chemin critique.
-    - 4 familles : vocabulaire vivant uniquement dans
-      `guide_analyse`/`controle` (ARIA, SIRET, `alt=`) ; questions
-      multi-sujets (seul vrai cas d'usage du découpage LLM) ; questions
-      méthodologiques sans réponse dans le corpus (teste le « je ne sais
-      pas » honnête, cf. `IDEA.md`) ; règles voisines concurrentes (teste la
-      précision, que le recall@3 à cible unique ne mesure jamais).
-    - **Prérequis de format** : le JSONL actuel
-      `{question, numero_regle_attendue}` ne sait exprimer ni plusieurs
-      cibles acceptables, ni « aucune réponse attendue ». À étendre avant
-      d'écrire les cas.
-    - Demande le jugement métier de David (même schéma que les 17 initiaux :
-      proposition puis validation).
+  - [x] **Étape 2 — cas d'acceptance durs = amorce de spec US2** (2026-09-09)
+    — `D`/`A`
+    - Spec `docs/superpowers/specs/2026-09-09-rag-acceptance-familles-design.md`,
+      plan `docs/superpowers/plans/2026-09-09-rag-acceptance-familles-implementation.md`.
+      Détail tâche par tâche dans `CHANGELOG.md` (2026-09-09).
+    - Format étendu : `{question, famille, numeros_regle_attendus}` — liste
+      de cibles (plusieurs cibles acceptables) et `[]` (aucune réponse
+      attendue, toujours `FAIL`, faute de mécanisme de refus). Verdict à 3
+      états (`PASS`/`FAIL`/`PARTIEL`), taux calculé par famille.
+    - **5 familles** (la 1re scindée en deux selon la provenance du
+      vocabulaire, à la demande de David) : `vocabulaire_source_opquast`
+      (texte Opquast brut, `solution`/`controle`) ; `vocabulaire_genere_llm`
+      (généré par l'enrichissement, `guide_analyse` seul) ; `multi_sujets` ;
+      `sans_reponse` ; `regles_concurrentes`.
+    - 56 cas au total (17 historiques migrés sous `paraphrase_intitule` + 39
+      nouveaux, vocabulaire repéré par extraction automatique plutôt que
+      deviné, proposition Opus puis validation David).
+    - Carte Kanboard #8 créée séparément : `theme` absent du chunk vectorisé
+      sans justification documentée — non urgent, conditionnel à un échec
+      mesuré à l'Étape 4 ci-dessous.
   - [ ] **Étape 3 — mesurer `recall@3/5/10/15`, pipeline inchangé** (quelques
     centimes) — `A`
     - Il y a une vraie chance que ça referme le débat : si le rappel couvre

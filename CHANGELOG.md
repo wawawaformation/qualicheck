@@ -37,6 +37,17 @@ Format d'entrée, une ligne par réalisation :
     conception — non urgent, conditionnel à un échec mesuré à l'Étape 4.
   - Hors périmètre de ce chantier (session ultérieure, modèle Opus prévu) :
     rédaction effective des nouveaux cas durs pour les 5 familles.
+  - **39 nouveaux cas durs ajoutés** (commit `e5c4d5c`, même jour) : 10
+    `vocabulaire_source_opquast`, 13 `vocabulaire_genere_llm`, 4
+    `multi_sujets`, 5 `sans_reponse`, 7 `regles_concurrentes` — 56 cas au
+    total avec les 17 historiques. Vocabulaire repéré par extraction
+    automatique (regex + comptage SQL par champ,
+    `tmp/extract_vocab_distinctif.py`) plutôt qu'une liste devinée. Un
+    candidat (règle 124, terme `autoplay`) retiré après relecture : il vit
+    aussi dans `solution`, ne testait donc pas proprement la dépendance à
+    la génération LLM. Cibles vérifiées contre les numéros de règle réels
+    en base avant commit. Proposition (Opus) puis validation (David), même
+    schéma que les 17 cas initiaux.
 
 ## 2026-09-08 — Claude Code (Part 9)
 
