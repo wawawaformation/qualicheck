@@ -11,7 +11,7 @@ de mesure officiel de l'Étape 3 (scripts/check_rag_acceptance.py, inchangé)
 import logging
 import os
 import sys
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -50,7 +50,9 @@ def get_engine():
     return create_engine(url)
 
 
-def build_report(taux_par_top_n: dict[int, dict], evaluations_top15: list[dict]) -> str:
+def build_report(
+    taux_par_top_n: dict[int, dict], evaluations_top15: list[dict], horodatage: datetime
+) -> str:
     """Construit le rapport Markdown : tableau agrégé + cas PARTIEL/FAIL à top_n=15."""
     familles = list(taux_par_top_n[TOP_NS[0]].keys())
 
@@ -75,7 +77,7 @@ def build_report(taux_par_top_n: dict[int, dict], evaluations_top15: list[dict])
     section_echecs = "\n".join(lignes_echecs) if lignes_echecs else "Aucun."
 
     return (
-        f"# Mesure recall — rag_dense_acceptance ({date.today().isoformat()})\n\n"
+        f"# Mesure recall — rag_dense_acceptance ({horodatage.strftime('%Y-%m-%d %H:%M')})\n\n"
         f"## Taux de réussite par famille × top_n\n\n{tableau}\n\n"
         f"## Cas PARTIEL/FAIL persistants à top_n=15\n\n"
         f"(famille `{FAMILLE_HORS_SEUIL}` exclue : toujours FAIL par construction, "
@@ -117,9 +119,10 @@ def main() -> None:
         f"rag_dense_acceptance — tokens : {client.total_tokens}, coût estimé : {cost:.4f} €"
     )
 
-    rapport = build_report(taux_par_top_n, resultats_par_top_n[top_n_max])
+    horodatage = datetime.now()
+    rapport = build_report(taux_par_top_n, resultats_par_top_n[top_n_max], horodatage)
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    report_path = REPORT_DIR / f"rag_dense_acceptance_{date.today().isoformat()}.md"
+    report_path = REPORT_DIR / f"rag_dense_acceptance_{horodatage.strftime('%Y-%m-%d_%H%M%S')}.md"
     report_path.write_text(rapport, encoding="utf-8")
 
     logger.info(f"=== rag_dense_acceptance : rapport écrit dans {report_path} ===")
