@@ -43,7 +43,7 @@ l'espace vectoriel.
 
 ## Architecture
 
-```
+```text
 app/retrieval/
 ├── __init__.py
 ├── decomposition.py            # appel LLM (gpt-5.4-mini) : question → sous-questions
@@ -56,7 +56,10 @@ Premier module du futur système retrieval, construit en avance de la
 conception API complète — même statut que `check_rag_acceptance.py`/
 `rag_dense_acceptance.py` (scripts déjà isolables du reste d'US2).
 
-Diagramme : `2026-09-09-retrieval-decomposition-multi-sujets-design.drawio`.
+Diagramme : `conception/3_autre_us/us2_question_libre/diagramme_decomposition_multi_sujets.drawio`
+— rangé avec les autres diagrammes US2 (`diagramme_activite_us2.drawio`,
+`cas_utilisation_us2.drawio`), c'est de la conception, pas un artefact
+jetable de brainstorming.
 
 ## Composants
 
