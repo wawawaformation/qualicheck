@@ -37,6 +37,7 @@ CASES_PATH = Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag
 REPORT_DIR = Path(__file__).resolve().parents[1] / "docs" / "eval"
 
 TOP_NS = [3, 5, 10, 15]
+FAMILLE_HORS_SEUIL = "sans_reponse"
 
 
 def get_engine():
@@ -61,7 +62,11 @@ def build_report(taux_par_top_n: dict[int, dict], evaluations_top15: list[dict])
         lignes.append(f"| {famille} | " + " | ".join(valeurs) + " |")
     tableau = "\n".join(lignes)
 
-    echecs = [e for e in evaluations_top15 if e["verdict"] in ("FAIL", "PARTIEL")]
+    echecs = [
+        e
+        for e in evaluations_top15
+        if e["verdict"] in ("FAIL", "PARTIEL") and e["famille"] != FAMILLE_HORS_SEUIL
+    ]
     lignes_echecs = [
         f"- **{e['verdict']}** [{e['famille']}] « {e['question']} » — "
         f"attendu {e['numeros_regle_attendus']}, retourné {e['numeros_retournes']}"
@@ -72,7 +77,9 @@ def build_report(taux_par_top_n: dict[int, dict], evaluations_top15: list[dict])
     return (
         f"# Mesure recall — rag_dense_acceptance ({date.today().isoformat()})\n\n"
         f"## Taux de réussite par famille × top_n\n\n{tableau}\n\n"
-        f"## Cas PARTIEL/FAIL persistants à top_n=15\n\n{section_echecs}\n"
+        f"## Cas PARTIEL/FAIL persistants à top_n=15\n\n"
+        f"(famille `{FAMILLE_HORS_SEUIL}` exclue : toujours FAIL par construction, "
+        f"pas un signal — voir le taux dans le tableau ci-dessus)\n\n{section_echecs}\n"
     )
 
 
