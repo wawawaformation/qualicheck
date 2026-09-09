@@ -35,22 +35,17 @@ Exception volontaire : `tests/migration/` cible `POSTGRES_DB` (lecture seule, v�
 
 Travail au fil de l'eau directement sur `dev`, pas de découpage par sujet.
 
-## Environnement local — `uv run` cassé (constaté 2026-09-08)
+## Environnement local — `uv run` (shebang cassé, corrigé le 2026-09-09)
 
-`uv run pytest` / `uv run ruff` échouent dans cet environnement : le
-shebang des scripts de `.venv/bin/` pointe vers un ancien chemin de montage
-(`/media/david/projets1/QualiCheck/.venv/bin/python`), alors que le projet
-est maintenant sur `/projets/QualiCheck`. Contournement systématique tant
-que le venv n'est pas régénéré : `.venv/bin/python -m pytest`,
-`.venv/bin/python -m ruff check`, `.venv/bin/python scripts/....py` — pas
-`uv run <commande>`. Concerne aussi les cibles `Makefile` qui appellent
-`uv run` en interne (`make migration`, `make create-db-audit`, etc.) : si
-une cible échoue pour cette raison, rejouer la commande sous-jacente avec
-`.venv/bin/python` plutôt que d'y voir un bug de la cible elle-même. Non
-corrigé volontairement le 2026-09-08 (hors du périmètre de la tâche en
-cours ce jour-là) — un `uv sync`/régénération du venv réglerait
-probablement le shebang, à faire quand ça vaut la peine d'interrompre le
-travail en cours pour ça.
+Incident résolu : `uv run pytest` / `uv run ruff` échouaient (shebang de
+`.venv/bin/` pointant vers un ancien chemin de montage,
+`/media/david/projets1/QualiCheck/.venv/bin/python`, depuis que le projet a
+déménagé sur `/projets/QualiCheck`). Corrigé par régénération complète du
+venv (`rm -rf .venv && uv sync` — un `uv sync` seul sur un venv déjà
+"checked" ne suffit pas, il ne réécrit pas les shebangs existants).
+`uv run <commande>` fonctionne à nouveau normalement. Si le symptôme
+revient après un déplacement de dépôt, rejouer la même procédure plutôt que
+réintroduire le contournement `.venv/bin/python -m ...`.
 
 ## Fichiers temporaires
 

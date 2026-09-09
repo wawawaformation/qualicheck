@@ -9,6 +9,14 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-09 — Claude Code (Part 2)
+
+- **Environnement `uv run` réparé** — le shebang cassé constaté le
+  2026-09-08 (`docs/agent/02_regles_execution.md`) est corrigé par
+  régénération complète du venv (`rm -rf .venv && uv sync`, un `uv sync`
+  seul ne réécrit pas les shebangs d'un venv déjà résolu). `uv run
+  pytest`/`uv run ruff` fonctionnent à nouveau, 128 tests toujours verts.
+
 ## 2026-09-09 — Claude Code
 
 - **Jeu d'acceptance RAG étendu à 5 familles de cas** (Étape 2 du plan
