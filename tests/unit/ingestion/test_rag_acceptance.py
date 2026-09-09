@@ -36,7 +36,11 @@ def test_load_cases_parses_jsonl(tmp_path):
 
 def test_evaluate_case_pass_single_cible():
     """Un cas à cible unique réussit (PASS) si sa cible figure dans les résultats."""
-    case = {"question": "Q1", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [139]}
+    case = {
+        "question": "Q1",
+        "famille": "vocabulaire_source_opquast",
+        "numeros_regle_attendus": [139],
+    }
 
     result = evaluate_case(case, numeros_retournes=[42, 139, 7])
 
@@ -49,7 +53,11 @@ def test_evaluate_case_pass_single_cible():
 
 def test_evaluate_case_fail_single_cible_absente():
     """Un cas à cible unique échoue (FAIL) si sa cible est absente des résultats."""
-    case = {"question": "Q1", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [139]}
+    case = {
+        "question": "Q1",
+        "famille": "vocabulaire_source_opquast",
+        "numeros_regle_attendus": [139],
+    }
 
     result = evaluate_case(case, numeros_retournes=[42, 7, 8])
 
@@ -67,7 +75,11 @@ def test_evaluate_case_pass_toutes_cibles_multiples_trouvees():
 
 def test_evaluate_case_partiel_certaines_cibles_trouvees():
     """Un cas à cibles multiples est PARTIEL si certaines cibles manquent."""
-    case = {"question": "Q1", "famille": "regles_concurrentes", "numeros_regle_attendus": [58, 79, 152]}
+    case = {
+        "question": "Q1",
+        "famille": "regles_concurrentes",
+        "numeros_regle_attendus": [58, 79, 152],
+    }
 
     result = evaluate_case(case, numeros_retournes=[58, 152])
 

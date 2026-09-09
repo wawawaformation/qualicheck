@@ -9,6 +9,35 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-09 — Claude Code
+
+- **Jeu d'acceptance RAG étendu à 5 familles de cas** (Étape 2 du plan
+  retrieval US2, `jury/decisions/2026-09-08-mesurer-avant-mecanismes-retrieval.md`)
+  — spec `docs/superpowers/specs/2026-09-09-rag-acceptance-familles-design.md`,
+  plan `docs/superpowers/plans/2026-09-09-rag-acceptance-familles-implementation.md`,
+  exécuté en 6 tâches (TDD), 128 tests unitaires verts, `ruff` propre.
+  - Format `tests/acceptance/rag_acceptance.jsonl` migré : `numero_regle_attendue`
+    (entier) → `numeros_regle_attendus` (liste) + nouveau champ `famille`.
+    Les 17 cas historiques migrés tels quels sous `famille: paraphrase_intitule`
+    (reshape mécanique, aucun contenu changé).
+  - `evaluate_case()` produit un verdict à 3 états (`PASS`/`FAIL`/`PARTIEL`)
+    plutôt qu'un booléen — `PARTIEL` quand certaines cibles multiples sont
+    retrouvées mais pas toutes ; `FAIL` toujours pour un cas `sans_reponse`
+    (`numeros_regle_attendus: []`), faute de mécanisme de refus dans le
+    pipeline de retrieval.
+  - `compute_taux_par_famille()` remplace `compute_taux_reussite()` : un
+    taux par famille, `PARTIEL` exclu du dénominateur (compté à part).
+  - `is_acceptable()` compare chaque famille au seuil du manifest, sauf
+    `sans_reponse` (toujours ignorée — son taux nul est attendu, pas un
+    défaut du retrieval).
+  - `scripts/check_rag_acceptance.py` : logs par cas (famille + verdict),
+    résumé par famille avant le verdict global.
+  - Carte Kanboard #8 créée séparément : `theme` absent du chunk vectorisé
+    (`app/ingestion/chunking.py`) sans justification documentée dans la
+    conception — non urgent, conditionnel à un échec mesuré à l'Étape 4.
+  - Hors périmètre de ce chantier (session ultérieure, modèle Opus prévu) :
+    rédaction effective des nouveaux cas durs pour les 5 familles.
+
 ## 2026-09-08 — Claude Code (Part 9)
 
 - **Syntaxe de recherche façon Google sur `GET /regles?q=`** — commit
