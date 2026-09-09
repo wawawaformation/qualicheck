@@ -15,3 +15,42 @@
 {"question": "Le formulaire d'inscription doit-il accepter les adresses email avec un signe plus (+) dedans ?", "famille": "paraphrase_intitule", "numeros_regle_attendus": [24]}
 {"question": "Les messages d'erreur doivent-ils être dans la même langue que le formulaire ?", "famille": "paraphrase_intitule", "numeros_regle_attendus": [82]}
 {"question": "Le numéro SIRET (ou équivalent d'immatriculation légale) doit-il être affiché sur le site ?", "famille": "paraphrase_intitule", "numeros_regle_attendus": [106]}
+{"question": "Peut-on imposer un ordre de parcours des champs différent de celui du code, avec des numéros ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [167]}
+{"question": "Faut-il prévoir des règles de style qui changent selon la largeur de l'écran ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [194]}
+{"question": "La petite image affichée dans l'onglet du navigateur doit-elle être déclarée dans le code ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [104]}
+{"question": "Les options payantes supplémentaires peuvent-elles être pré-cochées dans le panier ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [33]}
+{"question": "Peut-on déclarer au navigateur depuis quels domaines il a le droit de charger scripts et images ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [212]}
+{"question": "Si mon navigateur est réglé en allemand puis en anglais, le site doit-il respecter cet ordre ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [135]}
+{"question": "Le serveur doit-il permettre au navigateur de savoir si une page a changé depuis sa dernière visite ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [227]}
+{"question": "Dans un document téléchargeable issu d'un scan, doit-on pouvoir sélectionner le texte ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [240]}
+{"question": "Faut-il prouver que les mails envoyés depuis mon domaine viennent réellement de moi ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [217]}
+{"question": "Si la police choisie n'est pas disponible, le navigateur doit-il avoir une solution de repli ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [190]}
+{"question": "Comment éviter que la même page soit vue comme deux pages distinctes selon l'adresse tapée ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [218]}
+{"question": "Quand on saisit des données confidentielles, la redirection vers une connexion chiffrée doit-elle être définitive ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [27]}
+{"question": "Faut-il un code temporaire envoyé à l'utilisateur pour sécuriser l'accès à son compte ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [19]}
+{"question": "Dans mon espace personnel, puis-je récupérer mes données dans un fichier exploitable ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [21]}
+{"question": "Pour un paiement en plusieurs fois, le coût réel du crédit doit-il être affiché ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [42]}
+{"question": "Si l'utilisateur clique sur retour pendant une commande, doit-il être prévenu qu'il perdra sa saisie ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [90]}
+{"question": "Un menu qui se déplie doit-il annoncer son état aux outils d'assistance ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [185]}
+{"question": "Une icône affichée via une police spéciale doit-elle avoir un équivalent lisible par les outils d'assistance ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [189]}
+{"question": "L'indicateur de robustesse du mot de passe doit-il être annoncé au fil de la saisie ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [203]}
+{"question": "La date d'un article doit-elle être lisible par une machine, pas seulement par un humain ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [231]}
+{"question": "Le serveur doit-il réduire la taille des fichiers envoyés quand le navigateur sait les décompresser ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [226]}
+{"question": "Peut-on empêcher l'utilisateur de sélectionner et copier le texte d'une page ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [237]}
+{"question": "Si le site affirme respecter un référentiel d'accessibilité, doit-il indiquer lequel précisément ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [115]}
+{"question": "Je lance une boutique : quelles informations légales afficher, et comment rendre mes vidéos compréhensibles pour tous ?", "famille": "multi_sujets", "numeros_regle_attendus": [106, 122]}
+{"question": "Mon site a un moteur de recherche : les résultats sont-ils partageables par lien et indiquent-ils leur nombre ?", "famille": "multi_sujets", "numeros_regle_attendus": [13, 169]}
+{"question": "Sur mobile, faut-il des boutons assez grands et laisser l'utilisateur agrandir la page ?", "famille": "multi_sujets", "numeros_regle_attendus": [186, 193]}
+{"question": "Comment un client peut-il nous joindre, et où lit-il les conditions de vente ?", "famille": "multi_sujets", "numeros_regle_attendus": [107, 46]}
+{"question": "Comment recruter un panel d'utilisateurs en situation de handicap pour tester mon site ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Combien de temps faut-il prévoir pour réaliser un audit qualité web complet ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quelle méthode d'estimation agile utiliser pour planifier les corrections d'un audit ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quel est le tarif d'une certification Opquast pour une équipe ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quel framework JavaScript choisir pour construire mon site ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Que doit-on vérifier au sujet du HTTPS sur un site ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [197, 199, 200]}
+{"question": "Comment aider l'utilisateur qui crée un mot de passe ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [75, 76, 203]}
+{"question": "Quels moyens de contact un site doit-il proposer ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [107, 112, 113]}
+{"question": "Que faut-il prévoir pour les vidéos d'un site ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [121, 122, 123, 124]}
+{"question": "Comment doit-on rédiger les liens d'un site ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [117, 134, 137]}
+{"question": "Les liens doivent-ils se distinguer visuellement ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [140, 141]}
+{"question": "Que doit permettre une page de résultats de recherche ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [13, 169, 170]}
