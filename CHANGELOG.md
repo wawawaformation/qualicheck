@@ -9,6 +9,23 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-09 — Claude Code (Part 7)
+
+- **Mécanisme de décomposition LLM des questions multi-sujets implémenté**
+  (carte Kanboard #10) — nouveau package `app/retrieval/`
+  (`decomposition.py` : appel LLM structuré `gpt-5.4-mini`, retry 3x,
+  fail-open ; `retrieval.py` : orchestration décompose → embed →
+  pgvector → union simple). `scripts/check_rag_acceptance.py` bascule
+  entièrement sur `retrieve()` pour les 99 cas.
+- **Résultat mesuré** : `multi_sujets` passe de 2/4 PASS + 2 PARTIEL à
+  **4/4 PASS (100%)** — les 2 cas qui perdaient une des deux cibles
+  (règles 106/122 et 107/46) sont désormais entièrement retrouvés. Les 3
+  échecs isolés préexistants (règles 167, 185, 236 — écart
+  paraphrase/jargon ou dilution isolée) persistent à l'identique, sans
+  régression sur les 95 autres cas. Coût du run complet : 0,0073 €.
+- 6 nouveaux tests unitaires (`tests/unit/retrieval/`), 198 tests au
+  total, tous verts.
+
 ## 2026-09-09 — Claude Code (Part 6)
 
 - **28 nouveaux cas d'acceptance** (`vocabulaire_source_opquast`,

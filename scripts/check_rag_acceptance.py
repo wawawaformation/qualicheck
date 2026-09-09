@@ -27,10 +27,11 @@ from app.ingestion.rag_acceptance import (  # noqa: E402
     format_dataset_versions,
     is_acceptable,
     load_cases,
-    query_top_n_numeros,
     summarize_dataset_versions,
 )
 from app.logging_config import setup_logging  # noqa: E402
+from app.retrieval.decomposition import DecompositionClient  # noqa: E402
+from app.retrieval.retrieval import retrieve  # noqa: E402
 
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
@@ -64,16 +65,22 @@ def main() -> None:
 
     try:
         cases = load_cases(CASES_PATH)
-        client = EmbeddingClient()
-        vectors = client.embed_batch([case["question"] for case in cases])
+        embedding_client = EmbeddingClient()
+        decomposition_client = DecompositionClient()
 
         evaluations = []
         with Session(engine) as session:
             dataset_summary = format_dataset_versions(summarize_dataset_versions(session))
             progress_logger.info(f"check_rag_acceptance — Jeu de données : {dataset_summary}")
 
-            for case, vector in zip(cases, vectors, strict=True):
-                numeros_retournes = query_top_n_numeros(session, vector, top_n)
+            for case in cases:
+                numeros_retournes = retrieve(
+                    session=session,
+                    question=case["question"],
+                    top_n=top_n,
+                    decomposition_client=decomposition_client,
+                    embedding_client=embedding_client,
+                )
                 evaluation = evaluate_case(case, numeros_retournes)
                 evaluations.append(evaluation)
                 progress_logger.info(
@@ -95,11 +102,26 @@ def main() -> None:
                 f"{stats['reussis']}/{stats['total']} ({stats['taux']:.0%}){partiel_note}{note}"
             )
 
-        role = load_manifest()["embedding"]
-        cost = client.total_tokens * role["prix_entree_par_million"] / 1_000_000
+        manifest = load_manifest()
+        embedding_role = manifest["embedding"]
+        decomposition_role = manifest["decomposition"]
+        embedding_cost = (
+            embedding_client.total_tokens * embedding_role["prix_entree_par_million"] / 1_000_000
+        )
+        decomposition_cost = (
+            decomposition_client.input_tokens
+            * decomposition_role["prix_entree_par_million"]
+            / 1_000_000
+            + decomposition_client.output_tokens
+            * decomposition_role["prix_sortie_par_million"]
+            / 1_000_000
+        )
+        cost = embedding_cost + decomposition_cost
         summary = (
-            f"check_rag_acceptance — seuil {seuil:.0%}, tokens : {client.total_tokens}, "
-            f"coût estimé : {cost:.4f} €"
+            f"check_rag_acceptance — seuil {seuil:.0%}, "
+            f"tokens embedding : {embedding_client.total_tokens}, "
+            f"tokens décomposition : {decomposition_client.input_tokens}+"
+            f"{decomposition_client.output_tokens}, coût estimé : {cost:.4f} €"
         )
         logger.info(summary)
         progress_logger.info(summary)

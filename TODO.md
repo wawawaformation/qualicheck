@@ -208,6 +208,19 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       aucun cas comparable trouvé — statut inchangé pour celle-là.
     - Voir aussi `docs/eval/` (mesure rejouée) et la question ouverte
       HyDE/reformulation à trancher avec David à la lumière de ce résultat.
+  - [x] **Recommandation 3 — mécanisme de décomposition LLM pour
+    `multi_sujets`** (2026-09-09, carte Kanboard #10) — `D`/`A`
+    - `app/retrieval/` (`decomposition.py`, `retrieval.py`) — un appel LLM
+      structuré (`gpt-5.4-mini`, pas d'agent ReAct) découpe la question,
+      union simple des résultats pgvector par sous-question.
+      `scripts/check_rag_acceptance.py` bascule entièrement sur
+      `retrieve()` (test de non-régression grandeur nature sur les 95
+      cas mono-sujet). Spec :
+      `docs/superpowers/specs/2026-09-09-retrieval-decomposition-multi-sujets-design.md`,
+      plan : `docs/superpowers/plans/2026-09-09-retrieval-decomposition-multi-sujets-implementation.md`.
+    - Résultat mesuré : `multi_sujets` passe de 2/4 PASS + 2 PARTIEL à
+      **4/4 (100%)**, aucune régression sur les 95 autres cas. Coût du
+      run complet : 0,0073 €.
   - **Point de vigilance avant la prochaine synchro staging** (constaté
     2026-09-09) : `.gitea/workflows/cd-staging.yml` applique les migrations
     (`make migration`) mais ne relance jamais l'ingestion ni l'embedding.
