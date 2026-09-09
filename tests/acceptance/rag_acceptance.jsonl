@@ -69,3 +69,31 @@
 {"question": "En navigateur texte ou avec les images désactivées, comment l'utilisateur comprend-il le sens des images et des images-liens ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [117, 118]}
 {"question": "Comment permettre à l'utilisateur de décider en connaissance de cause avant de lancer ou de télécharger un média ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [123]}
 {"question": "Que prévoir pour un utilisateur désorienté qui veut repartir de zéro sur le site ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [155]}
+{"question": "Un flux RSS suffit-il à faire connaître les nouveautés d'un site ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [1]}
+{"question": "Peut-on afficher une vignette en réduisant l'image d'origine via les attributs width et height ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [119]}
+{"question": "Quel registre officiel fait référence pour les codes de langue à déclarer ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [130]}
+{"question": "Un numéro de téléphone doit-il être cliquable via un lien href=\"tel:...\" ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [145]}
+{"question": "Faut-il envoyer un en-tête X-Frame-Options pour empêcher qu'un autre site affiche mes pages dans un cadre ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [211]}
+{"question": "Peut-on ouvrir une fenêtre avec window.open en masquant la barre d'outils (toolbar=\"no\") ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [216]}
+{"question": "Comment déclarer qu'un répertoire ne doit pas être indexé (directive disallow) ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [219]}
+{"question": "Un titre de niveau h2 peut-il être suivi directement d'un h4 ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [234]}
+{"question": "Comment relier une cellule à son en-tête quand scope ne suffit pas ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [242]}
+{"question": "Faut-il éviter d'imposer un ordre de tabulation avec l'attribut tabindex ?", "famille": "vocabulaire_source_opquast", "numeros_regle_attendus": [167]}
+{"question": "Faut-il prévenir l'utilisateur qu'il aura besoin de son RIB avant de commencer une démarche ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [86]}
+{"question": "Faut-il regrouper les options d'un select avec optgroup ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [93]}
+{"question": "Les éléments object et embed doivent-ils avoir une alternative textuelle ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [120]}
+{"question": "Un fichier proposé au téléchargement peut-il s'appeler document.pdf ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [150]}
+{"question": "Les majuscules décoratives doivent-elles être faites avec text-transform plutôt que saisies en dur ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [192]}
+{"question": "À l'impression, faut-il retirer les éléments nav et footer de la page ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [196]}
+{"question": "L'en-tête Content-Type doit-il préciser charset=utf-8 ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [228]}
+{"question": "Un tableau de données peut-il être construit avec des div et des span ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [245]}
+{"question": "Un menu déroulant doit-il exposer son état ouvert/fermé via aria-expanded ?", "famille": "vocabulaire_genere_llm", "numeros_regle_attendus": [185]}
+{"question": "Que doit permettre le titre d'une page dans les onglets et les favoris du navigateur ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [102, 103]}
+{"question": "Sur une page d'erreur, comment éviter que l'utilisateur se retrouve dans un cul-de-sac et doive utiliser le bouton Précédent ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [225]}
+{"question": "Comment rassurer l'utilisateur que le problème ne vient pas de sa connexion quand un accès lui est refusé ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [224]}
+{"question": "Pourquoi ne faut-il pas pouvoir renvoyer à l'utilisateur son mot de passe existant ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [204]}
+{"question": "Que proposer à un utilisateur désorienté qui veut visualiser l'ensemble des contenus et la taille du site ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [171]}
+{"question": "L'utilisateur doit-il pouvoir accéder au contenu tout de suite même si le site diffuse une publicité préalable ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [127]}
+{"question": "Comment donner à l'utilisateur de la visibilité sur les étapes qu'il va accomplir et les informations nécessaires ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [87]}
+{"question": "Où l'utilisateur apprend-il pour quelles raisons ses publications peuvent être modérées ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [9]}
+{"question": "Que se passe-t-il si un client demande un remboursement après le délai légal ?", "famille": "vocabulaire_objectif", "numeros_regle_attendus": [54]}

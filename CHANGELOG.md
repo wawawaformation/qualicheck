@@ -9,6 +9,22 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-09 — Claude Code (Part 6)
+
+- **28 nouveaux cas d'acceptance** (`vocabulaire_source_opquast`,
+  `vocabulaire_genere_llm`, `vocabulaire_objectif` — carte Kanboard #11),
+  99 cas au total. Résultat clé : 2 cas « discriminants » (même règle
+  cible que les échecs 167/185, mais nommant le jargon technique au lieu
+  de le paraphraser) passent tous les deux — confirme que ces échecs sont
+  un écart paraphrase→jargon, pas de la dilution vectorielle. Voir
+  `TODO.md` (Retrieval US2, recommandation 2) pour le détail et la
+  question HyDE qui en découle.
+- Aussi : spec + diagramme drawio pour le mécanisme de décomposition
+  multi-sujets (carte #10) —
+  `docs/superpowers/specs/2026-09-09-retrieval-decomposition-multi-sujets-design.md`,
+  `conception/3_autre_us/us2_question_libre/diagramme_decomposition_multi_sujets.drawio`.
+  Design validé, plan d'implémentation pas encore écrit.
+
 ## 2026-09-09 — Claude Code (Part 5)
 
 - **Nouvelle famille d'acceptance `vocabulaire_objectif`** (carte Kanboard #12)

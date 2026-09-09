@@ -190,6 +190,24 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     ci-dessus)** : on pensait `objectifs` absent de `build_chunk_text()` par
     manque de jointure — en fait `EnrichedRule` les portait déjà via
     `load_enriched_rules_from_db()`, seule la concaténation manquait.
+  - [x] **Recommandation 2 — étoffer vocabulaire_source_opquast /
+    vocabulaire_genere_llm / vocabulaire_objectif** (2026-09-09, carte
+    Kanboard #11) — `D`/`A`
+    - 28 nouveaux cas (extraction automatique de vocabulaire non encore
+      utilisé, `tmp/extract_vocab_distinctif.py`/`extract_vocab_objectif.py`,
+      proposition Opus, validation David) : 99 cas au total. Résultat
+      mesuré : les 28 nouveaux cas passent tous ; les 3 échecs préexistants
+      (règles 167, 185, 236) restent exactement les mêmes.
+    - **Condition de réouverture HyDE tranchée par la mesure** : 2 cas
+      « discriminants » construits exprès (même règle cible que 167/185,
+      mais nommant explicitement `tabindex`/`aria-expanded` au lieu de les
+      paraphraser) **passent** tous les deux — alors que leur paraphrase
+      échoue. Confirme que l'échec est un écart **paraphrase → jargon
+      technique**, pas de la dilution vectorielle. Règle 236 (`vocabulaire_
+      objectif`, « interprétation hasardeuse du DOM ») reste isolée (1/24),
+      aucun cas comparable trouvé — statut inchangé pour celle-là.
+    - Voir aussi `docs/eval/` (mesure rejouée) et la question ouverte
+      HyDE/reformulation à trancher avec David à la lumière de ce résultat.
   - **Point de vigilance avant la prochaine synchro staging** (constaté
     2026-09-09) : `.gitea/workflows/cd-staging.yml` applique les migrations
     (`make migration`) mais ne relance jamais l'ingestion ni l'embedding.
