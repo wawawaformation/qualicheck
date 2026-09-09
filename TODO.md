@@ -254,6 +254,15 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     **embeddings**, pas seulement sur le code. Au moment de pousser :
     prévoir un `make embed-rules` manuel sur l'hôte staging après
     déploiement, pas seulement le merge git.
+  - [ ] **Prochaine étape : API HTTP intégrant le RAG** (`GET /regles/dense`,
+    carte Kanboard #14) — exposer `retrieve()` (`app/retrieval/retrieval.py`)
+    via un endpoint HTTP dans `app/api_regles/` : aujourd'hui `retrieve()`
+    n'est appelable que depuis un script, aucun vrai utilisateur ne peut
+    encore poser une question au RAG. Vision du futur agent US2 (David,
+    2026-09-09) : 3 tools — `GET /regles/dense` (sémantique),
+    `GET /regles?q=` (mots-clés/syntaxe exacte, déjà réel),
+    `GET /regles/{numero}` (lookup direct, déjà réel). Pas commencé, à
+    brainstormer à la prochaine session.
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
