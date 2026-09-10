@@ -5,8 +5,10 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
+from app.api_regles import config
 from app.api_regles.schemas import (
     OutilFiltre,
+    RegleDenseQuery,
     ReglePatch,
     RegleRead,
     ReviewStatus,
@@ -197,3 +199,28 @@ def test_note_en_francais_riche_est_acceptee():
     annotation = ReglePatch(review_status="a_revoir", review_note=note)
 
     assert annotation.review_note == note
+
+
+def test_question_valide_est_acceptee():
+    requete = RegleDenseQuery(question="Faut-il un attribut alt ?")
+    assert requete.question == "Faut-il un attribut alt ?"
+
+
+def test_question_vide_est_refusee():
+    with pytest.raises(ValidationError):
+        RegleDenseQuery(question="")
+
+
+def test_question_uniquement_des_espaces_est_refusee():
+    with pytest.raises(ValidationError):
+        RegleDenseQuery(question="   ")
+
+
+def test_question_trop_longue_est_refusee():
+    with pytest.raises(ValidationError):
+        RegleDenseQuery(question="a" * (config.QUESTION_MAX_LENGTH + 1))
+
+
+def test_question_est_nettoyee_des_espaces_en_bord():
+    requete = RegleDenseQuery(question="  Une question ?  ")
+    assert requete.question == "Une question ?"

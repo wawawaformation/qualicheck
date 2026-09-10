@@ -119,6 +119,22 @@ class RegleRead(BaseModel):
         )
 
 
+class RegleDenseQuery(BaseModel):
+    """Question en langage naturel pour la recherche sémantique (POST /regles/dense)."""
+
+    question: str
+
+    @field_validator("question")
+    @classmethod
+    def valider_la_question(cls, valeur: str) -> str:
+        valeur = valeur.strip()
+        if not valeur:
+            raise ValueError("question ne peut pas être vide")
+        if len(valeur) > config.QUESTION_MAX_LENGTH:
+            raise ValueError(f"question dépasse {config.QUESTION_MAX_LENGTH} caractères")
+        return valeur
+
+
 class ReglePatch(BaseModel):
     """
     Annotation de revue humaine.
