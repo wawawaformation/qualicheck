@@ -2,15 +2,15 @@
 
 ## Taux de réussite par famille × top_n
 
-| Famille | top_n=3 | top_n=5 | top_n=10 | top_n=15 |
-|---|---|---|---|---|
-| paraphrase_intitule | 100% | 100% | 100% | 100% |
-| vocabulaire_source_opquast | 95% | 95% | 100% | 100% |
-| vocabulaire_genere_llm | 82% | 91% | 95% | 95% |
-| multi_sujets | 100% | 100% | 100% | 100% |
-| sans_reponse | 0% | 0% | 0% | 0% |
-| regles_concurrentes | 75% | 100% | 100% | 100% |
-| vocabulaire_objectif | 79% | 88% | 92% | 96% |
+| Famille                    | top_n=3 | top_n=5 | top_n=10 | top_n=15 |
+| -------------------------- | ------- | ------- | -------- | -------- |
+| paraphrase_intitule        | 100%    | 100%    | 100%     | 100%     |
+| vocabulaire_source_opquast | 95%     | 95%     | 100%     | 100%     |
+| vocabulaire_genere_llm     | 82%     | 91%     | 95%      | 95%      |
+| multi_sujets               | 100%    | 100%    | 100%     | 100%     |
+| sans_reponse               | 0%      | 0%      | 0%       | 0%       |
+| regles_concurrentes        | 75%     | 100%    | 100%     | 100%     |
+| vocabulaire_objectif       | 79%     | 88%     | 92%      | 96%      |
 
 ## Cas PARTIEL/FAIL persistants à top_n=15
 
