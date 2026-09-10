@@ -152,6 +152,25 @@ def test_dense_echec_retrieve_donne_503(
     assert reponse.status_code == 503
 
 
+@patch("app.api_regles.regles.DecompositionClient")
+def test_dense_echec_construction_client_donne_503(mock_decomposition_client, client, jeu_de_regles):
+    """Une config manquante (ex. variable d'env absente) donne 503, pas un 500 brut.
+
+    Reproduit le bug staging du 2026-09-10 : AZURE_MODEL_GPT_MINI absent des
+    secrets Gitea faisait échouer DecompositionClient() avant le try/except,
+    donc un 500 non maîtrisé au lieu du 503 annoncé par cet endpoint.
+    """
+    mock_decomposition_client.side_effect = RuntimeError("AZURE_MODEL_GPT_MINI manquant")
+
+    reponse = client.post(
+        "/regles/dense",
+        json={"question": "Question de test"},
+        headers=_entetes(),
+    )
+
+    assert reponse.status_code == 503
+
+
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")

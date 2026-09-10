@@ -36,6 +36,17 @@ Format d'entrée, une ligne par réalisation :
   (`AZURE_AI_ENDPOINT`, `AZURE_AI_API_KEY`,
   `AZURE_MODEL_TEXT_EMBEDDING_SMALL`). Spec :
   `docs/superpowers/specs/2026-09-10-cd-staging-embed-rules-design.md`.
+- **Fix : 500 brut sur `POST /regles/dense` en staging** — le secret
+  `AZURE_MODEL_GPT_MINI` (requis par `DecompositionClient`) manquait dans
+  les secrets Gitea et dans le `.env` du pipeline CD staging, faisant
+  échouer `ChatOpenAI(model=None, ...)` à la construction. Cette
+  construction avait lieu **avant** le `try/except` de l'endpoint
+  ([regles.py](app/api_regles/regles.py)), donc l'exception n'était jamais
+  attrapée : 500 non maîtrisé au lieu du 503 prévu. Corrigé sur les deux
+  plans : secret ajouté (`tea actions secrets create`), et construction des
+  clients déplacée à l'intérieur du `try` pour que toute future erreur de
+  config redevienne un 503. Test de non-régression :
+  `test_dense_echec_construction_client_donne_503`.
 
 ## 2026-09-09 — Claude Code (Part 7)
 

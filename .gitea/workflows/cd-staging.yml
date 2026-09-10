@@ -125,6 +125,7 @@ jobs:
           AZURE_AI_ENDPOINT=${{ secrets.AZURE_AI_ENDPOINT }}
           AZURE_AI_API_KEY=${{ secrets.AZURE_AI_API_KEY }}
           AZURE_MODEL_TEXT_EMBEDDING_SMALL=${{ secrets.AZURE_MODEL_TEXT_EMBEDDING_SMALL }}
+          AZURE_MODEL_GPT_MINI=${{ secrets.AZURE_MODEL_GPT_MINI }}
           API_REGLES_IMAGE=git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
           DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml

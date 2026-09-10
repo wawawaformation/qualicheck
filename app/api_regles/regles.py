@@ -268,12 +268,12 @@ def chercher_regles_dense(
     contrairement aux autres lectures de ce router.
     """
     top_n = load_manifest()["rag_acceptance"]["top_n"]
-    decomposition_client = DecompositionClient()
-    embedding_client = EmbeddingClient()
 
     logger.info("Recherche dense par %s : « %s »", client_nom, requete.question)
 
     try:
+        decomposition_client = DecompositionClient()
+        embedding_client = EmbeddingClient()
         numeros = retrieve(
             session=session,
             question=requete.question,
