@@ -29,6 +29,7 @@ VERSION: str = _MANIFEST["api"]["version"]
 PORT: int = _MANIFEST["api"]["port"]
 CORS_ALLOWED_ORIGINS: list[str] = _MANIFEST["cors"]["allowed_origins"]
 REVIEW_NOTE_MAX_LENGTH: int = _MANIFEST["validation"]["review_note_max_length"]
+QUESTION_MAX_LENGTH: int = _MANIFEST["validation"]["question_max_length"]
 
 # Identifie le code et le moment reellement en cours d'execution — sert a
 # verifier qu'un deploiement CD a bien pris effet. GIT_SHA est fige dans

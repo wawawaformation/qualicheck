@@ -20,6 +20,11 @@ validation:
   # Longueur maximale d'une review_note : borne le coût en tokens du prochain
   # enrich_again autant que la surface d'injection de prompt.
   review_note_max_length: 2000
+  # Longueur maximale d'une question envoyée à POST /regles/dense — chaque
+  # appel a un coût réel (LLM + embedding), cette borne écarte un payload
+  # abusif sans gêner un usage normal (la plus longue question du jeu
+  # d'acceptance fait ~150 caractères).
+  question_max_length: 500
 
 # Clients autorisés à écrire (PATCH). Chacun a son propre jeton (variable
 # .env dédiée) : un jeton par expert externe (ex. Élie Sloïm) plutôt qu'un

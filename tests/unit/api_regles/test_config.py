@@ -13,6 +13,10 @@ def test_le_manifeste_expose_la_longueur_max_de_note():
     assert config.REVIEW_NOTE_MAX_LENGTH == 2000
 
 
+def test_le_manifeste_expose_la_longueur_max_de_question():
+    assert config.QUESTION_MAX_LENGTH == 500
+
+
 def test_le_manifeste_expose_les_origines_cors():
     assert "http://localhost:5173" in config.CORS_ALLOWED_ORIGINS
     assert "*" not in config.CORS_ALLOWED_ORIGINS
