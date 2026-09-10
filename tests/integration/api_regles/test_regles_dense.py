@@ -93,11 +93,19 @@ def _entetes(token: str = JETON) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+@patch("app.api_regles.regles.EmbeddingClient")
+@patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
 def test_dense_retourne_les_regles_dans_l_ordre_de_pertinence(
-    mock_retrieve, client, jeu_de_regles
+    mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles
 ):
-    """La réponse suit l'ordre de retrieve(), pas l'ordre numéro."""
+    """La réponse suit l'ordre de retrieve(), pas l'ordre numéro.
+
+    DecompositionClient/EmbeddingClient sont mockés en plus de retrieve() :
+    l'endpoint les construit pour de vrai avant d'appeler retrieve(), et leur
+    __init__ appelle ChatOpenAI/OpenAI (échoue sans les secrets Azure, absents
+    de la CI par construction).
+    """
     mock_retrieve.return_value = [3, 1]
 
     reponse = client.post(
@@ -127,8 +135,12 @@ def test_dense_question_vide_donne_422(mock_retrieve, client, jeu_de_regles):
     mock_retrieve.assert_not_called()
 
 
+@patch("app.api_regles.regles.EmbeddingClient")
+@patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
-def test_dense_echec_retrieve_donne_503(mock_retrieve, client, jeu_de_regles):
+def test_dense_echec_retrieve_donne_503(
+    mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles
+):
     mock_retrieve.side_effect = RuntimeError("embedding indisponible")
 
     reponse = client.post(
@@ -140,9 +152,11 @@ def test_dense_echec_retrieve_donne_503(mock_retrieve, client, jeu_de_regles):
     assert reponse.status_code == 503
 
 
+@patch("app.api_regles.regles.EmbeddingClient")
+@patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
 def test_dense_journalise_la_question_et_le_client(
-    mock_retrieve, client, jeu_de_regles, caplog
+    mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles, caplog
 ):
     mock_retrieve.return_value = [1]
 
