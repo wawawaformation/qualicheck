@@ -9,6 +9,25 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-10 — Claude Code
+
+- **`POST /regles/dense`** (carte Kanboard #14) — le RAG sémantique
+  (`app/retrieval/retrieve()`) exposé en HTTP dans `app/api_regles/`.
+  Révise une contrainte documentée dans `IDEA.md` (2026-07-26, « aucun
+  appel LLM » dans la couche données) : décision de David, le RAG complet
+  rejoint l'API données plutôt qu'un futur `api_business` séparé.
+  Corps `{"question": "..."}`, jeton Bearer requis (coût réel par appel,
+  contrairement aux lectures SQL gratuites), réponse `list[RegleRead]`
+  réordonnée selon la pertinence. Spec :
+  `docs/superpowers/specs/2026-09-10-api-regles-dense-design.md`, plan :
+  `docs/superpowers/plans/2026-09-10-api-regles-dense-implementation.md`.
+- **Vérification bout-en-bout réelle** : `make api-regles-dense-acceptance`
+  (nouveau, hors CI comme `make rag-acceptance`) rejoue les 99 cas
+  d'acceptance via HTTP réel contre le conteneur `qualicheck-api-regles`
+  reconstruit. Résultat identique à la mesure directe du 2026-09-09
+  (95-100% par famille selon le seuil de 90%) — confirme que le contrat
+  HTTP ne dégrade rien.
+
 ## 2026-09-09 — Claude Code (Part 7)
 
 - **Mécanisme de décomposition LLM des questions multi-sujets implémenté**

@@ -1,4 +1,4 @@
-.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance api-regles api-regles-acceptance regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -134,6 +134,13 @@ api-regles:
 ## documentée, voir docs/superpowers/plans/2026-07-26-api-regles-implementation.md
 api-regles-acceptance:
 	uv run python scripts/check_api_regles_acceptance.py
+
+## Rejoue le jeu d'acceptance RAG (99 cas, tests/acceptance/rag_acceptance.jsonl)
+## via POST /regles/dense en HTTP reel — necessite make api-regles demarre
+## dans un autre terminal. Cout reel (LLM + embedding) a chaque execution,
+## volontairement hors CI, comme make rag-acceptance.
+api-regles-dense-acceptance:
+	uv run python scripts/check_api_regles_dense_acceptance.py
 
 # ============================================================
 # Clients

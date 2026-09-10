@@ -254,15 +254,26 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     **embeddings**, pas seulement sur le code. Au moment de pousser :
     prévoir un `make embed-rules` manuel sur l'hôte staging après
     déploiement, pas seulement le merge git.
-  - [ ] **Prochaine étape : API HTTP intégrant le RAG** (`GET /regles/dense`,
-    carte Kanboard #14) — exposer `retrieve()` (`app/retrieval/retrieval.py`)
-    via un endpoint HTTP dans `app/api_regles/` : aujourd'hui `retrieve()`
-    n'est appelable que depuis un script, aucun vrai utilisateur ne peut
-    encore poser une question au RAG. Vision du futur agent US2 (David,
-    2026-09-09) : 3 tools — `GET /regles/dense` (sémantique),
-    `GET /regles?q=` (mots-clés/syntaxe exacte, déjà réel),
-    `GET /regles/{numero}` (lookup direct, déjà réel). Pas commencé, à
-    brainstormer à la prochaine session.
+  - [x] **API HTTP intégrant le RAG** (`POST /regles/dense`, carte
+    Kanboard #14, 2026-09-10) — `D`/`A`
+    - `retrieve()` exposé dans `app/api_regles/regles.py`. Révise la
+      contrainte « aucun appel LLM » de `IDEA.md` (2026-07-26) — décision
+      de David : le RAG complet rejoint l'API données, pas de
+      `api_business` séparé pour cette fonctionnalité. Détail :
+      `docs/superpowers/specs/2026-09-10-api-regles-dense-design.md`,
+      plan `docs/superpowers/plans/2026-09-10-api-regles-dense-implementation.md`.
+    - POST (pas GET, coût réel + texte libre), jeton Bearer requis,
+      `top_n` réutilisé depuis `manifest.yml`, réponse `list[RegleRead]`
+      réordonnée selon la pertinence.
+    - Vérification bout-en-bout réelle : `make api-regles-dense-acceptance`
+      (nouveau, hors CI) contre le conteneur `qualicheck-api-regles`
+      reconstruit — 99 cas, résultat identique à la mesure directe du
+      2026-09-09 (95-100% par famille, seuil 90%).
+    - Vision du futur agent US2 (David, 2026-09-09), les 3 tools sont
+      maintenant réels : `POST /regles/dense` (sémantique),
+      `GET /regles?q=` (mots-clés/syntaxe exacte), `GET /regles/{numero}`
+      (lookup direct) — reste à concevoir l'agent lui-même qui les
+      appellera (US2 non encore spécée).
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
