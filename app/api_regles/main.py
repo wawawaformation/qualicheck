@@ -57,7 +57,7 @@ app.add_middleware(
     # Jamais ["*"] : n'importe quel site pourrait faire lire le corpus enrichi
     # par le navigateur d'un visiteur.
     allow_origins=config.CORS_ALLOWED_ORIGINS,
-    allow_methods=["GET", "PATCH"],
+    allow_methods=["GET", "PATCH", "POST"],
     # Authorization est indispensable, sinon le préflight du PATCH échoue.
     allow_headers=["Authorization", "Content-Type"],
     # L'authentification passe par un header, pas par un cookie : les attaques

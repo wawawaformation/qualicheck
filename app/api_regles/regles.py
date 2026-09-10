@@ -10,8 +10,16 @@ from sqlalchemy.orm import Session
 
 from app.api_regles.auth import require_bearer
 from app.api_regles.recherche import parse_recherche
-from app.api_regles.schemas import OutilFiltre, ReglePatch, RegleRead, ReviewStatusFiltre
+from app.api_regles.schemas import (
+    OutilFiltre,
+    RegleDenseQuery,
+    ReglePatch,
+    RegleRead,
+    ReviewStatusFiltre,
+)
 from app.db import get_session_referentiel
+from app.ingestion.embedding import EmbeddingClient
+from app.ingestion.llm_client import load_manifest
 from app.models.referentiel import (
     Objectif,
     ObjectifRegle,
@@ -22,6 +30,8 @@ from app.models.referentiel import (
     Tag,
     Theme,
 )
+from app.retrieval.decomposition import DecompositionClient
+from app.retrieval.retrieval import retrieve
 
 logger = logging.getLogger(__name__)
 
@@ -242,3 +252,48 @@ def annoter_regle(
         Theme.id == Regle.theme_id, Regle.numero == numero
     )
     return _charger_regles(session, requete)[0]
+
+
+@router.post("/dense", response_model=list[RegleRead])
+def chercher_regles_dense(
+    requete: RegleDenseQuery,
+    session: Session = Depends(get_session_referentiel),
+    client_nom: str = Depends(require_bearer),
+) -> list[RegleRead]:
+    """
+    Recherche sémantique : décompose la question, vectorise, interroge
+    pgvector, fusionne. Voir app/retrieval/retrieval.py::retrieve().
+
+    Chaque appel a un coût réel (LLM + embedding) — jeton Bearer requis,
+    contrairement aux autres lectures de ce router.
+    """
+    top_n = load_manifest()["rag_acceptance"]["top_n"]
+    decomposition_client = DecompositionClient()
+    embedding_client = EmbeddingClient()
+
+    logger.info("Recherche dense par %s : « %s »", client_nom, requete.question)
+
+    try:
+        numeros = retrieve(
+            session=session,
+            question=requete.question,
+            top_n=top_n,
+            decomposition_client=decomposition_client,
+            embedding_client=embedding_client,
+        )
+    except Exception as e:
+        logger.error("Recherche dense — échec (%s)", e)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Recherche sémantique indisponible",
+        ) from e
+
+    requete_orm = session.query(Regle, Theme.theme).filter(
+        Theme.id == Regle.theme_id, Regle.numero.in_(numeros)
+    )
+    resultats = _charger_regles(session, requete_orm)
+
+    # Réordonne selon l'ordre de pertinence de retrieve() — la requête SQL
+    # IN (...) ne garantit aucun ordre.
+    position = {numero: i for i, numero in enumerate(numeros)}
+    return sorted(resultats, key=lambda r: position[r.numero])
