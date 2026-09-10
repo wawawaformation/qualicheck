@@ -27,6 +27,15 @@ Format d'entrée, une ligne par réalisation :
   reconstruit. Résultat identique à la mesure directe du 2026-09-09
   (95-100% par famille selon le seuil de 90%) — confirme que le contrat
   HTTP ne dégrade rien.
+- **CD staging relance l'embedding après migration** —
+  `.gitea/workflows/cd-staging.yml` exécute désormais `make embed-rules`
+  entre `make migration` et `make up-staging`, à chaque déploiement.
+  Résout le point de vigilance noté le 2026-09-09 (staging restait
+  désynchronisée sur les embeddings après l'ajout de `theme`/`objectifs`
+  au chunk). Secrets Azure ajoutés au dépôt Gitea
+  (`AZURE_AI_ENDPOINT`, `AZURE_AI_API_KEY`,
+  `AZURE_MODEL_TEXT_EMBEDDING_SMALL`). Spec :
+  `docs/superpowers/specs/2026-09-10-cd-staging-embed-rules-design.md`.
 
 ## 2026-09-09 — Claude Code (Part 7)
 

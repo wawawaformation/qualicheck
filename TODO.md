@@ -246,14 +246,12 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       préfixe / system prompt plutôt que de reconcaténer le prompt en
       texte brut à chaque appel. À reprendre si le volume d'appels
       augmente significativement (US2 en usage réel).
-  - **Point de vigilance avant la prochaine synchro staging** (constaté
-    2026-09-09) : `.gitea/workflows/cd-staging.yml` applique les migrations
-    (`make migration`) mais ne relance jamais l'ingestion ni l'embedding.
-    Tant que `dev` (chunk enrichi `theme`+`objectifs`, recalculé localement)
-    n'est pas mergé sur `staging`, les deux bases divergent déjà sur les
-    **embeddings**, pas seulement sur le code. Au moment de pousser :
-    prévoir un `make embed-rules` manuel sur l'hôte staging après
-    déploiement, pas seulement le merge git.
+  - [x] **Point de vigilance staging résolu** (2026-09-10) —
+    `.gitea/workflows/cd-staging.yml` relance `make embed-rules` après
+    chaque migration : la base staging ne peut plus rester
+    désynchronisée sur les embeddings par rapport au chunk vectorisé
+    déployé. Secrets Azure ajoutés au dépôt Gitea. Détail :
+    `docs/superpowers/specs/2026-09-10-cd-staging-embed-rules-design.md`.
   - [x] **API HTTP intégrant le RAG** (`POST /regles/dense`, carte
     Kanboard #14, 2026-09-10) — `D`/`A`
     - `retrieve()` exposé dans `app/api_regles/regles.py`. Révise la
