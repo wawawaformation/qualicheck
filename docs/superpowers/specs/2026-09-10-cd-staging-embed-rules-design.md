@@ -55,13 +55,16 @@ côté chunking — jugé négligeable.
 
 ## Conséquences
 
-**Nouveaux secrets Gitea requis, à ajouter par David** (environnement
-`staging`, pas accessible depuis ce contexte) : `AZURE_AI_ENDPOINT`,
+**Nouveaux secrets Gitea requis** : `AZURE_AI_ENDPOINT`,
 `AZURE_AI_API_KEY`, `AZURE_MODEL_TEXT_EMBEDDING_SMALL` — jusqu'ici le
 `.env` généré sur l'hôte distant ne portait que les secrets
 Postgres/FastAPI, `embed_rules.py` (rôle `embedding` du manifeste) en a
 besoin. Seuls ces trois-là : le rôle `enrichissement`
 (`AZURE_MODEL_KIMI`) n'est pas utilisé par `embed_rules.py`.
+**Fait (2026-09-10)** : ajoutés au dépôt via `tea actions secrets create`
+(secrets repo simples, pas de scoping par environnement dans cette
+installation Gitea — confirmé par `tea actions secrets list`), mêmes
+valeurs que le `.env` local, jamais affichées en clair.
 
 **`export_sql` s'exécute aussi** (chaîné dans la cible Makefile
 `embed-rules`) — écrit un nouveau dump dans `$DEPLOY_DIR/backups/` à
