@@ -122,6 +122,9 @@ jobs:
           FASTAPI_API_KEY_ELIE=${{ secrets.FASTAPI_API_KEY_ELIE }}
           FASTAPI_API_KEY_DAVID=${{ secrets.FASTAPI_API_KEY_DAVID }}
           FASTAPI_API_KEY_FORMATEUR=${{ secrets.FASTAPI_API_KEY_FORMATEUR }}
+          AZURE_AI_ENDPOINT=${{ secrets.AZURE_AI_ENDPOINT }}
+          AZURE_AI_API_KEY=${{ secrets.AZURE_AI_API_KEY }}
+          AZURE_MODEL_TEXT_EMBEDDING_SMALL=${{ secrets.AZURE_MODEL_TEXT_EMBEDDING_SMALL }}
           API_REGLES_IMAGE=git.david-legrand.fr/david/qualicheck-api-regles:${{ github.sha }}
           DEPLOYED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           COMPOSE_FILE=docker-compose.yml:/srv/docker/qualicheck-staging-override/docker-compose.override.yml
@@ -136,6 +139,7 @@ jobs:
           done
 
           make migration
+          make embed-rules
           make up-staging
 
           until curl -sf http://localhost:8880/health; do
