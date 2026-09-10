@@ -153,7 +153,9 @@ def test_dense_echec_retrieve_donne_503(
 
 
 @patch("app.api_regles.regles.DecompositionClient")
-def test_dense_echec_construction_client_donne_503(mock_decomposition_client, client, jeu_de_regles):
+def test_dense_echec_construction_client_donne_503(
+    mock_decomposition_client, client, jeu_de_regles
+):
     """Une config manquante (ex. variable d'env absente) donne 503, pas un 500 brut.
 
     Reproduit le bug staging du 2026-09-10 : AZURE_MODEL_GPT_MINI absent des
