@@ -301,6 +301,30 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       langage naturel à l'utilisateur final. Nombre fixe, dépendant du
       nombre de sous-questions détectées, ou laissé au jugement du LLM de
       réponse : à trancher.
+  - **Protocole de mesure des chunks (David, 2026-09-11)** — « le
+    retrieval est la matière première d'US2 », fixer les chunks sur
+    preuve plutôt qu'au doigt mouillé. Passe **avant** le Temps 2 du
+    refus (le refus dépend de la représentation vectorielle choisie).
+    Mémoire assistant : `protocole_mesure_retrieval.md`.
+    - [x] **Vague 1 — 11 champs isolés + baseline, mesurée** (2026-09-11)
+      — `D`/`A`. Spec
+      `docs/superpowers/specs/2026-09-11-mesure-chunks-vague1-design.md`,
+      plan
+      `docs/superpowers/plans/2026-09-11-mesure-chunks-vague1-implementation.md`
+      (exécuté subagent-driven, 4 tâches de code + exécution réelle,
+      0,0130 €). MRR + recall@k sur 114 cas × 12 variantes, résultats :
+      `docs/eval/mesure_variantes_chunks_2026-09-11_094703.md`
+      (résumé) et `.csv` (détail candidat par candidat, cosinus bruts).
+      `theme`/`tags`/`phases`/`strategie_analyse` quasi inutiles
+      isolément ; `intitule` et `guide_analyse` portent un vrai signal ;
+      `objectifs` bat la baseline sur sa propre famille cible mais faible
+      ailleurs. Aucune variante isolée ne bat la baseline en général.
+      Exploratoire seulement — pas de choix de chunk tranché à ce stade.
+    - [ ] **Vague 2 — combinaisons de champs motivées par la vague 1**,
+      avec cette fois jeu de validation réservé et critère de décision
+      écrit d'avance (points du protocole non encore appliqués en vague
+      1) — nouveau cycle spec → plan à ouvrir.
+    - [ ] **Vague 3 — affinage** sur les 2-3 têtes de série de la vague 2.
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
