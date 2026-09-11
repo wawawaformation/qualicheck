@@ -9,6 +9,20 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-11 — Claude Code
+
+- **Fiche jury — score cosinus en RAG** :
+  `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` explique
+  pourquoi un score cosinus bas n'est pas un problème dans le retrieval
+  actuel (classement, jamais de seuil absolu lu — voir
+  `app/ingestion/rag_acceptance.py`), et pourquoi c'est le contraste
+  top-1/top-N qui porte le signal, pas le niveau. David considère le
+  retrieval **non fini** : deux points ouverts ajoutés à `TODO.md`
+  (section « Retrieval US2 ») — mécanisme de refus (`sans_reponse`
+  toujours `FAIL` aujourd'hui, seuil absolu difficile à calibrer vu §2-3
+  de la fiche) et nombre de règles à citer dans la réponse finale
+  (distinct du `top_n=15` qui dimensionne le pool de candidats).
+
 ## 2026-09-10 — Claude Code
 
 - **`POST /regles/dense`** (carte Kanboard #14) — le RAG sémantique

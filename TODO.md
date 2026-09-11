@@ -272,6 +272,21 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       `GET /regles?q=` (mots-clés/syntaxe exacte), `GET /regles/{numero}`
       (lookup direct) — reste à concevoir l'agent lui-même qui les
       appellera (US2 non encore spécée).
+  - **Retrieval considéré non fini (David, 2026-09-11)** — deux points
+    ouverts avant de clore le chantier, détail et pistes dans
+    `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` :
+    - [ ] **Le refus** — `retrieve()` retourne toujours des règles, même
+      hors sujet (famille `sans_reponse` toujours `FAIL`, faute de
+      mécanisme). Un seuil absolu de cosinus est mal calibrable (scores
+      bas et peu contrastés par construction, voir fiche). Pistes non
+      tranchées : seuil relatif (écart top-1/top-N) ou jugement du LLM de
+      réponse sur les chunks retournés, sans seuil vectoriel.
+    - [ ] **Combien de règles retourner dans la réponse** — `top_n=15`
+      (`manifest.yml`) dimensionne le pool de candidats interrogé par
+      `retrieve()`, pas forcément le nombre à citer dans une réponse en
+      langage naturel à l'utilisateur final. Nombre fixe, dépendant du
+      nombre de sous-questions détectées, ou laissé au jugement du LLM de
+      réponse : à trancher.
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
