@@ -99,14 +99,14 @@ def _entetes(token: str = JETON) -> dict[str, str]:
 def test_dense_retourne_les_regles_dans_l_ordre_de_pertinence(
     mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles
 ):
-    """La réponse suit l'ordre de retrieve(), pas l'ordre numéro.
+    """La réponse suit l'ordre de retrieve(), pas l'ordre numéro, et embarque le score.
 
     DecompositionClient/EmbeddingClient sont mockés en plus de retrieve() :
     l'endpoint les construit pour de vrai avant d'appeler retrieve(), et leur
     __init__ appelle ChatOpenAI/OpenAI (échoue sans les secrets Azure, absents
     de la CI par construction).
     """
-    mock_retrieve.return_value = [3, 1]
+    mock_retrieve.return_value = [(3, 0.8), (1, 0.5)]
 
     reponse = client.post(
         "/regles/dense",
@@ -115,8 +115,9 @@ def test_dense_retourne_les_regles_dans_l_ordre_de_pertinence(
     )
 
     assert reponse.status_code == 200
-    numeros = [r["numero"] for r in reponse.json()]
-    assert numeros == [3, 1]
+    corps = reponse.json()
+    assert [item["regle"]["numero"] for item in corps] == [3, 1]
+    assert [item["score"] for item in corps] == [0.8, 0.5]
 
 
 @patch("app.api_regles.regles.retrieve")
@@ -179,7 +180,7 @@ def test_dense_echec_construction_client_donne_503(
 def test_dense_journalise_la_question_et_le_client(
     mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles, caplog
 ):
-    mock_retrieve.return_value = [1]
+    mock_retrieve.return_value = [(1, 0.9)]
 
     with caplog.at_level("INFO", logger="app.api_regles.regles"):
         client.post(

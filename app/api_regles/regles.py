@@ -12,6 +12,7 @@ from app.api_regles.auth import require_bearer
 from app.api_regles.recherche import parse_recherche
 from app.api_regles.schemas import (
     OutilFiltre,
+    RegleAvecScore,
     RegleDenseQuery,
     ReglePatch,
     RegleRead,
@@ -254,18 +255,19 @@ def annoter_regle(
     return _charger_regles(session, requete)[0]
 
 
-@router.post("/dense", response_model=list[RegleRead])
+@router.post("/dense", response_model=list[RegleAvecScore])
 def chercher_regles_dense(
     requete: RegleDenseQuery,
     session: Session = Depends(get_session_referentiel),
     client_nom: str = Depends(require_bearer),
-) -> list[RegleRead]:
+) -> list[RegleAvecScore]:
     """
     Recherche sémantique : décompose la question, vectorise, interroge
     pgvector, fusionne. Voir app/retrieval/retrieval.py::retrieve().
 
     Chaque appel a un coût réel (LLM + embedding) — jeton Bearer requis,
-    contrairement aux autres lectures de ce router.
+    contrairement aux autres lectures de ce router. Le score de similarité
+    (1 - distance cosinus) est renvoyé pour chaque règle.
     """
     top_n = load_manifest()["rag_acceptance"]["top_n"]
 
@@ -274,7 +276,7 @@ def chercher_regles_dense(
     try:
         decomposition_client = DecompositionClient()
         embedding_client = EmbeddingClient()
-        numeros = retrieve(
+        resultat = retrieve(
             session=session,
             question=requete.question,
             top_n=top_n,
@@ -288,12 +290,16 @@ def chercher_regles_dense(
             detail="Recherche sémantique indisponible",
         ) from e
 
+    numeros = [numero for numero, _ in resultat]
+    scores = dict(resultat)
+
     requete_orm = session.query(Regle, Theme.theme).filter(
         Theme.id == Regle.theme_id, Regle.numero.in_(numeros)
     )
-    resultats = _charger_regles(session, requete_orm)
+    regles = _charger_regles(session, requete_orm)
 
     # Réordonne selon l'ordre de pertinence de retrieve() — la requête SQL
     # IN (...) ne garantit aucun ordre.
     position = {numero: i for i, numero in enumerate(numeros)}
-    return sorted(resultats, key=lambda r: position[r.numero])
+    regles_triees = sorted(regles, key=lambda r: position[r.numero])
+    return [RegleAvecScore(regle=r, score=scores[r.numero]) for r in regles_triees]

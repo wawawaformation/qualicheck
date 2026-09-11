@@ -119,6 +119,17 @@ class RegleRead(BaseModel):
         )
 
 
+class RegleAvecScore(BaseModel):
+    """Règle retournée par la recherche sémantique, avec son score de similarité.
+
+    Score de similarité cosinus (1 - distance) : 1 = identique, 0 = aucun
+    rapport. Voir app/retrieval/retrieval.py::retrieve().
+    """
+
+    regle: RegleRead
+    score: float
+
+
 class RegleDenseQuery(BaseModel):
     """Question en langage naturel pour la recherche sémantique (POST /regles/dense)."""
 
