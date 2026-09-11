@@ -11,6 +11,25 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-11 — Claude Code
 
+- **Vague 2 du protocole de mesure des chunks — combinaisons de champs**
+  (spec `docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md`,
+  plan `docs/superpowers/plans/2026-09-11-mesure-chunks-vague2-implementation.md`,
+  6 tâches exécutées en inline) : `build_combo_text()` (texte labellisé
+  multi-champs, `app/ingestion/chunking.py`), jeu réservé stratifié par
+  famille (`tirer_jeu_reserve()`, persisté dans
+  `tests/acceptance/rag_acceptance_holdout.json`, 38 cas sur 114), critère
+  de décision écrit d'avance (`appliquer_critere_decision()` : plancher
+  strict relatif à la baseline sur le jeu d'exploration, validation sur
+  le jeu réservé), script `scripts/mesure_combinaisons_chunks.py`
+  (`make mesure-combinaisons-chunks`). Exécution réelle : coût 0,0174 €.
+  **Résultat : les 5 combinaisons (A-E) sont toutes éliminées** — chacune
+  régresse par rapport au chunk de production actuel sur au moins une
+  famille du jeu d'exploration (ex. `A_chunk_epure` perd sur
+  `vocabulaire_objectif` : MRR 0.688 vs 0.741 baseline ; `E_enrichissement_seul`
+  s'effondre sur `vocabulaire_objectif` : 0.303). **Choix retenu : le chunk
+  de production actuel (baseline), aucun changement.** Détail :
+  `docs/eval/mesure_combinaisons_chunks_2026-09-11_191321.md`/`.csv`.
+
 - **Revue finale du chantier « mesure des variantes de chunk » — 2 correctifs**
   (`app/ingestion/rag_acceptance.py`, `scripts/mesure_variantes_chunks.py`,
   `tests/unit/ingestion/test_rag_acceptance.py`) : (1) le CSV expose

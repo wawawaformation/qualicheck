@@ -320,11 +320,23 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       `objectifs` bat la baseline sur sa propre famille cible mais faible
       ailleurs. Aucune variante isolée ne bat la baseline en général.
       Exploratoire seulement — pas de choix de chunk tranché à ce stade.
-    - [ ] **Vague 2 — combinaisons de champs motivées par la vague 1**,
-      avec cette fois jeu de validation réservé et critère de décision
-      écrit d'avance (points du protocole non encore appliqués en vague
-      1) — nouveau cycle spec → plan à ouvrir.
-    - [ ] **Vague 3 — affinage** sur les 2-3 têtes de série de la vague 2.
+    - [x] **Vague 2 — combinaisons de champs motivées par la vague 1**
+      (2026-09-11) — `D`/`A`. Spec
+      `docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md`,
+      plan `docs/superpowers/plans/2026-09-11-mesure-chunks-vague2-implementation.md`
+      (exécuté en inline, 6 tâches, 0,0174 €). Jeu réservé stratifié par
+      famille (38/114 cas), critère de décision écrit d'avance (plancher
+      relatif à la baseline, validation sur le jeu réservé) appliqué pour
+      de vrai. **Résultat : les 5 combinaisons testées (chunk épuré, duo
+      généraliste, duo+spécialiste, source Opquast seule, enrichissement
+      seul) sont toutes éliminées** — chacune régresse sur au moins une
+      famille par rapport au chunk de production actuel. **Choix retenu :
+      le chunk actuel, aucun changement.** Détail :
+      `docs/eval/mesure_combinaisons_chunks_2026-09-11_191321.md`/`.csv`.
+    - [ ] **Vague 3 (affinage)** : sans objet — la vague 2 n'a fait
+      émerger aucune tête de série à affiner (toutes éliminées par le
+      plancher). Rouverte uniquement si une nouvelle piste de combinaison
+      est proposée plus tard.
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage
