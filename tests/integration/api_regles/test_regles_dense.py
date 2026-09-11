@@ -93,20 +93,29 @@ def _entetes(token: str = JETON) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+@patch("app.api_regles.regles.JugementClient")
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
 def test_dense_retourne_les_regles_dans_l_ordre_de_pertinence(
-    mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles
+    mock_retrieve,
+    mock_decomposition_client,
+    mock_embedding_client,
+    mock_jugement_client,
+    client,
+    jeu_de_regles,
 ):
     """La réponse suit l'ordre de retrieve(), pas l'ordre numéro, et embarque le score.
 
-    DecompositionClient/EmbeddingClient sont mockés en plus de retrieve() :
-    l'endpoint les construit pour de vrai avant d'appeler retrieve(), et leur
-    __init__ appelle ChatOpenAI/OpenAI (échoue sans les secrets Azure, absents
-    de la CI par construction).
+    DecompositionClient/EmbeddingClient/JugementClient sont mockés en plus de
+    retrieve() : l'endpoint les construit pour de vrai avant/après retrieve(),
+    et leur __init__ appelle ChatOpenAI/OpenAI (échoue sans les secrets Azure,
+    absents de la CI par construction). JugementClient.juger() retourne les 2
+    numéros pour que ce test vérifie l'ordre/le score, pas le filtrage (voir
+    test_dense_filtre_les_regles_non_pertinentes pour le filtrage).
     """
     mock_retrieve.return_value = [(3, 0.8), (1, 0.5)]
+    mock_jugement_client.return_value.juger.return_value = [3, 1]
 
     reponse = client.post(
         "/regles/dense",
@@ -174,13 +183,21 @@ def test_dense_echec_construction_client_donne_503(
     assert reponse.status_code == 503
 
 
+@patch("app.api_regles.regles.JugementClient")
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
 def test_dense_journalise_la_question_et_le_client(
-    mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles, caplog
+    mock_retrieve,
+    mock_decomposition_client,
+    mock_embedding_client,
+    mock_jugement_client,
+    client,
+    jeu_de_regles,
+    caplog,
 ):
     mock_retrieve.return_value = [(1, 0.9)]
+    mock_jugement_client.return_value.juger.return_value = [1]
 
     with caplog.at_level("INFO", logger="app.api_regles.regles"):
         client.post(
@@ -191,3 +208,58 @@ def test_dense_journalise_la_question_et_le_client(
 
     assert "dev" in caplog.text
     assert "Question de test" in caplog.text
+
+
+@patch("app.api_regles.regles.JugementClient")
+@patch("app.api_regles.regles.EmbeddingClient")
+@patch("app.api_regles.regles.DecompositionClient")
+@patch("app.api_regles.regles.retrieve")
+def test_dense_filtre_les_regles_non_pertinentes(
+    mock_retrieve,
+    mock_decomposition_client,
+    mock_embedding_client,
+    mock_jugement_client,
+    client,
+    jeu_de_regles,
+):
+    """Le jugement LLM peut retenir un sous-ensemble strict des candidats
+    retournés par retrieve() — la règle 3 est écartée."""
+    mock_retrieve.return_value = [(3, 0.8), (1, 0.5)]
+    mock_jugement_client.return_value.juger.return_value = [1]
+
+    reponse = client.post(
+        "/regles/dense",
+        json={"question": "Question de test"},
+        headers=_entetes(),
+    )
+
+    assert reponse.status_code == 200
+    corps = reponse.json()
+    assert [item["regle"]["numero"] for item in corps] == [1]
+
+
+@patch("app.api_regles.regles.JugementClient")
+@patch("app.api_regles.regles.EmbeddingClient")
+@patch("app.api_regles.regles.DecompositionClient")
+@patch("app.api_regles.regles.retrieve")
+def test_dense_jugement_vide_donne_200_liste_vide(
+    mock_retrieve,
+    mock_decomposition_client,
+    mock_embedding_client,
+    mock_jugement_client,
+    client,
+    jeu_de_regles,
+):
+    """Aucun candidat jugé pertinent : 200 avec une liste vide (refus
+    explicite), pas une erreur."""
+    mock_retrieve.return_value = [(3, 0.8), (1, 0.5)]
+    mock_jugement_client.return_value.juger.return_value = []
+
+    reponse = client.post(
+        "/regles/dense",
+        json={"question": "Question hors sujet"},
+        headers=_entetes(),
+    )
+
+    assert reponse.status_code == 200
+    assert reponse.json() == []

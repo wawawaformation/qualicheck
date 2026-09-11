@@ -19,6 +19,7 @@ from app.api_regles.schemas import (
     ReviewStatusFiltre,
 )
 from app.db import get_session_referentiel
+from app.ingestion.chunking import build_chunk_text
 from app.ingestion.embedding import EmbeddingClient
 from app.ingestion.llm_client import load_manifest
 from app.models.referentiel import (
@@ -32,6 +33,7 @@ from app.models.referentiel import (
     Theme,
 )
 from app.retrieval.decomposition import DecompositionClient
+from app.retrieval.jugement import JugementClient
 from app.retrieval.retrieval import retrieve
 
 logger = logging.getLogger(__name__)
@@ -263,11 +265,16 @@ def chercher_regles_dense(
 ) -> list[RegleAvecScore]:
     """
     Recherche sémantique : décompose la question, vectorise, interroge
-    pgvector, fusionne. Voir app/retrieval/retrieval.py::retrieve().
+    pgvector, fusionne, puis un jugement LLM filtre les candidats
+    réellement pertinents (liste vide si aucun — refus explicite). Voir
+    app/retrieval/retrieval.py::retrieve() et
+    app/retrieval/jugement.py::JugementClient.
 
-    Chaque appel a un coût réel (LLM + embedding) — jeton Bearer requis,
-    contrairement aux autres lectures de ce router. Le score de similarité
-    (1 - distance cosinus) est renvoyé pour chaque règle.
+    Chaque appel a un coût réel (LLM décomposition + embedding + LLM
+    jugement) — jeton Bearer requis, contrairement aux autres lectures
+    de ce router. Le score de similarité (1 - distance cosinus) reste
+    renvoyé pour chaque règle citée, à titre informatif — ce n'est plus
+    le critère de pertinence.
     """
     top_n = load_manifest()["rag_acceptance"]["top_n"]
 
@@ -302,4 +309,14 @@ def chercher_regles_dense(
     # IN (...) ne garantit aucun ordre.
     position = {numero: i for i, numero in enumerate(numeros)}
     regles_triees = sorted(regles, key=lambda r: position[r.numero])
-    return [RegleAvecScore(regle=r, score=scores[r.numero]) for r in regles_triees]
+
+    # Jugement LLM de pertinence — filtre le pool brut retourné par
+    # retrieve() avant citation. Ne lève jamais (fail-open interne à
+    # JugementClient) : jamais de 503 provoqué ici. Voir
+    # docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md.
+    jugement_client = JugementClient()
+    candidats = [(r.numero, build_chunk_text(r)) for r in regles_triees]
+    numeros_pertinents = set(jugement_client.juger(requete.question, candidats))
+    regles_retenues = [r for r in regles_triees if r.numero in numeros_pertinents]
+
+    return [RegleAvecScore(regle=r, score=scores[r.numero]) for r in regles_retenues]
