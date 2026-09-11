@@ -11,6 +11,45 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-11 — Claude Code
 
+- **Temps 2 du mécanisme de refus — jugement LLM, mesuré et conclu**
+  (spec `docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md`,
+  plan `docs/superpowers/plans/2026-09-11-retrieval-refus-temps2-implementation.md`,
+  4 tâches exécutées en inline) : `JugementClient` (`app/retrieval/jugement.py`)
+  filtre les candidats de `retrieve()` par jugement LLM avant citation,
+  intégré dans `POST /regles/dense` (modifié en place, contrat
+  `RegleAvecScore` inchangé de forme). 2 bugs de mesure trouvés et
+  corrigés pendant l'exécution réelle : `evaluate_case()` marquait
+  `sans_reponse` `FAIL` inconditionnellement (oubli du Temps 2, il fallait
+  reconnaître un refus vide comme `PASS`) ; `check_api_regles_dense_acceptance.py`
+  dupliquait cette logique au lieu d'appeler `evaluate_case()` (le premier
+  fix était invisible pour ce script).
+  **Résultat mesuré, après correction** : `sans_reponse` plafonne à
+  40-55% selon le modèle (`gpt-5.4-mini` : 40-45%, `gpt-5.4` : 55%, Kimi
+  K2.6 écarté — timeout, latence 4s incompatible avec le timeout de 2s),
+  très loin du seuil garde-fou de 90%, malgré un prompt renforcé
+  (proximité thématique ≠ réponse, exemples explicites). Toutes les
+  autres familles restent fortes (91-100%).
+  **Diagnostic** : le cas le plus net (« palmarès Coupe du monde » →
+  règle 12 citée, deux fois, malgré un contre-exemple dédié dans le
+  prompt) révèle un biais de sélection, pas un problème de formulation —
+  présenter une liste de candidats pousse le LLM à y choisir quelque
+  chose plutôt qu'à juger réellement.
+  **Hypothèse testée et confirmée** : `GuardrailClient`
+  (`app/retrieval/guardrail.py`, expérimental, non intégré) classe une
+  question dans/hors périmètre Opquast **sans voir aucun candidat** —
+  résultat `docs/eval/mesure_guardrail_perimetre_2026-09-11_214327.md` :
+  **100% sur `sans_reponse` (20/20)**, 97,9% sur les cas valides (92/94,
+  2 faux refus sur du vocabulaire métier sans mot-clé web). Coût 0,0063€.
+  **Conclusion architecturale** : le refus n'est pas une décision mais
+  trois, à trois endroits — guardrail avant tout appel d'outil (mesuré
+  ici, pas construit — hors périmètre `api_regles`), jugement sur les
+  candidats retrouvés (Temps 2, construit, limite structurelle acceptée),
+  jugement final avec mémoire/contexte (niveau agent, hors périmètre).
+  `is_acceptable()` exclut de nouveau `sans_reponse` de son seuil garde-fou,
+  avec cette nouvelle justification (mesurée, pas "faute de mécanisme").
+  Diagramme de référence :
+  `conception/3_autre_us/us2_question_libre/diagramme_retrieval_refus_citation.drawio`.
+
 - **Fiche jury — protocole de mesure des chunks (vagues 1 et 2)** :
   `jury/documents_jury/working/fiche-rag-mesure-chunks.md` synthétise le
   protocole, la vague 1 (cardinalité vs structure, généraliste vs

@@ -292,15 +292,42 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
         `docs/superpowers/plans/2026-09-11-retrieval-refus-implementation.md`,
         `docs/eval/mesure_scores_refus_2026-09-11_075738.md`,
         `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` §4.1.
-      - [ ] **Temps 2 (construction)** — jugement LLM sur les chunks
-        retournés (seule branche restant ouverte après la mesure),
-        nouvelle spec à écrire.
-    - [ ] **Combien de règles retourner dans la réponse** — `top_n=15`
-      (`manifest.yml`) dimensionne le pool de candidats interrogé par
-      `retrieve()`, pas forcément le nombre à citer dans une réponse en
-      langage naturel à l'utilisateur final. Nombre fixe, dépendant du
-      nombre de sous-questions détectées, ou laissé au jugement du LLM de
-      réponse : à trancher.
+      - [x] **Temps 2 (construction), 2026-09-11** — `D`/`A`. Spec
+        `docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md`,
+        plan `docs/superpowers/plans/2026-09-11-retrieval-refus-temps2-implementation.md`
+        (exécuté en inline, 4 tâches). `JugementClient`
+        (`app/retrieval/jugement.py`) filtre les candidats de `retrieve()`
+        avant citation dans `POST /regles/dense` (modifié en place).
+        **Résultat mesuré : plafond structurel ~40-55% sur `sans_reponse`**
+        (`gpt-5.4-mini`/`gpt-5.4`, prompt renforcé compris) — le mécanisme
+        est gardé (filtre quand même ~50% des cas hors sujet, en plus de
+        citer correctement les cas valides) mais `is_acceptable()` exclut
+        de nouveau `sans_reponse` de son seuil garde-fou, cette fois avec
+        preuve à l'appui (pas "faute de mécanisme"). Diagnostic : biais de
+        sélection quand une liste de candidats est présentée au LLM (cas
+        net : « palmarès Coupe du monde » → règle 12 citée malgré un
+        contre-exemple dédié dans le prompt). **Hypothèse testée en
+        conséquence** : `GuardrailClient` (`app/retrieval/guardrail.py`,
+        expérimental, non intégré) classe la question dans/hors périmètre
+        **sans candidats** — 100% sur `sans_reponse`, 97,9% sur les cas
+        valides
+        (`docs/eval/mesure_guardrail_perimetre_2026-09-11_214327.md`).
+        Conclusion architecturale : le refus est 3 décisions à 3 endroits
+        (guardrail agent avant tout appel d'outil → jugement sur les
+        candidats retrouvés, Temps 2 → jugement final avec mémoire/contexte,
+        agent) — seule la 2e est dans le périmètre `api_regles`.
+      - [ ] **Guardrail de périmètre au niveau agent** — hors périmètre
+        `api_regles`, mesuré isolément (voir ci-dessus, 100% sur
+        `sans_reponse`) mais jamais intégré à un pipeline réel. À
+        concevoir avec la couche agent (mémoire, historique de discussion,
+        choix d'outils) quand ce chantier démarrera —
+        `app/retrieval/guardrail.py` est prêt à être branché.
+    - [x] **Combien de règles retourner dans la réponse** — résolu par le
+      Temps 2 : le jugement LLM décide lui-même du sous-ensemble à citer
+      (0 à N parmi les 15 candidats), pas de nombre fixe à trancher
+      séparément. `top_n=15` (pool de candidats) confirmé par la mesure
+      recall@k : seul k où les cas à cibles multiples sont tous couverts
+      (1.000 sur 14 cas), voir discussion 2026-09-11 en session.
   - **Protocole de mesure des chunks (David, 2026-09-11)** — « le
     retrieval est la matière première d'US2 », fixer les chunks sur
     preuve plutôt qu'au doigt mouillé. Passe **avant** le Temps 2 du

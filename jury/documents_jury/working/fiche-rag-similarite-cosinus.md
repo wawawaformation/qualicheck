@@ -98,20 +98,50 @@ proprement `sans_reponse` des cas `PASS`** :
   qu'un taux qui baisse d'un point).
 
 **Conséquence** : le seuil relatif est écarté, **pas par principe mais par
-mesure** — la voie retenue pour la suite (Temps 2, hors périmètre de ce
-plan) est le jugement LLM sur les chunks retournés. Cohérent avec la
-méthode déjà établie sur ce chantier : mesurer avant de construire, et
-accepter que la mesure retourne contre l'intuition initiale (ici, l'idée
-qu'un simple seuil de score suffirait).
+mesure** — la voie retenue pour la suite (Temps 2) est le jugement LLM sur
+les chunks retournés. Cohérent avec la méthode déjà établie sur ce
+chantier : mesurer avant de construire, et accepter que la mesure
+retourne contre l'intuition initiale (ici, l'idée qu'un simple seuil de
+score suffirait).
+
+**Temps 2, construit et mesuré (2026-09-11)** : `JugementClient`
+(`app/retrieval/jugement.py`) filtre les candidats de `retrieve()` par un
+appel LLM avant citation dans `POST /regles/dense`. **Résultat mesuré sur
+les 114 cas réels : la famille `sans_reponse` plafonne à 40-55 % selon le
+modèle** (`gpt-5.4-mini`/`gpt-5.4`, prompt renforcé compris), très loin du
+seuil garde-fou de 90 % — malgré des instructions explicites contre la
+confusion proximité/pertinence. Le cas le plus net : *« quel est le
+palmarès de la dernière Coupe du monde de football ? »* → une règle
+Opquast citée à tort, **deux fois**, malgré un contre-exemple dédié dans
+le prompt.
+
+**Diagnostic, pas un échec de prompt** : présenter une liste de candidats
+au LLM et lui demander « lesquels répondent » crée un **biais de
+sélection** — il choisit, même quand rien ne convient. Vérifié en isolant
+la variable : un second client (`GuardrailClient`, expérimental) classe
+la même question dans/hors périmètre Opquast **sans voir aucun
+candidat** — résultat : **100 % sur les 20 cas `sans_reponse`**, 97,9 %
+sur les 94 cas valides
+(`docs/eval/mesure_guardrail_perimetre_2026-09-11_214327.md`, coût
+0,0063 €). Retirer les candidats retire le biais.
+
+**Conclusion architecturale** : le refus n'est pas une décision unique,
+ce sont **trois décisions à trois endroits** du pipeline US2 — un
+guardrail de périmètre *avant* tout appel d'outil (sans candidats, mesuré
+fiable, pas encore intégré — niveau agent), le jugement sur les candidats
+retrouvés (ce Temps 2, construit, limite structurelle acceptée), et le
+jugement final avec mémoire/contexte au moment de rédiger (niveau agent).
+`is_acceptable()` exclut de nouveau `sans_reponse` de son seuil
+garde-fou — plus par absence de mécanisme, mais parce que la mesure
+prouve que ce n'est pas au bon endroit du pipeline. Détail complet :
+mémoire assistant `refus_architecture_trois_decisions`, diagramme
+`conception/3_autre_us/us2_question_libre/diagramme_retrieval_refus_citation.drawio`.
 
 ### 4.2 Combien de règles retourner dans la réponse
 
-`top_n=15` (`manifest.yml`) est le paramètre du **pool de candidats**
-interrogé par `retrieve()` — pas nécessairement le nombre de règles à
-citer dans une réponse en langage naturel à l'utilisateur final. Reste à
-décider : le nombre cité doit-il être fixe, dépendre du nombre de
-sous-questions détectées par la décomposition, ou être laissé au jugement
-du LLM de réponse à partir du pool de 15 ?
-
-Ces deux points sont ouverts, pas de décision prise — voir `TODO.md`
-(section « Retrieval US2 ») pour le suivi.
+Résolu par construction du Temps 2 : le jugement LLM décide lui-même du
+sous-ensemble à citer (0 à N parmi les candidats), pas de nombre fixe à
+trancher séparément. `top_n=15` (pool de candidats interrogé par
+`retrieve()`) est confirmé par la mesure recall@k : c'est le seul k où
+les cas à cibles multiples de l'acceptance sont tous couverts (recall
+1.000 sur 14 cas), contre 0.929 à k=10.
