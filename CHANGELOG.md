@@ -11,6 +11,12 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-11 — Claude Code
 
+- **Fiche jury — protocole de mesure des chunks (vagues 1 et 2)** :
+  `jury/documents_jury/working/fiche-rag-mesure-chunks.md` synthétise le
+  protocole, la vague 1 (cardinalité vs structure, généraliste vs
+  spécialiste) et la vague 2 (critère de décision, résultat : chunk
+  actuel conservé) — préparation orale E2/E3.
+
 - **Vague 2 du protocole de mesure des chunks — combinaisons de champs**
   (spec `docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md`,
   plan `docs/superpowers/plans/2026-09-11-mesure-chunks-vague2-implementation.md`,
