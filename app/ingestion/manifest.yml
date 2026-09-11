@@ -67,3 +67,15 @@ jugement:
   # docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md.
   prix_entree_par_million: 0.15
   prix_sortie_par_million: 0.60
+
+guardrail:
+  modele: gpt-5.4-mini
+  env_var: AZURE_MODEL_GPT_MINI
+  # Role experimental (2026-09-11) : teste l'hypothese qu'un LLM classe
+  # correctement une question dans/hors perimetre Opquast SANS voir de
+  # candidats retrieval (pas de biais de selection) - avant de decider
+  # si ce guardrail merite d'etre construit au niveau agent. Mesure
+  # uniquement pour l'instant (scripts/mesure_guardrail_perimetre.py),
+  # pas encore integre a un pipeline de production.
+  prix_entree_par_million: 0.15
+  prix_sortie_par_million: 0.60

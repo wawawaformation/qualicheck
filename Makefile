@@ -1,4 +1,4 @@
-.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks mesure-guardrail-perimetre api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -135,6 +135,11 @@ mesure-combinaisons-chunks:
 ## intitule + guide_analyse, fusionnes) contre la baseline — vague 3
 mesure-multi-vecteurs-chunks:
 	uv run python scripts/mesure_multi_vecteurs_chunks.py
+
+## Mesure si un LLM classe correctement une question dans/hors perimetre
+## Opquast SANS voir de candidats retrieval (hypothese guardrail agent)
+mesure-guardrail-perimetre:
+	uv run python scripts/mesure_guardrail_perimetre.py
 
 # ============================================================
 # API données
