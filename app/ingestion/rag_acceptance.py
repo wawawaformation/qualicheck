@@ -213,6 +213,26 @@ def retrieve_variante(
     return [(numero, meilleurs_scores[numero]) for numero in ordre]
 
 
+def fusionner_meilleur_score(
+    resultats: list[list[tuple[int, float]]],
+) -> list[tuple[int, float]]:
+    """Fusionne plusieurs listes de (numéro, score) déjà produites (ex.
+    une par type de vecteur via retrieve_variante), en gardant le
+    meilleur score par règle. Ordre de première apparition entre les
+    listes, dans l'ordre donné — même principe que la fusion déjà dans
+    retrieve_variante, généralisé à des listes déjà calculées."""
+    ordre: list[int] = []
+    meilleurs_scores: dict[int, float] = {}
+    for resultat in resultats:
+        for numero, score in resultat:
+            if numero not in meilleurs_scores:
+                ordre.append(numero)
+                meilleurs_scores[numero] = score
+            elif score > meilleurs_scores[numero]:
+                meilleurs_scores[numero] = score
+    return [(numero, meilleurs_scores[numero]) for numero in ordre]
+
+
 def mesurer_variante(
     nom_variante: str,
     vecteurs_regles: dict,

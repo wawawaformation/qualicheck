@@ -23,6 +23,7 @@ from app.ingestion.rag_acceptance import (
     cosine_similarity_matrix,
     evaluate_case,
     format_dataset_versions,
+    fusionner_meilleur_score,
     is_acceptable,
     load_cases,
     mesurer_variante,
@@ -649,3 +650,29 @@ def test_construire_resume_markdown_vague2_non_valide_le_signale():
 
     assert "NON confirmée" in resultat
     assert "**Choix retenu : baseline**" in resultat
+
+
+def test_fusionner_meilleur_score_garde_le_meilleur_sur_chevauchement():
+    """Une règle présente dans plusieurs listes garde son meilleur score."""
+    resultats = [[(1, 0.5), (2, 0.3)], [(1, 0.8), (3, 0.4)]]
+
+    assert fusionner_meilleur_score(resultats) == [(1, 0.8), (2, 0.3), (3, 0.4)]
+
+
+def test_fusionner_meilleur_score_union_sans_chevauchement():
+    """Des listes disjointes produisent l'union complète."""
+    resultats = [[(1, 0.5)], [(2, 0.3)]]
+
+    assert fusionner_meilleur_score(resultats) == [(1, 0.5), (2, 0.3)]
+
+
+def test_fusionner_meilleur_score_ordre_premiere_apparition():
+    """L'ordre suit la première apparition entre les listes, pas le score."""
+    resultats = [[(2, 0.1)], [(1, 0.9)]]
+
+    assert fusionner_meilleur_score(resultats) == [(2, 0.1), (1, 0.9)]
+
+
+def test_fusionner_meilleur_score_liste_vide():
+    """Aucune liste à fusionner retourne une liste vide."""
+    assert fusionner_meilleur_score([]) == []
