@@ -7,6 +7,7 @@ docs/superpowers/specs/2026-07-26-rag-acceptance-jsonl-design.md.
 """
 
 import json
+import random
 from datetime import datetime
 from pathlib import Path
 
@@ -21,6 +22,36 @@ def load_cases(jsonl_path: Path) -> list[dict]:
     """Charge le jeu de cas d'acceptance RAG depuis un fichier JSONL."""
     with open(jsonl_path, encoding="utf-8") as f:
         return [json.loads(line) for line in f if line.strip()]
+
+
+def tirer_jeu_reserve(
+    cases: list[dict], proportion: float, seed: int
+) -> tuple[list[dict], list[dict]]:
+    """Tire un jeu réservé stratifié par famille (point 2 du protocole de
+    mesure, voir docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md).
+
+    Pour chaque famille, `proportion` de ses cas (arrondi à l'entier le
+    plus proche) est tiré au hasard et mis dans le jeu réservé, le reste
+    dans le jeu d'exploration. Déterministe pour une seed et un ordre
+    d'entrée donnés — reproductible tant que `cases` ne change pas.
+
+    Retourne (exploration, reserve).
+    """
+    rng = random.Random(seed)
+    cas_par_famille: dict[str, list[dict]] = {}
+    for case in cases:
+        cas_par_famille.setdefault(case["famille"], []).append(case)
+
+    exploration: list[dict] = []
+    reserve: list[dict] = []
+    for cas_famille in cas_par_famille.values():
+        melange = cas_famille[:]
+        rng.shuffle(melange)
+        n_reserve = round(len(melange) * proportion)
+        reserve.extend(melange[:n_reserve])
+        exploration.extend(melange[n_reserve:])
+
+    return exploration, reserve
 
 
 def query_top_n_numeros(

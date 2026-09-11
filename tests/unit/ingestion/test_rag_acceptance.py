@@ -26,6 +26,7 @@ from app.ingestion.rag_acceptance import (
     metriques_scores,
     rang_meilleure_cible,
     retrieve_variante,
+    tirer_jeu_reserve,
 )
 
 
@@ -451,3 +452,52 @@ def test_construire_resume_markdown_structure_et_arrondi():
     assert "| tags | fam_b | 0.333 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 |" in resultat
     lignes_tableau = [ligne for ligne in resultat.splitlines() if ligne.startswith("|")]
     assert len(lignes_tableau) == len(lignes) + 2  # en-tête + séparateur + une ligne par entrée
+
+
+def _cases_deux_familles() -> list[dict]:
+    return [
+        {"question": f"Q{i}", "famille": "fam_a", "numeros_regle_attendus": [1]}
+        for i in range(6)
+    ] + [
+        {"question": f"R{i}", "famille": "fam_b", "numeros_regle_attendus": [2]}
+        for i in range(3)
+    ]
+
+
+def test_tirer_jeu_reserve_partition_complete_sans_chevauchement():
+    """Chaque cas se retrouve dans exactement un des deux sous-ensembles."""
+    cases = _cases_deux_familles()
+
+    exploration, reserve = tirer_jeu_reserve(cases, proportion=1 / 3, seed=42)
+
+    assert len(exploration) + len(reserve) == len(cases)
+    questions_exploration = {c["question"] for c in exploration}
+    questions_reserve = {c["question"] for c in reserve}
+    assert questions_exploration.isdisjoint(questions_reserve)
+    assert questions_exploration | questions_reserve == {c["question"] for c in cases}
+
+
+def test_tirer_jeu_reserve_respecte_la_proportion_par_famille():
+    """~1/3 de chaque famille est réservé, pas seulement 1/3 du total
+    (une famille à 3 cas ne doit pas se retrouver à 0 cas réservés)."""
+    cases = _cases_deux_familles()
+
+    exploration, reserve = tirer_jeu_reserve(cases, proportion=1 / 3, seed=42)
+
+    reserve_fam_a = [c for c in reserve if c["famille"] == "fam_a"]
+    reserve_fam_b = [c for c in reserve if c["famille"] == "fam_b"]
+    assert len(reserve_fam_a) == 2  # round(6 * 1/3)
+    assert len(reserve_fam_b) == 1  # round(3 * 1/3)
+
+
+def test_tirer_jeu_reserve_deterministe_pour_une_meme_seed():
+    """Deux appels avec la même seed et le même ordre d'entrée donnent
+    exactement le même partitionnement — condition pour que le jeu
+    réservé soit reproductible."""
+    cases = _cases_deux_familles()
+
+    exploration_1, reserve_1 = tirer_jeu_reserve(cases, proportion=1 / 3, seed=7)
+    exploration_2, reserve_2 = tirer_jeu_reserve(cases, proportion=1 / 3, seed=7)
+
+    assert [c["question"] for c in reserve_1] == [c["question"] for c in reserve_2]
+    assert [c["question"] for c in exploration_1] == [c["question"] for c in exploration_2]
