@@ -1,4 +1,4 @@
-.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -125,6 +125,11 @@ mesure-scores-refus:
 ## baseline) sur les 114 cas d'acceptance — vague 1 du protocole de mesure
 mesure-variantes-chunks:
 	uv run python scripts/mesure_variantes_chunks.py
+
+## Mesure MRR/recall@k pour 6 candidats (baseline + 5 combinaisons de
+## champs), jeu reserve stratifie + critere de decision — vague 2
+mesure-combinaisons-chunks:
+	uv run python scripts/mesure_combinaisons_chunks.py
 
 # ============================================================
 # API données
