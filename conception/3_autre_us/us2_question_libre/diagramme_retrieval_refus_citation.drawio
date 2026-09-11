@@ -1,0 +1,60 @@
+<mxfile host="Electron">
+  <diagram id="PipelineCompletApiApi" name="Page-1">
+    <mxGraphModel dx="1740" dy="926" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="question" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;html=0;" value="Question&#xa;(API)" vertex="1">
+          <mxGeometry height="60" width="280" x="310" y="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="decompose" parent="1" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;html=0;" value="Décomposition (LLM)&#xa;question → sous-questions" vertex="1">
+          <mxGeometry height="60" width="280" x="310" y="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="retrieval" parent="1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;html=0;" value="Recherche vectorielle + fusion&#xa;top-15, meilleur score gardé" vertex="1">
+          <mxGeometry height="60" width="280" x="310" y="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="llm" parent="1" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;html=0;" value="LLM de réponse&#xa;juge la pertinence" vertex="1">
+          <mxGeometry height="60" width="280" x="310" y="330" as="geometry" />
+        </mxCell>
+
+        <mxCell id="refus" parent="1" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;html=0;" value="Refus&#xa;[]" vertex="1">
+          <mxGeometry height="60" width="240" x="80" y="450" as="geometry" />
+        </mxCell>
+
+        <mxCell id="citation" parent="1" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;html=0;" value="Citation&#xa;1 à N règles" vertex="1">
+          <mxGeometry height="60" width="240" x="580" y="450" as="geometry" />
+        </mxCell>
+
+        <mxCell id="reponse" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;html=0;" value="Réponse&#xa;(API)" vertex="1">
+          <mxGeometry height="60" width="280" x="310" y="570" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" edge="1" parent="1" source="question" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="decompose">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="decompose" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="retrieval">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="retrieval" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="llm" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;" target="refus">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="llm" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;" target="citation">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="refus" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="reponse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="citation" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="reponse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
