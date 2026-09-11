@@ -400,13 +400,17 @@ def construire_resume_markdown_vague2(
     lignes_reserve: list[dict],
     decision: dict,
     horodatage: datetime,
+    titre: str | None = None,
 ) -> str:
-    """Construit le texte Markdown du résumé de la vague 2 : tableau
-    MRR/recall@k sur le jeu d'exploration, tableau sur le jeu réservé, et
-    la conclusion du critère de décision (voir
-    docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md).
-    Pure : pas d'écriture disque (voir
+    """Construit le texte Markdown du résumé d'une vague de mesure à
+    critère de décision (vague 2 et suivantes) : tableau MRR/recall@k sur
+    le jeu d'exploration, tableau sur le jeu réservé, et la conclusion du
+    critère de décision. `titre` par défaut : celui de la vague 2
+    (docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md) —
+    une vague suivante (ex. vague 3) passe son propre titre. Pure : pas
+    d'écriture disque (voir
     scripts/mesure_combinaisons_chunks.py::ecrire_resume_markdown)."""
+    titre_effectif = titre if titre is not None else "Mesure des combinaisons de chunk — vague 2"
     entete = (
         "| Variante | Famille | MRR | recall@1 | recall@3 | recall@5 | "
         "recall@10 | recall@15 |"
@@ -435,7 +439,7 @@ def construire_resume_markdown_vague2(
     )
 
     return (
-        f"# Mesure des combinaisons de chunk — vague 2 "
+        f"# {titre_effectif} "
         f"({horodatage.strftime('%Y-%m-%d %H:%M')})\n\n"
         f"## Jeu d'exploration\n\n{tableau(lignes_exploration)}\n"
         f"## Jeu réservé\n\n{tableau(lignes_reserve)}\n"

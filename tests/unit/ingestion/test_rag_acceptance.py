@@ -653,6 +653,44 @@ def test_construire_resume_markdown_vague2_non_valide_le_signale():
     assert "**Choix retenu : baseline**" in resultat
 
 
+def test_construire_resume_markdown_vague2_titre_personnalise():
+    """Un titre personnalisé remplace le titre par défaut de la vague 2."""
+    ligne = _ligne_resume_exemple()
+    decision = {
+        "candidats_elimines": [],
+        "gagnant_provisoire": "baseline",
+        "choix_retenu": "baseline",
+        "valide": True,
+    }
+
+    resultat = construire_resume_markdown_vague2(
+        [ligne],
+        [ligne],
+        decision,
+        datetime(2026, 9, 11, 10, 0),
+        titre="Mesure multi-vecteurs — vague 3",
+    )
+
+    assert resultat.startswith("# Mesure multi-vecteurs — vague 3")
+
+
+def test_construire_resume_markdown_vague2_titre_par_defaut_inchange():
+    """Sans titre fourni, le texte reste celui de la vague 2 (non-régression)."""
+    ligne = _ligne_resume_exemple()
+    decision = {
+        "candidats_elimines": [],
+        "gagnant_provisoire": "baseline",
+        "choix_retenu": "baseline",
+        "valide": True,
+    }
+
+    resultat = construire_resume_markdown_vague2(
+        [ligne], [ligne], decision, datetime(2026, 9, 11, 10, 0)
+    )
+
+    assert resultat.startswith("# Mesure des combinaisons de chunk — vague 2")
+
+
 def test_fusionner_meilleur_score_garde_le_meilleur_sur_chevauchement():
     """Une règle présente dans plusieurs listes garde son meilleur score."""
     resultats = [[(1, 0.5), (2, 0.3)], [(1, 0.8), (3, 0.4)]]
