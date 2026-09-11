@@ -1,4 +1,4 @@
-.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -115,6 +115,11 @@ rag-acceptance:
 ## Compare le recall du RAG sur plusieurs top_n (3/5/10/15), rapport Markdown
 rag-dense-acceptance:
 	uv run python scripts/rag_dense_acceptance.py
+
+## Mesure les scores (top-1, écart top-1/top-15) : sans_reponse vs cas PASS,
+## pour trancher si un seuil relatif est calibrable (Temps 1 du chantier refus)
+mesure-scores-refus:
+	uv run python scripts/mesure_scores_refus.py
 
 # ============================================================
 # API données
