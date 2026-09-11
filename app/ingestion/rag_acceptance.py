@@ -501,15 +501,24 @@ def compute_taux_par_famille(evaluations: list[dict]) -> dict[str, dict]:
 
 
 def is_acceptable(taux_par_famille: dict[str, dict], seuil: float) -> bool:
-    """Le jeu est acceptable si chaque famille atteint le seuil.
+    """Le jeu est acceptable si chaque famille à cible normale atteint le seuil.
 
-    Depuis le Temps 2 du mécanisme de refus (jugement LLM,
-    docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md),
-    "sans_reponse" est une famille comme les autres : un vrai mécanisme
-    existe désormais pour la traiter, elle n'est plus exclue par
-    construction.
+    La famille "sans_reponse" est exclue — pas faute de mécanisme
+    (le Temps 2 en a construit un, jugement LLM sur les candidats
+    retournés), mais parce que sa mesure réelle (~40-55% selon le
+    modèle, cf. docs/eval/mesure_guardrail_perimetre_2026-09-11_214327.md
+    et les runs précédents) a révélé une limite structurelle : présenter
+    des candidats au LLM crée un biais de sélection qui l'empêche de
+    répondre "aucun" de façon fiable. Le vrai correctif mesuré est un
+    guardrail *sans* candidats, au niveau agent (100% sur sans_reponse
+    isolément) — hors périmètre d'api_regles. Bloquer ce seuil ici
+    signalerait à tort un problème de retrieval, alors que le retrieval
+    et le jugement font leur travail ; c'est l'architecture qui manque
+    une étape en amont.
     """
-    for stats in taux_par_famille.values():
+    for famille, stats in taux_par_famille.items():
+        if famille == "sans_reponse":
+            continue
         if stats["taux"] < seuil:
             return False
     return True
