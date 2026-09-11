@@ -49,7 +49,7 @@ def _evaluer_cas_http(client: httpx.Client, base_url: str, case: dict) -> dict:
         timeout=30,
     )
     reponse.raise_for_status()
-    numeros_retournes = [regle["numero"] for regle in reponse.json()]
+    numeros_retournes = [item["regle"]["numero"] for item in reponse.json()]
 
     attendus = case["numeros_regle_attendus"]
     trouves = [n for n in attendus if n in numeros_retournes]
