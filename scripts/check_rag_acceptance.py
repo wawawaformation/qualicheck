@@ -74,13 +74,14 @@ def main() -> None:
             progress_logger.info(f"check_rag_acceptance — Jeu de données : {dataset_summary}")
 
             for case in cases:
-                numeros_retournes = retrieve(
+                resultat = retrieve(
                     session=session,
                     question=case["question"],
                     top_n=top_n,
                     decomposition_client=decomposition_client,
                     embedding_client=embedding_client,
                 )
+                numeros_retournes = [numero for numero, _ in resultat]
                 evaluation = evaluate_case(case, numeros_retournes)
                 evaluations.append(evaluation)
                 progress_logger.info(
