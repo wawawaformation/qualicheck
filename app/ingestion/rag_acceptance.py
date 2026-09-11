@@ -21,15 +21,19 @@ def load_cases(jsonl_path: Path) -> list[dict]:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def query_top_n_numeros(session: Session, vector: list[float], top_n: int) -> list[int]:
-    """Retourne les numéros des top_n règles les plus proches du vecteur (similarité cosinus)."""
+def query_top_n_numeros(session: Session, vector: list[float], top_n: int) -> list[tuple[int, float]]:
+    """Retourne les (numéro, score) des top_n règles les plus proches du vecteur.
+
+    Score de similarité cosinus (1 - distance) : 1 = identique, 0 = aucun
+    rapport. Ordonné par similarité décroissante (le plus proche en premier).
+    """
     resultats = (
-        session.query(Regle.numero)
+        session.query(Regle.numero, Regle.embedding.cosine_distance(vector))
         .order_by(Regle.embedding.cosine_distance(vector))
         .limit(top_n)
         .all()
     )
-    return [numero for (numero,) in resultats]
+    return [(numero, 1 - distance) for numero, distance in resultats]
 
 
 def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
