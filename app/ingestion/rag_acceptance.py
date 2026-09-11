@@ -500,15 +500,15 @@ def compute_taux_par_famille(evaluations: list[dict]) -> dict[str, dict]:
 
 
 def is_acceptable(taux_par_famille: dict[str, dict], seuil: float) -> bool:
-    """Le jeu est acceptable si chaque famille à cible normale atteint le seuil.
+    """Le jeu est acceptable si chaque famille atteint le seuil.
 
-    La famille "sans_reponse" est toujours ignorée : son taux est nul par
-    construction (aucun mécanisme de refus), ce n'est pas un défaut du
-    retrieval mesuré par les autres familles.
+    Depuis le Temps 2 du mécanisme de refus (jugement LLM,
+    docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md),
+    "sans_reponse" est une famille comme les autres : un vrai mécanisme
+    existe désormais pour la traiter, elle n'est plus exclue par
+    construction.
     """
-    for famille, stats in taux_par_famille.items():
-        if famille == "sans_reponse":
-            continue
+    for stats in taux_par_famille.values():
         if stats["taux"] < seuil:
             return False
     return True

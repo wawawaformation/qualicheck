@@ -209,11 +209,22 @@ def test_is_acceptable_false_when_one_famille_below_seuil():
     assert is_acceptable(taux_par_famille, seuil=0.8) is False
 
 
-def test_is_acceptable_ignores_sans_reponse_famille():
-    """La famille sans_reponse n'entre jamais dans le calcul, même à 0%."""
+def test_is_acceptable_sans_reponse_compte_comme_les_autres():
+    """Depuis le Temps 2 du mécanisme de refus, sans_reponse est une
+    famille comme les autres : sous le seuil, elle fait échouer le jeu."""
     taux_par_famille = {
         "vocabulaire_source_opquast": {"taux": 1.0, "reussis": 4, "total": 4, "partiels": 0},
         "sans_reponse": {"taux": 0.0, "reussis": 0, "total": 2, "partiels": 0},
+    }
+
+    assert is_acceptable(taux_par_famille, seuil=0.8) is False
+
+
+def test_is_acceptable_sans_reponse_au_seuil_est_accepte():
+    """sans_reponse au-dessus du seuil n'empêche pas l'acceptation."""
+    taux_par_famille = {
+        "vocabulaire_source_opquast": {"taux": 1.0, "reussis": 4, "total": 4, "partiels": 0},
+        "sans_reponse": {"taux": 0.9, "reussis": 18, "total": 20, "partiels": 0},
     }
 
     assert is_acceptable(taux_par_famille, seuil=0.8) is True
