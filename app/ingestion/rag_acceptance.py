@@ -54,6 +54,70 @@ def tirer_jeu_reserve(
     return exploration, reserve
 
 
+def mrr_moyen_non_pondere(mrr_par_famille: dict[str, float]) -> float:
+    """Moyenne non pondérée du MRR entre familles (chaque famille compte
+    pareil, indépendamment de son nombre de cas). 0.0 si aucune famille."""
+    if not mrr_par_famille:
+        return 0.0
+    return sum(mrr_par_famille.values()) / len(mrr_par_famille)
+
+
+def candidat_regresse(
+    mrr_candidat_par_famille: dict[str, float],
+    mrr_baseline_par_famille: dict[str, float],
+) -> bool:
+    """True si le candidat fait strictement moins bien que la baseline
+    sur au moins une famille (plancher strict, point 2 du critère de
+    décision de la vague 2)."""
+    return any(
+        mrr_candidat_par_famille[famille] < mrr_baseline
+        for famille, mrr_baseline in mrr_baseline_par_famille.items()
+    )
+
+
+def appliquer_critere_decision(
+    mrr_exploration: dict[str, dict[str, float]],
+    mrr_reserve: dict[str, dict[str, float]],
+    nom_baseline: str = "baseline",
+) -> dict:
+    """Applique le critère de décision de la vague 2 (voir
+    docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md) :
+    élimine les candidats qui régressent vs la baseline sur au moins une
+    famille (jeu d'exploration), désigne le gagnant provisoire par MRR
+    moyen non pondéré le plus haut, puis valide ce gagnant sur le jeu
+    réservé.
+
+    mrr_exploration / mrr_reserve : {nom_candidat: {famille: mrr}},
+    mêmes candidats et familles dans les deux.
+
+    Retourne {"candidats_elimines": [...], "gagnant_provisoire": str,
+    "choix_retenu": str, "valide": bool}. En cas d'égalité de MRR moyen
+    sur le jeu d'exploration, la baseline l'emporte (aucun changement
+    par défaut).
+    """
+    baseline_exploration = mrr_exploration[nom_baseline]
+    survivants = [nom_baseline] + [
+        candidat
+        for candidat in mrr_exploration
+        if candidat != nom_baseline
+        and not candidat_regresse(mrr_exploration[candidat], baseline_exploration)
+    ]
+    candidats_elimines = [c for c in mrr_exploration if c not in survivants]
+
+    gagnant_provisoire = max(survivants, key=lambda c: mrr_moyen_non_pondere(mrr_exploration[c]))
+
+    mrr_baseline_reserve = mrr_moyen_non_pondere(mrr_reserve[nom_baseline])
+    mrr_gagnant_reserve = mrr_moyen_non_pondere(mrr_reserve[gagnant_provisoire])
+    valide = mrr_gagnant_reserve >= mrr_baseline_reserve
+
+    return {
+        "candidats_elimines": candidats_elimines,
+        "gagnant_provisoire": gagnant_provisoire,
+        "choix_retenu": gagnant_provisoire if valide else nom_baseline,
+        "valide": valide,
+    }
+
+
 def query_top_n_numeros(
     session: Session, vector: list[float], top_n: int
 ) -> list[tuple[int, float]]:

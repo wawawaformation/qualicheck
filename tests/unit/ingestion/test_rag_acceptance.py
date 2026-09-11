@@ -13,8 +13,10 @@ from datetime import datetime
 import pytest
 
 from app.ingestion.rag_acceptance import (
+    appliquer_critere_decision,
     calculer_mrr,
     calculer_recall_a_k,
+    candidat_regresse,
     compute_taux_par_famille,
     construire_resume_markdown,
     cosine_similarity_matrix,
@@ -24,6 +26,7 @@ from app.ingestion.rag_acceptance import (
     load_cases,
     mesurer_variante,
     metriques_scores,
+    mrr_moyen_non_pondere,
     rang_meilleure_cible,
     retrieve_variante,
     tirer_jeu_reserve,
@@ -501,3 +504,76 @@ def test_tirer_jeu_reserve_deterministe_pour_une_meme_seed():
 
     assert [c["question"] for c in reserve_1] == [c["question"] for c in reserve_2]
     assert [c["question"] for c in exploration_1] == [c["question"] for c in exploration_2]
+
+
+def test_mrr_moyen_non_pondere_moyenne_simple_entre_familles():
+    """Chaque famille compte pareil, indépendamment de son nombre de cas."""
+    assert mrr_moyen_non_pondere({"fam_a": 1.0, "fam_b": 0.0}) == pytest.approx(0.5)
+
+
+def test_mrr_moyen_non_pondere_dictionnaire_vide():
+    assert mrr_moyen_non_pondere({}) == 0.0
+
+
+def test_candidat_regresse_vrai_si_une_famille_est_pire():
+    mrr_baseline = {"fam_a": 0.5, "fam_b": 0.3}
+    mrr_candidat = {"fam_a": 0.6, "fam_b": 0.2}
+
+    assert candidat_regresse(mrr_candidat, mrr_baseline) is True
+
+
+def test_candidat_regresse_faux_si_tout_est_egal_ou_meilleur():
+    mrr_baseline = {"fam_a": 0.5, "fam_b": 0.3}
+    mrr_candidat = {"fam_a": 0.5, "fam_b": 0.4}
+
+    assert candidat_regresse(mrr_candidat, mrr_baseline) is False
+
+
+def test_appliquer_critere_decision_elimine_puis_valide_le_gagnant():
+    """Un candidat qui régresse sur une famille est éliminé ; parmi les
+    survivants, celui au MRR moyen le plus haut est le gagnant
+    provisoire ; confirmé par le jeu réservé, il devient le choix
+    retenu."""
+    mrr_exploration = {
+        "baseline": {"fam_a": 0.5, "fam_b": 0.5},
+        "candidat_gagnant": {"fam_a": 0.6, "fam_b": 0.6},
+        "candidat_regresse": {"fam_a": 0.9, "fam_b": 0.1},
+    }
+    mrr_reserve = {
+        "baseline": {"fam_a": 0.4, "fam_b": 0.4},
+        "candidat_gagnant": {"fam_a": 0.5, "fam_b": 0.5},
+        "candidat_regresse": {"fam_a": 0.9, "fam_b": 0.1},
+    }
+
+    resultat = appliquer_critere_decision(mrr_exploration, mrr_reserve)
+
+    assert resultat == {
+        "candidats_elimines": ["candidat_regresse"],
+        "gagnant_provisoire": "candidat_gagnant",
+        "choix_retenu": "candidat_gagnant",
+        "valide": True,
+    }
+
+
+def test_appliquer_critere_decision_gagnant_non_valide_garde_la_baseline():
+    """Un gagnant provisoire qui ne se confirme pas sur le jeu réservé
+    laisse la baseline comme choix retenu."""
+    mrr_exploration = {"baseline": {"fam_a": 0.5}, "candidat": {"fam_a": 0.6}}
+    mrr_reserve = {"baseline": {"fam_a": 0.5}, "candidat": {"fam_a": 0.3}}
+
+    resultat = appliquer_critere_decision(mrr_exploration, mrr_reserve)
+
+    assert resultat["gagnant_provisoire"] == "candidat"
+    assert resultat["valide"] is False
+    assert resultat["choix_retenu"] == "baseline"
+
+
+def test_appliquer_critere_decision_egalite_favorise_la_baseline():
+    """En cas d'égalité de MRR moyen sur le jeu d'exploration, la
+    baseline l'emporte (aucun changement par défaut)."""
+    mrr_exploration = {"baseline": {"fam_a": 0.5}, "candidat": {"fam_a": 0.5}}
+    mrr_reserve = {"baseline": {"fam_a": 0.5}, "candidat": {"fam_a": 0.5}}
+
+    resultat = appliquer_critere_decision(mrr_exploration, mrr_reserve)
+
+    assert resultat["gagnant_provisoire"] == "baseline"
