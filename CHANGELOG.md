@@ -11,6 +11,19 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-11 — Claude Code
 
+- **Revue finale du chantier « mesure des variantes de chunk » — 2 correctifs**
+  (`app/ingestion/rag_acceptance.py`, `scripts/mesure_variantes_chunks.py`,
+  `tests/unit/ingestion/test_rag_acceptance.py`) : (1) le CSV expose
+  désormais `cibles_mesurees` par ligne (sous-ensemble de
+  `numeros_attendus` réellement vectorisé pour la variante — sans cette
+  colonne, recalculer le recall depuis le CSV pour la variante `tags`
+  donnait un résultat différent du résumé `.md`, sans explication) ; (2)
+  `mesurer_variante()`/`construire_resume_markdown()` déplacées de
+  `scripts/` vers `app/ingestion/rag_acceptance.py` (logique pure, aucun
+  appel Azure/BDD, ne relevait pas de la convention « scripts couplés à
+  Azure, non testés » — désormais couvertes par 2 nouveaux tests). Les
+  fichiers déjà générés (`docs/eval/mesure_variantes_chunks_2026-09-11_094703.*`)
+  ne sont pas affectés, ces correctifs ne valent que pour les prochains runs.
 - **Mesure des variantes de chunk — vague 1 (11 champs isolés + baseline)** —
   spec (`docs/superpowers/specs/2026-09-11-mesure-chunks-vague1-design.md`)
   puis plan (`docs/superpowers/plans/2026-09-11-mesure-chunks-vague1-implementation.md`)
