@@ -76,7 +76,8 @@ def retrieve_numeros_par_top_n(
     sous_questions = decomposition_client.decomposer(question)
     vectors = embedding_client.embed_batch(sous_questions)
     numeros_max_par_sous_question = [
-        query_top_n_numeros(session, vector, top_n_max) for vector in vectors
+        [numero for numero, _ in query_top_n_numeros(session, vector, top_n_max)]
+        for vector in vectors
     ]
 
     resultats: dict[int, list[int]] = {}
