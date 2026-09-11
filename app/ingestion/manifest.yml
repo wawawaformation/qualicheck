@@ -57,3 +57,13 @@ decomposition:
   # à corriger dès le premier run réel, même logique que le rôle embedding.
   prix_entree_par_million: 0.15
   prix_sortie_par_million: 0.60
+
+jugement:
+  modele: gpt-5.4-mini
+  env_var: AZURE_MODEL_GPT_MINI
+  # Meme modele/variable d'environnement que le role decomposition (meme
+  # deploiement Azure, prompt different) - juge la pertinence des
+  # candidats retournes par retrieve() avant citation. Voir
+  # docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md.
+  prix_entree_par_million: 0.15
+  prix_sortie_par_million: 0.60
