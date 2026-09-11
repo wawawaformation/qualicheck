@@ -8,17 +8,21 @@ testées ici (nécessitent une base réellement vectorisée), validées par
 exécution réelle via `make rag-acceptance`.
 """
 
+from datetime import datetime
+
 import pytest
 
 from app.ingestion.rag_acceptance import (
     calculer_mrr,
     calculer_recall_a_k,
     compute_taux_par_famille,
+    construire_resume_markdown,
     cosine_similarity_matrix,
     evaluate_case,
     format_dataset_versions,
     is_acceptable,
     load_cases,
+    mesurer_variante,
     metriques_scores,
     rang_meilleure_cible,
     retrieve_variante,
@@ -349,3 +353,101 @@ def test_retrieve_variante_fusionne_deux_sous_questions():
     resultat = retrieve_variante(sous_questions_vecteurs, vecteurs_regles, top_n=2)
 
     assert resultat == [(10, pytest.approx(1.0)), (20, pytest.approx(0.8))]
+
+
+def test_mesurer_variante_cible_absente_exclut_le_cas_du_resume_mais_pas_du_csv():
+    """Un cas dont aucune cible n'a été vectorisée (ex. règle sans tag pour
+    la variante "tags") ne contribue aucune entrée MRR/recall pour sa
+    famille, mais produit quand même ses lignes CSV par candidat."""
+    vecteurs_regles = {1: [1.0, 0.0], 2: [0.0, 1.0]}
+    cases = [{"question": "Q1", "famille": "fam_a", "numeros_regle_attendus": [99]}]
+    sous_questions_vecteurs_par_cas = [[[1.0, 0.0]]]
+
+    lignes_csv, lignes_resume = mesurer_variante(
+        "variante_test",
+        vecteurs_regles,
+        cases,
+        sous_questions_vecteurs_par_cas,
+        top_n=2,
+        recall_ks=[1],
+    )
+
+    assert lignes_resume == []
+    assert len(lignes_csv) == 2
+    for ligne in lignes_csv:
+        assert ligne["numeros_attendus"] == "99"
+        assert ligne["cibles_mesurees"] == ""
+        assert ligne["est_cible"] == "non"
+
+
+def test_mesurer_variante_cible_trouvee_alimente_le_resume():
+    """Un cas dont la cible a été vectorisée et retrouvée alimente le MRR
+    et le recall de sa famille, et cibles_mesurees reflète la cible
+    effectivement mesurée."""
+    vecteurs_regles = {1: [1.0, 0.0], 2: [0.0, 1.0]}
+    cases = [{"question": "Q1", "famille": "fam_a", "numeros_regle_attendus": [1]}]
+    sous_questions_vecteurs_par_cas = [[[1.0, 0.0]]]
+
+    lignes_csv, lignes_resume = mesurer_variante(
+        "variante_test",
+        vecteurs_regles,
+        cases,
+        sous_questions_vecteurs_par_cas,
+        top_n=2,
+        recall_ks=[1, 2],
+    )
+
+    assert lignes_resume == [
+        {
+            "variante": "variante_test",
+            "famille": "fam_a",
+            "mrr": 1.0,
+            "recall_1": 1.0,
+            "recall_2": 1.0,
+        }
+    ]
+    assert len(lignes_csv) == 2
+    ligne_cible = next(ligne for ligne in lignes_csv if ligne["numero_retourne"] == 1)
+    assert ligne_cible["est_cible"] == "oui"
+    assert ligne_cible["cibles_mesurees"] == "1"
+    assert ligne_cible["numeros_attendus"] == "1"
+
+
+def test_construire_resume_markdown_structure_et_arrondi():
+    """Le Markdown contient l'en-tête, une ligne par entrée, et des valeurs
+    arrondies à 3 décimales."""
+    lignes = [
+        {
+            "variante": "baseline",
+            "famille": "fam_a",
+            "mrr": 0.5,
+            "recall_1": 0.1,
+            "recall_3": 0.2,
+            "recall_5": 0.3,
+            "recall_10": 0.4,
+            "recall_15": 0.5,
+        },
+        {
+            "variante": "tags",
+            "famille": "fam_b",
+            "mrr": 1 / 3,
+            "recall_1": 0.0,
+            "recall_3": 0.0,
+            "recall_5": 1.0,
+            "recall_10": 1.0,
+            "recall_15": 1.0,
+        },
+    ]
+    horodatage = datetime(2026, 9, 11, 9, 47)
+
+    resultat = construire_resume_markdown(lignes, horodatage)
+
+    assert (
+        "| Variante | Famille | MRR | recall@1 | recall@3 | recall@5 | recall@10 | recall@15 |"
+        in resultat
+    )
+    assert "|---|---|---|---|---|---|---|---|" in resultat
+    assert "| baseline | fam_a | 0.500 | 0.100 | 0.200 | 0.300 | 0.400 | 0.500 |" in resultat
+    assert "| tags | fam_b | 0.333 | 0.000 | 0.000 | 1.000 | 1.000 | 1.000 |" in resultat
+    lignes_tableau = [ligne for ligne in resultat.splitlines() if ligne.startswith("|")]
+    assert len(lignes_tableau) == len(lignes) + 2  # en-tête + séparateur + une ligne par entrée

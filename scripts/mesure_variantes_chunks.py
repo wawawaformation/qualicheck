@@ -30,11 +30,9 @@ from app.ingestion.chunking import build_chunk_text, build_variant_text  # noqa:
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
 from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
-    calculer_mrr,
-    calculer_recall_a_k,
+    construire_resume_markdown,
     load_cases,
-    rang_meilleure_cible,
-    retrieve_variante,
+    mesurer_variante,
 )
 from app.ingestion.stockage import load_enriched_rules_from_db  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
@@ -105,68 +103,11 @@ def vectoriser_variante(regles, champ: str | None, embedding_client: EmbeddingCl
     return vecteurs_regles
 
 
-def mesurer_variante(
-    nom_variante: str,
-    vecteurs_regles: dict,
-    cases: list[dict],
-    sous_questions_vecteurs_par_cas: list[list[list[float]]],
-) -> tuple[list[dict], list[dict]]:
-    """Mesure une variante sur les 114 cas. Retourne (lignes_csv,
-    lignes_resume_par_famille)."""
-    lignes_csv = []
-    rangs_par_famille: dict[str, list] = {}
-    recalls_par_famille: dict[str, dict[int, list]] = {}
-
-    for case, sous_questions_vecteurs in zip(cases, sous_questions_vecteurs_par_cas, strict=True):
-        candidats = retrieve_variante(sous_questions_vecteurs, vecteurs_regles, top_n=TOP_N)
-        candidats_tries = sorted(candidats, key=lambda t: t[1], reverse=True)
-        numeros_tries = [numero for numero, _ in candidats_tries]
-
-        cibles = case["numeros_regle_attendus"]
-        cibles_valides = [c for c in cibles if c in vecteurs_regles]
-
-        for rang, (numero, score) in enumerate(candidats_tries, start=1):
-            lignes_csv.append(
-                {
-                    "variante": nom_variante,
-                    "question": case["question"],
-                    "famille": case["famille"],
-                    "numeros_attendus": ";".join(str(c) for c in cibles),
-                    "numero_retourne": numero,
-                    "rang": rang,
-                    "cosinus": f"{score:.6f}",
-                    "est_cible": "oui" if numero in cibles else "non",
-                }
-            )
-
-        if not cibles_valides:
-            continue  # cas exclu pour cette variante (ex. cible sans tag, variante "tags")
-
-        famille = case["famille"]
-        rang = rang_meilleure_cible(numeros_tries, cibles_valides)
-        rangs_par_famille.setdefault(famille, []).append(rang)
-        for k in RECALL_KS:
-            recalls_par_famille.setdefault(famille, {}).setdefault(k, []).append(
-                calculer_recall_a_k(numeros_tries, cibles_valides, k)
-            )
-
-    lignes_resume = []
-    for famille in rangs_par_famille:
-        mrr = calculer_mrr(rangs_par_famille[famille])
-        ligne = {"variante": nom_variante, "famille": famille, "mrr": mrr}
-        for k in RECALL_KS:
-            valeurs = recalls_par_famille[famille][k]
-            ligne[f"recall_{k}"] = sum(valeurs) / len(valeurs)
-        lignes_resume.append(ligne)
-        progress_logger.info(
-            f"mesure_variantes_chunks — {nom_variante} / {famille} : "
-            f"MRR={mrr:.3f} recall@5={ligne['recall_5']:.3f}"
-        )
-
-    return lignes_csv, lignes_resume
-
-
 def ecrire_csv(chemin: Path, lignes: list[dict]) -> None:
+    # cibles_mesurees : sous-ensemble de numeros_attendus effectivement
+    # vectorisé pour la variante (ex. une règle sans tag est absente de
+    # cette liste pour la variante "tags") — sert au calcul du MRR/recall,
+    # exposé ici pour que le CSV soit reproductible sans deviner l'exclusion.
     with open(chemin, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f,
@@ -175,6 +116,7 @@ def ecrire_csv(chemin: Path, lignes: list[dict]) -> None:
                 "question",
                 "famille",
                 "numeros_attendus",
+                "cibles_mesurees",
                 "numero_retourne",
                 "rang",
                 "cosinus",
@@ -186,23 +128,7 @@ def ecrire_csv(chemin: Path, lignes: list[dict]) -> None:
 
 
 def ecrire_resume_markdown(chemin: Path, lignes: list[dict], horodatage: datetime) -> None:
-    entete = (
-        "| Variante | Famille | MRR | recall@1 | recall@3 | recall@5 | "
-        "recall@10 | recall@15 |"
-    )
-    separateur = "|---|---|---|---|---|---|---|---|"
-    corps = [
-        f"| {r['variante']} | {r['famille']} | {r['mrr']:.3f} | "
-        f"{r['recall_1']:.3f} | {r['recall_3']:.3f} | {r['recall_5']:.3f} | "
-        f"{r['recall_10']:.3f} | {r['recall_15']:.3f} |"
-        for r in lignes
-    ]
-    contenu = (
-        f"# Mesure des variantes de chunk — vague 1 "
-        f"({horodatage.strftime('%Y-%m-%d %H:%M')})\n\n"
-        f"{entete}\n{separateur}\n" + "\n".join(corps) + "\n"
-    )
-    chemin.write_text(contenu, encoding="utf-8")
+    chemin.write_text(construire_resume_markdown(lignes, horodatage), encoding="utf-8")
 
 
 def main() -> None:
@@ -248,8 +174,13 @@ def main() -> None:
         )
 
         lignes_csv, lignes_resume = mesurer_variante(
-            nom_variante, vecteurs_regles, cases, sous_questions_vecteurs_par_cas
+            nom_variante, vecteurs_regles, cases, sous_questions_vecteurs_par_cas, TOP_N, RECALL_KS
         )
+        for ligne in lignes_resume:
+            progress_logger.info(
+                f"mesure_variantes_chunks — {nom_variante} / {ligne['famille']} : "
+                f"MRR={ligne['mrr']:.3f} recall@5={ligne['recall_5']:.3f}"
+            )
         toutes_lignes_csv.extend(lignes_csv)
         tous_lignes_resume.extend(lignes_resume)
 

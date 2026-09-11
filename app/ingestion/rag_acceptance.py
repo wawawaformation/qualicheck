@@ -7,6 +7,7 @@ docs/superpowers/specs/2026-07-26-rag-acceptance-jsonl-design.md.
 """
 
 import json
+from datetime import datetime
 from pathlib import Path
 
 import numpy as np
@@ -115,6 +116,95 @@ def retrieve_variante(
             elif score > meilleurs_scores[numero]:
                 meilleurs_scores[numero] = score
     return [(numero, meilleurs_scores[numero]) for numero in ordre]
+
+
+def mesurer_variante(
+    nom_variante: str,
+    vecteurs_regles: dict,
+    cases: list[dict],
+    sous_questions_vecteurs_par_cas: list[list[list[float]]],
+    top_n: int,
+    recall_ks: list[int],
+) -> tuple[list[dict], list[dict]]:
+    """Mesure une variante de chunk sur l'ensemble des cas d'acceptance.
+    Retourne (lignes_csv, lignes_resume_par_famille).
+
+    Pure : aucun appel réseau, BDD ni log — la progression est loguée par
+    l'appelant (scripts/mesure_variantes_chunks.py::main()).
+    """
+    lignes_csv = []
+    rangs_par_famille: dict[str, list] = {}
+    recalls_par_famille: dict[str, dict[int, list]] = {}
+
+    for case, sous_questions_vecteurs in zip(cases, sous_questions_vecteurs_par_cas, strict=True):
+        candidats = retrieve_variante(sous_questions_vecteurs, vecteurs_regles, top_n=top_n)
+        candidats_tries = sorted(candidats, key=lambda t: t[1], reverse=True)
+        numeros_tries = [numero for numero, _ in candidats_tries]
+
+        cibles = case["numeros_regle_attendus"]
+        # Cibles réellement vectorisées pour cette variante (ex. une règle
+        # sans tag est absente de vecteurs_regles pour la variante "tags").
+        cibles_valides = [c for c in cibles if c in vecteurs_regles]
+        cibles_mesurees_str = ";".join(str(c) for c in cibles_valides)
+
+        for rang, (numero, score) in enumerate(candidats_tries, start=1):
+            lignes_csv.append(
+                {
+                    "variante": nom_variante,
+                    "question": case["question"],
+                    "famille": case["famille"],
+                    "numeros_attendus": ";".join(str(c) for c in cibles),
+                    "cibles_mesurees": cibles_mesurees_str,
+                    "numero_retourne": numero,
+                    "rang": rang,
+                    "cosinus": f"{score:.6f}",
+                    "est_cible": "oui" if numero in cibles else "non",
+                }
+            )
+
+        if not cibles_valides:
+            continue  # cas exclu pour cette variante (ex. cible sans tag, variante "tags")
+
+        famille = case["famille"]
+        rang = rang_meilleure_cible(numeros_tries, cibles_valides)
+        rangs_par_famille.setdefault(famille, []).append(rang)
+        for k in recall_ks:
+            recalls_par_famille.setdefault(famille, {}).setdefault(k, []).append(
+                calculer_recall_a_k(numeros_tries, cibles_valides, k)
+            )
+
+    lignes_resume = []
+    for famille in rangs_par_famille:
+        mrr = calculer_mrr(rangs_par_famille[famille])
+        ligne = {"variante": nom_variante, "famille": famille, "mrr": mrr}
+        for k in recall_ks:
+            valeurs = recalls_par_famille[famille][k]
+            ligne[f"recall_{k}"] = sum(valeurs) / len(valeurs)
+        lignes_resume.append(ligne)
+
+    return lignes_csv, lignes_resume
+
+
+def construire_resume_markdown(lignes: list[dict], horodatage: datetime) -> str:
+    """Construit le texte Markdown du résumé MRR/recall par variante et
+    famille. Pure : pas d'écriture disque (voir
+    scripts/mesure_variantes_chunks.py::ecrire_resume_markdown)."""
+    entete = (
+        "| Variante | Famille | MRR | recall@1 | recall@3 | recall@5 | "
+        "recall@10 | recall@15 |"
+    )
+    separateur = "|---|---|---|---|---|---|---|---|"
+    corps = [
+        f"| {r['variante']} | {r['famille']} | {r['mrr']:.3f} | "
+        f"{r['recall_1']:.3f} | {r['recall_3']:.3f} | {r['recall_5']:.3f} | "
+        f"{r['recall_10']:.3f} | {r['recall_15']:.3f} |"
+        for r in lignes
+    ]
+    return (
+        f"# Mesure des variantes de chunk — vague 1 "
+        f"({horodatage.strftime('%Y-%m-%d %H:%M')})\n\n"
+        f"{entete}\n{separateur}\n" + "\n".join(corps) + "\n"
+    )
 
 
 def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
