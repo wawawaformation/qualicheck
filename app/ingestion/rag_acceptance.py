@@ -302,6 +302,54 @@ def construire_resume_markdown(lignes: list[dict], horodatage: datetime) -> str:
     )
 
 
+def construire_resume_markdown_vague2(
+    lignes_exploration: list[dict],
+    lignes_reserve: list[dict],
+    decision: dict,
+    horodatage: datetime,
+) -> str:
+    """Construit le texte Markdown du résumé de la vague 2 : tableau
+    MRR/recall@k sur le jeu d'exploration, tableau sur le jeu réservé, et
+    la conclusion du critère de décision (voir
+    docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md).
+    Pure : pas d'écriture disque (voir
+    scripts/mesure_combinaisons_chunks.py::ecrire_resume_markdown)."""
+    entete = (
+        "| Variante | Famille | MRR | recall@1 | recall@3 | recall@5 | "
+        "recall@10 | recall@15 |"
+    )
+    separateur = "|---|---|---|---|---|---|---|---|"
+
+    def tableau(lignes: list[dict]) -> str:
+        corps = [
+            f"| {r['variante']} | {r['famille']} | {r['mrr']:.3f} | "
+            f"{r['recall_1']:.3f} | {r['recall_3']:.3f} | {r['recall_5']:.3f} | "
+            f"{r['recall_10']:.3f} | {r['recall_15']:.3f} |"
+            for r in lignes
+        ]
+        return f"{entete}\n{separateur}\n" + "\n".join(corps) + "\n"
+
+    candidats_elimines = decision["candidats_elimines"]
+    conclusion = (
+        f"Candidats éliminés (régression vs baseline sur au moins une "
+        f"famille, jeu d'exploration) : "
+        f"{', '.join(candidats_elimines) if candidats_elimines else 'aucun'}.\n\n"
+        f"Gagnant provisoire (MRR moyen non pondéré le plus haut, jeu "
+        f"d'exploration) : **{decision['gagnant_provisoire']}**.\n\n"
+        f"Validation sur le jeu réservé : "
+        f"{'confirmée' if decision['valide'] else 'NON confirmée'}.\n\n"
+        f"**Choix retenu : {decision['choix_retenu']}**"
+    )
+
+    return (
+        f"# Mesure des combinaisons de chunk — vague 2 "
+        f"({horodatage.strftime('%Y-%m-%d %H:%M')})\n\n"
+        f"## Jeu d'exploration\n\n{tableau(lignes_exploration)}\n"
+        f"## Jeu réservé\n\n{tableau(lignes_reserve)}\n"
+        f"## Décision\n\n{conclusion}\n"
+    )
+
+
 def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
     """Évalue un cas : verdict PASS/FAIL/PARTIEL selon les cibles retrouvées.
 

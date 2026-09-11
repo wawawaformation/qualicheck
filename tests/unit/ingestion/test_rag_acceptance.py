@@ -19,6 +19,7 @@ from app.ingestion.rag_acceptance import (
     candidat_regresse,
     compute_taux_par_famille,
     construire_resume_markdown,
+    construire_resume_markdown_vague2,
     cosine_similarity_matrix,
     evaluate_case,
     format_dataset_versions,
@@ -577,3 +578,74 @@ def test_appliquer_critere_decision_egalite_favorise_la_baseline():
     resultat = appliquer_critere_decision(mrr_exploration, mrr_reserve)
 
     assert resultat["gagnant_provisoire"] == "baseline"
+
+
+def _ligne_resume_exemple() -> dict:
+    return {
+        "variante": "baseline",
+        "famille": "fam_a",
+        "mrr": 0.5,
+        "recall_1": 0.1,
+        "recall_3": 0.2,
+        "recall_5": 0.3,
+        "recall_10": 0.4,
+        "recall_15": 0.5,
+    }
+
+
+def test_construire_resume_markdown_vague2_structure():
+    """Contient les deux tableaux (exploration/réservé) et la conclusion
+    de la décision, avec le choix retenu en évidence."""
+    ligne = _ligne_resume_exemple()
+    decision = {
+        "candidats_elimines": ["D_source_opquast"],
+        "gagnant_provisoire": "B_duo_generaliste",
+        "choix_retenu": "B_duo_generaliste",
+        "valide": True,
+    }
+
+    resultat = construire_resume_markdown_vague2(
+        [ligne], [ligne], decision, datetime(2026, 9, 11, 10, 0)
+    )
+
+    assert "## Jeu d'exploration" in resultat
+    assert "## Jeu réservé" in resultat
+    assert "Candidats éliminés" in resultat and "D_source_opquast" in resultat
+    assert "**Choix retenu : B_duo_generaliste**" in resultat
+
+
+def test_construire_resume_markdown_vague2_aucun_candidat_elimine():
+    """Le texte reste correct quand la liste des candidats éliminés est
+    vide."""
+    ligne = _ligne_resume_exemple()
+    decision = {
+        "candidats_elimines": [],
+        "gagnant_provisoire": "baseline",
+        "choix_retenu": "baseline",
+        "valide": True,
+    }
+
+    resultat = construire_resume_markdown_vague2(
+        [ligne], [ligne], decision, datetime(2026, 9, 11, 10, 0)
+    )
+
+    assert "aucun" in resultat
+
+
+def test_construire_resume_markdown_vague2_non_valide_le_signale():
+    """Une validation échouée est visible dans le texte (pas seulement
+    dans le dict de décision)."""
+    ligne = _ligne_resume_exemple()
+    decision = {
+        "candidats_elimines": [],
+        "gagnant_provisoire": "C_duo_specialiste",
+        "choix_retenu": "baseline",
+        "valide": False,
+    }
+
+    resultat = construire_resume_markdown_vague2(
+        [ligne], [ligne], decision, datetime(2026, 9, 11, 10, 0)
+    )
+
+    assert "NON confirmée" in resultat
+    assert "**Choix retenu : baseline**" in resultat
