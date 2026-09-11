@@ -9,6 +9,7 @@ docs/superpowers/specs/2026-07-26-rag-acceptance-jsonl-design.md.
 import json
 from pathlib import Path
 
+import numpy as np
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -50,6 +51,70 @@ def metriques_scores(candidats: list[tuple[int, float]]) -> dict:
     index_top15 = min(14, len(tries) - 1)
     top15 = tries[index_top15][1]
     return {"top1": top1, "top15": top15, "ecart": top1 - top15}
+
+
+def rang_meilleure_cible(candidats_tries: list[int], cibles: list[int]) -> int | None:
+    """Rang (1-indexé) de la première cible rencontrée dans les candidats
+    déjà triés par pertinence décroissante. None si aucune cible n'y figure."""
+    for rang, numero in enumerate(candidats_tries, start=1):
+        if numero in cibles:
+            return rang
+    return None
+
+
+def calculer_mrr(rangs: list[int | None]) -> float:
+    """Mean Reciprocal Rank : moyenne de 1/rang, 0 pour une cible absente
+    (rang None). 0.0 sur une liste vide (pas de division par zéro)."""
+    if not rangs:
+        return 0.0
+    return sum(1 / rang if rang is not None else 0.0 for rang in rangs) / len(rangs)
+
+
+def calculer_recall_a_k(candidats_tries: list[int], cibles: list[int], k: int) -> float:
+    """Proportion des cibles présentes dans les k premiers candidats.
+    0.0 si cibles est vide (pas de division par zéro)."""
+    if not cibles:
+        return 0.0
+    top_k = set(candidats_tries[:k])
+    trouves = sum(1 for cible in cibles if cible in top_k)
+    return trouves / len(cibles)
+
+
+def cosine_similarity_matrix(
+    vecteur_question: list[float], vecteurs_regles: dict[int, list[float]]
+) -> list[tuple[int, float]]:
+    """Similarité cosinus entre un vecteur question et un ensemble de
+    vecteurs de règles, calculée en numpy (pas de requête SQL). Retourne
+    les (numéro, score) triés par similarité décroissante."""
+    numeros = list(vecteurs_regles.keys())
+    matrice = np.array([vecteurs_regles[numero] for numero in numeros])
+    q = np.array(vecteur_question)
+    normes = np.linalg.norm(matrice, axis=1) * np.linalg.norm(q)
+    scores = (matrice @ q) / normes
+    resultat = sorted(zip(numeros, scores.tolist(), strict=True), key=lambda t: t[1], reverse=True)
+    return resultat
+
+
+def retrieve_variante(
+    sous_questions_vecteurs: list[list[float]],
+    vecteurs_regles: dict[int, list[float]],
+    top_n: int,
+) -> list[tuple[int, float]]:
+    """Même logique de fusion que app.retrieval.retrieval.retrieve(), en
+    numpy plutôt que pgvector : top_n par sous-question, union
+    dédoublonnée en gardant le meilleur score, ordre de première
+    apparition."""
+    ordre: list[int] = []
+    meilleurs_scores: dict[int, float] = {}
+    for vecteur in sous_questions_vecteurs:
+        top = cosine_similarity_matrix(vecteur, vecteurs_regles)[:top_n]
+        for numero, score in top:
+            if numero not in meilleurs_scores:
+                ordre.append(numero)
+                meilleurs_scores[numero] = score
+            elif score > meilleurs_scores[numero]:
+                meilleurs_scores[numero] = score
+    return [(numero, meilleurs_scores[numero]) for numero in ordre]
 
 
 def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
