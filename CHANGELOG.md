@@ -11,6 +11,34 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-11 — Claude Code
 
+- **Mesure des variantes de chunk — vague 1 (11 champs isolés + baseline)** —
+  spec (`docs/superpowers/specs/2026-09-11-mesure-chunks-vague1-design.md`)
+  puis plan (`docs/superpowers/plans/2026-09-11-mesure-chunks-vague1-implementation.md`)
+  exécutés en entier (subagent-driven, 4 tâches de code + exécution réelle).
+  Nouvelles fonctions pures (`app/ingestion/rag_acceptance.py`) : rang de
+  la meilleure cible, MRR, recall@k, similarité cosinus et fusion
+  multi-sous-questions en numpy (jamais d'écriture dans `regle.embedding`
+  — tout reste en mémoire le temps du run). `build_variant_text()`
+  (`app/ingestion/chunking.py`) extrait le texte d'un seul champ. Nouveau
+  script `scripts/mesure_variantes_chunks.py` (`make mesure-variantes-chunks`)
+  vectorise les 245 règles pour chacune des 12 variantes et mesure MRR/
+  recall@k sur les 114 cas d'acceptance ; rapports dans `docs/eval/`
+  (`mesure_variantes_chunks_2026-09-11_094703.csv`, candidat par candidat
+  avec cosinus bruts, et `.md`, résumé agrégé). Incident en cours de route :
+  rate limit Azure (429, quota vraisemblablement en tokens/minute sur le
+  tier S0) sur les lots de chunk complet — corrigé par une pause de 20s
+  entre lots dans le script (2 tentatives à 2s insuffisantes).
+  **Résultat mesuré** (coût réel 0,0130 €) : `theme`/`tags`/`phases`/
+  `strategie_analyse` quasi inutiles isolément (MRR proche de 0 sur toutes
+  les familles) ; `intitule` et `guide_analyse` portent un vrai signal
+  isolément (le second surtout sur `vocabulaire_genere_llm`, cohérent
+  avec sa provenance) ; `objectifs` isolé bat la baseline sur sa propre
+  famille cible `vocabulaire_objectif` (MRR 0.851 contre 0.664) mais est
+  faible ailleurs — signal très localisé. Aucune variante isolée ne bat
+  la baseline de façon générale. Vague 1 exploratoire seulement (pas de
+  jeu réservé ni de critère de décision écrit d'avance à ce stade) : ne
+  tranche pas le choix d'un chunk, cartographie le signal par champ en
+  vue des vagues 2-3 (combinaisons, affinage).
 - **Fiche jury — score cosinus en RAG** :
   `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` explique
   pourquoi un score cosinus bas n'est pas un problème dans le retrieval
