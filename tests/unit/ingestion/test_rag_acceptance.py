@@ -114,8 +114,19 @@ def test_evaluate_case_fail_aucune_cible_multiple_trouvee():
     assert result["verdict"] == "FAIL"
 
 
-def test_evaluate_case_fail_sans_reponse_attendue():
-    """Un cas sans_reponse (numeros_regle_attendus vide) est toujours FAIL."""
+def test_evaluate_case_pass_sans_reponse_correctement_refusee():
+    """Un cas sans_reponse (numeros_regle_attendus vide) est PASS si la
+    réponse est vide — depuis le Temps 2 du mécanisme de refus, une
+    liste vide est un vrai refus, pas une absence de mécanisme."""
+    case = {"question": "Q1", "famille": "sans_reponse", "numeros_regle_attendus": []}
+
+    result = evaluate_case(case, numeros_retournes=[])
+
+    assert result["verdict"] == "PASS"
+
+
+def test_evaluate_case_fail_sans_reponse_mais_regle_citee():
+    """Un cas sans_reponse est FAIL si une règle est citée à tort."""
     case = {"question": "Q1", "famille": "sans_reponse", "numeros_regle_attendus": []}
 
     result = evaluate_case(case, numeros_retournes=[1, 2, 3])

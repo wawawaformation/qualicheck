@@ -451,14 +451,15 @@ def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
     """Évalue un cas : verdict PASS/FAIL/PARTIEL selon les cibles retrouvées.
 
     Un cas sans cible attendue (numeros_regle_attendus vide, famille
-    sans_reponse) est toujours FAIL : aucun mécanisme de refus n'existe
-    aujourd'hui dans le pipeline de retrieval.
+    sans_reponse) est PASS si la réponse est vide (refus correct), FAIL
+    si une règle est citée à tort — depuis le Temps 2 du mécanisme de
+    refus (jugement LLM), un vrai mécanisme existe pour ce cas.
     """
     attendus = case["numeros_regle_attendus"]
     trouves = [n for n in attendus if n in numeros_retournes]
 
     if not attendus:
-        verdict = "FAIL"
+        verdict = "PASS" if not numeros_retournes else "FAIL"
     elif len(trouves) == len(attendus):
         verdict = "PASS"
     elif len(trouves) == 0:
