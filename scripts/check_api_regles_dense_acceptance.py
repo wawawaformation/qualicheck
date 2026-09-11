@@ -24,6 +24,7 @@ from app.api_regles import config  # noqa: E402
 from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
     compute_taux_par_famille,
+    evaluate_case,
     is_acceptable,
     load_cases,
 )
@@ -40,8 +41,9 @@ def _entetes() -> dict[str, str]:
 
 
 def _evaluer_cas_http(client: httpx.Client, base_url: str, case: dict) -> dict:
-    """Appelle POST /regles/dense et construit la même structure d'évaluation
-    que app.ingestion.rag_acceptance.evaluate_case (verdict PASS/FAIL/PARTIEL)."""
+    """Appelle POST /regles/dense et évalue via
+    app.ingestion.rag_acceptance.evaluate_case (verdict PASS/FAIL/PARTIEL) —
+    seule source de vérité pour cette logique, pas de copie locale."""
     reponse = client.post(
         f"{base_url}/regles/dense",
         json={"question": case["question"]},
@@ -51,24 +53,7 @@ def _evaluer_cas_http(client: httpx.Client, base_url: str, case: dict) -> dict:
     reponse.raise_for_status()
     numeros_retournes = [item["regle"]["numero"] for item in reponse.json()]
 
-    attendus = case["numeros_regle_attendus"]
-    trouves = [n for n in attendus if n in numeros_retournes]
-    if not attendus:
-        verdict = "FAIL"
-    elif len(trouves) == len(attendus):
-        verdict = "PASS"
-    elif len(trouves) == 0:
-        verdict = "FAIL"
-    else:
-        verdict = "PARTIEL"
-
-    return {
-        "question": case["question"],
-        "famille": case["famille"],
-        "numeros_regle_attendus": attendus,
-        "numeros_retournes": numeros_retournes,
-        "verdict": verdict,
-    }
+    return evaluate_case(case, numeros_retournes)
 
 
 def main() -> None:
