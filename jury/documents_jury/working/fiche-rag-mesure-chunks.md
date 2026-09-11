@@ -111,18 +111,43 @@ d'exploration par rapport au chunk de production :
 départager) → validée trivialement sur le jeu réservé → **choix retenu :
 le chunk de production actuel, aucun changement.**
 
+## 3bis. Vague 3 : une architecture différente, même conclusion
+
+La vague 2 ne teste qu'une hypothèse : quel texte mettre dans **un seul**
+vecteur par règle. Une idée distincte, proposée après coup : **plusieurs
+vecteurs séparés par règle** (chunk complet + intitulé seul +
+guide_analyse seul), cherchés indépendamment à la requête et fusionnés en
+gardant le meilleur score — pas un texte combiné (déjà testé et écarté :
+candidat B de la vague 2).
+
+Réutilise le jeu réservé et le critère de décision de la vague 2 sans les
+redéfinir — seule la vague qui *choisit* doit poser ce garde-fou, pas
+chaque nouvelle idée testée derrière. Coût réel 0,0114 €.
+
+**Résultat : le candidat à 3 vecteurs est éliminé** — régresse sur au
+moins une famille du jeu d'exploration vs la baseline. Confirmé sous un
+second angle (recall@5 global, sans passer par une moyenne de MRR) :
+baseline 0,921 (exploration) / 0,903 (réservé) contre 0,889 / 0,839 pour
+le multi-vecteurs — l'écart tient sur les deux sous-ensembles, pas un
+artefact du bruit de mesure. **Choix retenu : le chunk unique actuel,
+aucun changement** — deux architectures différentes (texte combiné,
+multi-vecteurs), la même conclusion mesurée.
+
 ## 4. L'argument à ne pas perdre à l'oral
 
 La compétence démontrée n'est pas d'avoir amélioré le chunk — c'est
 d'avoir **mesuré avant de changer quoi que ce soit**, avec un critère
 écrit d'avance, et d'avoir accepté que la mesure ne confirme aucune des
-5 hypothèses envisagées. Un chunk qui survit à cinq tentatives
-d'amélioration mesurées et documentées est une conclusion défendable ;
-un chunk jamais interrogé ne l'aurait pas été. La vague 3 (affinage des
-têtes de série de la vague 2) devient sans objet — il n'y a pas de tête
-de série à affiner.
+6 hypothèses envisagées (5 combinaisons + le multi-vecteurs). Un chunk
+qui survit à six tentatives d'amélioration mesurées et documentées, sous
+deux architectures différentes, est une conclusion défendable ; un chunk
+jamais interrogé ne l'aurait pas été. La vague 3 (affinage des têtes de
+série de la vague 2) devient sans objet — il n'y a pas de tête de série à
+affiner ; la vague 3 bis (multi-vecteurs) répond à une hypothèse
+distincte et conclut de la même façon.
 
 **Conséquence pour la suite** : le Temps 2 du mécanisme de refus
 (jugement LLM sur les chunks retournés, voir `fiche-rag-similarite-cosinus.md`
-§4.1), qui attendait la conclusion de ce protocole, peut reprendre sur la
-base du chunk actuel — il ne changera plus.
+§4.1), qui attendait la conclusion de ce protocole, a repris sur la base
+du chunk actuel (inchangé) — voir cette même fiche pour son résultat et
+la découverte architecturale qui en a suivi (guardrail de périmètre).

@@ -360,10 +360,24 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       famille par rapport au chunk de production actuel. **Choix retenu :
       le chunk actuel, aucun changement.** Détail :
       `docs/eval/mesure_combinaisons_chunks_2026-09-11_191321.md`/`.csv`.
-    - [ ] **Vague 3 (affinage)** : sans objet — la vague 2 n'a fait
-      émerger aucune tête de série à affiner (toutes éliminées par le
-      plancher). Rouverte uniquement si une nouvelle piste de combinaison
-      est proposée plus tard.
+    - [x] **Vague 3 (affinage des combinaisons de vague 2)** : sans objet
+      — la vague 2 n'a fait émerger aucune tête de série à affiner
+      (toutes éliminées par le plancher).
+    - [x] **Vague 3 bis — multi-vecteurs par règle, nouvelle hypothèse**
+      (2026-09-11) — `D`/`A`. Spec
+      `docs/superpowers/specs/2026-09-11-mesure-chunks-vague3-design.md`,
+      plan `docs/superpowers/plans/2026-09-11-mesure-chunks-vague3-implementation.md`
+      (exécuté en inline, 5 tâches, 0,0114 €). Proposée par David après la
+      vague 2 : au lieu d'un texte combiné, **3 vecteurs séparés par
+      règle** (complet + intitulé seul + guide_analyse seul), fusionnés à
+      la requête (meilleur score gardé). Réutilise le jeu réservé et le
+      critère de décision de la vague 2 sans les modifier. **Résultat :
+      le candidat éliminé** (régresse sur au moins une famille vs
+      baseline), confirmé aussi en recall@5 global (0.921/0.903 baseline
+      vs 0.889/0.839 multi-vecteurs). **Choix retenu : le chunk unique
+      actuel, aucun changement** — même conclusion que la vague 2 sous
+      une architecture différente. Détail :
+      `docs/eval/mesure_multi_vecteurs_chunks_2026-09-11_194724.md`/`.csv`.
 
 - [ ] **Outillage C16/C18/C19 — décisions actées le 2026-08-29, exécution en cours**
   — Kanboard auto-hébergé (`kanban.david-legrand.fr`) pour le pilotage

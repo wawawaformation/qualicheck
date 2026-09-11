@@ -11,6 +11,24 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-11 — Claude Code
 
+- **Vague 3 du protocole de mesure des chunks — multi-vecteurs par règle**
+  (spec `docs/superpowers/specs/2026-09-11-mesure-chunks-vague3-design.md`,
+  plan `docs/superpowers/plans/2026-09-11-mesure-chunks-vague3-implementation.md`,
+  5 tâches exécutées en inline) : nouvelle hypothèse proposée après la
+  vague 2 — au lieu d'un texte combiné en un seul vecteur, **3 vecteurs
+  séparés par règle** (chunk complet + intitulé seul + guide_analyse
+  seul), fusionnés à la requête en gardant le meilleur score par règle
+  (`fusionner_meilleur_score`, `app/ingestion/rag_acceptance.py`).
+  Réutilise le jeu réservé et le critère de décision déjà actés en vague
+  2, sans les redéfinir. Coût réel 0,0114 €. **Résultat : le candidat
+  `F_multi_vecteurs` est éliminé** (régresse sur au moins une famille du
+  jeu d'exploration vs la baseline) — confirmé sous l'angle recall@5
+  global (baseline 0,921/0,903 exploration/réservé vs 0,889/0,839).
+  **Choix retenu : le chunk unique actuel, aucun changement** — les
+  vagues 2 et 3 convergent sur la même conclusion via deux architectures
+  différentes (texte combiné vs multi-vecteurs). Détail :
+  `docs/eval/mesure_multi_vecteurs_chunks_2026-09-11_194724.md`/`.csv`.
+
 - **Temps 2 du mécanisme de refus — jugement LLM, mesuré et conclu**
   (spec `docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md`,
   plan `docs/superpowers/plans/2026-09-11-retrieval-refus-temps2-implementation.md`,
