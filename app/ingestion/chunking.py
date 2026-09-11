@@ -52,3 +52,41 @@ def build_variant_text(rule, champ: str) -> str | None:
     if isinstance(valeur, list):
         return ", ".join(valeur) if valeur else None
     return valeur if valeur else None
+
+
+def build_combo_text(rule, champs: list[str]) -> str:
+    """
+    Texte labellisé d'une combinaison de champs, pour l'étude de
+    combinaisons de chunk (scripts/mesure_combinaisons_chunks.py, voir
+    docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md).
+
+    Args:
+        rule: objet portant les mêmes attributs qu'EnrichedRule
+        champs: noms des attributs à inclure, dans l'ordre donné
+
+    Returns:
+        Texte structuré avec labels, une section par champ non vide.
+        Un champ vide est omis (même convention que le traitement
+        optionnel de "Contexte" dans build_chunk_text) — contrairement à
+        build_variant_text, la règle n'est jamais exclue : ne retourne
+        jamais None.
+    """
+    labels = {
+        "intitule": "Intitulé",
+        "theme": "Thème",
+        "contexte": "Contexte",
+        "solution": "Solution",
+        "controle": "Controle",
+        "objectifs": "Objectifs",
+        "tags": "Tags",
+        "phases": "Phases",
+        "strategie_justification": "Stratégie de justification",
+        "guide_analyse": "Guide d'analyse",
+    }
+    parts = []
+    for champ in champs:
+        valeur = getattr(rule, champ)
+        texte = ", ".join(valeur) if isinstance(valeur, list) else valeur
+        if texte:
+            parts.append(f"{labels[champ]} : {texte}")
+    return "\n".join(parts)

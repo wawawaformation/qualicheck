@@ -4,7 +4,7 @@ Tests unitaires pour app/ingestion/chunking.py
 Teste la construction du texte de chunk (une règle = un chunk, structuré
 avec labels).
 """
-from app.ingestion.chunking import build_chunk_text, build_variant_text
+from app.ingestion.chunking import build_chunk_text, build_combo_text, build_variant_text
 from app.ingestion.schema import EnrichedRule
 
 
@@ -91,3 +91,69 @@ def test_build_variant_text_tous_les_champs_de_la_vague_1():
 
     for champ in champs:
         assert build_variant_text(rule, champ) is not None
+
+
+def test_build_combo_text_plusieurs_champs_labellises():
+    """Une combinaison de plusieurs champs produit un texte labellisé,
+    un champ par ligne, dans l'ordre donné."""
+    rule = _rule(contexte="Un contexte")
+
+    texte = build_combo_text(rule, ["intitule", "contexte", "objectifs"])
+
+    assert texte == (
+        "Intitulé : Les images ont un attribut alt\n"
+        "Contexte : Un contexte\n"
+        "Objectifs : Accessibilité"
+    )
+
+
+def test_build_combo_text_champ_vide_saute_sans_exclure_la_regle():
+    """Un champ vide (contexte=None) est omis de la sortie ; la fonction
+    retourne quand même un texte (pas None, contrairement à
+    build_variant_text)."""
+    rule = _rule(contexte=None)
+
+    texte = build_combo_text(rule, ["intitule", "contexte", "solution"])
+
+    assert texte == (
+        "Intitulé : Les images ont un attribut alt\n"
+        "Solution : Ajouter alt descriptif"
+    )
+
+
+def test_build_combo_text_champ_liste_jointe():
+    """Une liste (objectifs/tags/phases) est jointe par ', ', même
+    convention que build_chunk_text/build_variant_text."""
+    rule = _rule(objectifs=["Un", "Deux"])
+
+    texte = build_combo_text(rule, ["objectifs"])
+
+    assert texte == "Objectifs : Un, Deux"
+
+
+def test_build_combo_text_strategie_justification_a_un_label():
+    """strategie_justification, absent de build_chunk_text, a son propre
+    label — nécessaire pour le candidat E de la vague 2."""
+    rule = _rule()
+
+    texte = build_combo_text(rule, ["strategie_justification"])
+
+    assert texte == "Stratégie de justification : Justif"
+
+
+def test_build_combo_text_tous_les_champs_de_la_vague_2():
+    """Les 10 champs utilisés par les 5 combinaisons + la baseline de la
+    vague 2 ont tous un label et ne lèvent pas d'erreur."""
+    rule = _rule(contexte="Contexte présent")
+    champs = [
+        "intitule", "theme", "contexte", "solution", "controle",
+        "objectifs", "tags", "phases", "strategie_justification", "guide_analyse",
+    ]
+
+    texte = build_combo_text(rule, champs)
+
+    for champ_attendu in [
+        "Intitulé", "Thème", "Contexte", "Solution", "Controle",
+        "Objectifs", "Tags", "Phases", "Stratégie de justification", "Guide d'analyse",
+    ]:
+        assert f"{champ_attendu} : " in texte
