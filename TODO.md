@@ -277,10 +277,24 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` :
     - [ ] **Le refus** — `retrieve()` retourne toujours des règles, même
       hors sujet (famille `sans_reponse` toujours `FAIL`, faute de
-      mécanisme). Un seuil absolu de cosinus est mal calibrable (scores
-      bas et peu contrastés par construction, voir fiche). Pistes non
-      tranchées : seuil relatif (écart top-1/top-N) ou jugement du LLM de
-      réponse sur les chunks retournés, sans seuil vectoriel.
+      mécanisme).
+      - [x] **Temps 1 (mesure), carte Kanboard #17, 2026-09-11** — `A`.
+        `sans_reponse` étoffé de 5 à 20 cas (3 catégories, 114 cas au
+        total) ; score de similarité propagé de `query_top_n_numeros()`
+        jusqu'au contrat HTTP de `/regles/dense` (`RegleAvecScore`) ;
+        `scripts/mesure_scores_refus.py` (`make mesure-scores-refus`)
+        rejoué en réel. **Résultat : aucune métrique (top-1, top-15,
+        écart top-1/top-15) ne sépare proprement `sans_reponse` des cas
+        `PASS`** — un seuil calé sur l'écart classerait à tort 16/91 cas
+        `PASS` (17,6%) comme refus. Seuil relatif écarté **par la
+        mesure**. Détail :
+        `docs/superpowers/specs/2026-09-11-retrieval-refus-design.md`,
+        `docs/superpowers/plans/2026-09-11-retrieval-refus-implementation.md`,
+        `docs/eval/mesure_scores_refus_2026-09-11_075738.md`,
+        `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` §4.1.
+      - [ ] **Temps 2 (construction)** — jugement LLM sur les chunks
+        retournés (seule branche restant ouverte après la mesure),
+        nouvelle spec à écrire.
     - [ ] **Combien de règles retourner dans la réponse** — `top_n=15`
       (`manifest.yml`) dimensionne le pool de candidats interrogé par
       `retrieve()`, pas forcément le nombre à citer dans une réponse en

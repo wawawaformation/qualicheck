@@ -74,11 +74,35 @@ Un seuil absolu de cosinus (« refuser si `cos_max` < X ») est **difficile
 à calibrer précisément à cause de ce que montre cette fiche** : les scores
 sont bas et peu contrastés par construction (§2-3), donc la marge entre
 « question hors sujet » et « question pertinente mais formulée
-différemment » est étroite. Deux pistes, non tranchées :
+différemment » est étroite. Deux pistes envisagées :
 
 - un seuil **relatif** (écart top-1 / top-N, plutôt qu'une valeur absolue) ;
 - un jugement du LLM de réponse sur la pertinence des chunks retournés —
   pas de seuil vectoriel du tout, coût d'un appel en plus.
+
+**Tranché par la mesure (2026-09-11)** : `scripts/mesure_scores_refus.py`
+(`docs/superpowers/plans/2026-09-11-retrieval-refus-implementation.md`,
+Temps 1) a rejoué les 114 cas d'acceptance (dont 20 `sans_reponse`,
+étoffé de 5 à 20 pour ce chantier — voir `docs/eval/
+mesure_scores_refus_2026-09-11_075738.md`). Résultat : **aucune des
+métriques mesurées (top-1, top-15, écart top-1/top-15) ne sépare
+proprement `sans_reponse` des cas `PASS`** :
+
+- top-1 : `sans_reponse` [0.190–0.534] vs `PASS` [0.406–0.740] — 8 cas de
+  chaque groupe se chevauchent entre 0.406 et 0.534.
+- écart top-1/top-15, pourtant la métrique la plus prometteuse a priori :
+  un seuil calé pour capturer les 20 cas `sans_reponse` (≤0.079)
+  classerait à tort **16 des 91 cas `PASS` (17,6 %) comme refus** — bien
+  au-delà de ce qu'un faux refus tolérable permet (la spec identifie le
+  faux refus comme la régression la plus grave à surveiller, plus grave
+  qu'un taux qui baisse d'un point).
+
+**Conséquence** : le seuil relatif est écarté, **pas par principe mais par
+mesure** — la voie retenue pour la suite (Temps 2, hors périmètre de ce
+plan) est le jugement LLM sur les chunks retournés. Cohérent avec la
+méthode déjà établie sur ce chantier : mesurer avant de construire, et
+accepter que la mesure retourne contre l'intuition initiale (ici, l'idée
+qu'un simple seuil de score suffirait).
 
 ### 4.2 Combien de règles retourner dans la réponse
 

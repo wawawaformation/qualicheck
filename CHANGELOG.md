@@ -22,6 +22,33 @@ Format d'entrée, une ligne par réalisation :
   toujours `FAIL` aujourd'hui, seuil absolu difficile à calibrer vu §2-3
   de la fiche) et nombre de règles à citer dans la réponse finale
   (distinct du `top_n=15` qui dimensionne le pool de candidats).
+- **Mécanisme de refus du retrieval — Temps 1 (mesure), carte Kanboard
+  #17** — spec
+  (`docs/superpowers/specs/2026-09-11-retrieval-refus-design.md`) puis
+  plan
+  (`docs/superpowers/plans/2026-09-11-retrieval-refus-implementation.md`)
+  exécutés en entier. Score de similarité propagé de
+  `query_top_n_numeros()` → `retrieve()` (`list[tuple[int, float]]`,
+  meilleur score gardé sur doublon entre sous-questions) → contrat HTTP
+  de `/regles/dense` (`RegleAvecScore`, `{regle, score}`) ; scripts
+  (`check_rag_acceptance.py`, `rag_dense_acceptance.py`,
+  `check_api_regles_dense_acceptance.py`) et tests adaptés en
+  conséquence. Famille `sans_reponse` étoffée de 5 à 20 cas (3
+  catégories — hors-domaine, domaine proche, écosystème Opquast
+  réel : VPTCS, formations, sourcé sur opquast.com plutôt que deviné),
+  114 cas au total. Nouveau `scripts/mesure_scores_refus.py`
+  (`make mesure-scores-refus`) rejoué en réel (~114 appels
+  décomposition+embedding).
+  **Résultat mesuré : aucun seuil relatif calibrable** (top-1, top-15,
+  écart top-1/top-15 se chevauchent tous significativement entre
+  `sans_reponse` et cas `PASS` — jusqu'à 17,6% de faux refus avec le
+  meilleur seuil possible sur l'écart). Rapport :
+  `docs/eval/mesure_scores_refus_2026-09-11_075738.md`. Bascule actée
+  vers un jugement LLM pour le Temps 2 (nouvelle spec à venir, hors
+  périmètre de ce plan) — voir
+  `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` §4.1 et
+  `TODO.md` (section « Retrieval US2 »). 194 tests unitaires/intégration
+  verts, ruff propre.
 
 ## 2026-09-10 — Claude Code
 
