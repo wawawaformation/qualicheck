@@ -4,16 +4,18 @@ Tests unitaires pour app/ingestion/chunking.py
 Teste la construction du texte de chunk (une règle = un chunk, structuré
 avec labels).
 """
-from app.ingestion.chunking import build_chunk_text
+from app.ingestion.chunking import build_chunk_text, build_variant_text
 from app.ingestion.schema import EnrichedRule
 
 
-def _rule(contexte=None):
+def _rule(contexte=None, objectifs=None, tags=None, phases=None):
     return EnrichedRule(
         id=1, number=1, intitule="Les images ont un attribut alt",
         theme="Contenus", contexte=contexte,
         solution="Ajouter alt descriptif", controle="Vérifier alt présent",
-        objectifs=["Accessibilité"], tags=["HTML", "Images"], phases=["Intégration"],
+        objectifs=objectifs if objectifs is not None else ["Accessibilité"],
+        tags=tags if tags is not None else ["HTML", "Images"],
+        phases=phases if phases is not None else ["Intégration"],
         slug="images-alt",
         strategie_analyse="statique", strategie_justification="Justif",
         guide_analyse="Parcourez le DOM et vérifiez l'attribut alt.",
@@ -46,3 +48,46 @@ def test_build_chunk_text_omits_contexte_when_none():
     assert "Contexte" not in chunk
     assert "Intitulé : Les images ont un attribut alt" in chunk
     assert "Solution : Ajouter alt descriptif" in chunk
+
+
+def test_build_variant_text_champ_scalaire_renseigne():
+    """Un champ texte simple renvoie sa valeur telle quelle."""
+    rule = _rule()
+
+    assert build_variant_text(rule, "intitule") == "Les images ont un attribut alt"
+
+
+def test_build_variant_text_champ_liste_jointe():
+    """Une liste (objectifs/tags/phases) est jointe par ', ', même
+    convention que build_chunk_text()."""
+    rule = _rule(objectifs=["Un", "Deux", "Trois"])
+
+    assert build_variant_text(rule, "objectifs") == "Un, Deux, Trois"
+
+
+def test_build_variant_text_champ_nullable_vide():
+    """Un champ nullable à None retourne None (règle exclue de la variante)."""
+    rule = _rule(contexte=None)
+
+    assert build_variant_text(rule, "contexte") is None
+
+
+def test_build_variant_text_liste_vide():
+    """Une liste vide (tags, le seul champ liste sans contrainte de
+    non-vacuité) retourne None."""
+    rule = _rule(tags=[])
+
+    assert build_variant_text(rule, "tags") is None
+
+
+def test_build_variant_text_tous_les_champs_de_la_vague_1():
+    """Les 11 champs de la vague 1 sont tous lisibles sans erreur."""
+    rule = _rule(contexte="Contexte présent")
+    champs = [
+        "intitule", "theme", "contexte", "solution", "controle",
+        "objectifs", "tags", "phases",
+        "strategie_analyse", "strategie_justification", "guide_analyse",
+    ]
+
+    for champ in champs:
+        assert build_variant_text(rule, champ) is not None

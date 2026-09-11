@@ -31,3 +31,24 @@ def build_chunk_text(rule) -> str:
     parts.append(f"Tags : {', '.join(rule.tags)}")
     parts.append(f"Phases : {', '.join(rule.phases)}")
     return "\n".join(parts)
+
+
+def build_variant_text(rule, champ: str) -> str | None:
+    """
+    Texte d'un seul champ de la règle, pour l'étude d'ablation des
+    variantes de chunk (scripts/mesure_variantes_chunks.py, voir
+    docs/superpowers/specs/2026-09-11-mesure-chunks-vague1-design.md).
+
+    Args:
+        rule: objet portant les mêmes attributs qu'EnrichedRule
+        champ: nom de l'attribut à extraire (ex. "intitule", "guide_analyse")
+
+    Returns:
+        Le texte du champ, ou None s'il est vide/absent — la règle est
+        alors exclue de cette variante (pas de texte vide envoyé à l'API
+        d'embedding).
+    """
+    valeur = getattr(rule, champ)
+    if isinstance(valeur, list):
+        return ", ".join(valeur) if valeur else None
+    return valeur if valeur else None
