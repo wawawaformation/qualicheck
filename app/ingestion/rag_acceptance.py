@@ -36,6 +36,20 @@ def query_top_n_numeros(session: Session, vector: list[float], top_n: int) -> li
     return [(numero, 1 - distance) for numero, distance in resultats]
 
 
+def metriques_scores(candidats: list[tuple[int, float]]) -> dict:
+    """Calcule top1 (meilleur score) et top15 (15e meilleur, ou le dernier si moins de 15).
+
+    Trie localement par score décroissant, indépendamment de l'ordre de la
+    liste passée (retrieve() ordonne par première apparition entre
+    sous-questions, pas par score).
+    """
+    tries = sorted(candidats, key=lambda c: c[1], reverse=True)
+    top1 = tries[0][1]
+    index_top15 = min(14, len(tries) - 1)
+    top15 = tries[index_top15][1]
+    return {"top1": top1, "top15": top15, "ecart": top1 - top15}
+
+
 def evaluate_case(case: dict, numeros_retournes: list[int]) -> dict:
     """Évalue un cas : verdict PASS/FAIL/PARTIEL selon les cibles retrouvées.
 

@@ -8,12 +8,15 @@ testées ici (nécessitent une base réellement vectorisée), validées par
 exécution réelle via `make rag-acceptance`.
 """
 
+import pytest
+
 from app.ingestion.rag_acceptance import (
     compute_taux_par_famille,
     evaluate_case,
     format_dataset_versions,
     is_acceptable,
     load_cases,
+    metriques_scores,
 )
 
 
@@ -205,6 +208,35 @@ def test_format_dataset_versions_single_version():
     summary = [{"prompt_version": 5, "llm_model": "kimi-k2.6", "nombre_regles": 245}]
 
     assert format_dataset_versions(summary) == "prompt_version=5 (kimi-k2.6): 245 règles"
+
+
+def test_metriques_scores_top1_et_top15():
+    """top1 = meilleur score, top15 = score du 15e candidat une fois trié."""
+    candidats = [(i, 1.0 - i * 0.05) for i in range(20)]  # scores de 1.0 à 0.05
+
+    resultat = metriques_scores(candidats)
+
+    assert resultat["top1"] == 1.0
+    assert resultat["top15"] == pytest.approx(1.0 - 14 * 0.05)
+    assert resultat["ecart"] == pytest.approx(resultat["top1"] - resultat["top15"])
+
+
+def test_metriques_scores_ignore_l_ordre_d_entree():
+    """Le tri se fait par score, indépendamment de l'ordre de la liste passée."""
+    candidats = [(1, 0.2), (2, 0.9), (3, 0.5)]
+
+    resultat = metriques_scores(candidats)
+
+    assert resultat["top1"] == 0.9
+
+
+def test_metriques_scores_moins_de_15_candidats():
+    """Avec moins de 15 candidats, top15 retombe sur le dernier (le plus faible)."""
+    candidats = [(1, 0.8), (2, 0.3)]
+
+    resultat = metriques_scores(candidats)
+
+    assert resultat["top15"] == 0.3
 
 
 def test_format_dataset_versions_mixed_versions():
