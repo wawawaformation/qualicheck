@@ -16,6 +16,7 @@ import csv
 import logging
 import os
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -93,6 +94,13 @@ def vectoriser_variante(regles, champ: str | None, embedding_client: EmbeddingCl
         lot_vecteurs = embedding_client.embed_batch(lot_textes)
         for numero, vecteur in zip(lot_numeros, lot_vecteurs, strict=True):
             vecteurs_regles[numero] = vecteur
+        # Pause entre lots : évite le RateLimitReached Azure (tier S0),
+        # rencontré en exécution réelle le 2026-09-11 — quota vraisemblablement
+        # en tokens/minute (déclenché par les lots de chunk complet, le texte
+        # le plus long des 12 variantes), pas juste en nombre de requêtes.
+        # Azure suggérait d'attendre jusqu'à 19s ; le retry existant
+        # (backoff max 8s) ne suffisait pas. 2s puis 20s testés en pratique.
+        time.sleep(20)
 
     return vecteurs_regles
 
