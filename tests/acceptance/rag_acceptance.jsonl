@@ -47,6 +47,21 @@
 {"question": "Quelle méthode d'estimation agile utiliser pour planifier les corrections d'un audit ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
 {"question": "Quel est le tarif d'une certification Opquast pour une équipe ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
 {"question": "Quel framework JavaScript choisir pour construire mon site ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quelle est la meilleure recette de tarte aux pommes ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Comment planifier un voyage en Europe pas cher ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quel est le palmarès de la dernière Coupe du monde de football ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Comment entretenir un jardin potager en hiver ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quelle est la différence entre un chat et un chien comme animal de compagnie ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quel est le meilleur CMS pour un petit site vitrine ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Comment structurer une équipe de développement web en méthode Scrum ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quels indicateurs suivre pour mesurer le trafic d'un site e-commerce ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Combien coûte un audit RGPD complet pour une PME ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Comment rédiger un cahier des charges pour un projet web ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Qu'est-ce que le modèle VPTCS et quelles sont ses cinq composantes ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Qui a créé le modèle VPTCS et en quelle année ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quelle est la différence entre UX et UI selon le modèle VPTCS ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Combien coûte la formation Référent Qualité Numérique chez Opquast ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
+{"question": "Quelles sont les conditions pour devenir formateur Opquast ?", "famille": "sans_reponse", "numeros_regle_attendus": []}
 {"question": "Que doit-on vérifier au sujet du HTTPS sur un site ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [197, 199, 200]}
 {"question": "Comment aider l'utilisateur qui crée un mot de passe ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [75, 76, 203]}
 {"question": "Quels moyens de contact un site doit-il proposer ?", "famille": "regles_concurrentes", "numeros_regle_attendus": [107, 112, 113]}
