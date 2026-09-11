@@ -300,6 +300,79 @@ def mesurer_variante(
     return lignes_csv, lignes_resume
 
 
+def mesurer_candidat_fusion(
+    nom_candidat: str,
+    vecteurs_par_type: dict[str, dict[int, list[float]]],
+    cases: list[dict],
+    sous_questions_vecteurs_par_cas: list[list[list[float]]],
+    top_n: int,
+    recall_ks: list[int],
+) -> tuple[list[dict], list[dict]]:
+    """Comme mesurer_variante, mais pour un candidat à plusieurs vecteurs
+    par règle (un par type de chunk, ex. règle complète/intitulé/guide
+    d'analyse) : chaque type est cherché séparément (retrieve_variante)
+    puis fusionné en gardant le meilleur score par règle
+    (fusionner_meilleur_score). Retourne (lignes_csv,
+    lignes_resume_par_famille).
+
+    Pure : aucun appel réseau, BDD ni log.
+    """
+    lignes_csv = []
+    rangs_par_famille: dict[str, list] = {}
+    recalls_par_famille: dict[str, dict[int, list]] = {}
+    numeros_disponibles = next(iter(vecteurs_par_type.values()))
+
+    for case, sous_questions_vecteurs in zip(cases, sous_questions_vecteurs_par_cas, strict=True):
+        resultats_par_type = [
+            retrieve_variante(sous_questions_vecteurs, vecteurs_regles, top_n=top_n)
+            for vecteurs_regles in vecteurs_par_type.values()
+        ]
+        candidats = fusionner_meilleur_score(resultats_par_type)
+        candidats_tries = sorted(candidats, key=lambda t: t[1], reverse=True)
+        numeros_tries = [numero for numero, _ in candidats_tries]
+
+        cibles = case["numeros_regle_attendus"]
+        cibles_valides = [c for c in cibles if c in numeros_disponibles]
+        cibles_mesurees_str = ";".join(str(c) for c in cibles_valides)
+
+        for rang, (numero, score) in enumerate(candidats_tries, start=1):
+            lignes_csv.append(
+                {
+                    "variante": nom_candidat,
+                    "question": case["question"],
+                    "famille": case["famille"],
+                    "numeros_attendus": ";".join(str(c) for c in cibles),
+                    "cibles_mesurees": cibles_mesurees_str,
+                    "numero_retourne": numero,
+                    "rang": rang,
+                    "cosinus": f"{score:.6f}",
+                    "est_cible": "oui" if numero in cibles else "non",
+                }
+            )
+
+        if not cibles_valides:
+            continue
+
+        famille = case["famille"]
+        rang = rang_meilleure_cible(numeros_tries, cibles_valides)
+        rangs_par_famille.setdefault(famille, []).append(rang)
+        for k in recall_ks:
+            recalls_par_famille.setdefault(famille, {}).setdefault(k, []).append(
+                calculer_recall_a_k(numeros_tries, cibles_valides, k)
+            )
+
+    lignes_resume = []
+    for famille in rangs_par_famille:
+        mrr = calculer_mrr(rangs_par_famille[famille])
+        ligne = {"variante": nom_candidat, "famille": famille, "mrr": mrr}
+        for k in recall_ks:
+            valeurs = recalls_par_famille[famille][k]
+            ligne[f"recall_{k}"] = sum(valeurs) / len(valeurs)
+        lignes_resume.append(ligne)
+
+    return lignes_csv, lignes_resume
+
+
 def construire_resume_markdown(lignes: list[dict], horodatage: datetime) -> str:
     """Construit le texte Markdown du résumé MRR/recall par variante et
     famille. Pure : pas d'écriture disque (voir

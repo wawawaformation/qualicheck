@@ -26,6 +26,7 @@ from app.ingestion.rag_acceptance import (
     fusionner_meilleur_score,
     is_acceptable,
     load_cases,
+    mesurer_candidat_fusion,
     mesurer_variante,
     metriques_scores,
     mrr_moyen_non_pondere,
@@ -676,3 +677,72 @@ def test_fusionner_meilleur_score_ordre_premiere_apparition():
 def test_fusionner_meilleur_score_liste_vide():
     """Aucune liste à fusionner retourne une liste vide."""
     assert fusionner_meilleur_score([]) == []
+
+
+def test_mesurer_candidat_fusion_cible_trouvee_via_fusion():
+    """La fusion de deux types de vecteur retrouve la cible ; le MRR et
+    le recall de sa famille sont alimentés."""
+    vecteurs_par_type = {
+        "baseline": {1: [1.0, 0.0], 2: [0.0, 1.0]},
+        "intitule": {1: [0.0, 1.0], 2: [1.0, 0.0]},
+    }
+    cases = [{"question": "Q1", "famille": "fam_a", "numeros_regle_attendus": [1]}]
+    sous_questions_vecteurs_par_cas = [[[1.0, 0.0]]]
+
+    lignes_csv, lignes_resume = mesurer_candidat_fusion(
+        "F_multi_vecteurs",
+        vecteurs_par_type,
+        cases,
+        sous_questions_vecteurs_par_cas,
+        top_n=2,
+        recall_ks=[1],
+    )
+
+    assert lignes_resume == [
+        {"variante": "F_multi_vecteurs", "famille": "fam_a", "mrr": 1.0, "recall_1": 1.0}
+    ]
+    assert len(lignes_csv) == 2
+
+
+def test_mesurer_candidat_fusion_garde_le_meilleur_score_entre_types():
+    """Une règle retrouvée par deux types de vecteur garde le meilleur des
+    deux scores dans le CSV."""
+    vecteurs_par_type = {
+        "baseline": {1: [1.0, 0.0]},
+        "intitule": {1: [0.6, 0.8]},
+    }
+    cases = [{"question": "Q1", "famille": "fam_a", "numeros_regle_attendus": [1]}]
+    sous_questions_vecteurs_par_cas = [[[1.0, 0.0]]]
+
+    lignes_csv, _ = mesurer_candidat_fusion(
+        "F_multi_vecteurs",
+        vecteurs_par_type,
+        cases,
+        sous_questions_vecteurs_par_cas,
+        top_n=2,
+        recall_ks=[1],
+    )
+
+    assert len(lignes_csv) == 1
+    assert lignes_csv[0]["cosinus"] == "1.000000"
+
+
+def test_mesurer_candidat_fusion_cible_absente_de_tous_les_types():
+    """Aucune cible retrouvée par aucun type : cas exclu du résumé, présent
+    dans le CSV avec est_cible=non."""
+    vecteurs_par_type = {"baseline": {1: [1.0, 0.0], 2: [0.0, 1.0]}}
+    cases = [{"question": "Q1", "famille": "fam_a", "numeros_regle_attendus": [99]}]
+    sous_questions_vecteurs_par_cas = [[[1.0, 0.0]]]
+
+    lignes_csv, lignes_resume = mesurer_candidat_fusion(
+        "F_multi_vecteurs",
+        vecteurs_par_type,
+        cases,
+        sous_questions_vecteurs_par_cas,
+        top_n=2,
+        recall_ks=[1],
+    )
+
+    assert lignes_resume == []
+    assert len(lignes_csv) == 2
+    assert all(ligne["est_cible"] == "non" for ligne in lignes_csv)
