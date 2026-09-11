@@ -21,7 +21,9 @@ def load_cases(jsonl_path: Path) -> list[dict]:
         return [json.loads(line) for line in f if line.strip()]
 
 
-def query_top_n_numeros(session: Session, vector: list[float], top_n: int) -> list[tuple[int, float]]:
+def query_top_n_numeros(
+    session: Session, vector: list[float], top_n: int
+) -> list[tuple[int, float]]:
     """Retourne les (numéro, score) des top_n règles les plus proches du vecteur.
 
     Score de similarité cosinus (1 - distance) : 1 = identique, 0 = aucun
