@@ -97,7 +97,9 @@ def _entetes(token: str = JETON) -> dict[str, str]:
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
+@patch("app.api_regles.regles.GuardrailClient")
 def test_dense_retourne_les_regles_dans_l_ordre_de_pertinence(
+    mock_guardrail_client,
     mock_retrieve,
     mock_decomposition_client,
     mock_embedding_client,
@@ -107,13 +109,18 @@ def test_dense_retourne_les_regles_dans_l_ordre_de_pertinence(
 ):
     """La réponse suit l'ordre de retrieve(), pas l'ordre numéro, et embarque le score.
 
-    DecompositionClient/EmbeddingClient/JugementClient sont mockés en plus de
-    retrieve() : l'endpoint les construit pour de vrai avant/après retrieve(),
-    et leur __init__ appelle ChatOpenAI/OpenAI (échoue sans les secrets Azure,
-    absents de la CI par construction). JugementClient.juger() retourne les 2
-    numéros pour que ce test vérifie l'ordre/le score, pas le filtrage (voir
+    GuardrailClient/DecompositionClient/EmbeddingClient/JugementClient sont
+    mockés en plus de retrieve() : l'endpoint les construit pour de vrai
+    avant/après retrieve(), et leur __init__ appelle ChatOpenAI/OpenAI (échoue
+    sans les secrets Azure, absents de la CI par construction). Le guardrail
+    laisse passer (question dans le périmètre) pour que ce test vérifie
+    l'ordre/le score, pas le guardrail (voir
+    test_dense_guardrail_hors_perimetre_retourne_liste_vide pour ça).
+    JugementClient.juger() retourne les 2 numéros pour que ce test vérifie
+    l'ordre/le score, pas le filtrage (voir
     test_dense_filtre_les_regles_non_pertinentes pour le filtrage).
     """
+    mock_guardrail_client.return_value.est_dans_le_perimetre.return_value = True
     mock_retrieve.return_value = [(3, 0.8), (1, 0.5)]
     mock_jugement_client.return_value.juger.return_value = [3, 1]
 
@@ -148,9 +155,16 @@ def test_dense_question_vide_donne_422(mock_retrieve, client, jeu_de_regles):
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
+@patch("app.api_regles.regles.GuardrailClient")
 def test_dense_echec_retrieve_donne_503(
-    mock_retrieve, mock_decomposition_client, mock_embedding_client, client, jeu_de_regles
+    mock_guardrail_client,
+    mock_retrieve,
+    mock_decomposition_client,
+    mock_embedding_client,
+    client,
+    jeu_de_regles,
 ):
+    mock_guardrail_client.return_value.est_dans_le_perimetre.return_value = True
     mock_retrieve.side_effect = RuntimeError("embedding indisponible")
 
     reponse = client.post(
@@ -163,8 +177,9 @@ def test_dense_echec_retrieve_donne_503(
 
 
 @patch("app.api_regles.regles.DecompositionClient")
+@patch("app.api_regles.regles.GuardrailClient")
 def test_dense_echec_construction_client_donne_503(
-    mock_decomposition_client, client, jeu_de_regles
+    mock_guardrail_client, mock_decomposition_client, client, jeu_de_regles
 ):
     """Une config manquante (ex. variable d'env absente) donne 503, pas un 500 brut.
 
@@ -172,6 +187,7 @@ def test_dense_echec_construction_client_donne_503(
     secrets Gitea faisait échouer DecompositionClient() avant le try/except,
     donc un 500 non maîtrisé au lieu du 503 annoncé par cet endpoint.
     """
+    mock_guardrail_client.return_value.est_dans_le_perimetre.return_value = True
     mock_decomposition_client.side_effect = RuntimeError("AZURE_MODEL_GPT_MINI manquant")
 
     reponse = client.post(
@@ -187,7 +203,9 @@ def test_dense_echec_construction_client_donne_503(
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
+@patch("app.api_regles.regles.GuardrailClient")
 def test_dense_journalise_la_question_et_le_client(
+    mock_guardrail_client,
     mock_retrieve,
     mock_decomposition_client,
     mock_embedding_client,
@@ -196,6 +214,7 @@ def test_dense_journalise_la_question_et_le_client(
     jeu_de_regles,
     caplog,
 ):
+    mock_guardrail_client.return_value.est_dans_le_perimetre.return_value = True
     mock_retrieve.return_value = [(1, 0.9)]
     mock_jugement_client.return_value.juger.return_value = [1]
 
@@ -214,7 +233,9 @@ def test_dense_journalise_la_question_et_le_client(
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
+@patch("app.api_regles.regles.GuardrailClient")
 def test_dense_filtre_les_regles_non_pertinentes(
+    mock_guardrail_client,
     mock_retrieve,
     mock_decomposition_client,
     mock_embedding_client,
@@ -224,6 +245,7 @@ def test_dense_filtre_les_regles_non_pertinentes(
 ):
     """Le jugement LLM peut retenir un sous-ensemble strict des candidats
     retournés par retrieve() — la règle 3 est écartée."""
+    mock_guardrail_client.return_value.est_dans_le_perimetre.return_value = True
     mock_retrieve.return_value = [(3, 0.8), (1, 0.5)]
     mock_jugement_client.return_value.juger.return_value = [1]
 
@@ -242,7 +264,9 @@ def test_dense_filtre_les_regles_non_pertinentes(
 @patch("app.api_regles.regles.EmbeddingClient")
 @patch("app.api_regles.regles.DecompositionClient")
 @patch("app.api_regles.regles.retrieve")
+@patch("app.api_regles.regles.GuardrailClient")
 def test_dense_jugement_vide_donne_200_liste_vide(
+    mock_guardrail_client,
     mock_retrieve,
     mock_decomposition_client,
     mock_embedding_client,
@@ -251,7 +275,11 @@ def test_dense_jugement_vide_donne_200_liste_vide(
     jeu_de_regles,
 ):
     """Aucun candidat jugé pertinent : 200 avec une liste vide (refus
-    explicite), pas une erreur."""
+    explicite), pas une erreur. Le guardrail laisse passer (question dans
+    le périmètre) — c'est le jugement en aval qui refuse ici, pas le
+    guardrail (voir test_dense_guardrail_hors_perimetre_retourne_liste_vide
+    pour le refus au guardrail)."""
+    mock_guardrail_client.return_value.est_dans_le_perimetre.return_value = True
     mock_retrieve.return_value = [(3, 0.8), (1, 0.5)]
     mock_jugement_client.return_value.juger.return_value = []
 
@@ -263,3 +291,76 @@ def test_dense_jugement_vide_donne_200_liste_vide(
 
     assert reponse.status_code == 200
     assert reponse.json() == []
+
+
+@patch("app.api_regles.regles.JugementClient")
+@patch("app.api_regles.regles.EmbeddingClient")
+@patch("app.api_regles.regles.DecompositionClient")
+@patch("app.api_regles.regles.retrieve")
+@patch("app.api_regles.regles.GuardrailClient")
+def test_dense_guardrail_hors_perimetre_retourne_liste_vide(
+    mock_guardrail_client,
+    mock_retrieve,
+    mock_decomposition_client,
+    mock_embedding_client,
+    mock_jugement_client,
+    client,
+    jeu_de_regles,
+    caplog,
+):
+    """Question hors périmètre selon le guardrail : 200 + [] immédiat, sans
+    appeler décomposition/retrieval/jugement (court-circuit complet)."""
+    mock_guardrail_client.return_value.est_dans_le_perimetre.return_value = False
+
+    with caplog.at_level("INFO", logger="app.api_regles.regles"):
+        reponse = client.post(
+            "/regles/dense",
+            json={"question": "Quelle est la meilleure recette de tarte ?"},
+            headers=_entetes(),
+        )
+
+    assert reponse.status_code == 200
+    assert reponse.json() == []
+    mock_retrieve.assert_not_called()
+    mock_decomposition_client.assert_not_called()
+    mock_embedding_client.assert_not_called()
+    mock_jugement_client.assert_not_called()
+    assert "hors périmètre" in caplog.text
+
+
+@patch("app.api_regles.regles.JugementClient")
+@patch("app.api_regles.regles.EmbeddingClient")
+@patch("app.api_regles.regles.DecompositionClient")
+@patch("app.api_regles.regles.retrieve")
+@patch("app.api_regles.regles.GuardrailClient")
+def test_dense_echec_construction_guardrail_fail_open(
+    mock_guardrail_client,
+    mock_retrieve,
+    mock_decomposition_client,
+    mock_embedding_client,
+    mock_jugement_client,
+    client,
+    jeu_de_regles,
+    caplog,
+):
+    """Une panne du guardrail à la construction (ex. secret Azure manquant,
+    comme le bug staging du 2026-09-10 sur DecompositionClient) ne bloque
+    jamais la recherche : fail-open, la question est considérée dans le
+    périmètre et le reste du pipeline se déroule normalement — la preuve
+    recherchée est que la recherche aboutit (200), pas qu'elle échoue.
+    DecompositionClient/EmbeddingClient/JugementClient sont mockés pour que
+    seule la panne du guardrail soit sous test."""
+    mock_guardrail_client.side_effect = RuntimeError("AZURE_MODEL_GPT_MINI manquant")
+    mock_retrieve.return_value = [(1, 0.9)]
+    mock_jugement_client.return_value.juger.return_value = [1]
+
+    with caplog.at_level("WARNING", logger="app.api_regles.regles"):
+        reponse = client.post(
+            "/regles/dense",
+            json={"question": "Question de test"},
+            headers=_entetes(),
+        )
+
+    assert reponse.status_code == 200
+    assert [item["regle"]["numero"] for item in reponse.json()] == [1]
+    assert "guardrail" in caplog.text.lower()

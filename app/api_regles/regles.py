@@ -33,6 +33,7 @@ from app.models.referentiel import (
     Theme,
 )
 from app.retrieval.decomposition import DecompositionClient
+from app.retrieval.guardrail import GuardrailClient
 from app.retrieval.jugement import JugementClient
 from app.retrieval.retrieval import retrieve
 
@@ -264,21 +265,38 @@ def chercher_regles_dense(
     client_nom: str = Depends(require_bearer),
 ) -> list[RegleAvecScore]:
     """
-    Recherche sémantique : décompose la question, vectorise, interroge
-    pgvector, fusionne, puis un jugement LLM filtre les candidats
-    réellement pertinents (liste vide si aucun — refus explicite). Voir
+    Un guardrail LLM classe d'abord la question dans/hors périmètre
+    Opquast (sans candidat) ; hors périmètre, retour immédiat sans
+    appeler le reste. Dans le périmètre : décompose la question,
+    vectorise, interroge pgvector, fusionne, puis un second jugement LLM
+    filtre les candidats réellement pertinents (liste vide si aucun —
+    refus explicite). Voir app/retrieval/guardrail.py::GuardrailClient,
     app/retrieval/retrieval.py::retrieve() et
     app/retrieval/jugement.py::JugementClient.
 
-    Chaque appel a un coût réel (LLM décomposition + embedding + LLM
-    jugement) — jeton Bearer requis, contrairement aux autres lectures
-    de ce router. Le score de similarité (1 - distance cosinus) reste
-    renvoyé pour chaque règle citée, à titre informatif — ce n'est plus
-    le critère de pertinence.
+    Chaque appel dans le périmètre a un coût réel (LLM décomposition +
+    embedding + LLM jugement, en plus du guardrail) — jeton Bearer
+    requis, contrairement aux autres lectures de ce router. Le score de
+    similarité (1 - distance cosinus) reste renvoyé pour chaque règle
+    citée, à titre informatif — ce n'est plus le critère de pertinence.
     """
-    top_n = load_manifest()["rag_acceptance"]["top_n"]
-
     logger.info("Recherche dense par %s : « %s »", client_nom, requete.question)
+
+    try:
+        guardrail_client = GuardrailClient()
+        dans_le_perimetre = guardrail_client.est_dans_le_perimetre(requete.question)
+    except Exception as e:
+        logger.warning("Recherche dense — échec du guardrail (%s), fail-open", e)
+        dans_le_perimetre = True
+
+    if not dans_le_perimetre:
+        logger.info(
+            "Recherche dense par %s — question hors périmètre (guardrail), refus direct",
+            client_nom,
+        )
+        return []
+
+    top_n = load_manifest()["rag_acceptance"]["top_n"]
 
     try:
         decomposition_client = DecompositionClient()
