@@ -500,26 +500,30 @@ def compute_taux_par_famille(evaluations: list[dict]) -> dict[str, dict]:
     return resultat
 
 
-def is_acceptable(taux_par_famille: dict[str, dict], seuil: float) -> bool:
-    """Le jeu est acceptable si chaque famille à cible normale atteint le seuil.
+def is_acceptable(
+    taux_par_famille: dict[str, dict],
+    seuil: float,
+    seuils_par_famille: dict[str, float] | None = None,
+) -> bool:
+    """Le jeu est acceptable si chaque famille atteint son seuil.
 
-    La famille "sans_reponse" est exclue — pas faute de mécanisme
-    (le Temps 2 en a construit un, jugement LLM sur les candidats
-    retournés), mais parce que sa mesure réelle (~40-55% selon le
-    modèle, cf. docs/eval/mesure_guardrail_perimetre_2026-09-11_214327.md
-    et les runs précédents) a révélé une limite structurelle : présenter
-    des candidats au LLM crée un biais de sélection qui l'empêche de
-    répondre "aucun" de façon fiable. Le vrai correctif mesuré est un
-    guardrail *sans* candidats, au niveau agent (100% sur sans_reponse
-    isolément) — hors périmètre d'api_regles. Bloquer ce seuil ici
-    signalerait à tort un problème de retrieval, alors que le retrieval
-    et le jugement font leur travail ; c'est l'architecture qui manque
-    une étape en amont.
+    Depuis l'intégration du guardrail de périmètre en premier maillon
+    d'api_regles (2026-09-13), "sans_reponse" est mesurée au même titre
+    que les autres familles : le guardrail (sans candidats, mesuré
+    isolément et en réel à 100%) porte désormais le refus, en plus du
+    jugement seul (limité par le biais de sélection, cf. mémoire
+    assistant refus_architecture_trois_decisions).
+
+    seuils_par_famille permet un plancher différent du seuil général pour
+    une famille précise (ex. "vocabulaire_objectif" : instabilité
+    structurelle mesurée du jugement LLM face à des règles quasi-doublons,
+    carte Kanboard #20, sans lien avec le guardrail ni avec le contenu du
+    prompt de jugement — confirmé par A/B) — les autres familles gardent
+    le seuil garde-fou général.
     """
+    seuils_par_famille = seuils_par_famille or {}
     for famille, stats in taux_par_famille.items():
-        if famille == "sans_reponse":
-            continue
-        if stats["taux"] < seuil:
+        if stats["taux"] < seuils_par_famille.get(famille, seuil):
             return False
     return True
 

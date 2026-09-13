@@ -89,8 +89,10 @@ def main() -> None:
         logger.error("check_api_regles_dense_acceptance : ÉCHEC (%s)", e)
         sys.exit(1)
 
-    seuil = load_manifest()["rag_acceptance"]["taux_reussite_minimum"]
-    if not is_acceptable(taux_par_famille, seuil):
+    rag_acceptance_config = load_manifest()["rag_acceptance"]
+    seuil = rag_acceptance_config["taux_reussite_minimum"]
+    seuils_par_famille = rag_acceptance_config.get("taux_reussite_minimum_par_famille", {})
+    if not is_acceptable(taux_par_famille, seuil, seuils_par_famille):
         logger.error("check_api_regles_dense_acceptance : au moins une famille sous le seuil")
         sys.exit(1)
 

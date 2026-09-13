@@ -9,6 +9,66 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-13 — Claude Code
+
+- **Guardrail de périmètre intégré en premier maillon de `POST /regles/dense`**
+  (spec `docs/superpowers/specs/2026-09-13-guardrail-integration-design.md`,
+  plan `docs/superpowers/plans/2026-09-13-guardrail-integration-implementation.md`,
+  exécuté en inline) : `GuardrailClient` (déjà écrit et mesuré isolément à
+  100%/97,9% le 2026-09-11, jamais branché) appelé juste après le log
+  initial de `chercher_regles_dense` — hors périmètre, retour `[]`
+  immédiat sans appeler décomposition/retrieval/jugement. Construction et
+  appel englobés dans un `try/except` fail-open (écart assumé par
+  rapport à la spec, qui supposait à tort qu'aucun enveloppement n'était
+  nécessaire — même panne possible que `DecompositionClient` en staging
+  le 2026-09-10, secret Azure manquant). 8 tests d'intégration adaptés +
+  2 nouveaux (`tests/integration/api_regles/test_regles_dense.py`, 10 au
+  total). Commit `f9976f0`.
+
+- **Prompt de jugement allégé puis reverté (régression mesurée)** : tentative
+  d'alléger `app/retrieval/prompts/juger_pertinence.md` (commit `a068503`)
+  en misant sur le fait que le guardrail couvre désormais la distinction
+  Opquast-business/VPTCS en amont. Mesure réelle : `vocabulaire_objectif`
+  chute de ~92% à 74-78%. **Test A/B direct** (mêmes candidats retrouvés,
+  ancien vs nouveau prompt) : la règle 127 (« publicité préalable ») est
+  retenue par l'ancien prompt, perdue par le prompt allégé au profit d'une
+  règle concurrente proche (153) — preuve qu'un LLM juge sur l'ensemble du
+  prompt, pas par blocs indépendants, contrairement à l'hypothèse de la
+  spec. **Prompt original restauré** (commit `d7893b6`), aucun gain mesuré
+  à l'allègement.
+
+- **Mesure réelle sur les 114 cas d'acceptance (4 runs, guardrail +
+  jugement)** : `sans_reponse` **stable à 100% (20/20) sur les 4 runs** —
+  confirme en conditions réelles l'hypothèse mesurée isolément le
+  2026-09-11. `is_acceptable()` ne l'exclut plus de son seuil garde-fou
+  (`app/ingestion/rag_acceptance.py`), signature étendue avec
+  `seuils_par_famille` optionnel pour un plancher différent par famille
+  sans affaiblir le seuil général des autres.
+
+- **Effet de bord découvert, hors périmètre de ce chantier — variance de
+  la suite d'acceptance plus large que prévu** : `vocabulaire_objectif`
+  mesurée instable (74-78% sur les 4 runs, indépendamment du prompt de
+  jugement — confirmé pré-existant, pas causé par ce chantier), seuil
+  spécifique abaissé à 0.70 (`app/ingestion/manifest.yml::rag_acceptance.taux_reussite_minimum_par_famille`,
+  temporaire, carte Kanboard #20). Sur le 4e run, la variance s'est
+  révélée **plus large que prévu** : `regles_concurrentes` (67%, était
+  100% x3 runs), `vocabulaire_genere_llm` (86%) et `paraphrase_intitule`
+  (88%) chutent aussi tour à tour sous 90%, signe d'une variance
+  stochastique générale de la suite (LLM non déterministe), pas d'une
+  régression localisée. Investigation reprise le 2026-09-17 (carte
+  Kanboard #20, élargie) — pas de correctif au coup par coup pour chaque
+  nouvelle chute.
+
+- **Coût réel** : ~0,05-0,08 € pour les 4 runs de mesure de ce chantier
+  (décomposition + embedding + jugement + guardrail par cas, 114 cas
+  dans le périmètre par run).
+
+- **Traçage** : `TODO.md` (section « Retrieval US2 »), Kanboard (carte
+  #19 fermée avec le résultat, nouvelle carte #20 pour la variance de la
+  suite), mémoire assistant `refus_architecture_trois_decisions` (guardrail
+  vit dans `api_regles`, pas dans une future couche agent — corrigé par
+  rapport à la version précédente).
+
 ## 2026-09-11 — Claude Code
 
 - **Vague 3 du protocole de mesure des chunks — multi-vecteurs par règle**

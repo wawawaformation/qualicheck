@@ -316,12 +316,31 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
         (guardrail agent avant tout appel d'outil → jugement sur les
         candidats retrouvés, Temps 2 → jugement final avec mémoire/contexte,
         agent) — seule la 2e est dans le périmètre `api_regles`.
-      - [ ] **Guardrail de périmètre au niveau agent** — hors périmètre
-        `api_regles`, mesuré isolément (voir ci-dessus, 100% sur
-        `sans_reponse`) mais jamais intégré à un pipeline réel. À
-        concevoir avec la couche agent (mémoire, historique de discussion,
-        choix d'outils) quand ce chantier démarrera —
-        `app/retrieval/guardrail.py` est prêt à être branché.
+      - [x] **Guardrail de périmètre intégré dans `api_regles`** (2026-09-13)
+        — `D`/`A`. Correction par rapport à la conclusion du 2026-09-11 :
+        le guardrail vit en **premier maillon de `POST /regles/dense`**
+        (`app/api_regles/regles.py`), pas dans une future couche agent —
+        il est stateless, rien n'empêchait de le brancher tout de suite.
+        Spec `docs/superpowers/specs/2026-09-13-guardrail-integration-design.md`,
+        plan `docs/superpowers/plans/2026-09-13-guardrail-integration-implementation.md`
+        (exécuté en inline). Construction + appel englobés dans un
+        `try/except` fail-open (cas non prévu par la spec initiale — même
+        panne que `DecompositionClient` en staging le 2026-09-10).
+        **Résultat mesuré en réel : `sans_reponse` à 100% (20/20), stable
+        sur 4 runs** — confirme la mesure isolée du 2026-09-11.
+        `is_acceptable()` ne l'exclut plus de son seuil garde-fou
+        (`app/ingestion/rag_acceptance.py`).
+        Allègement du prompt de jugement tenté puis **reverté** : aucun
+        gain mesuré, un test A/B (mêmes candidats, ancien vs nouveau
+        prompt) montre un LLM qui juge sur l'ensemble du prompt, pas par
+        blocs indépendants — prompt original conservé.
+        **Effet de bord découvert, hors périmètre de ce chantier** : la
+        suite d'acceptance réelle a une variance plus large que prévu —
+        pas seulement `vocabulaire_objectif` (74-78%, seuil abaissé à 0.70
+        via `taux_reussite_minimum_par_famille`), mais aussi
+        `regles_concurrentes`/`vocabulaire_genere_llm`/`paraphrase_intitule`
+        qui chutent tour à tour sous 90% d'un run à l'autre. Investigation
+        reprise le 2026-09-17 — carte Kanboard #20.
     - [x] **Combien de règles retourner dans la réponse** — résolu par le
       Temps 2 : le jugement LLM décide lui-même du sous-ensemble à citer
       (0 à N parmi les 15 candidats), pas de nombre fixe à trancher

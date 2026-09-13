@@ -220,16 +220,35 @@ def test_is_acceptable_false_when_one_famille_below_seuil():
     assert is_acceptable(taux_par_famille, seuil=0.8) is False
 
 
-def test_is_acceptable_ignore_sans_reponse_meme_a_zero():
-    """sans_reponse n'entre jamais dans le calcul, même à 0% — limite
-    structurelle mesurée du jugement LLM (biais de sélection face à des
-    candidats), pas un défaut de retrieval que ce garde-fou doit signaler."""
+def test_is_acceptable_false_when_sans_reponse_sous_le_seuil():
+    """sans_reponse compte désormais comme les autres familles — depuis
+    l'intégration du guardrail de périmètre en premier maillon d'api_regles
+    (2026-09-13), un vrai mécanisme la porte, mesuré à 100% en réel."""
     taux_par_famille = {
         "vocabulaire_source_opquast": {"taux": 1.0, "reussis": 4, "total": 4, "partiels": 0},
         "sans_reponse": {"taux": 0.0, "reussis": 0, "total": 2, "partiels": 0},
     }
 
-    assert is_acceptable(taux_par_famille, seuil=0.8) is True
+    assert is_acceptable(taux_par_famille, seuil=0.8) is False
+
+
+def test_is_acceptable_seuil_par_famille_assouplit_une_seule_famille():
+    """seuils_par_famille abaisse le plancher d'une famille précise
+    (ex. vocabulaire_objectif, instabilité structurelle mesurée du
+    jugement LLM — carte Kanboard #20) sans toucher au seuil général des
+    autres familles."""
+    taux_par_famille = {
+        "vocabulaire_objectif": {"taux": 0.74, "reussis": 17, "total": 23, "partiels": 1},
+        "regles_concurrentes": {"taux": 1.0, "reussis": 3, "total": 3, "partiels": 0},
+    }
+
+    assert is_acceptable(taux_par_famille, seuil=0.9) is False
+    assert (
+        is_acceptable(
+            taux_par_famille, seuil=0.9, seuils_par_famille={"vocabulaire_objectif": 0.7}
+        )
+        is True
+    )
 
 
 def test_format_dataset_versions_single_version():

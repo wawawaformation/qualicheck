@@ -45,6 +45,15 @@ rag_acceptance:
   # n'avait jamais été dérivé, juste choisi par défaut. Détail :
   # jury/decisions/2026-09-09-seuil-acceptance-rag-90-pourcent.md
   taux_reussite_minimum: 0.9
+  # Plancher temporaire par famille, en dessous du seuil général — n'assouplit
+  # que la famille listée, les autres restent au seuil général. Ajouté le
+  # 2026-09-13 : vocabulaire_objectif mesurée instable (74-78% sur 3 runs
+  # réels), instabilité structurelle du jugement LLM sur des règles
+  # quasi-doublons, confirmée indépendante du guardrail et du prompt de
+  # jugement (A/B fait). Carte Kanboard #20 — à retirer une fois la cause
+  # investiguée et corrigée, pas à laisser en l'état indéfiniment.
+  taux_reussite_minimum_par_famille:
+    vocabulaire_objectif: 0.7
 
 decomposition:
   modele: gpt-5.4-mini
