@@ -21,7 +21,6 @@ from app.api_regles.schemas import (
 from app.db import get_session_referentiel
 from app.ingestion.chunking import build_chunk_text
 from app.ingestion.embedding import EmbeddingClient
-from app.ingestion.llm_client import load_manifest
 from app.models.referentiel import (
     Objectif,
     ObjectifRegle,
@@ -32,6 +31,7 @@ from app.models.referentiel import (
     Tag,
     Theme,
 )
+from app.retrieval.config import load_config
 from app.retrieval.decomposition import DecompositionClient
 from app.retrieval.guardrail import GuardrailClient
 from app.retrieval.jugement import JugementClient
@@ -296,7 +296,7 @@ def chercher_regles_dense(
         )
         return []
 
-    top_n = load_manifest()["rag_acceptance"]["top_n"]
+    top_n = load_config()["rag_acceptance"]["top_n"]
 
     try:
         decomposition_client = DecompositionClient()

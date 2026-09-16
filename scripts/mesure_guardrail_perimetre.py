@@ -21,9 +21,9 @@ from dotenv import load_dotenv
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import load_cases  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
+from app.retrieval.config import load_config  # noqa: E402
 from app.retrieval.guardrail import GuardrailClient  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -120,7 +120,7 @@ def main() -> None:
     )
     md_path.write_text(contenu, encoding="utf-8")
 
-    manifest_role = load_manifest()["guardrail"]
+    manifest_role = load_config()["guardrail"]
     cost = (
         client.input_tokens * manifest_role["prix_entree_par_million"] / 1_000_000
         + client.output_tokens * manifest_role["prix_sortie_par_million"] / 1_000_000

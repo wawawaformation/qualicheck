@@ -21,7 +21,6 @@ from dotenv import load_dotenv
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.api_regles import config  # noqa: E402
-from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
     compute_taux_par_famille,
     evaluate_case,
@@ -29,6 +28,7 @@ from app.ingestion.rag_acceptance import (  # noqa: E402
     load_cases,
 )
 from app.logging_config import setup_logging  # noqa: E402
+from app.retrieval.config import load_config  # noqa: E402
 
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
@@ -89,7 +89,7 @@ def main() -> None:
         logger.error("check_api_regles_dense_acceptance : ÉCHEC (%s)", e)
         sys.exit(1)
 
-    rag_acceptance_config = load_manifest()["rag_acceptance"]
+    rag_acceptance_config = load_config()["rag_acceptance"]
     seuil = rag_acceptance_config["taux_reussite_minimum"]
     seuils_par_famille = rag_acceptance_config.get("taux_reussite_minimum_par_famille", {})
     if not is_acceptable(taux_par_famille, seuil, seuils_par_famille):

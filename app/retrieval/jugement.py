@@ -13,7 +13,7 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from app.ingestion.llm_client import load_manifest
+from app.retrieval.config import load_config
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +31,8 @@ class JugementClient:
 
     def __init__(self):
         """Initialise le client Azure OpenAI (rôle jugement, timeout 2s)."""
-        manifest = load_manifest()
-        role = manifest["jugement"]
+        config = load_config()
+        role = config["jugement"]
 
         self.llm = ChatOpenAI(
             base_url=os.getenv("AZURE_AI_ENDPOINT"),
