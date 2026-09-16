@@ -330,17 +330,25 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
         sur 4 runs** — confirme la mesure isolée du 2026-09-11.
         `is_acceptable()` ne l'exclut plus de son seuil garde-fou
         (`app/ingestion/rag_acceptance.py`).
-        Allègement du prompt de jugement tenté puis **reverté** : aucun
-        gain mesuré, un test A/B (mêmes candidats, ancien vs nouveau
-        prompt) montre un LLM qui juge sur l'ensemble du prompt, pas par
-        blocs indépendants — prompt original conservé.
-        **Effet de bord découvert, hors périmètre de ce chantier** : la
-        suite d'acceptance réelle a une variance plus large que prévu —
-        pas seulement `vocabulaire_objectif` (74-78%, seuil abaissé à 0.70
-        via `taux_reussite_minimum_par_famille`), mais aussi
-        `regles_concurrentes`/`vocabulaire_genere_llm`/`paraphrase_intitule`
-        qui chutent tour à tour sous 90% d'un run à l'autre. Investigation
-        reprise le 2026-09-17 — carte Kanboard #20.
+        Allègement du prompt de jugement tenté puis **reverté** : test A/B
+        (mêmes candidats, ancien vs nouveau prompt) suggérant une
+        régression — **conclusion invalidée le 2026-09-16** (test fait à
+        température 0.7, comparait potentiellement deux tirages
+        aléatoires, pas deux prompts). Prompt original conservé faute de
+        nouvelle mesure, question rouverte.
+        **Effet de bord découvert, hors périmètre de ce chantier, résolu
+        le 2026-09-16** : la suite d'acceptance réelle avait une variance
+        plus large que prévu — pas seulement `vocabulaire_objectif`, mais
+        aussi `regles_concurrentes`/`vocabulaire_genere_llm`/
+        `paraphrase_intitule` qui chutaient tour à tour sous 90% d'un run
+        à l'autre. **Cause trouvée et corrigée** (carte Kanboard #20) :
+        `temperature` non fixée sur les 3 clients LLM du retrieval
+        (défaut LangChain 0.7 → échantillonnage aléatoire). `temperature: 0`
+        ajouté (`app/ingestion/manifest.yml`), vérifié stable sur 2 runs
+        réels post-correctif (effondrements de 30+ points disparus, résidu
+        d'1 cas/famille normal). `vocabulaire_objectif` reconfirmée à
+        73-74% — un plafond réel (règles quasi-doublons), pas de la
+        variance — son plancher à 0.70 reste donc justifié.
     - [x] **Combien de règles retourner dans la réponse** — résolu par le
       Temps 2 : le jugement LLM décide lui-même du sous-ensemble à citer
       (0 à N parmi les 15 candidats), pas de nombre fixe à trancher

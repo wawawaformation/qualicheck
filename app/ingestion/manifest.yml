@@ -45,13 +45,18 @@ rag_acceptance:
   # n'avait jamais été dérivé, juste choisi par défaut. Détail :
   # jury/decisions/2026-09-09-seuil-acceptance-rag-90-pourcent.md
   taux_reussite_minimum: 0.9
-  # Plancher temporaire par famille, en dessous du seuil général — n'assouplit
-  # que la famille listée, les autres restent au seuil général. Ajouté le
-  # 2026-09-13 : vocabulaire_objectif mesurée instable (74-78% sur 3 runs
-  # réels), instabilité structurelle du jugement LLM sur des règles
-  # quasi-doublons, confirmée indépendante du guardrail et du prompt de
-  # jugement (A/B fait). Carte Kanboard #20 — à retirer une fois la cause
-  # investiguée et corrigée, pas à laisser en l'état indéfiniment.
+  # Plancher par famille, en dessous du seuil général — n'assouplit que la
+  # famille listée, les autres restent au seuil général. Ajouté le
+  # 2026-09-13 pour vocabulaire_objectif (74-78% mesurés), à l'époque sans
+  # cause connue. Cause trouvée et corrigée le 2026-09-16 (température des
+  # clients LLM non fixée, cf. temperature: 0 ci-dessous, carte Kanboard
+  # #20) — mais vocabulaire_objectif reste stable à 73-74% sur 2 runs
+  # post-correction : ce n'était pas de la variance pour cette famille,
+  # c'est un plafond réel (règles quasi-doublons qui piègent le jugement
+  # LLM, ex. règle 28 vs 25, 127 vs 153 — diagnostiqué par A/B le
+  # 2026-09-13). Ce plancher reste donc justifié, plus comme rustine en
+  # attente d'une cause, mais comme limite mesurée et comprise — à retirer
+  # seulement si une future correction du jugement fait remonter le taux.
   taux_reussite_minimum_par_famille:
     vocabulaire_objectif: 0.7
 
@@ -66,6 +71,15 @@ decomposition:
   # à corriger dès le premier run réel, même logique que le rôle embedding.
   prix_entree_par_million: 0.15
   prix_sortie_par_million: 0.60
+  # Température explicite à 0 (2026-09-16) : ChatOpenAI appliquait son
+  # défaut (0.7) faute de valeur passée — les trois rôles du chemin
+  # retrieval (decomposition, jugement, guardrail) échantillonnaient donc
+  # au hasard à chaque appel. Cause mesurée de la variance run-à-run de
+  # la suite d'acceptance (carte Kanboard #20 : des familles entières
+  # passant de 100% à 67% sans aucun changement de code entre deux runs).
+  # 0 = décodage glouton, le plus reproductible possible pour une tâche de
+  # classification/décision, pas de génération créative.
+  temperature: 0
 
 jugement:
   modele: gpt-5.4-mini
@@ -76,6 +90,9 @@ jugement:
   # docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md.
   prix_entree_par_million: 0.15
   prix_sortie_par_million: 0.60
+  # Température à 0 — même raison que le rôle decomposition ci-dessus
+  # (carte Kanboard #20).
+  temperature: 0
 
 guardrail:
   modele: gpt-5.4-mini
@@ -88,3 +105,6 @@ guardrail:
   # pas encore integre a un pipeline de production.
   prix_entree_par_million: 0.15
   prix_sortie_par_million: 0.60
+  # Température à 0 — même raison que le rôle decomposition ci-dessus
+  # (carte Kanboard #20).
+  temperature: 0

@@ -9,6 +9,46 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-16 — Claude Code
+
+- **Cause racine de la variance de la suite d'acceptance trouvée et
+  corrigée : température LLM non fixée** (carte Kanboard #20, ouverte le
+  2026-09-13). Aucun des trois clients du chemin retrieval
+  (`app/retrieval/decomposition.py`, `jugement.py`, `guardrail.py`) ne
+  passait `temperature` à `ChatOpenAI` — défaut LangChain appliqué :
+  `0.7`. Chaque appel échantillonnait donc au hasard, expliquant les
+  effondrements observés le 2026-09-13 (`regles_concurrentes` 100% → 67%
+  sans aucun changement de code entre deux runs).
+  **Correctif** : `temperature: 0` ajouté aux trois rôles dans
+  `app/ingestion/manifest.yml` (pas en dur dans le code), passé aux
+  trois `ChatOpenAI(...)`. 3 tests unitaires ajoutés
+  (`tests/unit/retrieval/test_{decomposition,jugement,guardrail}.py`)
+  asserant `temperature=0` à la construction.
+  **Vérification réelle (2 runs consécutifs après rebuild)** : les
+  effondrements massifs ont disparu — `sans_reponse`, `multi_sujets` et
+  `paraphrase_intitule` identiques d'un run à l'autre ; les autres
+  familles ne varient plus que d'1 cas sur ~20-23 (résidu de
+  non-déterminisme normal, même à température 0, dû au batching/à
+  l'arithmétique flottante côté fournisseur — pas comparable aux écarts
+  de 33 points observés avant correctif).
+  **Effet de bord positif** : ça invalide le test A/B du 2026-09-13 sur
+  le prompt de jugement (fait à température 0.7, un seul appel de chaque
+  côté — comparait deux tirages aléatoires, pas deux prompts). La
+  conclusion « l'allègement cause une régression » n'était donc pas
+  établie ; le prompt actuel (version longue, restaurée le 2026-09-13)
+  reste en place faute de nouvelle mesure, mais la question reste
+  ouverte.
+  **`vocabulaire_objectif` reconfirmée comme plafond réel, pas de la
+  variance** : stable à 73-74% sur les 2 runs post-correctif (plus
+  proche du bruit résiduel que des 33 points d'écart des autres
+  familles). Le plancher spécifique à 0.70
+  (`app/ingestion/manifest.yml::rag_acceptance.taux_reussite_minimum_par_famille`)
+  reste donc justifié, mais maintenant pour une cause comprise (règles
+  quasi-doublons piégeant le jugement LLM, ex. 28 vs 25, 127 vs 153) et
+  non plus comme rustine en attente d'investigation.
+  **Coût réel** : ~0,03 € pour les 2 runs de vérification.
+  Traçage complet sur la carte Kanboard #20 (commentaires horodatés).
+
 ## 2026-09-13 — Claude Code
 
 - **Guardrail de périmètre intégré en premier maillon de `POST /regles/dense`**

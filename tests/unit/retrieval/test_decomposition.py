@@ -44,6 +44,19 @@ class TestDecompositionClient:
         assert client.output_tokens == 20
 
     @patch("app.retrieval.decomposition.ChatOpenAI")
+    def test_construit_le_client_avec_temperature_zero(self, mock_llm_class):
+        """Décodage glouton (temperature=0) — reproductibilité, pas de créativité.
+
+        Régression du 2026-09-16 : la température n'était pas passée à
+        ChatOpenAI, qui appliquait alors son défaut (0.7) — chaque appel
+        échantillonnait au hasard. Cause de la variance run-à-run de la
+        suite d'acceptance (carte Kanboard #20).
+        """
+        DecompositionClient()
+
+        assert mock_llm_class.call_args.kwargs["temperature"] == 0
+
+    @patch("app.retrieval.decomposition.ChatOpenAI")
     def test_decomposer_question_multi_sujets_retourne_n_sous_questions(self, mock_llm_class):
         """Une question multi-sujets est découpée en plusieurs sous-questions."""
         mock_llm_instance = MagicMock()

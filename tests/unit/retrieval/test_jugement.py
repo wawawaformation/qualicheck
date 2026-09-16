@@ -40,6 +40,19 @@ class TestJugementClient:
         assert client.output_tokens == 10
 
     @patch("app.retrieval.jugement.ChatOpenAI")
+    def test_construit_le_client_avec_temperature_zero(self, mock_llm_class):
+        """Décodage glouton (temperature=0) — reproductibilité, pas de créativité.
+
+        Régression du 2026-09-16 : la température n'était pas passée à
+        ChatOpenAI, qui appliquait alors son défaut (0.7) — chaque appel
+        échantillonnait au hasard. Cause de la variance run-à-run de la
+        suite d'acceptance (carte Kanboard #20).
+        """
+        JugementClient()
+
+        assert mock_llm_class.call_args.kwargs["temperature"] == 0
+
+    @patch("app.retrieval.jugement.ChatOpenAI")
     def test_juger_liste_vide_si_aucun_candidat_pertinent(self, mock_llm_class):
         """Aucun candidat pertinent : liste vide (refus)."""
         mock_llm_instance = MagicMock()

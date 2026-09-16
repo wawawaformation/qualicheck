@@ -40,6 +40,7 @@ class DecompositionClient:
             base_url=os.getenv("AZURE_AI_ENDPOINT"),
             api_key=os.getenv("AZURE_AI_API_KEY"),
             model=os.getenv(role["env_var"]),
+            temperature=role["temperature"],
             timeout=2,
         )
         self.parser = JsonOutputParser(pydantic_object=DecompositionOutput)
