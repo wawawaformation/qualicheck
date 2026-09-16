@@ -330,12 +330,14 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
         sur 4 runs** — confirme la mesure isolée du 2026-09-11.
         `is_acceptable()` ne l'exclut plus de son seuil garde-fou
         (`app/ingestion/rag_acceptance.py`).
-        Allègement du prompt de jugement tenté puis **reverté** : test A/B
-        (mêmes candidats, ancien vs nouveau prompt) suggérant une
-        régression — **conclusion invalidée le 2026-09-16** (test fait à
-        température 0.7, comparait potentiellement deux tirages
-        aléatoires, pas deux prompts). Prompt original conservé faute de
-        nouvelle mesure, question rouverte.
+        Allègement du prompt de jugement tenté, reverté (2026-09-13) puis
+        **réappliqué (2026-09-16)** : le revert reposait sur un test A/B à
+        un seul appel, fait à température 0.7 (bug non découvert alors)
+        — conclusion invalidée. Retest à 10 répétitions par prompt sur
+        les 2 cas litigieux, puis confirmé sur 6 runs réels complets (3
+        par version, 684 évaluations) : l'allégé ne régresse sur aucune
+        famille, et fait mieux sur `vocabulaire_source_opquast` (100%
+        stable sur 3 runs contre 90-95%). Prompt allégé réappliqué.
         **Effet de bord découvert, hors périmètre de ce chantier, résolu
         le 2026-09-16** : la suite d'acceptance réelle avait une variance
         plus large que prévu — pas seulement `vocabulaire_objectif`, mais

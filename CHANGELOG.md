@@ -49,6 +49,34 @@ Format d'entrée, une ligne par réalisation :
   **Coût réel** : ~0,03 € pour les 2 runs de vérification.
   Traçage complet sur la carte Kanboard #20 (commentaires horodatés).
 
+- **Prompt de jugement allégé — retest A/B répété, conclusion du
+  2026-09-13 inversée, allègement réappliqué**
+  (`app/retrieval/prompts/juger_pertinence.md`). Le test A/B du
+  2026-09-13 (revert) reposait sur un seul appel de chaque côté à
+  température 0.7 (bug non découvert à l'époque). Une fois la
+  température fixée (ci-dessus), un premier retest à 10 répétitions par
+  prompt sur les 2 cas litigieux (candidats figés) a montré que le
+  jugement n'est **toujours pas parfaitement déterministe même à
+  température 0** (probable effet d'infrastructure fournisseur — routing/
+  batching — sur des décisions proches d'une frontière) : le prompt
+  original échoue **0/10** sur la règle 28, le prompt allégé **1/10** ;
+  la règle 127 est retenue 3/10 par l'original contre 6/10 par l'allégé.
+  Direction inverse de la conclusion du 2026-09-13.
+  **Confirmé à plus large échelle** : 3 runs réels complets (114 cas)
+  avec chaque version du prompt (6 runs, 684 évaluations de cas au
+  total). Moyennes par famille quasi identiques entre les deux versions,
+  sauf `vocabulaire_source_opquast` où l'allégé est net et stable à
+  **100% sur les 3 runs** contre 90-95% pour l'original. Aucune famille
+  ne régresse avec l'allégé. Les 2 seuls échecs de seuil observés sur les
+  6 runs tombent sur exactement la même fraction (16/23 =
+  69,6%, arrondie à 70%) pour `vocabulaire_objectif`, une fois dans
+  chaque groupe — signature de bruit symétrique, pas d'effet du prompt.
+  **Décision : prompt allégé réappliqué**, la conclusion du 2026-09-13
+  n'était pas soutenue par les faits (mesure insuffisante, pas un vrai
+  défaut du prompt). Suite de tests inchangée et verte (aucun test
+  n'asserte sur le contenu littéral du prompt).
+  **Coût réel** : ~0,10-0,12 € pour les 6 runs de vérification.
+
 ## 2026-09-13 — Claude Code
 
 - **Guardrail de périmètre intégré en premier maillon de `POST /regles/dense`**
