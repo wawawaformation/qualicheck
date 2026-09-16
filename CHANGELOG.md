@@ -11,6 +11,25 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-16 — Claude Code
 
+- **Config LLM par domaine, dette de la carte Kanboard #18 payée** (spec
+  `docs/superpowers/specs/2026-09-16-config-llm-par-domaine-design.md`,
+  plan `docs/superpowers/plans/2026-09-16-config-llm-par-domaine-implementation.md`,
+  exécuté en inline, 5 tâches) : `manifest.yml`/`load_manifest()`
+  renommés en `config.yml`/`load_config()` partout — le nom "manifest"
+  décrivait un inventaire figé, pas les paramètres réglables (modèles,
+  prix, seuils, température) qu'il contenait réellement.
+  `app/ingestion/manifest.yml` scindé en `app/ingestion/config.yml`
+  (`enrichissement`, `embedding`) et `app/retrieval/config.yml`
+  (`rag_acceptance`, `decomposition`, `jugement`, `guardrail`, nouveau
+  module — corrige la mauvaise localisation des 3 derniers rôles, qui
+  vivaient en ingestion faute d'endroit dédié). `app/api_regles/manifest.yml`
+  renommé à l'identique (fichier déjà bien situé). Coupure nette, 18
+  fichiers Python migrés (dont 5 scripts à double import ingestion+
+  retrieval, 2 de plus que ce que le spec avait identifié — trouvés par
+  `grep` exhaustif en écrivant le plan), Makefile et `docs/agent/`
+  vivantes mis à jour, suite de tests inchangée en comportement (263
+  tests verts, +4 nouveaux pour `app/retrieval/config.py`).
+
 - **Cause racine de la variance de la suite d'acceptance trouvée et
   corrigée : température LLM non fixée** (carte Kanboard #20, ouverte le
   2026-09-13). Aucun des trois clients du chemin retrieval
