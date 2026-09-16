@@ -18,8 +18,8 @@ from sqlalchemy.orm import Session
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.ingestion.chunking import build_chunk_text  # noqa: E402
+from app.ingestion.config import load_config  # noqa: E402
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
-from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.stockage import load_enriched_rules_from_db, upsert_rule  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
 
@@ -72,7 +72,7 @@ def main() -> None:
                 upsert_rule(session, rule)
             session.commit()
 
-        role = load_manifest()["embedding"]
+        role = load_config()["embedding"]
         cost = client.total_tokens * role["prix_entree_par_million"] / 1_000_000
         summary = f"embed_rules — Tokens : {client.total_tokens}, coût estimé : {cost:.4f} €"
         logger.info(summary)

@@ -14,6 +14,7 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from tenacity import retry, stop_after_attempt, wait_exponential
 
+from .config import load_config
 from .schema import EnrichedRule
 from .schema import RuleAggregation as Rule
 
@@ -28,13 +29,6 @@ PROMPT_PLACEHOLDERS = [
     "tags",
     "phases",
 ]
-
-
-def load_manifest() -> dict:
-    """Charge les décisions courantes du pipeline (app/ingestion/manifest.yml)."""
-    manifest_path = Path(__file__).parent / "manifest.yml"
-    with open(manifest_path, encoding="utf-8") as f:
-        return yaml.safe_load(f)
 
 
 def _read_prompt_file() -> str:
@@ -66,8 +60,8 @@ class LLMClient:
 
     def __init__(self):
         """Initialise le client Azure OpenAI et le parser JSON."""
-        manifest = load_manifest()
-        role = manifest["enrichissement"]
+        config = load_config()
+        role = config["enrichissement"]
         self.model_name = role["modele"]
         self.prompt_version = load_prompt_version()
 

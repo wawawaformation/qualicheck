@@ -12,7 +12,7 @@ import os
 from openai import OpenAI
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from .llm_client import load_manifest
+from .config import load_config
 
 EMBEDDING_DIMENSIONS = 1536
 
@@ -22,8 +22,8 @@ class EmbeddingClient:
 
     def __init__(self):
         """Initialise le client Azure OpenAI (embeddings)."""
-        manifest = load_manifest()
-        role = manifest["embedding"]
+        config = load_config()
+        role = config["embedding"]
         self.model_name = role["modele"]
         self.deployment_name = os.getenv(role["env_var"])
 

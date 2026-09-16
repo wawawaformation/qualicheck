@@ -396,16 +396,16 @@ class TestLoadPromptContexte:
         assert "{contexte}" not in prompt
 
 
-class TestManifestAndPromptVersion:
-    """Vérifie la lecture du manifeste et de la version de prompt."""
+class TestConfigAndPromptVersion:
+    """Vérifie la lecture de la config et de la version de prompt."""
 
-    def test_load_manifest_reads_enrichissement_role(self):
-        from app.ingestion.llm_client import load_manifest
+    def test_load_config_reads_enrichissement_role(self):
+        from app.ingestion.config import load_config
 
-        manifest = load_manifest()
+        config = load_config()
 
-        assert manifest["enrichissement"]["modele"] == "kimi-k2.6"
-        assert manifest["enrichissement"]["env_var"] == "AZURE_MODEL_KIMI"
+        assert config["enrichissement"]["modele"] == "kimi-k2.6"
+        assert config["enrichissement"]["env_var"] == "AZURE_MODEL_KIMI"
 
     def test_load_prompt_version_reads_frontmatter(self):
         from app.ingestion.llm_client import load_prompt_version

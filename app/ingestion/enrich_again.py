@@ -23,7 +23,8 @@ from app.models.referentiel import (
     Theme,
 )
 
-from .llm_client import LLMClient, load_manifest
+from .config import load_config
+from .llm_client import LLMClient
 from .schema import RuleAggregation
 from .stockage import upsert_rule
 
@@ -171,7 +172,7 @@ def enrich_again(session: Session, dry_run: bool = False) -> None:
                 logger.error(f"Règle {rule.number} — enrich_again : KO ({e})")
                 raise
     finally:
-        role = load_manifest()["enrichissement"]
+        role = load_config()["enrichissement"]
         cost = (
             llm_client.input_tokens * role["prix_entree_par_million"]
             + llm_client.output_tokens * role["prix_sortie_par_million"]

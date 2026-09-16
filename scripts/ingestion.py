@@ -23,9 +23,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.ingestion.acquisition import acquire_rules  # noqa: E402
 from app.ingestion.aggregation import aggregate_rules  # noqa: E402
 from app.ingestion.chunking import build_chunk_text  # noqa: E402
+from app.ingestion.config import load_config  # noqa: E402
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
 from app.ingestion.enrichment import enrich_rules  # noqa: E402
-from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.stockage import (  # noqa: E402
     clear_opquast_tables,
     count_rules,
@@ -155,7 +155,7 @@ def main() -> None:
             logger.error("Étape 3 — Enrichissement : ÉCHEC (%s)", e)
             sys.exit(1)
 
-        role = load_manifest()["enrichissement"]
+        role = load_config()["enrichissement"]
         price_input_per_1m = role["prix_entree_par_million"]
         price_output_per_1m = role["prix_sortie_par_million"]
         cost = (
