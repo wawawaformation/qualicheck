@@ -48,7 +48,7 @@ def session():
 
 @pytest.fixture
 def client(session, monkeypatch):
-    # Les 3 autres clients déclarés dans manifest.yml doivent aussi avoir leur
+    # Les 3 autres clients déclarés dans config.yml doivent aussi avoir leur
     # jeton renseigné : clients_tokens() lève RuntimeError si un seul manque,
     # y compris en CI où aucun .env réel n'est présent.
     monkeypatch.setenv("FASTAPI_API_KEY", JETON)

@@ -15,7 +15,7 @@ from app.api_regles.acceptance import evaluate_case, is_acceptable, load_cases
 
 def _un_seul_client(monkeypatch):
     """Isole CLIENTS : ces tests ne doivent pas dépendre du nombre réel de
-    clients déclarés dans le manifeste ni du contenu réel de .env."""
+    clients déclarés dans la config ni du contenu réel de .env."""
     monkeypatch.setattr(
         config, "CLIENTS", [{"nom": "dev", "env_var_token": "FASTAPI_API_KEY"}]
     )

@@ -14,22 +14,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def load_manifest() -> dict:
-    """Charge la configuration courante de l'API (app/api_regles/manifest.yml)."""
-    manifest_path = Path(__file__).parent / "manifest.yml"
-    with open(manifest_path, encoding="utf-8") as f:
+def load_config() -> dict:
+    """Charge la configuration courante de l'API (app/api_regles/config.yml)."""
+    config_path = Path(__file__).parent / "config.yml"
+    with open(config_path, encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
-_MANIFEST = load_manifest()
+_CONFIG = load_config()
 
-TITLE: str = _MANIFEST["api"]["title"]
-DESCRIPTION: str = _MANIFEST["api"]["description"]
-VERSION: str = _MANIFEST["api"]["version"]
-PORT: int = _MANIFEST["api"]["port"]
-CORS_ALLOWED_ORIGINS: list[str] = _MANIFEST["cors"]["allowed_origins"]
-REVIEW_NOTE_MAX_LENGTH: int = _MANIFEST["validation"]["review_note_max_length"]
-QUESTION_MAX_LENGTH: int = _MANIFEST["validation"]["question_max_length"]
+TITLE: str = _CONFIG["api"]["title"]
+DESCRIPTION: str = _CONFIG["api"]["description"]
+VERSION: str = _CONFIG["api"]["version"]
+PORT: int = _CONFIG["api"]["port"]
+CORS_ALLOWED_ORIGINS: list[str] = _CONFIG["cors"]["allowed_origins"]
+REVIEW_NOTE_MAX_LENGTH: int = _CONFIG["validation"]["review_note_max_length"]
+QUESTION_MAX_LENGTH: int = _CONFIG["validation"]["question_max_length"]
 
 # Identifie le code et le moment reellement en cours d'execution — sert a
 # verifier qu'un deploiement CD a bien pris effet. GIT_SHA est fige dans
@@ -42,17 +42,17 @@ DEPLOYED_AT: str = os.getenv("DEPLOYED_AT", "inconnu")
 # Attribution CC BY-SA 4.0 : obligation de la licence du référentiel Opquast,
 # que cette API distribue. Voir
 # docs/jury/decisions/2026-07-26-lecture-ouverte-api-regles.md
-LICENCE_NOM: str = _MANIFEST["licence"]["nom"]
-LICENCE_URL: str = _MANIFEST["licence"]["url"]
-ATTRIBUTION: str = _MANIFEST["licence"]["attribution"]
+LICENCE_NOM: str = _CONFIG["licence"]["nom"]
+LICENCE_URL: str = _CONFIG["licence"]["url"]
+ATTRIBUTION: str = _CONFIG["licence"]["attribution"]
 
 
-CLIENTS: list[dict] = _MANIFEST.get("clients", [])
+CLIENTS: list[dict] = _CONFIG.get("clients", [])
 
 
 def clients_tokens() -> dict[str, str]:
     """
-    {nom_client: jeton} pour chaque client déclaré dans le manifeste.
+    {nom_client: jeton} pour chaque client déclaré dans la config.
 
     Lève RuntimeError si un client déclaré n'a pas son jeton renseigné dans
     l'environnement : sans ce garde-fou, ce client serait silencieusement
