@@ -5,8 +5,15 @@ api:
   title: "QualiCheck — API données"
   description: "Accès au référentiel Opquast enrichi et boucle de revue humaine"
   # Version du contrat d'API, distincte de la version du paquet Python de
-  # pyproject.toml : elle évolue avec les endpoints, pas avec les dépendances.
-  version: "0.1.0"
+  # pyproject.toml : elle évolue avec les endpoints, pas avec les
+  # dépendances. Bumpée à 0.2.0 le 2026-09-16 : restée à 0.1.0 depuis le
+  # début malgré plusieurs changements réels de contrat (score dans
+  # RegleAvecScore, guardrail sur POST /regles/dense, filtres sur GET
+  # /regles, champ version ajouté à /version) — pas rattrapés un par un,
+  # un seul saut qui les acte tous. Règle à partir de maintenant : bumper
+  # à chaque tâche qui change un contrat d'endpoint (nouveau champ,
+  # nouveau comportement observable, pas un simple refactor interne).
+  version: "0.2.0"
   port: 8880
 
 cors:

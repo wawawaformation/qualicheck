@@ -91,10 +91,14 @@ def health(session: Session = Depends(get_session_referentiel)):
 @app.get("/version", tags=["infrastructure"])
 def version():
     """
-    Identifie le commit et le moment du dernier déploiement effectif.
+    Identifie le commit, le moment du dernier déploiement effectif et la
+    version du contrat d'API.
 
-    Distinct de la version du contrat d'API (`/health`) : sert à vérifier
-    depuis l'extérieur qu'un déploiement CD (staging ou main) a bien pris
-    effet, pas à documenter l'API elle-même.
+    Le commit sert à vérifier depuis l'extérieur qu'un déploiement CD
+    (staging ou main) a bien pris effet — précis mais peu lisible pour un
+    humain. `version` (ex. « 0.1.0 », bumpée à la main dans
+    `app/api_regles/config.yml` quand un changement d'endpoint le
+    justifie) donne un repère mémorisable et communicable, complémentaire
+    au commit plutôt qu'un substitut.
     """
-    return {"commit": config.GIT_SHA, "deployed_at": config.DEPLOYED_AT}
+    return {"commit": config.GIT_SHA, "deployed_at": config.DEPLOYED_AT, "version": config.VERSION}
