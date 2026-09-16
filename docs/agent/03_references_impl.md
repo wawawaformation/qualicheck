@@ -8,10 +8,11 @@ qu'elle compte pour une décision.
 
 | Donnée | Source de vérité | Piège |
 |---|---|---|
-| Prix/modèle LLM à utiliser au prochain run (enrichissement, embedding) | `app/ingestion/manifest.yml` | — |
-| Seuils du jeu d'acceptance RAG (`top_n`, `taux_reussite_minimum`) | `app/ingestion/manifest.yml` (section `rag_acceptance`) | — |
+| Prix/modèle LLM à utiliser au prochain run (enrichissement, embedding) | `app/ingestion/config.yml` | — |
+| Seuils du jeu d'acceptance RAG (`top_n`, `taux_reussite_minimum`) | `app/retrieval/config.yml` (section `rag_acceptance`) | — |
+| Rôles LLM du retrieval (decomposition, jugement, guardrail) | `app/retrieval/config.yml` | — |
 | Version de prompt active, à écrire au prochain enrichissement | Frontmatter de `app/ingestion/prompts/enrich_rule.md` | — |
-| Version de prompt ayant produit une règle donnée (déjà en base) | Colonne `regle.prompt_version` | `manifest.yml` et le frontmatter du prompt ne le savent pas — un `enrich_again` partiel peut mélanger les versions règle par règle |
+| Version de prompt ayant produit une règle donnée (déjà en base) | Colonne `regle.prompt_version` | `config.yml` et le frontmatter du prompt ne le savent pas — un `enrich_again` partiel peut mélanger les versions règle par règle |
 | Modèle LLM ayant produit une règle donnée | Colonne `regle.llm_model` | — |
 | Schéma de données réellement en place | Migrations Alembic (`app/migration/versions/`) | `conception/1_BDD/MLD_qualicheck.md` et le dictionnaire de données décrivent la **cible**, pas forcément l'état réel courant (convention `X_reel` vs cible, ex. `docs/schemas/`) |
 | Dernière opération d'export/import de backup | Table `etat_donnees` | — |
@@ -19,8 +20,8 @@ qu'elle compte pour une décision.
 | Avancement détaillé du pipeline d'ingestion (étapes 1-7) | `TODO_PIPELINE_INGESTION.md` | Non dupliqué dans `TODO.md` (transverse) |
 | Historique des réalisations (ce qui a été fait, quand) | `CHANGELOG.md` | Ne décrit que le passé, pas les décisions à venir (`TODO.md`) |
 | Variables d'environnement/secrets réels | `.env` (non versionné) | `.env.example` documente les clés attendues, pas les valeurs réelles |
-| Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_regles/manifest.yml` | — |
-| Jetons Bearer des écritures de l'API données (un par client nommé) | `app/api_regles/manifest.yml` (section `clients`) + `.env` (une variable par client) | — |
+| Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_regles/config.yml` | — |
+| Jetons Bearer des écritures de l'API données (un par client nommé) | `app/api_regles/config.yml` (section `clients`) + `.env` (une variable par client) | — |
 
 ## Spécifications principales
 

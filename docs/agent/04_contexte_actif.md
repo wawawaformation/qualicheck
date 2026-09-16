@@ -24,7 +24,7 @@ Objectif: donner un contexte fiable et peu couteux en tokens.
 
 - Commandes: `Makefile`
 - Pipeline: `scripts/ingestion.py` + `app/ingestion/`
-- Manifest des roles/modeles: `app/ingestion/manifest.yml`
+- Config des roles/modeles: `app/ingestion/config.yml` (enrichissement, embedding), `app/retrieval/config.yml` (decomposition, jugement, guardrail, rag_acceptance)
 
 ## Ce qu'il ne faut pas charger par defaut
 

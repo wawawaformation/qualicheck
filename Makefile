@@ -101,7 +101,7 @@ enrich-again:
 	$(MAKE) export_sql
 
 ## Recalcule l'embedding de toutes les règles (modèle et dimension définis
-## dans app/ingestion/manifest.yml, rôle embedding), puis sauvegarde les
+## dans app/ingestion/config.yml, rôle embedding), puis sauvegarde les
 ## données réelles
 embed-rules:
 	uv run python scripts/embed_rules.py
@@ -145,8 +145,8 @@ mesure-guardrail-perimetre:
 # API données
 # ============================================================
 
-# Port lu dans le manifeste, seule source de vérité.
-API_REGLES_PORT = $(shell grep 'port:' app/api_regles/manifest.yml | tr -d ' ' | cut -d: -f2)
+# Port lu dans la config, seule source de vérité.
+API_REGLES_PORT = $(shell grep 'port:' app/api_regles/config.yml | tr -d ' ' | cut -d: -f2)
 
 ## Démarre l'API données en développement (rechargement automatique)
 api-regles:

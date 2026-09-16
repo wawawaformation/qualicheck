@@ -27,8 +27,8 @@ from sqlalchemy.orm import Session
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.ingestion.chunking import build_chunk_text, build_variant_text  # noqa: E402
+from app.ingestion.config import load_config as load_ingestion_config  # noqa: E402
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
-from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
     construire_resume_markdown,
     load_cases,
@@ -36,6 +36,7 @@ from app.ingestion.rag_acceptance import (  # noqa: E402
 )
 from app.ingestion.stockage import load_enriched_rules_from_db  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
+from app.retrieval.config import load_config as load_retrieval_config  # noqa: E402
 from app.retrieval.decomposition import DecompositionClient  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -194,8 +195,8 @@ def main() -> None:
     md_path = REPORT_DIR / f"mesure_variantes_chunks_{suffixe}.md"
     ecrire_resume_markdown(md_path, tous_lignes_resume, horodatage)
 
-    embedding_role = load_manifest()["embedding"]
-    decomposition_role = load_manifest()["decomposition"]
+    embedding_role = load_ingestion_config()["embedding"]
+    decomposition_role = load_retrieval_config()["decomposition"]
     embedding_cost = (
         embedding_client.total_tokens * embedding_role["prix_entree_par_million"] / 1_000_000
     )

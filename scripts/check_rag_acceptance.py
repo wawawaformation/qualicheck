@@ -3,7 +3,7 @@
 Recalcule l'embedding réel de chaque question du jeu de cas
 (tests/acceptance/rag_acceptance.jsonl), interroge pgvector (similarité
 cosinus) et vérifie, par famille de cas, que les règles attendues figurent
-dans le top_n déclaré dans app/ingestion/manifest.yml (section
+dans le top_n déclaré dans app/retrieval/config.yml (section
 rag_acceptance). Coût réel à chaque exécution (appel Azure embeddings),
 volontairement hors CI — lancé à la demande via `make rag-acceptance`.
 """
@@ -19,8 +19,8 @@ from sqlalchemy.orm import Session
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from app.ingestion.config import load_config as load_ingestion_config  # noqa: E402
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
-from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
     compute_taux_par_famille,
     evaluate_case,
@@ -30,6 +30,7 @@ from app.ingestion.rag_acceptance import (  # noqa: E402
     summarize_dataset_versions,
 )
 from app.logging_config import setup_logging  # noqa: E402
+from app.retrieval.config import load_config as load_retrieval_config  # noqa: E402
 from app.retrieval.decomposition import DecompositionClient  # noqa: E402
 from app.retrieval.retrieval import retrieve  # noqa: E402
 
@@ -56,7 +57,7 @@ def main() -> None:
     load_dotenv()
 
     engine = get_engine()
-    config = load_manifest()["rag_acceptance"]
+    config = load_retrieval_config()["rag_acceptance"]
     top_n = config["top_n"]
     seuil = config["taux_reussite_minimum"]
 
@@ -103,9 +104,8 @@ def main() -> None:
                 f"{stats['reussis']}/{stats['total']} ({stats['taux']:.0%}){partiel_note}{note}"
             )
 
-        manifest = load_manifest()
-        embedding_role = manifest["embedding"]
-        decomposition_role = manifest["decomposition"]
+        embedding_role = load_ingestion_config()["embedding"]
+        decomposition_role = load_retrieval_config()["decomposition"]
         embedding_cost = (
             embedding_client.total_tokens * embedding_role["prix_entree_par_million"] / 1_000_000
         )

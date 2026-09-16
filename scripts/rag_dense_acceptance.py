@@ -25,8 +25,8 @@ from sqlalchemy.orm import Session
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from app.ingestion.config import load_config as load_ingestion_config  # noqa: E402
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
-from app.ingestion.llm_client import load_manifest  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
     compute_taux_par_famille,
     evaluate_case,
@@ -34,6 +34,7 @@ from app.ingestion.rag_acceptance import (  # noqa: E402
     query_top_n_numeros,
 )
 from app.logging_config import setup_logging  # noqa: E402
+from app.retrieval.config import load_config as load_retrieval_config  # noqa: E402
 from app.retrieval.decomposition import DecompositionClient  # noqa: E402
 
 logger = logging.getLogger(__name__)
@@ -162,9 +163,8 @@ def main() -> None:
 
     taux_par_top_n = {n: compute_taux_par_famille(resultats_par_top_n[n]) for n in TOP_NS}
 
-    manifest = load_manifest()
-    embedding_role = manifest["embedding"]
-    decomposition_role = manifest["decomposition"]
+    embedding_role = load_ingestion_config()["embedding"]
+    decomposition_role = load_retrieval_config()["decomposition"]
     embedding_cost = (
         embedding_client.total_tokens * embedding_role["prix_entree_par_million"] / 1_000_000
     )
