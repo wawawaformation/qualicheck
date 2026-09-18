@@ -36,3 +36,7 @@ Liste de règles avec score de similarité (peut être vide) :
 - `score` (similarité cosinus, 1 = identique, 0 = aucun rapport) informatif
   uniquement — la pertinence a déjà été tranchée par le jugement LLM côté
   API, l'agent ne doit pas re-filtrer sur ce score.
+- **Un score bas (0.4-0.5, parfois moins) est normal, ce n'est pas un
+  signal d'alerte.** Ne pas hésiter à citer une règle sous prétexte que
+  son score est bas — la pertinence a déjà été validée par le jugement
+  LLM côté API avant que la règle n'apparaisse dans cette liste.
