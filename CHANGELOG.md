@@ -11,7 +11,7 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-18 — Claude Code
 
-- **Inventaire des tools de l'agent US2, 7 tools** (réflexion en dialogue,
+- **Inventaire des tools de l'agent US2, 9 tools** (réflexion en dialogue,
   pas de spec formelle encore) — voir
   `conception/3_autre_us/us2_question_libre/harness/tools/` (un `.md` par
   tool : docstring, paramètres d'entrée, sortie), `TODO.md` (détail sous
@@ -24,6 +24,15 @@ Format d'entrée, une ligne par réalisation :
     (`statique`), `lire_capture_ecran` (`vision`),
     `verifier_avec_navigateur` (`playwright`, soumis à l'accord de
     l'utilisateur), `demander_a_l_utilisateur` (`manuel`).
+  - 2 tools supplémentaires trouvés en repassant les 245 champs
+    `controle` du référentiel à la recherche d'instruments nommés
+    explicitement : `calculer_ratio_contraste` (calcul WCAG,
+    sous-capacité de `playwright`) et `valider_marquage` (validateur
+    W3C, nommé en toutes lettres dans les règles 190/233/236,
+    sous-capacité de `statique`).
+  - ARIA/role et recherche web écartés faute de besoin mesuré dans les
+    245 `controle` — liste de tools non fermée, réouverte si un besoin
+    réel apparaît.
   - Boucle de l'agent actée comme pattern ReAct en tool-calling natif,
     suspendable entre deux tours (contrainte de `demander_a_l_utilisateur`
     sur une API HTTP) — détail dans la mémoire assistant

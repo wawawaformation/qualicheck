@@ -272,7 +272,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       `GET /regles?q=` (mots-clés/syntaxe exacte), `GET /regles/{numero}`
       (lookup direct) — reste à concevoir l'agent lui-même qui les
       appellera (US2 non encore spécée).
-      - [x] **Inventaire des tools de l'agent, 7 au total** (2026-09-18)
+      - [x] **Inventaire des tools de l'agent, 9 au total** (2026-09-18)
         — `conception/3_autre_us/us2_question_libre/harness/tools/`, un
         `.md` par tool (docstring, paramètres, sortie). Les 3 existants
         ci-dessus + 4 nouveaux, dérivés des 4 valeurs de
@@ -283,6 +283,21 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
         `demander_a_l_utilisateur` (`manuel`, 28/245 règles — l'humain
         est l'instrument de mesure). Les 4 nouveaux ne sont pas encore
         implémentés, contrat posé seulement.
+        - **+2 tools trouvés en repassant les 245 champs `controle`
+          cherchant des instruments nommés explicitement** :
+          `calculer_ratio_contraste` (calcul WCAG déterministe,
+          sous-capacité de `playwright`, ex. règle 182) et
+          `valider_marquage` (validateur HTML/CSS du W3C, nommé en toutes
+          lettres dans les règles 190/233/236 — `validator.w3.org`,
+          `jigsaw.w3.org/css-validator`), sous-capacité de `statique`.
+        - **Écartés faute de besoin mesuré dans le référentiel** : ARIA/
+          role (toujours de la simple lecture de marquage dans les
+          245 `controle`, aucun outil dédié nommé — couvert par
+          `lire_url`/`lire_capture_ecran`) et une recherche web générale
+          (aucune occurrence dans les 245 `controle` — contredirait le
+          principe de réponse strictement ancrée au référentiel). Liste
+          non fermée : un tool s'ajoute vite avec LangChain, à réouvrir
+          si un besoin réel apparaît.
         - [ ] **`chercher_regles_mots_cles` à mettre à jour côté API** :
           le paramètre `outil` de `GET /regles` (existant, non
           documenté dans le tool avant cette session) doit être exposé
