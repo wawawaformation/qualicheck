@@ -37,6 +37,28 @@ Format d'entrée, une ligne par réalisation :
     suspendable entre deux tours (contrainte de `demander_a_l_utilisateur`
     sur une API HTTP) — détail dans la mémoire assistant
     `us2_agent_boucle_et_tools`.
+- **Fiche sécurité de l'agent** (commun aux US + spécifique US2) — voir
+  `conception/3_autre_us/securite.md`. Modèle de menace acté :
+  utilisateurs authentifiés mais inconnus (l'authentification donne de la
+  traçabilité, pas de la confiance), donc deux attaquants possibles —
+  l'utilisateur lui-même et le propriétaire du site audité. Analyse des
+  trois entrées utilisateur (question, URL, capture d'écran) et de leurs
+  risques, protections classées par ordre d'importance (privilège faible
+  des outils, isolation réseau, accord avant d'agir, contrôle des
+  citations en sortie). Croisement avec les deux listes OWASP de
+  référence (applications LLM, août 2026 ; applications agentiques,
+  décembre 2025).
+- **Topologie infra/LLM par environnement** — voir
+  `conception/3_autre_us/us2_question_libre/harness/topologie_infra_llm.md`.
+  Dev et staging auto-hébergés mais modèles chez Azure ; prod envisagée
+  chez Infomaniak avec modèles Infomaniak et Ollama Cloud. Aucun
+  fournisseur n'est notre propre infrastructure, d'où une anonymisation
+  uniforme quel que soit le backend actif.
+- **Guardrails de l'agent US2, structure posée** — voir
+  `conception/3_autre_us/us2_question_libre/harness/guardrails/` (un
+  dossier par point d'accroche du middleware LangChain). Première fiche
+  écrite : limite d'itérations de la boucle (principe acté, valeur du
+  seuil à mesurer plus tard plutôt qu'à deviner).
 - Documents jury/conception mis en ordre pendant la même session :
   `jury/documents_jury/working/fiche-rag-mecanismes-retrieval.md` mise à
   jour avec le correctif température du 2026-09-16, diagramme
