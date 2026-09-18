@@ -9,6 +9,37 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-18 — Claude Code
+
+- **Inventaire des tools de l'agent US2, 7 tools** (réflexion en dialogue,
+  pas de spec formelle encore) — voir
+  `conception/3_autre_us/us2_question_libre/harness/tools/` (un `.md` par
+  tool : docstring, paramètres d'entrée, sortie), `TODO.md` (détail sous
+  le chantier « Retrieval US2 »).
+  - 3 tools déjà en production (`chercher_regles_semantique`,
+    `chercher_regles_mots_cles`, `lire_regle_par_numero`) documentés
+    depuis les endpoints réels de `app/api_regles/regles.py`.
+  - 4 nouveaux tools, contrat posé mais non implémenté, dérivés des 4
+    valeurs de `strategie_analyse` (`OutilFiltre`) : `lire_url`
+    (`statique`), `lire_capture_ecran` (`vision`),
+    `verifier_avec_navigateur` (`playwright`, soumis à l'accord de
+    l'utilisateur), `demander_a_l_utilisateur` (`manuel`).
+  - Boucle de l'agent actée comme pattern ReAct en tool-calling natif,
+    suspendable entre deux tours (contrainte de `demander_a_l_utilisateur`
+    sur une API HTTP) — détail dans la mémoire assistant
+    `us2_agent_boucle_et_tools`.
+- Documents jury/conception mis en ordre pendant la même session :
+  `jury/documents_jury/working/fiche-rag-mecanismes-retrieval.md` mise à
+  jour avec le correctif température du 2026-09-16, diagramme
+  `diagramme_retrieval_refus_citation_brouillon_pipeline_complet_api.drawio`
+  suivi en git et renommé depuis `(copie)` (variante 2026-09-11 du
+  diagramme).
+- Cartes Kanboard ouvertes (idées notées en dialogue, pas traitées) :
+  #21 renommage de `OutilFiltre.playwright` (vocabulaire trop lié à
+  l'implémentation), #22 comparaison de modèles pour le
+  ré-enrichissement (Azure / Kimi Infomaniak / Apertus, éventuellement
+  Ollama/DeepSeek).
+
 ## 2026-09-16 — Claude Code
 
 - **Config LLM par domaine, dette de la carte Kanboard #18 payée** (spec

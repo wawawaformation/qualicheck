@@ -272,6 +272,37 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       `GET /regles?q=` (mots-clés/syntaxe exacte), `GET /regles/{numero}`
       (lookup direct) — reste à concevoir l'agent lui-même qui les
       appellera (US2 non encore spécée).
+      - [x] **Inventaire des tools de l'agent, 7 au total** (2026-09-18)
+        — `conception/3_autre_us/us2_question_libre/harness/tools/`, un
+        `.md` par tool (docstring, paramètres, sortie). Les 3 existants
+        ci-dessus + 4 nouveaux, dérivés des 4 valeurs de
+        `strategie_analyse` (`app/api_regles/schemas.py::OutilFiltre`) :
+        `lire_url` (`statique`), `lire_capture_ecran` (`vision`),
+        `verifier_avec_navigateur` (`playwright`, ~96/245 règles,
+        soumis à l'accord de l'utilisateur),
+        `demander_a_l_utilisateur` (`manuel`, 28/245 règles — l'humain
+        est l'instrument de mesure). Les 4 nouveaux ne sont pas encore
+        implémentés, contrat posé seulement.
+        - [ ] **`chercher_regles_mots_cles` à mettre à jour côté API** :
+          le paramètre `outil` de `GET /regles` (existant, non
+          documenté dans le tool avant cette session) doit être exposé
+          à l'agent en plus de `q`.
+        - **Boucle de l'agent = pattern ReAct (pense/agit/observe,
+          reboucle), implémenté en tool-calling natif** (pas le
+          scratchpad textuel de l'article original) — justifié par le
+          fait qu'on ne connaît pas la question d'avance (US2 =
+          question libre, entrée non contrainte). Doit pouvoir se
+          **suspendre entre deux tours** (`demander_a_l_utilisateur`
+          termine le tour ; US2 est une API, pas un CLI) — contrainte
+          qui pousse vers LangGraph (`interrupt` + persistance d'état)
+          plutôt qu'une boucle naïve. Conséquence sur le contrat HTTP à
+          acter dans la spec US2 : une réponse peut être une réponse
+          argumentée ou une question en retour avec ses options.
+        - **Ligne de périmètre US1/US2 validée** : la granularité, pas
+          la capacité technique — US1 = audit systématique, en lot,
+          persisté, avec rapport ; US2 = vérification d'un point, à la
+          demande, dans une conversation, sans persistance d'audit.
+        - Détail complet : mémoire assistant `us2_agent_boucle_et_tools`.
   - **Retrieval considéré non fini (David, 2026-09-11)** — deux points
     ouverts avant de clore le chantier, détail et pistes dans
     `jury/documents_jury/working/fiche-rag-similarite-cosinus.md` :
