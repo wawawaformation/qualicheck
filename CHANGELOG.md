@@ -91,6 +91,41 @@ Format d'entrée, une ligne par réalisation :
   - Après chaque réponse et après la boucle : contrôle que les règles
     citées existent vraiment parmi celles retournées par les outils.
   - `conception/3_autre_us/securite.md` mise à jour en conséquence.
+- **A1 implémentée (A1a CLI + A1b API), agent nu terminé** — module
+  `app/agent_us2/` (renommé depuis `app/agent/` pour ne pas se confondre
+  avec un futur `agent_us1`). Voir schéma
+  `conception/3_autre_us/us2_question_libre/increments/A_agent_nu/A1_boucle_et_premier_outil.drawio`
+  et contrat `.../A_agent_nu/openapi.json` (`POST /questions`, statut à
+  trois valeurs, erreurs 422/503 — `hors_perimetre` pas encore
+  atteignable, en attente du contrôle de sujet C5).
+  - Boucle ReAct en tool-calling natif LangChain (`bind_tools`), un seul
+    outil (`rechercher_regles`, `GET /regles?q=`, accès libre). Tests
+    unitaires et d'intégration écrits avant le code à chaque étape (TDD) ;
+    l'intégration appelle réellement l'API des règles (LLM mocké) pour
+    couvrir le contrat JSON réel, pas seulement la logique interne.
+  - **Choix du LLM** : `gpt-5.4-mini` sur Azure (crédits école, aucune
+    dépense personnelle — Ollama Cloud et Infomaniak réservés à la phase
+    staging). DeepSeek-V4-Flash testé en premier et écarté : il a répondu
+    sans jamais appeler l'outil malgré la consigne système, contrairement
+    à `gpt-5.4-mini`/`gpt-5.4`/`Kimi-K2.6`, qui l'appellent tous de façon
+    fiable.
+  - **Mesure d'A1 couverte** (latence, coût par question, nombre
+    d'itérations — taux d'erreur restant une statistique multi-questions,
+    hors scope d'une seule réponse) : coût en euros estimé à partir du
+    tarif déjà utilisé pour ce même modèle dans
+    `app/retrieval/config.yml` (tarif catalogue, pas une facture Azure
+    vérifiée — même réserve documentée).
+  - Deux bugs réels trouvés et corrigés via smoke test en conditions
+    réelles (pas seulement les tests mockés) : mauvais `base_url` Ollama
+    Cloud compatible OpenAI (`api.ollama.com` renvoyait un 404 HTML
+    silencieux plutôt qu'une erreur — le bon est `ollama.com/v1`), et
+    serveur FastAPI qui ne chargeait jamais `.env` (`load_dotenv()`
+    absent de `app/agent_us2/config.py`, contrairement au CLI).
+  - URL de l'API des règles et clés des 3 candidats LLM testés
+    (Azure + Ollama Cloud) portées en variables d'environnement, jamais en
+    dur dans `config.yml` (versionné, identique par environnement) —
+    corrigé après relecture : l'URL vivait d'abord dans `config.yml`, qui
+    ne porte maintenant que le nom de la variable à lire dans `.env`.
 
 ## 2026-09-18 — Claude Code
 

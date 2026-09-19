@@ -1,0 +1,112 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="A1 - boucle et premier outil">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="780" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Titre -->
+        <mxCell id="title" value="A1 - boucle agent avec un seul outil (recherche par mots-cles)" style="text;html=1;fontStyle=1;fontSize=16;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Note entree -->
+        <mxCell id="note_entry" value="Entree : CLI (A1a, question en argument) ou FastAPI POST /questions (A1b, contrat increments.md). Boucle identique dans les deux cas." style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="260" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Start -->
+        <mxCell id="start" value="Question recue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="390" y="70" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Appel LLM -->
+        <mxCell id="call_llm" value="Appel LLM avec les messages du tour + l'outil declare (bind_tools, tool-calling natif)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="190" width="240" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Artefact UML : fichier de config centralisant les candidats LLM -->
+        <mxCell id="config_llm" value="config.yml&#10;(candidats LLM)&#10;&#10;- DeepSeek-V4-Flash (Azure)&#10;- deepseek-v4-flash:cloud (Ollama Cloud)&#10;- deepseek-v4-pro:cloud (Ollama Cloud)&#10;&#10;modele actif : a choisir" style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;spacingLeft=6;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="210" width="260" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Decision -->
+        <mxCell id="decision" value="Le modele appelle l'outil recherche_regles ?" style="shape=rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="340" width="220" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Tool call -->
+        <mxCell id="tool_call" value="Executer l'outil : GET /regles?q= (recherche mots-cles, API des regles, acces libre)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="350" width="260" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Tool result -->
+        <mxCell id="tool_result" value="Ajouter le resultat aux messages du tour (tool result)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="470" width="260" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Reponse finale -->
+        <mxCell id="final_answer" value="Reponse finale (texte + regles citees)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="510" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- End -->
+        <mxCell id="end" value="Reponse envoyee" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="390" y="620" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Note sortie -->
+        <mxCell id="note_end" value="Sortie :&#10;- CLI (A1a) : reponse + metriques en stdout (latence, cout, iterations, erreurs)&#10;- API (A1b) : JSON {statut, reponse, regles_citees} sur POST /questions" style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="700" y="605" width="280" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e_note_entry_start" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=none;rounded=0;" edge="1" parent="1" source="note_entry" target="start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_start_call_llm" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="start" target="call_llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_config_llm_call_llm" value="lit" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;dashed=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="config_llm" target="call_llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_call_llm_decision" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="call_llm" target="decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_decision_tool_call" value="oui" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="decision" target="tool_call">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_tool_call_tool_result" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="tool_call" target="tool_result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_tool_result_call_llm" value="tour suivant" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="tool_result" target="call_llm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1030" y="505" />
+              <mxPoint x="1030" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e_decision_final" value="non" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="decision" target="final_answer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_final_end" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="final_answer" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_note_end_end" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=none;rounded=0;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="note_end" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

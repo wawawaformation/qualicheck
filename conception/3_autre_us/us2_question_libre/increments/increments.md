@@ -287,36 +287,10 @@ une variable d'environnement pour son jeton. Bénéfice au passage : l'API
 journalise déjà quel client a fait quelle recherche, donc **le coût de
 l'agent devient attribuable**.
 
-## Contrat API du premier jet
+## Contrat API
 
-Tant que la discussion n'existe pas (avant la phase E), une question est
-autonome :
-
-```
-POST /questions
-
-{ "question": "texte de la question" }
-```
-
-Réponse :
-
-```json
-{
-  "statut": "repondu",
-  "reponse": "texte de la réponse argumentée",
-  "regles_citees": [ { "numero": 182, "intitule": "..." } ]
-}
-```
-
-`statut` vaut `repondu`, `aucune_regle_pertinente` (question dans le
-sujet, rien ne correspond) ou `hors_perimetre`. Les trois répondent en
-HTTP 200 : un refus est une réponse normale à une requête bien formée,
-pas une erreur du client — même parti pris que l'API des règles, qui
-renvoie une liste vide plutôt qu'une erreur.
-
-**L'adresse changera à la marche E1** : une question deviendra une
-sous-ressource d'une discussion. C'est accepté en connaissance de cause,
-le projet versionne déjà son contrat d'API.
+Voir `A_agent_nu/openapi.json` — contrat OpenAPI vivant, enrichi increment
+par increment (pas répété ici pour éviter une double source de vérité).
 
 ## Observabilité — construite avec, pas après
 
