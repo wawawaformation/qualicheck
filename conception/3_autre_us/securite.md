@@ -199,7 +199,8 @@ et des comportements émergents à grande échelle.
 | Distinguer une question hors sujet d'une question sur-le-sujet mais malveillante | **Décidé** — garde-fou distinct du contrôle de périmètre, jamais mesuré |
 | Identifiants techniques (clé, jeton) visibles dans une capture ou une URL | **Décidé** — garde-fou distinct de l'anonymisation, détection difficile sur image |
 
-Détail de ces 3 derniers points :
-`harness/guardrails/wrap_tool_call/autorisation_url.md`,
-`harness/guardrails/before_agent/intention_nocive.md`,
-`harness/guardrails/before_model/secrets_techniques.md`.
+Le détail de ces trois points, comme celui des autres garde-fous, a été
+rédigé lors de la conception initiale et vit désormais dans
+`us2_question_libre/archives/` — matière à reprendre au moment
+d'attaquer la marche concernée, pas une conception qui pilote le
+travail. Ce document-ci reste, lui, la référence vivante en sécurité.

@@ -83,8 +83,8 @@ suppression) est commun à US1 et US2, pas propre à la question libre — cf.
 `style/` (même convention que `US0/`, `US2/`), pas de dépendance croisée vers
 `US2/style/`.
 
-Basés sur `conception/3_autre_us/us2_question_libre/cas_utilisation_us2.drawio`
-et `scenarios.md` (cas d'utilisation "Se connecter", "Gérer mon profil",
+Basés sur `conception/3_autre_us/us2_question_libre/utilisateurs/cas_utilisation_us2.drawio`
+et `utilisateurs/scenarios_detailles.md` (cas d'utilisation "Se connecter", "Gérer mon profil",
 "Supprimer une discussion"/"Supprimer mon compte"). Réutilisent le pattern
 2 états déjà établi par `ecran-cle-api.html` (US0), adapté : ici le jeton
 identifie un profil (nom/prénom), pas seulement un droit d'écriture.

@@ -273,7 +273,8 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       (lookup direct) — reste à concevoir l'agent lui-même qui les
       appellera (US2 non encore spécée).
       - [x] **Inventaire des tools de l'agent, 9 au total** (2026-09-18)
-        — `conception/3_autre_us/us2_question_libre/harness/tools/`, un
+        — `conception/3_autre_us/us2_question_libre/archives/harness/tools/`
+        (archivé depuis, voir le README de ce dossier), un
         `.md` par tool (docstring, paramètres, sortie). Les 3 existants
         ci-dessus + 4 nouveaux, dérivés des 4 valeurs de
         `strategie_analyse` (`app/api_regles/schemas.py::OutilFiltre`) :

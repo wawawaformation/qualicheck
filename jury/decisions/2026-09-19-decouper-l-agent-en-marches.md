@@ -45,7 +45,7 @@ Contre : beaucoup plus de cartes à piloter, davantage de suivi.
 ## Décision
 
 Le découpage fin est retenu : **21 marches réparties en 5 phases**
-(`conception/3_autre_us/us2_question_libre/increments.md`).
+(`conception/3_autre_us/us2_question_libre/increments/`).
 
 Le critère qui a tranché n'est pas la granularité en elle-même, mais
 l'**ordre** qu'elle permet : *on n'avance pas du plus important au moins
