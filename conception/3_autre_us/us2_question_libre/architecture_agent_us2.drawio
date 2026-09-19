@@ -1,0 +1,160 @@
+<mxfile host="Electron">
+  <diagram id="ArchitectureAgentUS2" name="Page-1">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="900" pageHeight="1240" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="client" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;html=0;" value="Client" vertex="1">
+          <mxGeometry height="50" width="200" x="350" y="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_business" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;html=0;" value="API Business" vertex="1">
+          <mxGeometry height="50" width="240" x="330" y="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="us1" parent="1" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;fontSize=12;html=0;" value="US1&#xa;(hors périmètre ici)" vertex="1">
+          <mxGeometry height="50" width="180" x="40" y="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="us2" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;html=0;" value="US2" vertex="1">
+          <mxGeometry height="50" width="200" x="360" y="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gr_before_agent" parent="1" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;html=0;" value="Garde-fou avant de démarrer&#xa;Sujet (+ historique) et intention" vertex="1">
+          <mxGeometry height="90" width="320" x="300" y="290" as="geometry" />
+        </mxCell>
+
+        <mxCell id="agent" parent="1" style="swimlane;startSize=45;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=13;html=0;" value="Agent US2 — boucle de tool-calling" vertex="1">
+          <mxGeometry height="580" width="820" x="40" y="420" as="geometry" />
+        </mxCell>
+
+        <mxCell id="memoire" parent="agent" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;html=0;" value="Mémoire de la discussion" vertex="1">
+          <mxGeometry height="45" width="220" x="300" y="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gr_before_model" parent="agent" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;html=0;" value="Avant chaque appel modèle&#xa;Anonymisation · limite d'itérations&#xa;identifiants techniques" vertex="1">
+          <mxGeometry height="100" width="240" x="30" y="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="llm" parent="agent" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;html=0;" value="LLM" vertex="1">
+          <mxGeometry height="60" width="180" x="320" y="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gr_after_model" parent="agent" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;html=0;" value="Après chaque réponse&#xa;Contrôle des citations" vertex="1">
+          <mxGeometry height="100" width="240" x="550" y="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wrap_tools" parent="agent" style="swimlane;startSize=30;fillColor=#fff4e6;strokeColor=#d79b00;fontColor=#333333;fontStyle=1;fontSize=12;html=0;" value="Autour de chaque outil — consentement navigateur, autorisation URL, nettoyage avant mémoire" vertex="1">
+          <mxGeometry height="260" width="650" x="90" y="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tools_ref" parent="wrap_tools" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;html=0;" value="Outils référentiel (3)&#xa;recherche règles, lookup" vertex="1">
+          <mxGeometry height="100" width="180" x="30" y="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tools_reseau" parent="wrap_tools" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;html=0;" value="Outils réseau (3)&#xa;lecture, navigateur, validation" vertex="1">
+          <mxGeometry height="100" width="180" x="240" y="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tools_autres" parent="wrap_tools" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;html=0;" value="Autres outils (3)&#xa;image, calcul, question utilisateur" vertex="1">
+          <mxGeometry height="100" width="180" x="450" y="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note_suspend" parent="wrap_tools" vertex="1" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;" value="« demander à l'utilisateur » suspend le tour : la réponse de ce tour devient la question en attente, pas un résultat de tool ordinaire.">
+          <mxGeometry height="70" width="180" x="450" y="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gr_after_agent" parent="1" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;fontStyle=1;html=0;" value="Garde-fou après la boucle&#xa;Contrôle final avant envoi" vertex="1">
+          <mxGeometry height="90" width="320" x="300" y="1020" as="geometry" />
+        </mxCell>
+
+        <mxCell id="reponse" parent="1" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;fontStyle=1;html=0;" value="Réponse (API)" vertex="1">
+          <mxGeometry height="50" width="200" x="360" y="1140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_regles" parent="1" style="rounded=1;fillColor=#e8f4ea;strokeColor=#82b366;fontSize=12;fontStyle=1;html=0;" value="API Règles&#xa;(référentiel Opquast, existant)" vertex="1">
+          <mxGeometry height="60" width="220" x="40" y="1030" as="geometry" />
+        </mxCell>
+
+        <mxCell id="site_tiers" parent="1" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;fontSize=12;html=0;" value="Site tiers audité&#xa;(non maîtrisé)" vertex="1">
+          <mxGeometry height="60" width="220" x="640" y="1030" as="geometry" />
+        </mxCell>
+
+        <!-- Flux principal -->
+        <mxCell id="e_client_business" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="api_business">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_business_us1" edge="1" parent="1" source="api_business" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#999999;dashed=1;" target="us1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_business_us2" edge="1" parent="1" source="api_business" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="us2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_us2_grbefore" edge="1" parent="1" source="us2" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="gr_before_agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_grbefore_before_model" edge="1" parent="1" source="gr_before_agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;" target="gr_before_model" value="dans le périmètre">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_grbefore_reponse" edge="1" parent="1" source="gr_before_agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;dashed=1;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" target="reponse" value="hors périmètre — refus">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="20" y="335" />
+              <mxPoint x="20" y="1165" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Boucle interne de l'agent -->
+        <mxCell id="e_before_model_llm" edge="1" parent="1" source="gr_before_model" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="llm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_llm_after_model" edge="1" parent="1" source="llm" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="gr_after_model">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_memoire_llm" edge="1" parent="1" source="memoire" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#9673a6;startArrow=block;endArrow=block;" target="llm" value="lecture / écriture">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_llm_wraptools" edge="1" parent="1" source="llm" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;exitX=0.35;exitY=1;entryX=0.35;entryY=0;" target="wrap_tools" value="appel outil">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_wraptools_llm" edge="1" parent="1" source="wrap_tools" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;exitX=0.65;exitY=0;entryX=0.65;entryY=1;" target="llm" value="résultat">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_loop" edge="1" parent="1" source="gr_after_model" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="gr_before_model" value="boucle tant que l'agent choisit un outil">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="850" y="600" />
+              <mxPoint x="850" y="960" />
+              <mxPoint x="60" y="960" />
+              <mxPoint x="60" y="600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Outils vers systèmes externes -->
+        <mxCell id="e_toolsref_apiregles" edge="1" parent="1" source="tools_ref" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;" target="api_regles">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_toolsreseau_sitetiers" edge="1" parent="1" source="tools_reseau" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#999999;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="site_tiers">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="800" y="835" />
+              <mxPoint x="800" y="1060" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Sortie -->
+        <mxCell id="e_agent_grafter" edge="1" parent="1" source="agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="gr_after_agent" value="réponse finale">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_grafter_reponse" edge="1" parent="1" source="gr_after_agent" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#666666;" target="reponse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

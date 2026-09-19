@@ -11,6 +11,62 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-19 — Claude Code
 
+- **Schéma d'architecture de l'agent US2** — voir
+  `conception/3_autre_us/us2_question_libre/architecture_agent_us2.drawio`
+  et son export PNG. Vue d'ensemble : client, API business, garde-fou
+  d'entrée, boîte agent (mémoire, modèle, garde-fous avant/après appel,
+  boucle), les trois familles d'outils avec leur garde-fou d'entourage,
+  API des règles et site tiers. Volontairement à ce niveau de détail :
+  ni les 9 outils ni les 10 fiches de garde-fous, qui restent dans leurs
+  fichiers respectifs.
+- **Découpage en incréments de l'agent US2** — voir
+  `conception/3_autre_us/us2_question_libre/increments.md`. Huit marches,
+  ordonnées **non par importance mais par ordre où la mesure devient
+  possible** : l'agent nu d'abord, ce qui produit les données qui règlent
+  ensuite les seuils des garde-fous (la fiche sur la limite d'itérations
+  laissait justement son seuil ouvert en attendant cette mesure).
+  - Marche 1 sur la **recherche par mots-clés** plutôt que sémantique :
+    déterministe, gratuite, sans jeton, et elle ne cache pas trois appels
+    de modèle à l'intérieur — plus simple à comprendre pour une première
+    marche.
+  - Contrainte relevée par David : la recherche sémantique exige un
+    jeton (contrairement aux deux autres outils du référentiel). L'agent
+    devient donc un **client nommé de plus** de l'API des règles, ce qui
+    rend son coût attribuable. À ne pas confondre avec l'authentification
+    de l'utilisateur vers l'agent, reportée à la marche 5.
+  - Contrat API du premier jet posé (`POST /questions`, réponse avec
+    statut à trois valeurs, refus en HTTP 200 comme l'API des règles).
+    L'adresse changera quand la discussion arrivera, acté d'avance.
+  - **Observabilité rattachée aux compétences C11 et C20** : chaque
+    marche déclare les métriques qu'elle rend mesurables. Piège
+    identifié : C20 exige le respect des données personnelles dans la
+    journalisation elle-même — journaliser la question brute créerait une
+    copie hors du garde-fou d'anonymisation. **Ce piège existe déjà dans
+    le code en production** : la recherche dense journalise aujourd'hui
+    la question brute de l'utilisateur, à corriger.
+  - Échelle affinée de 8 à **21 marches en 5 phases** sur demande de
+    David (beaucoup de petites marches plutôt que peu de grosses), avec
+    une exception posée : **un garde-fou de sécurité reste soudé à la
+    capacité qu'il protège** — livrer l'outil de lecture d'URL sans son
+    contrôle d'autorisation serait une faille déployée, pas une petite
+    marche. Chaque marche porte un « afin de » ; les scénarios Gherkin
+    s'écriront au moment d'attaquer chaque marche, pas d'avance.
+  - Constat de l'exercice : certaines marches n'ont **pas de
+    bénéficiaire côté utilisateur** (instrumentation, contrôle final,
+    nettoyage de la mémoire) — elles servent l'exploitant.
+  - Outil de restitution des traces non tranché : Langfuse
+    auto-hébergé s'avère lourd (cinq services dont ClickHouse, 16 Go de
+    RAM recommandés), arbitrage hébergé / auto-hébergé reporté.
+- **Décision jury — découper la construction en petites marches** — voir
+  `jury/decisions/2026-09-19-decouper-l-agent-en-marches.md`. Documente
+  le passage d'un système conçu d'un seul tenant (9 outils, 5 points de
+  garde-fous, 3 types d'entrée) à une construction subdivisée, avec les
+  options pesées et le critère qui a tranché. Le bénéfice est rendu
+  **vérifiable** plutôt qu'anecdotique : les marches deviennent des
+  cartes Kanboard, et l'écart estimation / durée réelle sur les petites
+  cartes contre les grosses mesure si la subdivision améliore la
+  prévisibilité.
+
 - **10 fiches de garde-fous pour l'agent US2, réparties par point
   d'accroche du middleware** — voir
   `conception/3_autre_us/us2_question_libre/harness/guardrails/`.
