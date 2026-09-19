@@ -7,6 +7,28 @@
 - Expliquer les décisions importantes et les compromis.
 - Conserver une logique simple, explicite, lisible.
 
+## Aborder une carte (increment)
+
+Séquence à suivre pour toute carte Kanboard / increment, quel que soit
+l'outil agentique utilisé (Claude Code, OpenCode...) — ne pas sauter
+d'étape, ne pas implémenter avant la fin de la séquence :
+
+1. Réflexion, tracée dans le dossier de l'increment concerné (ex.
+   `conception/.../increments/<epic>/`).
+2. Se poser les bonnes questions — lever les ambiguïtés avant d'écrire
+   quoi que ce soit (voir `CLAUDE.md` racine, section « Avant toute
+   implémentation »).
+3. Créer la fiche `.md` (user story, mesure, questions ouvertes).
+4. Diviser en sous-tâches si besoin.
+5. Écrire les scénarios Gherkin quand il y a lieu — ne pas sauter cette
+   étape.
+6. Créer ou enrichir le(s) schéma(s) `.drawio` (voir le skill
+   `schemas-drawio`).
+7. Cycle spec / plan d'implémentation au besoin.
+8. Écrire les tests (unitaires puis intégration) — avant le code, jamais
+   après.
+9. Implémenter seulement une fois les 8 points précédents faits.
+
 ## Changelog obligatoire
 
 Toute réalisation doit être tracée dans CHANGELOG.md.
