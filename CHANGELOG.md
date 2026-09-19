@@ -9,6 +9,33 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-19 — Claude Code
+
+- **10 fiches de garde-fous pour l'agent US2, réparties par point
+  d'accroche du middleware** — voir
+  `conception/3_autre_us/us2_question_libre/harness/guardrails/`.
+  - Avant la boucle : le sujet de la question (avec historique de
+    discussion) et, distinct, son intention — une question peut être
+    topiquement légitime et malveillante dans son usage (ex. « comment
+    améliorer le référencement d'un site qui publie des adresses privées
+    de tiers »). Jamais mesuré, contrairement au contrôle de périmètre.
+  - Avant chaque appel modèle : anonymisation, limite d'itérations,
+    détection d'identifiants techniques (clé, jeton) visibles dans une
+    capture d'écran ou une URL — ni une donnée personnelle ni hors
+    sujet, donc échappant aux deux garde-fous précédents.
+  - Autour de chaque outil : consentement avant `verifier_avec_navigateur`,
+    nettoyage du contenu ramené avant son entrée en mémoire, et
+    **vérification de l'autorité de l'utilisateur sur le site avant de le
+    sonder** (`lire_url`, `verifier_avec_navigateur`, `valider_marquage`)
+    — une quinzaine de règles Opquast révèlent la posture de sécurité
+    d'un site (HTTPS, certificats, intégrité des ressources tierces...),
+    sans autorisation l'agent devient un outil de reconnaissance gratuit
+    et c'est l'IP de QualiCheck qui apparaît dans les journaux du site
+    visé, pas celle de l'utilisateur.
+  - Après chaque réponse et après la boucle : contrôle que les règles
+    citées existent vraiment parmi celles retournées par les outils.
+  - `conception/3_autre_us/securite.md` mise à jour en conséquence.
+
 ## 2026-09-18 — Claude Code
 
 - **Inventaire des tools de l'agent US2, 9 tools** (réflexion en dialogue,

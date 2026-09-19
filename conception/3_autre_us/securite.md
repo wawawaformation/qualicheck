@@ -195,3 +195,11 @@ et des comportements émergents à grande échelle.
 | Ce qu'on anonymise exactement, et comment sur une image | **Ouvert** |
 | Limitation du débit par utilisateur | **Ouvert** |
 | Garantie de l'utilisateur dans les conditions d'utilisation | **Ouvert** (juridique) |
+| Vérifier que l'utilisateur a l'autorité sur un site avant de le sonder (URL) | **Décidé** — déclaration ou preuve de propriété selon la fréquence, mécanisme à concevoir |
+| Distinguer une question hors sujet d'une question sur-le-sujet mais malveillante | **Décidé** — garde-fou distinct du contrôle de périmètre, jamais mesuré |
+| Identifiants techniques (clé, jeton) visibles dans une capture ou une URL | **Décidé** — garde-fou distinct de l'anonymisation, détection difficile sur image |
+
+Détail de ces 3 derniers points :
+`harness/guardrails/wrap_tool_call/autorisation_url.md`,
+`harness/guardrails/before_agent/intention_nocive.md`,
+`harness/guardrails/before_model/secrets_techniques.md`.
