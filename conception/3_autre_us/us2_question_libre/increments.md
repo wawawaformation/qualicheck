@@ -49,64 +49,216 @@ déployée. Deux couples restent donc soudés :
 
 ## L'échelle
 
-Chaque marche porte son **« afin de »**. L'acteur est le même presque
-partout — *un professionnel du web qui prépare ou mène un audit* — il
-n'est donc rappelé que lorsqu'il change.
+Chaque phase est un **epic**, chaque marche une **user story** quand elle
+sert quelqu'un — et une **tâche technique** assumée quand ce n'est pas le
+cas.
 
-Écrire ces « afin de » a un effet diagnostique : **une marche pour
-laquelle on n'y arrive pas ne sert personne directement.** C'est le cas de
-l'instrumentation, dont le bénéficiaire est l'exploitant. Ce n'est pas un
-défaut, mais autant le savoir.
+Deux acteurs seulement :
 
-Les scénarios Gherkin complets s'écrivent **au moment d'attaquer chaque
-marche**, pas d'avance : écrire vingt jeux de scénarios pour des
-comportements qui bougeront encore, c'est spéculer.
+- **le professionnel du web**, qui prépare ou mène un audit — l'acteur par
+  défaut ;
+- **l'exploitant** (nous), quand la marche sert à faire tourner ou à
+  protéger le service, pas à rendre un service à l'utilisateur.
 
-### Phase A — l'agent nu
+Écrire ces stories a un effet diagnostique : **quatre marches sur
+vingt-et-une n'ont aucun bénéficiaire côté utilisateur.** Ce n'est pas un
+défaut — mais mieux vaut l'assumer que leur inventer un faux argument
+produit.
 
-| Marche | Ce qu'on ajoute | Afin de | Ce que ça mesure |
-|---|---|---|---|
-| A1 | Question → réponse rédigée, **un seul outil : la recherche par mots-clés** | obtenir une réponse appuyée sur des règles, pas sur une opinion | Latence, coût par question, nombre d'itérations, taux d'erreur |
-| A2 | **L'instrumentation** : chaque étape devient une trace observable | *(exploitant)* diagnostiquer où passent le temps et l'argent | Rien de neuf — mais tout ce qui suit devient visible en arrivant |
-| A3 | La recherche sémantique | être compris sans employer les mots exacts du référentiel | L'agent **choisit** son outil ; coût réel (cet outil appelle lui-même trois modèles) |
-| A4 | La lecture d'une règle par numéro | obtenir le détail d'une règle dont je cite le numéro | Taux de bon choix entre trois outils |
+Les scénarios Gherkin s'écrivent **au moment d'attaquer chaque marche**,
+pas d'avance : écrire vingt jeux de scénarios pour des comportements qui
+bougeront encore, c'est spéculer.
 
-### Phase B — ce qui sort de l'agent
+---
 
-| Marche | Ce qu'on ajoute | Afin de | Ce que ça mesure |
-|---|---|---|---|
-| B1 | Contrôle des citations | pouvoir me fier aux règles citées, qui existent réellement | **Taux de citations inventées — seuil d'alerte à zéro**, toute occurrence est un incident |
-| B2 | Contrôle final après la boucle | *(exploitant)* rattraper en dernier recours ce qui aurait échappé | Écarts rattrapés |
+### Epic A — l'agent nu
 
-### Phase C — ce qui entre, et à quel prix
+**A1 · La boucle et un premier outil** (recherche par mots-clés)
 
-| Marche | Ce qu'on ajoute | Afin de | Ce que ça mesure |
-|---|---|---|---|
-| C1 | Limite d'itérations | recevoir une réponse honnête plutôt qu'une attente sans fin | **Le seuil se fixe ici**, avec la distribution observée en phases A et B |
-| C2 | Anonymisation + règles de journalisation | *(personne concernée)* que mes données ne partent ni chez un tiers ni dans les journaux | Taux de détection ; rien de personnel nulle part |
-| C3 | Détection d'identifiants techniques (clé, jeton) | ne pas divulguer une clé visible à l'écran sans m'en apercevoir | Occurrences détectées |
-| C4 | Authentification de l'utilisateur | que mon accès soit contrôlé et mes appels attribuables | Tentatives rejetées, appels par client |
-| C5 | Contrôle du sujet | recevoir un refus clair plutôt qu'une réponse inventée hors sujet | Taux de refus correct, **taux de faux refus** |
-| C6 | Contrôle de l'intention | *(exploitant)* ne pas aider à contourner une règle ou à nuire | Refus de ce qui est dans le sujet mais malveillant |
+> En tant que professionnel du web, je veux poser une question en langage
+> libre sur la qualité web, afin d'obtenir une réponse appuyée sur des
+> règles Opquast plutôt que sur une opinion.
 
-### Phase D — regarder une vraie page
+*Mesure* : latence, coût par question, nombre d'itérations, taux d'erreur.
 
-| Marche | Ce qu'on ajoute | Afin de | Ce que ça mesure |
-|---|---|---|---|
-| D1 | Lecture d'une URL **+ autorisation sur le site + isolation réseau** (indissociables) | faire analyser une page que j'ai le droit d'auditer | Taux d'échec, tentatives sur des adresses internes |
-| D2 | Capture d'écran | faire analyser une page que je ne peux pas exposer par une adresse | Taux d'illisibilité |
-| D3 | Validation du marquage | savoir si mon code respecte les spécifications | — |
-| D4 | Calcul du ratio de contraste | obtenir un chiffre fiable plutôt qu'une appréciation | — |
-| D5 | Vérification au navigateur **+ accord de l'utilisateur** (indissociables) | faire vérifier ce qui ne se voit ni dans le code ni sur une image | Durée, taux d'échec |
+**A2 · L'instrumentation** — *tâche technique*
 
-### Phase E — la conversation
+> En tant qu'exploitant, je veux voir le détail de chaque étape d'une
+> réponse, afin de savoir où passent le temps et l'argent.
 
-| Marche | Ce qu'on ajoute | Afin de | Ce que ça mesure |
-|---|---|---|---|
-| E1 | La discussion **sans mémoire** : on enregistre et on relit les échanges, l'agent ne s'en sert pas encore | retrouver mes échanges précédents | Longueur des discussions |
-| E2 | La mémoire : l'agent lit l'historique | ne pas répéter le contexte à chaque question | Effet sur les faux refus du contrôle de sujet |
-| E3 | Nettoyage du contenu ramené avant son entrée en mémoire | *(exploitant)* qu'une page piégée ne contamine pas les tours suivants | Contenus écartés |
-| E4 | « Demander à l'utilisateur » : suspension et reprise du tour | être sollicité quand moi seul peux constater quelque chose | Taux de reprise, abandons |
+*Mesure* : rien de neuf en soi — mais tout ce qui suit devient observable
+dès son arrivée.
+
+**A3 · La recherche sémantique**
+
+> En tant que professionnel du web, je veux être compris même si je
+> n'emploie pas les termes exacts du référentiel, afin de ne pas avoir à
+> deviner le vocabulaire d'Opquast.
+
+*Mesure* : choix d'outil par l'agent, coût réel (cet outil appelle
+lui-même trois modèles).
+
+**A4 · La lecture d'une règle par numéro**
+
+> En tant que professionnel du web, je veux citer un numéro de règle et
+> en obtenir le détail, afin de vérifier rapidement un point que je
+> connais déjà.
+
+*Mesure* : taux de bon choix entre trois outils.
+
+---
+
+### Epic B — ce qui sort de l'agent
+
+**B1 · Contrôle des citations**
+
+> En tant que professionnel du web, je veux que chaque règle citée existe
+> réellement, afin de pouvoir m'appuyer sur la réponse devant mon client.
+
+*Mesure* : taux de citations inventées — **seuil d'alerte à zéro**, toute
+occurrence est un incident.
+
+**B2 · Contrôle final après la boucle** — *tâche technique*
+
+> En tant qu'exploitant, je veux un dernier filtre avant l'envoi, afin de
+> rattraper ce qui aurait échappé aux contrôles précédents.
+
+*Mesure* : écarts rattrapés.
+
+---
+
+### Epic C — ce qui entre, et à quel prix
+
+**C1 · Limite d'itérations**
+
+> En tant que professionnel du web, je veux recevoir une réponse même
+> quand l'agent peine, afin de ne pas attendre indéfiniment sans
+> explication.
+
+*Mesure* : **le seuil se fixe ici**, avec la distribution observée en
+phases A et B.
+
+**C2 · Anonymisation et règles de journalisation**
+
+> En tant que personne dont les données figurent dans une question, je
+> veux qu'elles ne soient transmises ni à un fournisseur de modèle ni aux
+> journaux, afin que ma vie privée ne dépende pas de la vigilance de celui
+> qui pose la question.
+
+*Mesure* : taux de détection, absence de donnée personnelle dans les
+journaux.
+
+**C3 · Détection d'identifiants techniques**
+
+> En tant que professionnel du web, je veux qu'une clé ou un jeton collé
+> dans ma question ne soit pas transmis, afin de ne pas divulguer un
+> secret sans m'en apercevoir.
+
+*Mesure* : occurrences détectées.
+
+**C4 · Authentification de l'utilisateur**
+
+> En tant que professionnel du web, je veux que mon accès soit identifié,
+> afin que mes usages me soient attribués et que personne n'utilise le
+> service à ma place.
+
+*Mesure* : tentatives rejetées, appels par client.
+
+**C5 · Contrôle du sujet**
+
+> En tant que professionnel du web, je veux un refus clair quand ma
+> question sort du domaine, afin de ne pas recevoir une réponse inventée
+> que je croirais fondée.
+
+*Mesure* : taux de refus correct, **taux de faux refus**.
+
+**C6 · Contrôle de l'intention** — *tâche technique*
+
+> En tant qu'exploitant, je veux refuser les questions qui relèvent du
+> sujet mais visent à nuire, afin de ne pas outiller un usage malveillant.
+
+*Mesure* : refus de ce qui est dans le sujet mais malveillant.
+
+---
+
+### Epic D — regarder une vraie page
+
+**D1 · Lecture d'une URL** — *indissociable de l'autorisation sur le site
+et de l'isolation réseau*
+
+> En tant que professionnel du web, je veux faire analyser une page dont
+> je suis responsable, afin d'obtenir une réponse qui porte sur mon site
+> et pas seulement sur la théorie.
+
+*Mesure* : taux d'échec de récupération, tentatives sur des adresses
+internes.
+
+**D2 · Capture d'écran**
+
+> En tant que professionnel du web, je veux soumettre une capture quand la
+> page n'est pas accessible publiquement, afin de poser ma question sur un
+> site en développement ou protégé par un accès.
+
+*Mesure* : taux d'illisibilité.
+
+**D3 · Validation du marquage**
+
+> En tant que professionnel du web, je veux savoir si mon code respecte
+> les spécifications, afin de corriger ce qui est objectivement invalide
+> avant de discuter du reste.
+
+**D4 · Calcul du ratio de contraste**
+
+> En tant que professionnel du web, je veux un chiffre de contraste plutôt
+> qu'une appréciation, afin de pouvoir démontrer la conformité ou la
+> non-conformité.
+
+**D5 · Vérification au navigateur** — *indissociable de l'accord de
+l'utilisateur*
+
+> En tant que professionnel du web, je veux que l'agent vérifie lui-même
+> ce qui ne se voit ni dans le code ni sur une image, afin de ne pas avoir
+> à refaire la manipulation moi-même — et seulement si je l'y autorise.
+
+*Mesure* : durée, taux d'échec.
+
+---
+
+### Epic E — la conversation
+
+**E1 · La discussion, sans mémoire encore**
+
+> En tant que professionnel du web, je veux retrouver mes échanges
+> précédents, afin de ne pas perdre ce que j'ai déjà demandé.
+
+*Mesure* : longueur des discussions.
+
+**E2 · La mémoire**
+
+> En tant que professionnel du web, je veux que l'agent se souvienne du
+> contexte de la conversation, afin de ne pas répéter de quel site je
+> parle à chaque question.
+
+*Mesure* : effet sur les faux refus du contrôle de sujet.
+
+**E3 · Nettoyage du contenu avant son entrée en mémoire** — *tâche
+technique*
+
+> En tant qu'exploitant, je veux nettoyer ce qu'un outil ramène avant que
+> ça entre en mémoire, afin qu'une page piégée ne contamine pas les tours
+> suivants.
+
+*Mesure* : contenus écartés.
+
+**E4 · « Demander à l'utilisateur »**
+
+> En tant que professionnel du web, je veux être sollicité quand moi seul
+> peux constater quelque chose sur ma page, afin d'obtenir une réponse sur
+> les règles qu'aucun outil ne peut vérifier.
+
+*Mesure* : taux de reprise, abandons.
+
+---
 
 ### Pourquoi la recherche par mots-clés en premier
 
