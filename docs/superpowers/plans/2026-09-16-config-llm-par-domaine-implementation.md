@@ -1405,12 +1405,12 @@ git add CHANGELOG.md
 git commit -m "docs: trace le chantier config LLM par domaine dans CHANGELOG"
 ```
 
-- [ ] **Step 5 : Fermer la carte Kanboard #18**
+- [ ] **Step 5 : Terminer la carte Kanboard #18**
 
 Ajouter un commentaire sur la carte #18 résumant le résultat (fichiers
 créés/renommés, coupure nette, tests verts), puis la déplacer en colonne
-"Terminé" (`column_id: 4`) et la fermer — même méthode que les cartes #19/#20
-dans ce projet (`https://kanban.david-legrand.fr/jsonrpc.php`, voir mémoire
+"Done" (`column_id: 4`) **sans la fermer** (une carte fermée disparaît du
+board) — même méthode que les cartes #19/#20 dans ce projet (`https://kanban.david-legrand.fr/jsonrpc.php`, voir mémoire
 assistant `kanboard_access`).
 
 ---

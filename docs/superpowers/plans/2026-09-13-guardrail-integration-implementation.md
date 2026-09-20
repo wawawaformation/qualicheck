@@ -822,8 +822,8 @@ mesuré de `sans_reponse` et la décision prise sur `is_acceptable()`.
 
 `TODO.md` : fermer la ligne « Guardrail de périmètre au niveau agent »
 (elle devient « intégré dans `api_regles` », plus « hors périmètre agent »
-si le résultat confirme l'intégration). Kanboard : fermer la carte #19
-avec le résultat. Mémoire assistant `refus_architecture_trois_decisions` :
+si le résultat confirme l'intégration). Kanboard : commenter la carte #19
+avec le résultat et la déplacer en Done, sans la fermer. Mémoire assistant `refus_architecture_trois_decisions` :
 mettre à jour la conclusion architecturale (le guardrail vit dans
 `api_regles`, pas dans une future couche agent — corrigé par rapport à
 la version précédente de cette mémoire).

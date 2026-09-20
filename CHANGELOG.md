@@ -9,6 +9,21 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-20 — Claude Code
+
+- **Cartes Kanboard A1 (#23) et A2 (#24) rouvertes, A2 déplacée en Done** —
+  les deux cartes avaient été fermées en fin d'incrément et avaient donc
+  disparu du board (Kanboard n'affiche que les tâches ouvertes) ; A2 était
+  en plus restée en colonne « En cours ». Règle désormais retenue : une
+  carte terminée va en Done et reste active. Étapes « fermer la carte »
+  corrigées dans
+  `docs/superpowers/plans/2026-09-16-config-llm-par-domaine-implementation.md`
+  (étape 5) et
+  `docs/superpowers/plans/2026-09-13-guardrail-integration-implementation.md`
+  (étape 6). Règle ajoutée en fin de séquence dans
+  `docs/agent/02_regles_execution.md` pour que tous les outils agentiques
+  (Claude Code, OpenCode...) la suivent.
+
 ## 2026-09-20 — OpenCode
 
 - **Titre Swagger de l'API business corrigé** — `app/agent_us2/main.py`

@@ -33,6 +33,11 @@ d'étape, ne pas implémenter avant la fin de la séquence :
    après.
 10. Implémenter seulement une fois les 9 points précédents faits.
 
+Fin de séquence : une fois la carte terminée, ajouter un commentaire de
+clôture puis la déplacer en colonne **Done** (`column_id: 4`) et la
+**laisser active** — ne jamais la fermer (`closeTask`), sinon elle disparaît
+du board.
+
 ## Changelog obligatoire
 
 Toute réalisation doit être tracée dans CHANGELOG.md.
