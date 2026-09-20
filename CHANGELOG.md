@@ -11,6 +11,14 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Carte #45 clôturée (Done, laissée active), suite dans la carte #51** —
+  décision de David : la stratégie de tests, l'acceptance sur tag et la revue de
+  PR par LLM sont considérées faites (3,53 h passées, chrono arrêté, commentaire
+  de clôture ajouté). Le reste — ajustement de la pipeline (doublon
+  `ci-feature`/`ci-dev`, nouveau tag, test réel de `ci-review.yml`) et défauts
+  mineurs de `review_pr.py` — passe dans la carte #51, avec une phase de
+  brainstorming très pédagogique. Détail : `TODO.md`.
+
 - **Acceptance sur tag : `sans_reponse` n'échoue plus le retrieval seul (carte
   #45)** — premier vrai run de `ci-acceptance.yml` (tag `2026-09-20-fb62e53`,
   run Gitea 68) : le workflow démarre bien (glob `20[0-9][0-9]-…` validé) mais

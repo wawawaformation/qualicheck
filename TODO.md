@@ -516,17 +516,19 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
-- [ ] **Carte #45 — reste à faire après la journée du 2026-09-20** :
+- [ ] **Carte #51 — Ajuster la pipeline CI et corriger les défauts mineurs de
+  la revue de PR** (reste à faire de la carte #45, clôturée le 2026-09-20,
+  temps passé 3,53 h) — commencer par un **brainstorming très pédagogique** :
   1. Revalider `ci-acceptance.yml` par un **nouveau tag** (le run 68 a échoué
      sur `sans_reponse`, corrigé mais pas encore rejoué).
   2. Ouvrir la PR `feature/revue-pr-llm` vers `dev` pour tester `ci-review.yml`
      (vérifier d'abord le secret `REVIEW_API_TOKEN` dans Gitea).
   3. Arbitrer le **doublon probable `ci-feature` / `ci-dev`** (mêmes tests sur
-     le même code à chaque push puis à chaque merge) — David : « ça fait
-     beaucoup de tests juste pour dev ».
-  4. Défauts mineurs de la relecture de `review_pr.py` non traités : voir
-     `tmp/sdd/task-8-report.md` (local, non versionné) — log final annonçant
-     `verdict : ok` sur échec, troncature absente du commentaire d'échec.
+     le même code à chaque push puis à chaque merge).
+  4. Défauts mineurs de `review_pr.py` : log final annonçant `verdict : ok` sur
+     échec, troncature absente du commentaire d'échec, backoff non testé, coût
+     et flux `main()` non testés, casse du verdict non normalisée.
+     Liste complète : `tmp/sdd/task-8-report.md` (local, non versionné).
 
 - [ ] **Séparer `jury/` (et notamment `veille/`) du dépôt QualiCheck —
   question soulevée le 2026-08-25** : responsabilités mélangées dans un même
