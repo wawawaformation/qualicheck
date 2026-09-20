@@ -26,6 +26,7 @@ def _resultat(regles_citees: list[dict], reponse: str = "Réponse.") -> Resultat
         tokens_entree=10,
         tokens_sortie=10,
         cout_euros_estime=0.0000075,
+        trace_id=None,
     )
 
 

@@ -22,6 +22,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.agent_us2.config import load_config
 from app.agent_us2.tools import rechercher_regles
+from app.observability.tracing import current_trace_id, get_tracer
 
 SYSTEM_PROMPT = (
     "Tu es un assistant qui répond à des questions de qualité web en "
@@ -51,6 +52,7 @@ class ResultatAgent:
     tokens_entree: int
     tokens_sortie: int
     cout_euros_estime: float
+    trace_id: str | None
 
 
 def _construire_llm(config_llm: dict) -> ChatOpenAI:
@@ -84,6 +86,7 @@ def repondre(question: str) -> ResultatAgent:
     config = load_config()
     config_llm = config["llm"]
     max_tours = config["agent_a1"]["max_tours_securite"]
+    tracer = get_tracer()
 
     llm = _construire_llm(config_llm).bind_tools([rechercher_regles])
     messages: list = [SystemMessage(SYSTEM_PROMPT), HumanMessage(question)]
@@ -92,12 +95,18 @@ def repondre(question: str) -> ResultatAgent:
     tokens_entree = tokens_sortie = 0
     regles_citees: dict[int, str] = {}
     ai_message: AIMessage | None = None
+    trace_id = None
 
     for tour in range(1, max_tours + 1):
-        ai_message = _appeler_llm(llm, messages)
-        messages.append(ai_message)
+        with tracer.start_as_current_span("appel_llm", attributes={"tour": tour}) as span:
+            if trace_id is None:
+                trace_id = current_trace_id()
+            ai_message = _appeler_llm(llm, messages)
+            usage = ai_message.usage_metadata or {}
+            span.set_attribute("tokens_entree", usage.get("input_tokens", 0))
+            span.set_attribute("tokens_sortie", usage.get("output_tokens", 0))
 
-        usage = ai_message.usage_metadata or {}
+        messages.append(ai_message)
         tokens_entree += usage.get("input_tokens", 0)
         tokens_sortie += usage.get("output_tokens", 0)
 
@@ -105,7 +114,10 @@ def repondre(question: str) -> ResultatAgent:
             break
 
         for appel in ai_message.tool_calls:
-            resultat_texte = rechercher_regles.invoke(appel["args"])
+            with tracer.start_as_current_span(
+                "appel_outil", attributes={"outil": "rechercher_regles"}
+            ) as span:
+                resultat_texte = rechercher_regles.invoke(appel["args"])
             messages.append(ToolMessage(content=resultat_texte, tool_call_id=appel["id"]))
             try:
                 for r in json.loads(resultat_texte)["resultats"]:
@@ -124,6 +136,7 @@ def repondre(question: str) -> ResultatAgent:
             tokens_entree=tokens_entree,
             tokens_sortie=tokens_sortie,
             cout_euros_estime=_estimer_cout_euros(config_llm, tokens_entree, tokens_sortie),
+            trace_id=trace_id,
         )
 
     return ResultatAgent(
@@ -134,6 +147,7 @@ def repondre(question: str) -> ResultatAgent:
         tokens_entree=tokens_entree,
         tokens_sortie=tokens_sortie,
         cout_euros_estime=_estimer_cout_euros(config_llm, tokens_entree, tokens_sortie),
+        trace_id=trace_id,
     )
 
 
