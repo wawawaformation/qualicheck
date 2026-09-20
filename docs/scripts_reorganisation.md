@@ -10,7 +10,7 @@ Carte Kanboard #44 · 2026-09-20 · décisions de David.
 
 | Famille | Scripts | Décision |
 |---|---|---|
-| Points d'entrée vivants | `migration`, `ingestion`, `embed_rules`, `enrich_again`, `create_db_audit`, `agent_cli`, `creer_cle_api_regles` | **restent** dans `scripts/` |
+| Points d'entrée vivants | `migration`, `ingestion`, `embed_rules`, `enrich_again`, `create_db_audit`, `agent_cli`, `create_api_regles_key` | **restent** dans `scripts/` |
 | Vérifications d'acceptance (appels réels) | `check_api_regles_acceptance`, `check_api_regles_dense_acceptance`, `check_rag_acceptance`, `rag_dense_acceptance` | **déplacées** vers `tests/acceptance/` |
 | Campagnes de mesure | `mesure_scores_refus`, `mesure_variantes_chunks`, `mesure_combinaisons_chunks`, `mesure_multi_vecteurs_chunks`, `mesure_guardrail_perimetre` | **déplacées** vers `tests/mesures/` |
 | Périmés | `ingestion_test`, `storage_smoke`, `dirty_retriever` | **supprimés** (l'historique reste dans Git) |

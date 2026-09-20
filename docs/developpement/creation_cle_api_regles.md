@@ -17,7 +17,7 @@ environnements déclarent les mêmes clients.
 fichiers, crée le secret Gitea Actions) :
 
 ```bash
-uv run python scripts/creer_cle_api_regles.py <nom-client>
+uv run python scripts/create_api_regles_key.py <nom-client>
 ```
 
 Reste manuel après : relire les diffs, redémarrer l'API locale, committer et

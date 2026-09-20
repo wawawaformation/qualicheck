@@ -7,7 +7,7 @@ docs/developpement/creation_cle_api_regles.md
 Modifie 4 emplacements et crée un vrai secret Gitea Actions pour le
 déploiement staging — pas une simulation. Usage :
 
-    uv run python scripts/creer_cle_api_regles.py <nom-client>
+    uv run python scripts/create_api_regles_key.py <nom-client>
 """
 
 import re
@@ -75,7 +75,7 @@ def ajouter_ligne_apres_dernier_token_regles(chemin: Path, nouvelle_ligne: str) 
 
 def main() -> None:
     if len(sys.argv) != 2:
-        raise SystemExit("Usage : uv run python scripts/creer_cle_api_regles.py <nom-client>")
+        raise SystemExit("Usage : uv run python scripts/create_api_regles_key.py <nom-client>")
 
     nom = sys.argv[1]
     valider_nom(nom)

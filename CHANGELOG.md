@@ -11,6 +11,17 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **`scripts/creer_cle_api_regles.py` renommé `create_api_regles_key.py`** — le nom
+  de fichier était en français, contre la règle « code en anglais, commentaires en
+  français » (remarque de David). `api_regles` est conservé : c'est le nom du service
+  dans tout le projet. `git mv` (historique conservé), usages mis à jour dans le
+  script, `scripts/CLAUDE.md`, `docs/developpement/creation_cle_api_regles.md` et
+  `docs/scripts_reorganisation.md` ; le plan historique
+  `docs/superpowers/plans/2026-09-20-renommage-variables-env-api-implementation.md` et
+  les anciennes entrées du CHANGELOG gardent l'ancien nom (instantanés). Script à
+  effet réel (crée un vrai secret Gitea) : **jamais exécuté** pour vérifier, seulement
+  compilé. Noms français restants repérés, non modifiés : `tests/mesures/mesure_*.py`.
+
 - **Module mort `app/ingestion/dirty_retriever.py` supprimé (suite de la carte
   #44)** — sur décision de David (« on peut supprimer »). Vérifié d'abord : aucune
   référence dans le code, les tests ni la configuration ; il ne servait qu'au
