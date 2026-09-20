@@ -1,0 +1,116 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="A2 - de l'appel a la trace deposee dans Langfuse">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1360" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Titre -->
+        <mxCell id="title" value="A2 - de l'appel a la trace deposee dans Langfuse" style="text;html=1;fontStyle=1;fontSize=16;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="10" width="760" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Colonne principale : cycle de vie de la requete -->
+        <mxCell id="start" value="Requete recue (POST /questions)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="loop_ref" value="Boucle agent (voir A1_boucle_et_premier_outil.drawio) : appels LLM + appels d'outils - app/agent_us2 et app/retrieval" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="170" width="300" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="final_box" value="Reponse finale : texte + regles_citees + trace_id" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="380" y="420" width="260" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="end" value="Reponse HTTP envoyee" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="390" y="550" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Colonne tracing -->
+        <mxCell id="span_box" value="A chaque appel : span OpenTelemetry ouvert (duree, cout, nom de l'etape, resultat)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="770" y="170" width="280" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note_content" value="Contenu : texte brut autorise pour l'instant (pas d'utilisateur reel). C2 anonymisera avant tout usage reel (decision 3)." style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="165" width="240" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="decision" value="OTEL_EXPORTER ?" style="shape=rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="350" width="220" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="otlp_box" value="Export OTLP" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="510" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="jsonl_box" value="Ecriture d'une ligne JSON" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="980" y="510" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="langfuse_end" value="Langfuse Cloud (service externe)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="620" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="jsonl_end" value="logs/traces_agent_us2.jsonl (local)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="980" y="620" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note_trace" value="Le trace_id renvoye dans la reponse HTTP (colonne de gauche) permet de retrouver cette trace ici (Langfuse) ou dans le fichier local, selon l'exporteur configure." style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="620" y="720" width="500" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Edges colonne principale -->
+        <mxCell id="e_start_loop" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="start" target="loop_ref">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_loop_final" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="loop_ref" target="final_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_final_end" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="final_box" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Lien vers la colonne tracing -->
+        <mxCell id="e_loop_span" value="a chaque appel" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=open;endFill=0;rounded=0;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" parent="1" source="loop_ref" target="span_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_span_note_content" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=none;rounded=0;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="span_box" target="note_content">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_span_decision" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="span_box" target="decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_decision_otlp" value="otlp" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0;exitY=0.5;entryX=0.5;entryY=0;" edge="1" parent="1" source="decision" target="otlp_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_decision_jsonl" value="jsonl" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" edge="1" parent="1" source="decision" target="jsonl_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_otlp_langfuse" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="otlp_box" target="langfuse_end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_jsonl_local" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;rounded=0;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="jsonl_box" target="jsonl_end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_langfuse_note" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.15;entryY=0;" edge="1" parent="1" source="langfuse_end" target="note_trace">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_jsonl_note" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=none;rounded=0;exitX=0.5;exitY=1;entryX=0.85;entryY=0;" edge="1" parent="1" source="jsonl_end" target="note_trace">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

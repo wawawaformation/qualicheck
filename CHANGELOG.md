@@ -11,6 +11,27 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Démarrage carte #24 (A2 — Instrumentation)** — voir
+  `conception/3_autre_us/us2_question_libre/increments/A_agent_nu/A2_instrumentation.md`.
+  Décisions actées : granularité par appel LLM/outil (agent + retrieval),
+  traces OpenTelemetry exportées en OTLP vers Langfuse Cloud (faiblement
+  couplé, exporteur JSONL local en option —
+  `logs/traces_agent_us2.jsonl`), texte brut autorisé en traces tant
+  qu'il n'y a pas d'utilisateur réel (C2 anonymisera en temps voulu),
+  `trace_id` exposé dans la réponse API. Cinq sous-tâches créées sur la
+  carte Kanboard (#19-#23). Schéma `A2_instrumentation.drawio` produit et
+  contrôlé visuellement ; fiche `.md` et visuel joints en pièce jointe
+  sur la carte #24.
+- **Procédure carte enrichie** — voir `docs/agent/02_regles_execution.md` :
+  une fois la fiche `.md` et le visuel produits, les joindre en pièce
+  jointe sur la carte Kanboard correspondante.
+- **Spec et plan d'implémentation A2** — voir
+  `docs/superpowers/specs/2026-09-20-a2-instrumentation-design.md`
+  (contexte, décisions, architecture) et
+  `docs/superpowers/plans/2026-09-20-a2-instrumentation-implementation.md`
+  (4 tâches TDD : module d'observabilité OTel, instrumentation de la
+  boucle agent, instrumentation du retrieval, exposition de `trace_id`
+  dans l'API). Aucun code applicatif encore écrit.
 - **Investigation graphe Kanboard `CompletedComplexity` vide** — abandon
   retenu, voir `TODO.md` (section Divers). Le README du plugin laissait
   penser à un problème de nom de colonne (`Terminé` vs `Done` attendu) ;

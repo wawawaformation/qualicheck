@@ -24,10 +24,14 @@ d'étape, ne pas implémenter avant la fin de la séquence :
    étape.
 6. Créer ou enrichir le(s) schéma(s) `.drawio` (voir le skill
    `schemas-drawio`).
-7. Cycle spec / plan d'implémentation au besoin.
-8. Écrire les tests (unitaires puis intégration) — avant le code, jamais
+7. Une fois la conception réalisée (fiche `.md` + visuel), les joindre
+   en pièce jointe sur la carte Kanboard correspondante (export du
+   schéma, ex. PNG/SVG, en plus du `.drawio` source versionné dans
+   `conception/`).
+8. Cycle spec / plan d'implémentation au besoin.
+9. Écrire les tests (unitaires puis intégration) — avant le code, jamais
    après.
-9. Implémenter seulement une fois les 8 points précédents faits.
+10. Implémenter seulement une fois les 9 points précédents faits.
 
 ## Changelog obligatoire
 
