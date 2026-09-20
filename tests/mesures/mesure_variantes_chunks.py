@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.ingestion.chunking import build_chunk_text, build_variant_text  # noqa: E402
 from app.ingestion.config import load_config as load_ingestion_config  # noqa: E402
@@ -42,8 +42,8 @@ from app.retrieval.decomposition import DecompositionClient  # noqa: E402
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
 
-CASES_PATH = Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag_acceptance.jsonl"
-REPORT_DIR = Path(__file__).resolve().parents[1] / "docs" / "eval"
+CASES_PATH = Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "rag_acceptance.jsonl"
+REPORT_DIR = Path(__file__).resolve().parents[2] / "docs" / "eval"
 
 BATCH_SIZE = 50
 TOP_N = 15

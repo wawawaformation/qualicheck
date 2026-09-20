@@ -7,7 +7,7 @@ quand il n'y a aucun candidat à sélectionner, juste la question elle-même
 à classer. Voir docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md.
 
 Pas encore intégré à un pipeline de production — mesuré isolément par
-scripts/mesure_guardrail_perimetre.py avant toute décision de construire.
+tests/mesures/mesure_guardrail_perimetre.py avant toute décision de construire.
 """
 
 import logging

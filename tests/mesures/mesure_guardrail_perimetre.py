@@ -19,7 +19,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.ingestion.rag_acceptance import load_cases  # noqa: E402
 from app.logging_config import setup_logging  # noqa: E402
@@ -29,8 +29,8 @@ from app.retrieval.guardrail import GuardrailClient  # noqa: E402
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
 
-CASES_PATH = Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag_acceptance.jsonl"
-REPORT_DIR = Path(__file__).resolve().parents[1] / "docs" / "eval"
+CASES_PATH = Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "rag_acceptance.jsonl"
+REPORT_DIR = Path(__file__).resolve().parents[2] / "docs" / "eval"
 
 FAMILLE_SANS_REPONSE = "sans_reponse"
 

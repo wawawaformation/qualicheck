@@ -21,7 +21,7 @@ from pathlib import Path
 import httpx
 from dotenv import load_dotenv
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.api_regles import config  # noqa: E402
 from app.api_regles.acceptance import evaluate_case, is_acceptable, load_cases  # noqa: E402
@@ -31,9 +31,9 @@ logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
 
 CASES_PATH = (
-    Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "api_regles_acceptance.jsonl"
+    Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "api_regles_acceptance.jsonl"
 )
-PREVIEW_PATH = Path(__file__).resolve().parents[1] / "tmp" / "enrich_again_preview.json"
+PREVIEW_PATH = Path(__file__).resolve().parents[2] / "tmp" / "enrich_again_preview.json"
 # Règle utilisée pour vérifier la boucle de revue de bout en bout. Remise à
 # son état d'origine (review_status=null) en toute fin de script.
 NUMERO_REGLE_BOUCLE_REVUE = 124
@@ -48,7 +48,7 @@ def _lancer_dry_run() -> None:
         ["uv", "run", "python", "scripts/enrich_again.py", "--dry-run"],
         capture_output=True,
         text=True,
-        cwd=Path(__file__).resolve().parents[1],
+        cwd=Path(__file__).resolve().parents[2],
         check=True,
     )
 

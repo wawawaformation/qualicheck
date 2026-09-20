@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.ingestion.config import load_config as load_ingestion_config  # noqa: E402
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
@@ -37,7 +37,7 @@ from app.retrieval.retrieval import retrieve  # noqa: E402
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
 
-CASES_PATH = Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag_acceptance.jsonl"
+CASES_PATH = Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "rag_acceptance.jsonl"
 
 FAMILLE_HORS_SEUIL = "sans_reponse"
 

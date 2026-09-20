@@ -245,7 +245,7 @@ def mesurer_variante(
     Retourne (lignes_csv, lignes_resume_par_famille).
 
     Pure : aucun appel réseau, BDD ni log — la progression est loguée par
-    l'appelant (scripts/mesure_variantes_chunks.py::main()).
+    l'appelant (tests/mesures/mesure_variantes_chunks.py::main()).
     """
     lignes_csv = []
     rangs_par_famille: dict[str, list] = {}
@@ -376,7 +376,7 @@ def mesurer_candidat_fusion(
 def construire_resume_markdown(lignes: list[dict], horodatage: datetime) -> str:
     """Construit le texte Markdown du résumé MRR/recall par variante et
     famille. Pure : pas d'écriture disque (voir
-    scripts/mesure_variantes_chunks.py::ecrire_resume_markdown)."""
+    tests/mesures/mesure_variantes_chunks.py::ecrire_resume_markdown)."""
     entete = (
         "| Variante | Famille | MRR | recall@1 | recall@3 | recall@5 | "
         "recall@10 | recall@15 |"
@@ -409,7 +409,7 @@ def construire_resume_markdown_vague2(
     (docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md) —
     une vague suivante (ex. vague 3) passe son propre titre. Pure : pas
     d'écriture disque (voir
-    scripts/mesure_combinaisons_chunks.py::ecrire_resume_markdown)."""
+    tests/mesures/mesure_combinaisons_chunks.py::ecrire_resume_markdown)."""
     titre_effectif = titre if titre is not None else "Mesure des combinaisons de chunk — vague 2"
     entete = (
         "| Variante | Famille | MRR | recall@1 | recall@3 | recall@5 | "

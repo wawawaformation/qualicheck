@@ -7,7 +7,7 @@ puis tronque localement chaque sous-question pour chaque top_n de TOP_NS
 avant de fusionner. Produit un rapport Markdown horodaté dans docs/eval/.
 
 Passe par app.retrieval (décomposition + union), comme l'instrument de
-mesure officiel (scripts/check_rag_acceptance.py) depuis le 2026-09-09 —
+mesure officiel (tests/acceptance/check_rag_acceptance.py) depuis le 2026-09-09 —
 seule différence : compare plusieurs top_n en un run au lieu d'un seul.
 Voir docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md et
 docs/superpowers/specs/2026-09-09-retrieval-decomposition-multi-sujets-design.md.
@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.ingestion.config import load_config as load_ingestion_config  # noqa: E402
 from app.ingestion.embedding import EmbeddingClient  # noqa: E402
@@ -40,8 +40,8 @@ from app.retrieval.decomposition import DecompositionClient  # noqa: E402
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
 
-CASES_PATH = Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag_acceptance.jsonl"
-REPORT_DIR = Path(__file__).resolve().parents[1] / "docs" / "eval"
+CASES_PATH = Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "rag_acceptance.jsonl"
+REPORT_DIR = Path(__file__).resolve().parents[2] / "docs" / "eval"
 
 TOP_NS = [3, 5, 10, 15]
 FAMILLE_HORS_SEUIL = "sans_reponse"

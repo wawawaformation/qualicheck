@@ -11,6 +11,23 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Carte Kanboard #44 : `scripts/` rangé (20 scripts -> 7 points d'entrée)** —
+  décisions de David : piste 1 (`scripts/` reste à plat et ne garde que les points
+  d'entrée). 9 scripts déplacés avec `git mv` : 4 vérifications d'acceptance vers
+  `tests/acceptance/` (à côté de leurs jeux de données), 5 campagnes de mesure vers
+  `tests/mesures/` ; 3 scripts périmés supprimés (`ingestion_test.py`,
+  `storage_smoke.py`, `dirty_retriever.py`, tous écrivaient dans `POSTGRES_DB`) ;
+  **cible `make clear` retirée** (un seul appel effaçait les 245 règles
+  enrichies). Racine du projet corrigée (`parents[1]` -> `parents[2]`) dans les 9
+  scripts, `Makefile` mis à jour (9 chemins, les noms de cibles ne changent pas :
+  `cd-staging.yml` reste valide), chemins cités mis à jour dans les fichiers vivants
+  (les plans et specs historiques restent des instantanés), `scripts/CLAUDE.md`
+  enfin complet. Vérifié : 277 tests unitaires et 2 d'intégration avant et après,
+  `ruff` propre, chaque script déplacé se charge et retrouve sa racine et ses
+  données, les 9 cibles `make -n` pointent au bon endroit. Décisions et inventaire :
+  `docs/scripts_reorganisation.md`. Reste à décider (dans `TODO.md`) : le script
+  `clear_opquast_tables.py` et le module mort `app/ingestion/dirty_retriever.py`.
+
 - **Collection Bruno rattachée à la carte #45 (stratégie de tests)** — décision de
   David : versionner la collection `qualicheck` (aujourd'hui hors dépôt) comme
   niveau de preuve « HTTP de bout en bout ». Carte #45 : périmètre et critère de

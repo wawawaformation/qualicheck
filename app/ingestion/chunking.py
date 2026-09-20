@@ -36,7 +36,7 @@ def build_chunk_text(rule) -> str:
 def build_variant_text(rule, champ: str) -> str | None:
     """
     Texte d'un seul champ de la règle, pour l'étude d'ablation des
-    variantes de chunk (scripts/mesure_variantes_chunks.py, voir
+    variantes de chunk (tests/mesures/mesure_variantes_chunks.py, voir
     docs/superpowers/specs/2026-09-11-mesure-chunks-vague1-design.md).
 
     Args:
@@ -57,7 +57,7 @@ def build_variant_text(rule, champ: str) -> str | None:
 def build_combo_text(rule, champs: list[str]) -> str:
     """
     Texte labellisé d'une combinaison de champs, pour l'étude de
-    combinaisons de chunk (scripts/mesure_combinaisons_chunks.py, voir
+    combinaisons de chunk (tests/mesures/mesure_combinaisons_chunks.py, voir
     docs/superpowers/specs/2026-09-11-mesure-chunks-vague2-design.md).
 
     Args:

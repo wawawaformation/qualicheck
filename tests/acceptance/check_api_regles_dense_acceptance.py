@@ -3,7 +3,7 @@
 Nécessite l'API réellement démarrée (make api-regles, dans un terminal
 dédié). Réutilise tests/acceptance/rag_acceptance.jsonl (99 cas, aucune
 duplication) : vérifie que le contrat HTTP bout-en-bout produit le même
-résultat que l'appel direct à retrieve() (scripts/check_rag_acceptance.py).
+résultat que l'appel direct à retrieve() (tests/acceptance/check_rag_acceptance.py).
 
 Coût réel à chaque exécution (décomposition LLM + embedding pour chaque
 cas) — volontairement hors CI, jamais ajouté au jeu automatique
@@ -18,7 +18,7 @@ from pathlib import Path
 import httpx
 from dotenv import load_dotenv
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.api_regles import config  # noqa: E402
 from app.ingestion.rag_acceptance import (  # noqa: E402
@@ -33,7 +33,7 @@ from app.retrieval.config import load_config  # noqa: E402
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
 
-CASES_PATH = Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag_acceptance.jsonl"
+CASES_PATH = Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "rag_acceptance.jsonl"
 
 
 def _entetes() -> dict[str, str]:

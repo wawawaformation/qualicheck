@@ -112,7 +112,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
       mesuré à l'Étape 4 ci-dessous.
   - [x] **Étape 3 — mesurer `recall@3/5/10/15`, pipeline inchangé** (2026-09-09,
     tokens quasi gratuits) — `D`/`A`
-    - `scripts/rag_dense_acceptance.py` (spec
+    - `tests/acceptance/rag_dense_acceptance.py` (spec
       `docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md`,
       plan associé) : une seule requête pgvector par question à `LIMIT 15`,
       troncature locale pour 3/5/10/15. Rapport :
@@ -217,7 +217,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     - `app/retrieval/` (`decomposition.py`, `retrieval.py`) — un appel LLM
       structuré (`gpt-5.4-mini`, pas d'agent ReAct) découpe la question,
       union simple des résultats pgvector par sous-question.
-      `scripts/check_rag_acceptance.py` bascule entièrement sur
+      `tests/acceptance/check_rag_acceptance.py` bascule entièrement sur
       `retrieve()` (test de non-régression grandeur nature sur les 95
       cas mono-sujet). Spec :
       `docs/superpowers/specs/2026-09-09-retrieval-decomposition-multi-sujets-design.md`,
@@ -225,7 +225,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
     - Résultat mesuré : `multi_sujets` passe de 2/4 PASS + 2 PARTIEL à
       **4/4 (100%)**, aucune régression sur les 95 autres cas. Coût du
       run complet : 0,0073 €.
-    - `scripts/rag_dense_acceptance.py` mis à jour à l'identique (bascule
+    - `tests/acceptance/rag_dense_acceptance.py` mis à jour à l'identique (bascule
       sur `retrieve()`, une seule décomposition/embedding par question
       pour les 4 `top_n`) — `multi_sujets` est désormais à 100% dès
       `top_n=3`, plus besoin de `top_n` élevé pour cette famille.
@@ -329,7 +329,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
         `sans_reponse` étoffé de 5 à 20 cas (3 catégories, 114 cas au
         total) ; score de similarité propagé de `query_top_n_numeros()`
         jusqu'au contrat HTTP de `/regles/dense` (`RegleAvecScore`) ;
-        `scripts/mesure_scores_refus.py` (`make mesure-scores-refus`)
+        `tests/mesures/mesure_scores_refus.py` (`make mesure-scores-refus`)
         rejoué en réel. **Résultat : aucune métrique (top-1, top-15,
         écart top-1/top-15) ne sépare proprement `sans_reponse` des cas
         `PASS`** — un seuil calé sur l'écart classerait à tort 16/91 cas
@@ -507,7 +507,7 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   - `tests/acceptance/rag_acceptance.jsonl` : 17 cas `{question,
     numero_regle_attendue}` (les 2 vérifiés manuellement + 15 nouveaux,
     validés par David) ; `app/ingestion/rag_acceptance.py` (logique testée
-    unitairement) ; `scripts/check_rag_acceptance.py` + `make
+    unitairement) ; `tests/acceptance/check_rag_acceptance.py` + `make
     rag-acceptance` (top_n/taux_reussite_minimum dans `manifest.yml`)
   - Suite volontairement hors CI (coût réel à chaque run)
   - **`make rag-acceptance` lancé pour de vrai par David (2026-07-26)** :
@@ -872,5 +872,16 @@ Repérés en construisant l'index `jury/README.md`.
     **C4** (carte #32, authentification de l'utilisateur) — « on ne
     déploie certainement pas sans token d'identification ».
   - À cadrer avec David avant tout déclenchement, dans tous les cas.
+
+- [ ] **Décider du script `scripts/clear_opquast_tables.py` et du module mort
+  `app/ingestion/dirty_retriever.py`** — reliquat de la carte #44 — `D`
+  - `make clear` a été retiré le 2026-09-20 (un seul appel effaçait les 245 règles
+    enrichies sur `POSTGRES_DB`, sans confirmation). Le script reste appelable à
+    la main : le supprimer (`ingestion.py` utilise déjà la même fonction avec
+    confirmation) ou le sortir de `scripts/`. Mettre ensuite à jour
+    `docs/schemas/points_entree_cli_reel.drawio`, qui le montre encore.
+  - `app/ingestion/dirty_retriever.py` n'est plus utilisé par rien depuis la
+    suppression du script du même nom (code mort, à supprimer si tu le confirmes).
+  - Détail : `docs/scripts_reorganisation.md`.
 
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`

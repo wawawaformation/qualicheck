@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from app.ingestion.chunking import build_chunk_text, build_combo_text  # noqa: E402
 from app.ingestion.config import load_config as load_ingestion_config  # noqa: E402
@@ -46,11 +46,11 @@ from app.retrieval.decomposition import DecompositionClient  # noqa: E402
 logger = logging.getLogger(__name__)
 progress_logger = logging.getLogger("progress")
 
-CASES_PATH = Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag_acceptance.jsonl"
+CASES_PATH = Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "rag_acceptance.jsonl"
 HOLDOUT_PATH = (
-    Path(__file__).resolve().parents[1] / "tests" / "acceptance" / "rag_acceptance_holdout.json"
+    Path(__file__).resolve().parents[2] / "tests" / "acceptance" / "rag_acceptance_holdout.json"
 )
-REPORT_DIR = Path(__file__).resolve().parents[1] / "docs" / "eval"
+REPORT_DIR = Path(__file__).resolve().parents[2] / "docs" / "eval"
 
 BATCH_SIZE = 50
 TOP_N = 15
@@ -121,7 +121,7 @@ def vectoriser_combo(
         for numero, vecteur in zip(lot_numeros, lot_vecteurs, strict=True):
             vecteurs_regles[numero] = vecteur
         # Pause entre lots : évite le RateLimitReached Azure (tier S0),
-        # rencontré lors de la vague 1 (scripts/mesure_variantes_chunks.py).
+        # rencontré lors de la vague 1 (tests/mesures/mesure_variantes_chunks.py).
         time.sleep(20)
 
     return vecteurs_regles

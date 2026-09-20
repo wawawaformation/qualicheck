@@ -11,7 +11,7 @@ entièrement mockée, par tests/unit/agent_us2/test_loop.py).
 
 Nécessite l'API des règles réellement démarrée (make api-regles) — lecture
 seule sur POSTGRES_DB (GET uniquement, aucune écriture), même principe que
-scripts/check_api_regles_acceptance.py pour ses cas GET. Test sauté
+tests/acceptance/check_api_regles_acceptance.py pour ses cas GET. Test sauté
 automatiquement si l'API n'est pas joignable.
 """
 

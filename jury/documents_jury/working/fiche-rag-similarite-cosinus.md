@@ -80,7 +80,7 @@ différemment » est étroite. Deux pistes envisagées :
 - un jugement du LLM de réponse sur la pertinence des chunks retournés —
   pas de seuil vectoriel du tout, coût d'un appel en plus.
 
-**Tranché par la mesure (2026-09-11)** : `scripts/mesure_scores_refus.py`
+**Tranché par la mesure (2026-09-11)** : `tests/mesures/mesure_scores_refus.py`
 (`docs/superpowers/plans/2026-09-11-retrieval-refus-implementation.md`,
 Temps 1) a rejoué les 114 cas d'acceptance (dont 20 `sans_reponse`,
 étoffé de 5 à 20 pour ce chantier — voir `docs/eval/

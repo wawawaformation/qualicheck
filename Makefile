@@ -1,4 +1,4 @@
-.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks mesure-guardrail-perimetre api-regles api-regles-acceptance api-regles-dense-acceptance api-business regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks mesure-guardrail-perimetre api-regles api-regles-acceptance api-regles-dense-acceptance api-business regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -68,10 +68,6 @@ ingestion:
 	uv run python scripts/ingestion.py $(if $(LIMIT),--limit $(LIMIT),)
 	$(MAKE) export_sql
 
-## Vide les tables Opquast de la base de données (utile pour retester une ingestion)
-clear:
-	uv run python scripts/clear_opquast_tables.py
-
 ## Exporte les données du RÉFÉRENTIEL uniquement — le domaine audit a sa
 ## propre base et n'est pas couvert ici. Avant la scission du 2026-09-08,
 ## cette cible dumpait toute la base : « sauvegarder le référentiel »
@@ -110,36 +106,36 @@ embed-rules:
 ## Rejoue le jeu d'acceptance RAG (tests/acceptance/rag_acceptance.jsonl) :
 ## appel réel à l'API embeddings, coût réel, volontairement hors CI
 rag-acceptance:
-	uv run python scripts/check_rag_acceptance.py
+	uv run python tests/acceptance/check_rag_acceptance.py
 
 ## Compare le recall du RAG sur plusieurs top_n (3/5/10/15), rapport Markdown
 rag-dense-acceptance:
-	uv run python scripts/rag_dense_acceptance.py
+	uv run python tests/acceptance/rag_dense_acceptance.py
 
 ## Mesure les scores (top-1, écart top-1/top-15) : sans_reponse vs cas PASS,
 ## pour trancher si un seuil relatif est calibrable (Temps 1 du chantier refus)
 mesure-scores-refus:
-	uv run python scripts/mesure_scores_refus.py
+	uv run python tests/mesures/mesure_scores_refus.py
 
 ## Mesure MRR/recall@k pour 12 variantes de chunk (11 champs isoles +
 ## baseline) sur les 114 cas d'acceptance — vague 1 du protocole de mesure
 mesure-variantes-chunks:
-	uv run python scripts/mesure_variantes_chunks.py
+	uv run python tests/mesures/mesure_variantes_chunks.py
 
 ## Mesure MRR/recall@k pour 6 candidats (baseline + 5 combinaisons de
 ## champs), jeu reserve stratifie + critere de decision — vague 2
 mesure-combinaisons-chunks:
-	uv run python scripts/mesure_combinaisons_chunks.py
+	uv run python tests/mesures/mesure_combinaisons_chunks.py
 
 ## Mesure MRR/recall@k pour un candidat a 3 vecteurs par regle (complet +
 ## intitule + guide_analyse, fusionnes) contre la baseline — vague 3
 mesure-multi-vecteurs-chunks:
-	uv run python scripts/mesure_multi_vecteurs_chunks.py
+	uv run python tests/mesures/mesure_multi_vecteurs_chunks.py
 
 ## Mesure si un LLM classe correctement une question dans/hors perimetre
 ## Opquast SANS voir de candidats retrieval (hypothese guardrail agent)
 mesure-guardrail-perimetre:
-	uv run python scripts/mesure_guardrail_perimetre.py
+	uv run python tests/mesures/mesure_guardrail_perimetre.py
 
 # ============================================================
 # API données
@@ -169,14 +165,14 @@ api-business:
 ## vérifier la boucle de revue de bout en bout — exception volontaire et
 ## documentée, voir docs/superpowers/plans/2026-07-26-api-regles-implementation.md
 api-regles-acceptance:
-	uv run python scripts/check_api_regles_acceptance.py
+	uv run python tests/acceptance/check_api_regles_acceptance.py
 
 ## Rejoue le jeu d'acceptance RAG (99 cas, tests/acceptance/rag_acceptance.jsonl)
 ## via POST /regles/dense en HTTP reel — necessite make api-regles demarre
 ## dans un autre terminal. Cout reel (LLM + embedding) a chaque execution,
 ## volontairement hors CI, comme make rag-acceptance.
 api-regles-dense-acceptance:
-	uv run python scripts/check_api_regles_dense_acceptance.py
+	uv run python tests/acceptance/check_api_regles_dense_acceptance.py
 
 # ============================================================
 # Clients

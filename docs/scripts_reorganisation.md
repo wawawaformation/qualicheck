@@ -1,0 +1,56 @@
+# Réorganisation du dossier `scripts/`
+
+Carte Kanboard #44 · 2026-09-20 · décisions de David.
+
+## Pourquoi
+
+`scripts/` contenait **20 scripts à plat** (et `scripts/CLAUDE.md` n'en décrivait que 4), alors que sa règle est « uniquement les points d'entrée, aucune logique métier ». Trop d'éléments à retenir (loi de Miller), et de la logique métier (plus de 1 100 lignes de mesures) au mauvais endroit.
+
+## Inventaire (avant)
+
+| Famille | Scripts | Décision |
+|---|---|---|
+| Points d'entrée vivants | `migration`, `ingestion`, `embed_rules`, `enrich_again`, `create_db_audit`, `agent_cli`, `creer_cle_api_regles` | **restent** dans `scripts/` |
+| Vérifications d'acceptance (appels réels) | `check_api_regles_acceptance`, `check_api_regles_dense_acceptance`, `check_rag_acceptance`, `rag_dense_acceptance` | **déplacées** vers `tests/acceptance/` |
+| Campagnes de mesure | `mesure_scores_refus`, `mesure_variantes_chunks`, `mesure_combinaisons_chunks`, `mesure_multi_vecteurs_chunks`, `mesure_guardrail_perimetre` | **déplacées** vers `tests/mesures/` |
+| Périmés | `ingestion_test`, `storage_smoke`, `dirty_retriever` | **supprimés** (l'historique reste dans Git) |
+| Destructif | `clear_opquast_tables` | cible `make clear` **retirée** ; sort de `scripts/` ou est supprimé : décision en attente |
+
+## Arborescence cible (piste 1, retenue)
+
+```
+scripts/                 7 points d'entrée + CLAUDE.md, à plat (la règle est respectée)
+tests/acceptance/        jeux de données + les 4 vérifications qui les utilisent
+tests/mesures/           les 5 campagnes de mesure
+```
+
+## Pourquoi ces suppressions
+
+Les trois scripts supprimés écrivaient (ou lisaient) dans `POSTGRES_DB`, la vraie base de dev :
+
+- `ingestion_test.py` remplaçait le référentiel réel par des bouchons (il appelait `clear_opquast_tables` puis insérait des règles factices) ;
+- `storage_smoke.py` insérait un thème, un objectif et la règle n° 999 dès l'import, sans nettoyage ;
+- `dirty_retriever.py` interrogeait la base avec un embedding Azure payant, remplacé par `POST /regles/dense`.
+
+Les tests d'intégration du stockage (`tests/integration/ingestion/test_stockage_*.py`, sur `POSTGRES_TEST_DB`) couvrent ce que faisaient les deux premiers.
+
+## Pourquoi `make clear` est retiré
+
+Un seul appel effaçait les 245 règles enrichies, sans confirmation, sur `POSTGRES_DB`, alors que les régénérer coûte un appel LLM par règle. `ingestion.py` appelle déjà la même fonction (`app/ingestion/stockage.py::clear_opquast_tables`) avec confirmation quand c'est nécessaire.
+
+## Ce qui a changé techniquement
+
+- Les 9 scripts déplacés calculaient la racine du projet avec `parents[1]` ; à un niveau de plus, c'est `parents[2]`.
+- Le `Makefile` : 9 cibles changent de chemin, la cible `clear` disparaît. Les noms des autres cibles sont inchangés, donc `cd-staging.yml` (qui lance `make api-regles-acceptance`) fonctionne sans modification.
+- Les chemins cités dans les fichiers vivants sont mis à jour (`TODO.md`, commentaires de `app/`, fiches de travail du jury). Les plans, specs et décisions historiques restent tels quels : ce sont des instantanés.
+- Pytest ne collecte pas les scripts déplacés (il ne cherche que `test_*.py`).
+
+## Vérifié
+
+Avant et après : 277 tests unitaires, 2 tests d'intégration `agent_us2`, `ruff` sur `app tests scripts`. Chacun des 9 scripts se charge sans exécution et retrouve sa racine, ses jeux de données et son dossier de rapports. Les 9 cibles `make` affichent le bon chemin (`make -n`).
+
+## Reste à décider
+
+- `scripts/clear_opquast_tables.py` : le supprimer (la fonction reste utilisée par `ingestion.py`, avec confirmation) ou le garder sans cible.
+- `app/ingestion/dirty_retriever.py` : ne sert plus qu'à un script supprimé, donc du code mort (à signaler, pas supprimé ici).
+- Le schéma `docs/schemas/points_entree_cli_reel.drawio` montre encore `clear_opquast_tables.py` : à mettre à jour selon la décision ci-dessus.
