@@ -37,6 +37,29 @@ services:
       - qualicheck
     restart: unless-stopped
 
+  api-business:
+    container_name: qualicheck-api-business
+    build:
+      context: .
+    # Surcharge du CMD du Dockerfile : l'agent US2 (POST /questions) ne sert
+    # pas app.api_regles.main mais app.agent_us2.main, sur un autre port.
+    command: >
+      uv run --no-sync uvicorn app.agent_us2.main:app
+      --host 0.0.0.0 --port 8882
+    env_file:
+      - .env
+    environment:
+      # L'agent US2 est un client HTTP de l'API des règles : en Docker, il
+      # l'atteint par le nom du service api-regles, pas par localhost.
+      API_REGLES_URL_DEV: http://api-regles:8880
+    ports:
+      - "8882:8882"
+    depends_on:
+      - api-regles
+    networks:
+      - qualicheck
+    restart: unless-stopped
+
 volumes:
   postgres_data:
 

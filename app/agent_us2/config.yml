@@ -1,6 +1,12 @@
 # Configuration de l'agent US2 (question libre, increment A1). Aucun secret
 # ici : voir .env. Aucun historique ici : git s'en charge (git log config.yml).
 
+api_business:
+  # Port d'écoute de l'API de l'agent US2 (POST /questions), futur étage
+  # api_business partagé US1/US2. Distinct de app/api_regles (8880) — même
+  # principe que la séparation des services, voir conception/3_autre_us/en_commun.md.
+  port: 8882
+
 api_regles:
   # Nom de la variable d'environnement portant l'URL de l'API des regles
   # (GET /regles?q=, acces libre, sans jeton - voir increments.md), pas la

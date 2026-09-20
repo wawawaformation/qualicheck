@@ -11,6 +11,13 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — OpenCode
 
+- **API business (agent US2) exposée sur le port 8882** — ajout d'un bloc
+  `api_business.port: 8882` dans `app/agent_us2/config.yml`, d'une cible
+  `make api-business` (uvicorn `app.agent_us2.main:app`), et d'un service
+  `api-business` dans `docker-compose.yml` (le CMD du Dockerfile est surchargé,
+  `API_REGLES_URL_DEV` pointé vers `http://api-regles:8880`). Le port 8882
+  annoncé par `API_BUSINESS_URL_DEV` est désormais réellement servi.
+
 - **Renommage et nettoyage des variables d'environnement API** — le
   préfixe générique `FASTAPI_*` est remplacé par des noms explicites par
   service : `API_REGLES_URL_DEV` / `API_REGLES_URL_PREPROD` et

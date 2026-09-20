@@ -1,4 +1,4 @@
-.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks mesure-guardrail-perimetre api-regles api-regles-acceptance api-regles-dense-acceptance regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion clear export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks mesure-guardrail-perimetre api-regles api-regles-acceptance api-regles-dense-acceptance api-business regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -151,6 +151,17 @@ API_REGLES_PORT = $(shell grep 'port:' app/api_regles/config.yml | tr -d ' ' | c
 ## Démarre l'API données en développement (rechargement automatique)
 api-regles:
 	uv run uvicorn app.api_regles.main:app --reload --port $(API_REGLES_PORT)
+
+# ============================================================
+# API business (agent US2, POST /questions)
+# ============================================================
+
+# Port lu dans la config, seule source de vérité.
+API_BUSINESS_PORT = $(shell grep 'port:' app/agent_us2/config.yml | tr -d ' ' | cut -d: -f2)
+
+## Démarre l'API business (agent US2, POST /questions) en développement
+api-business:
+	uv run uvicorn app.agent_us2.main:app --reload --port $(API_BUSINESS_PORT)
 
 ## Rejoue le jeu d'acceptance de l'API données (tests/acceptance/api_regles_acceptance.jsonl) :
 ## nécessite make api-regles démarré dans un autre terminal. Aucun appel LLM,
