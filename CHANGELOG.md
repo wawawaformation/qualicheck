@@ -16,8 +16,9 @@ Format d'entrée, une ligne par réalisation :
   `questions_libres.appel_llm` et `questions_libres.appel_outil` ; ajout
   de `llm.provider`, `llm.model` et `llm.temperature` sur les spans LLM ;
   ajout de `outil.input` / `outil.output` (tronqués à 4000 caractères)
-  sur les spans outil. Mise à jour de `app/agent_us2/config.yml` et des
-  tests de traçage — voir
+  sur les spans outil. Ajout des attributs génériques `input` / `output`
+  pour alimenter la preview de Langfuse. Mise à jour de
+  `app/agent_us2/config.yml` et des tests de traçage — voir
   `docs/superpowers/specs/2026-09-20-renommage-et-enrichissement-spans-us2-design.md`.
 
 - **A2 Tâche d'enrichissement des spans LLM (input/output)** — ajout de
