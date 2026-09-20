@@ -40,4 +40,5 @@ def poser_question(requete: QuestionRequete) -> QuestionReponse:
         statut=statut,
         reponse=resultat.reponse,
         regles_citees=resultat.regles_citees,
+        trace_id=resultat.trace_id,
     )

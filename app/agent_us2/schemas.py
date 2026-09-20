@@ -34,3 +34,4 @@ class QuestionReponse(BaseModel):
     statut: StatutReponse
     reponse: str
     regles_citees: list[RegleCitee]
+    trace_id: str | None = None

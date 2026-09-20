@@ -46,6 +46,7 @@ class TestPoserQuestion:
             "statut": "repondu",
             "reponse": "Il faut le prix TTC.",
             "regles_citees": [{"numero": 56, "intitule": "Prix TTC"}],
+            "trace_id": None,
         }
 
     @patch("app.agent_us2.api.repondre")

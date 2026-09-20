@@ -3,7 +3,7 @@
   "info": {
     "title": "QualiCheck — Agent US2 (question libre)",
     "description": "Contrat vivant, enrichi increment par increment (voir conception/3_autre_us/us2_question_libre/increments/increments.md) — jamais réécrit d'un bloc. Miroir de app/agent_us2/schemas.py une fois ce module implémenté (même discipline que app/api_regles/config.yml, champ version : bumpée à chaque tâche qui change un contrat d'endpoint).",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "paths": {
     "/questions": {
@@ -28,7 +28,8 @@
                 "example": {
                   "statut": "repondu",
                   "reponse": "texte de la réponse argumentée",
-                  "regles_citees": [{ "numero": 182, "intitule": "..." }]
+                  "regles_citees": [{ "numero": 182, "intitule": "..." }],
+                  "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736"
                 }
               }
             }
@@ -94,6 +95,11 @@
           "regles_citees": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/RegleCitee" }
+          },
+          "trace_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Identifiant de trace OpenTelemetry (increment A2). Permet de retrouver le detail de la reponse dans Langfuse ou dans logs/traces_agent_us2.jsonl selon l'exporteur configure."
           }
         }
       },
