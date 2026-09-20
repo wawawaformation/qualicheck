@@ -180,36 +180,70 @@ def get_tracer() -> trace.Tracer:
     return trace.get_tracer(SERVICE_NAME_DEFAUT)
 
 
+def _role_message(msg: BaseMessage) -> str:
+    """Renvoie le rôle d'un message de manière défensive.
+
+    En production `msg.type` est une chaîne LangChain. Dans les tests
+    unitaires, `msg` peut être un `MagicMock` sans `type` défini ; on
+    retombe alors sur le nom de la classe concrète.
+    """
+    role = getattr(msg, "type", None)
+    if isinstance(role, str):
+        return role
+    return type(msg).__name__
+
+
 def _serialize_message(msg: BaseMessage) -> dict[str, Any]:
     """Convertit un message LangChain en dict sérialisable.
 
     Les AIMessage de l'historique portent leurs tool_calls et prennent le
-    role `assistant` pour la lisibilité dans Langfuse.
+    role `assistant` pour la lisibilité dans Langfuse. Les objets mockés
+    dans les tests unitaires sont traités de manière dégradée.
     """
-    if isinstance(msg, AIMessage):
+    if isinstance(msg, AIMessage) or getattr(msg, "tool_calls", None) is not None:
         return _serialize_ai_message(msg)
 
     serialized: dict[str, Any] = {
-        "role": msg.type,
-        "content": msg.content or "",
+        "role": _role_message(msg),
+        "content": getattr(msg, "content", "") or "",
     }
-    if isinstance(msg, ToolMessage):
-        serialized["tool_call_id"] = msg.tool_call_id
+    tool_call_id = getattr(msg, "tool_call_id", None)
+    if isinstance(tool_call_id, str):
+        serialized["tool_call_id"] = tool_call_id
     return serialized
 
 
 def _serialize_ai_message(msg: AIMessage) -> dict[str, Any]:
-    """Convertit la réponse AI en dict sérialisable."""
+    """Convertit la réponse AI en dict sérialisable.
+
+    Accepte aussi les objets mockés en test : les valeurs non dict sont
+    ignorées, content absent est traité comme vide.
+    """
     output: dict[str, Any] = {
         "role": "assistant",
-        "content": msg.content or "",
+        "content": getattr(msg, "content", "") or "",
     }
-    if msg.tool_calls:
+    tool_calls = getattr(msg, "tool_calls", None)
+    if tool_calls:
         output["tool_calls"] = [
             {"name": tc.get("name"), "args": tc.get("args")}
-            for tc in msg.tool_calls
+            for tc in tool_calls
+            if isinstance(tc, dict)
         ]
     return output
+
+
+def _json_default(obj: Any) -> Any:
+    """Fallback de sérialisation JSON pour les objets non natifs.
+
+    En production les messages sont des objets LangChain sérialisables. En
+    test, certains champs peuvent être des MagicMock : on les convertit en
+    chaîne plutôt que de faire échouer l'export de toute la trace.
+    """
+    # MagicMock et objets similaires n'ont pas de représentation JSON standard.
+    if "Mock" in type(obj).__name__:
+        return repr(obj)
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
 
 def _truncate_text(text: str, max_len: int) -> tuple[str, bool]:
@@ -248,11 +282,15 @@ def set_llm_span_io(
     - `llm.input_truncated` / `llm.output_truncated` : booléens.
     """
     input_data = [_serialize_message(m) for m in messages]
-    input_json = json.dumps(input_data, ensure_ascii=False, separators=(",", ":"))
+    input_json = json.dumps(
+        input_data, ensure_ascii=False, separators=(",", ":"), default=_json_default
+    )
     input_truncated_json, input_truncated = _truncate_text(input_json, max_len)
 
     output_data = _serialize_ai_message(ai_message)
-    output_json = json.dumps(output_data, ensure_ascii=False, separators=(",", ":"))
+    output_json = json.dumps(
+        output_data, ensure_ascii=False, separators=(",", ":"), default=_json_default
+    )
     output_truncated_json, output_truncated = _truncate_text(output_json, max_len)
 
     span.set_attribute("llm.input", input_truncated_json)

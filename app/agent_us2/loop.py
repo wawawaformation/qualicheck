@@ -22,7 +22,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.agent_us2.config import load_config
 from app.agent_us2.tools import rechercher_regles
-from app.observability.tracing import current_trace_id, get_tracer
+from app.observability.tracing import current_trace_id, get_tracer, set_llm_span_io
 
 SYSTEM_PROMPT = (
     "Tu es un assistant qui répond à des questions de qualité web en "
@@ -101,6 +101,7 @@ def repondre(question: str) -> ResultatAgent:
         for tour in range(1, max_tours + 1):
             with tracer.start_as_current_span("appel_llm", attributes={"tour": tour}) as span:
                 ai_message = _appeler_llm(llm, messages)
+                set_llm_span_io(span, messages, ai_message)
                 usage = ai_message.usage_metadata or {}
                 span.set_attribute("tokens_entree", usage.get("input_tokens", 0))
                 span.set_attribute("tokens_sortie", usage.get("output_tokens", 0))
