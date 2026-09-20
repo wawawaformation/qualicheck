@@ -873,13 +873,11 @@ Repérés en construisant l'index `jury/README.md`.
     déploie certainement pas sans token d'identification ».
   - À cadrer avec David avant tout déclenchement, dans tous les cas.
 
-- [ ] **Décider du module mort `app/ingestion/dirty_retriever.py`** — reliquat de
-  la carte #44 — `D`
-  - N'est plus utilisé par rien depuis la suppression du script du même nom (code
-    mort). Signalé, **pas supprimé** : à ne retirer que sur ta décision.
-  - Le script `scripts/clear_opquast_tables.py` est décidé : il reste, avec une
-    confirmation `[y/N]` (14 tests, 2026-09-20). Le schéma
-    `docs/schemas/points_entree_cli_reel.drawio` est mis à jour en conséquence.
-  - Détail : `docs/scripts_reorganisation.md`.
+- [x] **Module mort `app/ingestion/dirty_retriever.py`** — reliquat de la carte #44 —
+  `D` — clos 2026-09-20 : supprimé sur ta décision (« on peut supprimer »), après
+  vérification qu'aucun code, test ni configuration ne le référençait (il ne
+  servait qu'au script du même nom, supprimé plus tôt). L'historique reste dans
+  Git. Le script `scripts/clear_opquast_tables.py` est décidé : il reste, avec une
+  confirmation `[y/N]`. Détail : `docs/scripts_reorganisation.md`.
 
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`

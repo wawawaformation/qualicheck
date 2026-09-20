@@ -53,6 +53,6 @@ Avant et après : 277 tests unitaires, 2 tests d'intégration `agent_us2`, `ruff
 
 Décision de David : ne pas le supprimer, mais lui ajouter une confirmation. Il annonce désormais « Cela va supprimer les N règle(s) de la base « X ». Confirmer ? [y/N] » (le nom de la base est là pour qu'on voie qu'on vise la vraie base de dev) et n'agit que sur un `y`. Entrée, « oui », ou une entrée standard fermée (pipe, cron) refusent. Même convention que `scripts/ingestion.py`. Couvert par 14 tests (`tests/unit/scripts/`), qui remplacent la base : aucun n'exécute de vidage réel.
 
-## Reste à décider
+## Module mort supprimé
 
-- `app/ingestion/dirty_retriever.py` : ne sert plus qu'à un script supprimé, donc du code mort (signalé, **non supprimé**).
+`app/ingestion/dirty_retriever.py` (39 lignes, une fonction `query_top_n_regles`) ne servait plus qu'au script du même nom. Supprimé sur décision de David, après vérification qu'aucun code, test ni configuration ne le référençait. Rien ne reste à décider pour cette carte.

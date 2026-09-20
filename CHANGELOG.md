@@ -11,6 +11,12 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Module mort `app/ingestion/dirty_retriever.py` supprimé (suite de la carte
+  #44)** — sur décision de David (« on peut supprimer »). Vérifié d'abord : aucune
+  référence dans le code, les tests ni la configuration ; il ne servait qu'au
+  script du même nom, supprimé plus tôt. `git rm`, historique conservé. Aucun
+  test à adapter. `TODO.md` et `docs/scripts_reorganisation.md` mis à jour.
+
 - **`clear_opquast_tables.py` gardé, avec une confirmation `[y/N]` (suite de la
   carte #44)** — décision de David : ne pas le supprimer. Le script annonce le nombre
   de règles et **la base visée**, et n'agit que sur un `y` (Entrée, « oui » ou une
