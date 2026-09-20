@@ -11,6 +11,41 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Collection Bruno extraite de la carte #45 vers la carte #50** — décision de
+  David : le versionnement de la collection `qualicheck` n'est pas fait ce jour.
+  Carte #50 « Versionner la collection Bruno qualicheck » créée (En attente,
+  priorité 0, 1,5 h estimées). Carte #45 : critère de clôture et section Bruno
+  retirés, estimation de première intention ramenée à 6 h (champ Kanboard
+  `time_estimated` inchangé). Remplace le rattachement à #45 décrit plus bas.
+
+- **Revue automatisée de PR par LLM (carte #45)** — `scripts/review_pr.py` :
+  récupère le diff `origin/<base>...HEAD`, le fait relire par le LLM (rôle
+  `revue`, `scripts/review_pr_config.yml`, même déploiement Azure que
+  l'enrichissement) et poste le résultat en commentaire sur la PR. Écarté :
+  le Claude Code GitHub Action officiel (authentification OIDC GitHub
+  uniquement, incompatible Gitea). Workflows `ci-review.yml` ajoutés sur les
+  deux hébergeurs (`pull_request` vers `dev`), ainsi que les miroirs GitHub
+  de `ci-feature.yml`/`ci-dev.yml` — la CI tourne sur Gitea **et** GitHub
+  jusqu'à `dev` inclus, au-delà (tag, staging) reste Gitea.
+  **Durcissement après revue à froid (Opus)** : verdict structuré
+  `ok`/`mineur`/`bloquant` — seul `bloquant` fait échouer la CI, toute panne
+  de l'outil (réponse hors format, LLM injoignable, diff tronqué) reste non
+  bloquante ; retry 3 tentatives avec backoff exponentiel (règle projet, qui
+  manquait) ; coût de chaque revue calculé et affiché dans le commentaire
+  (`modele` et tarifs du config, jusque-là morts) ; diff au-delà de 60 000
+  caractères désormais tronqué avec avertissement au lieu de faire échouer la
+  CI ; validation Pydantic du verdict dans la zone du retry (un verdict hors énumération est retenté puis non bloquant, au lieu de lever un `KeyError`) ; 11 tests unitaires dans `tests/unit/scripts/test_review_pr.py`.
+  Déclencheur de `ci-acceptance.yml` resserré de `tags: '**'` au préfixe
+  `YYYY-MM-DD-*` (tout tag déclenchait sinon des appels LLM payants).
+  Décisions : `conception/4_ci_cd/strategie_tests_et_gates.md`, plan :
+  `docs/superpowers/plans/2026-09-20-revue-pr-llm-implementation.md`.
+  **Défaut connu non corrigé, différé après la carte #32 (C4,
+  authentification)** : le garde-fou de tag de `cd-staging.yml`
+  (`git describe --tags --exact-match`) porte sur le SHA de `staging`, qui
+  diffère du SHA tagué sur la branche feature si le merge n'est pas
+  fast-forward — il refuserait alors tout déploiement. Sans effet d'ici là,
+  rien ne se déployant sur staging avant #32.
+
 - **Implémentation carte #45 (CI/CD LLMOps, suite de l'atelier)** —
   `tests/acceptance/rag_dense_acceptance.py` déplacé/renommé
   `tests/mesures/mesure_rag_dense.py` (incohérence corrigée, cible Makefile

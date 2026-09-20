@@ -1,0 +1,42 @@
+name: CI — Revue automatisée (PR)
+
+# Script maison (scripts/review_pr.py) plutôt que le Claude Code GitHub
+# Action officiel : celui-ci n'authentifie qu'en OIDC GitHub, inutilisable
+# sur Gitea (hébergeur principal). Voir
+# conception/4_ci_cd/strategie_tests_et_gates.md.
+on:
+  pull_request:
+    branches:
+      - dev
+
+permissions:
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Installer les dépendances
+        run: uv sync
+
+      - name: Revue automatisée du diff
+        env:
+          AZURE_AI_ENDPOINT: ${{ secrets.AZURE_AI_ENDPOINT }}
+          AZURE_AI_API_KEY: ${{ secrets.AZURE_AI_API_KEY }}
+          AZURE_MODEL_KIMI: ${{ secrets.AZURE_MODEL_KIMI }}
+          REVIEW_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          uv run python scripts/review_pr.py \
+            --host gitea \
+            --api-url "${{ github.server_url }}" \
+            --repo "${{ github.repository }}" \
+            --pr "${{ github.event.pull_request.number }}" \
+            --base "${{ github.event.pull_request.base.ref }}"

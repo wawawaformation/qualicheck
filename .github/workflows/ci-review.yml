@@ -1,0 +1,40 @@
+name: CI — Revue automatisée (PR)
+
+# Miroir GitHub de .gitea/workflows/ci-review.yml — même script maison
+# (scripts/review_pr.py), pas l'Action officielle Claude Code GitHub Action.
+on:
+  pull_request:
+    branches:
+      - dev
+
+permissions:
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Installer les dépendances
+        run: uv sync
+
+      - name: Revue automatisée du diff
+        env:
+          AZURE_AI_ENDPOINT: ${{ secrets.AZURE_AI_ENDPOINT }}
+          AZURE_AI_API_KEY: ${{ secrets.AZURE_AI_API_KEY }}
+          AZURE_MODEL_KIMI: ${{ secrets.AZURE_MODEL_KIMI }}
+          REVIEW_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          uv run python scripts/review_pr.py \
+            --host github \
+            --api-url "${{ github.api_url }}" \
+            --repo "${{ github.repository }}" \
+            --pr "${{ github.event.pull_request.number }}" \
+            --base "${{ github.event.pull_request.base.ref }}"

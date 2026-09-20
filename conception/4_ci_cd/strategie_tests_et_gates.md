@@ -1,10 +1,23 @@
 # Stratégie de tests, gates et manifest de déploiement (LLMOps)
 
 2026-09-20 · conçu et validé avec David (atelier carte Kanboard #45) —
-**mixte** : certains éléments sont déjà réels (`ci-dev.yml`, `cd-staging.yml`
-existants), d'autres sont une cible pas encore implémentée (signalé
-explicitement ci-dessous). Vocabulaire utilisé : `docs/glossaire_tests.md`.
-Schéma : `conception/4_ci_cd/ci_cd_llmops.drawio`.
+**mixte** : certains éléments sont déjà réels, d'autres sont une cible pas
+encore implémentée (signalé explicitement ci-dessous). Vocabulaire utilisé :
+`docs/glossaire_tests.md`. Schéma : `conception/4_ci_cd/ci_cd_llmops.drawio`.
+
+**État réel au 2026-09-20 (vérifié dans le dépôt, fait foi sur le reste du
+document)** :
+
+| Élément | État |
+| --- | --- |
+| `ci-feature.yml`, `ci-dev.yml` (Gitea + GitHub) | fait |
+| `ci-acceptance.yml` sur tag (Gitea) | fait |
+| Garde-fou de tag dans `cd-staging.yml` | fait mais **connu cassé**, cf. « Tag » |
+| `ci-review.yml` + `scripts/review_pr.py` (revue LLM de PR) | fait, **à durcir** (cf. plan `docs/superpowers/plans/2026-09-20-revue-pr-llm-implementation.md`) |
+| Gate à seuil `dev -> staging` | non implémenté |
+| 2e image Docker (`api-business`) | non implémenté |
+| Manifest de déploiement | non implémenté |
+| Traces Langfuse pendant l'acceptance de PR | non implémenté |
 
 **Bloqué par la carte #32** ("C4 — Authentification de l'utilisateur", pas
 démarrée) : tout ce qui touche au déploiement de `api-business` (agent US2)
@@ -26,12 +39,12 @@ un nouveau test sans redemander.
 
 ```
 branche feature
-  -> CI feature (lint + tests unitaires/intégration, LLM mocké)  [ci-feature.yml, à faire]
+  -> CI feature (lint + tests unitaires/intégration, LLM mocké)  [ci-feature.yml, fait]
   -> CI verte (gate)
-  -> tag manuel (YYYY-MM-DD-<sha7>) quand la branche est prête   [nouveau, cf. « Tag »]
-  -> Acceptance (vrais tests, appels LLM réels)                   [déclenché par le push du tag,
-                                                                    workflow séparé, à faire]
-  -> revue de code (PR, auto-revue)
+  -> tag manuel (YYYY-MM-DD-<sha7>) quand la branche est prête   [cf. « Tag »]
+  -> Acceptance (vrais tests, appels LLM réels)                   [ci-acceptance.yml, fait —
+                                                                    déclenché par le push du tag]
+  -> revue de code (PR, auto-revue + revue LLM ci-review.yml)
   -> merge sur dev
   -> gate à seuil (déclenché à la promotion dev -> staging, PAS à chaque push)
   -> déploiement staging (build+push 2 images + manifest)        [aujourd'hui : 1 seule image poussée,
@@ -57,16 +70,37 @@ un retour rapide dès qu'une branche est taguée, avant même le merge sur
   cohérent avec la décision déjà prise plus bas de ne pas utiliser de
   version sémantique (`v1.2.3`) tant qu'aucun processus de release formel
   n'existe.
-- **Déclencheur des vrais tests d'acceptance** : le push du tag lui-même
-  (`on: push: tags: '**'`), workflow séparé de `ci-feature.yml`/`ci-dev.yml`.
-  Prépare un Postgres éphémère, ingère et embedde réellement le référentiel
-  (coût réel accepté), puis rejoue les tests d'acceptance qui en sont
-  vraiment (`check_rag_acceptance.py`, `check_api_regles_acceptance.py`,
-  `check_api_regles_dense_acceptance.py`) — pas `mesure_rag_dense.py`, qui
-  reste une mesure, pas une acceptance (cf. plus bas).
-- **Garde-fou avant déploiement staging** : `cd-staging.yml` doit vérifier
-  que le SHA déployé correspond à un tag existant avant de construire/pousser
-  les images — refuser sinon. Non implémenté à ce jour.
+- **Déclencheur des vrais tests d'acceptance** (`ci-acceptance.yml`, fait) :
+  le push du tag lui-même, workflow séparé de `ci-feature.yml`/`ci-dev.yml`.
+  Prépare un Postgres éphémère, importe le référentiel déjà embeddé, puis
+  rejoue les tests d'acceptance qui en sont vraiment
+  (`check_rag_acceptance.py`, `make api-regles-acceptance`,
+  `make api-regles-dense-acceptance`) — pas `mesure_rag_dense.py`, qui reste
+  une mesure, pas une acceptance (cf. plus bas).
+- **Filtre du déclencheur — à resserrer** : le workflow écoute aujourd'hui
+  `on: push: tags: '**'`, c'est-à-dire **tout** tag, alors que le format
+  décidé est `YYYY-MM-DD-<sha7>`. Un tag sans rapport (documentation,
+  release future, tag posé par erreur) déclencherait donc des appels LLM et
+  embeddings réels payants. **Décision : resserrer le filtre** à
+  `"20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"` — le déclencheur coûteux doit
+  suivre exactement la convention qui le justifie, sinon le découplage
+  coût/merge décrit plus haut ne tient plus. Un glob suffit (Actions ne
+  supporte pas les expressions régulières) ; il laisse passer un tag mal
+  formé du même préfixe, ce qui est acceptable : le but est d'écarter les
+  tags d'une autre nature, pas de valider une syntaxe.
+- **Garde-fou avant déploiement staging — fait, mais connu cassé** :
+  `cd-staging.yml` exécute `git describe --tags --exact-match ${{ github.sha }}`
+  avant de construire/pousser les images. **Défaut connu** : ce contrôle
+  porte sur le SHA du commit présent sur `staging`, alors que le tag est
+  posé sur la branche feature. Si la promotion vers `staging` crée un commit
+  de merge (merge non fast-forward), les deux SHA diffèrent et le garde-fou
+  refuse **tout** déploiement. **Correction différée** (décision de David,
+  2026-09-20) : rien ne se déploie sur `staging` tant que la carte **#32
+  (C4 — authentification)** n'est pas faite, donc le défaut n'a aucun effet
+  d'ici là. À reprendre en même temps que la reprise du déploiement staging
+  (pistes : merge fast-forward imposé, ou contrôle sur un tag atteignable
+  via `git describe --tags` sans `--exact-match`, ou tag reporté sur le
+  commit de merge).
 - **Données du Postgres éphémère** : `ci-acceptance.yml` importe
   `tests/fixtures/referentiel_embedde.sql` (référentiel déjà ingéré/embeddé,
   commité) plutôt que de relancer `make ingestion`/`make embed-rules` à
@@ -75,6 +109,12 @@ un retour rapide dès qu'une branche est taguée, avant même le merge sur
   **statique** : à régénérer manuellement (voir `tests/fixtures/README.md`)
   quand le référentiel change vraiment, sinon les tests d'acceptance
   tournent sur des données périmées.
+- **Publication du fixture — question réglée (2026-09-20)** : ce fichier
+  contient l'intégralité du référentiel Opquast et part sur le miroir
+  GitHub public. David confirme que le référentiel est publiable
+  (**CC BY-SA 4.0**) : pas d'obstacle à le versionner. Seule contrepartie
+  restante, assumée : ~5 Mo ajoutés définitivement à l'historique Git à
+  chaque régénération.
 
 ## Répartition mock / réel par étage (décision)
 
@@ -181,12 +221,55 @@ pas une exception à la règle ci-dessus, juste un cas où le coût est nul.
   2. Un `APP_ENV` distinct (ex. `ci`/`pr`) pour ne pas mélanger ces traces
      avec `dev`/`staging`/`prod` dans Langfuse.
 
-## Idée non actée : revue automatisée additionnelle
+## Revue automatisée additionnelle sur PR (décision, 2026-09-20)
 
-Ajouter une revue automatisée par Claude Code GitHub Action (backend Azure
-AI Foundry, payé par la formation, pas l'abonnement personnel de David) en
-complément de l'auto-revue humaine sur la PR. Pas de workflow existant pour
-ça — à concevoir séparément si retenu.
+**Écarté** : le Claude Code GitHub Action officiel — il n'authentifie qu'en
+OIDC GitHub (App Registration + federated credential), une dépendance
+GitHub incompatible avec Gitea, l'hébergeur principal du projet.
+
+**Décision** : un script maison (`scripts/review_pr.py`), pas de nouveau
+module `app/` (outil d'ops sans logique métier applicative, même exception
+que `scripts/create_api_regles_key.py`).
+
+- Récupère le diff `origin/<base>...HEAD`, l'envoie au LLM avec un prompt
+  de relecture fixe, poste le résultat en commentaire sur la PR.
+- **Modèle** : `kimi-k2.6`, même déploiement Azure que le rôle
+  `enrichissement` (`app/ingestion/config.yml`) — pas de nouveau secret
+  Azure, config dans `scripts/review_pr_config.yml` (rôle `revue`, même
+  forme que les autres `config.yml` du dépôt). Écarté : les modèles Claude
+  du projet Azure AI Foundry `dlegrandext-4532` — clé/config déjà obtenues
+  mais devenues sans objet, ce chantier n'en a pas besoin pour l'instant.
+- **Portabilité Gitea/GitHub** : le host est un paramètre (`--host
+  gitea|github`), pas du code dupliqué — seul le contrat de l'API de
+  commentaire diffère (URL de base, schéma du jeton), le reste (diff,
+  prompt, appel LLM) est identique. Les deux sont implémentés.
+- **Déclencheur et périmètre des hébergeurs** : `pull_request` vers `dev`.
+  La CI (lint, tests unitaires/intégration) tourne sur Gitea **et** GitHub
+  jusqu'à `dev` inclus (`ci-feature.yml`/`ci-dev.yml`/`ci-review.yml`
+  dupliqués dans `.gitea/workflows/` et `.github/workflows/`) ; au-delà
+  (tag, gate à seuil, déploiement staging) reste Gitea uniquement, propre à
+  l'hôte de déploiement réel.
+- **Garde-fou de coût** : au-delà de 60 000 caractères (~15k tokens), le
+  diff est **tronqué** et le commentaire le dit en première ligne (revue
+  partielle annoncée, jamais silencieuse). **Décision revue le 2026-09-20** :
+  le code faisait à l'origine un `sys.exit(1)`, ce qui rendait la CI rouge
+  pour une raison sans rapport avec la qualité du code. Une PR volumineuse
+  n'est pas un défaut : elle mérite un avertissement, pas un blocage.
+- **Verdict structuré et blocage** (décision de David, 2026-09-20) : le LLM
+  rend un verdict `ok` / `mineur` / `bloquant`. `ok` et `mineur` sont
+  informatifs (commentaire posté, CI verte) ; seul `bloquant` fait échouer
+  la CI. **Principe unique** : seul un verdict `bloquant` explicitement rendu
+  bloque. Toute défaillance de l'outil lui-même (réponse hors format après
+  parsing, LLM injoignable après 3 tentatives, diff tronqué) reste non
+  bloquante et laisse une trace explicite — un outil de revue en panne ne
+  doit pas se transformer en gate.
+- **Retry** : 3 tentatives avec backoff exponentiel sur l'appel LLM, comme
+  tout appel LLM du projet (règle non négociable, `CLAUDE.md`).
+
+**Statut** : implémenté dans cette session, mais le verdict structuré, le
+retry, le test unitaire et le suivi de coût restent à faire. Plan
+d'exécution détaillé :
+`docs/superpowers/plans/2026-09-20-revue-pr-llm-implementation.md`.
 
 ## Hors périmètre (renvoyé à une autre carte)
 

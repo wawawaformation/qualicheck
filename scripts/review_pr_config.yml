@@ -1,0 +1,10 @@
+# Rôle LLM pour la revue automatisée de PR (scripts/review_pr.py).
+# Aucun secret ici : voir .env / secrets Gitea Actions.
+
+revue:
+  modele: kimi-k2.6
+  env_var: AZURE_MODEL_KIMI
+  # Même déploiement Azure que le rôle enrichissement (app/ingestion/config.yml) —
+  # tarifs identiques, reconstruits depuis la facture Azure réelle du 19/07/2026.
+  prix_entree_par_million: 0.8008
+  prix_sortie_par_million: 3.3875

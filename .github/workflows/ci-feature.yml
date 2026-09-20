@@ -1,0 +1,70 @@
+name: CI — Feature
+
+# Miroir GitHub de .gitea/workflows/ci-feature.yml (Gitea reste l'hébergeur
+# principal — voir conception/4_ci_cd/strategie_tests_et_gates.md). CI
+# dupliquée jusqu'à dev inclus sur les deux hébergeurs ; au-delà (tag,
+# staging) reste Gitea uniquement.
+on:
+  push:
+    branches-ignore:
+      - main
+      - staging
+      - dev
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      # volontairement identique à POSTGRES_DB : la base du service CI est éphémère et c'est la seule migrée
+      POSTGRES_TEST_DB: ${{ secrets.POSTGRES_DB }}
+      # Le nom d'une base n'est pas un secret, et celle du service CI est
+      # éphémère : littéral plutôt qu'un secret supplémentaire à gérer.
+      POSTGRES_DB_AUDIT: qualicheck_audit
+      POSTGRES_TEST_DB_AUDIT: qualicheck_audit
+      # Un service voisin est joignable par son nom de service, pas par
+      # localhost, que le job tourne en VM (GitHub) ou en conteneur (Gitea).
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Installer les dépendances
+        run: uv sync
+
+      - name: Linting (ruff)
+        run: uv run ruff check
+
+      - name: Appliquer les migrations du référentiel
+        run: uv run python scripts/migration.py
+
+      - name: Créer et migrer la base du domaine audit
+        run: |
+          uv run python scripts/create_db_audit.py
+          uv run python scripts/migration.py audit
+
+      - name: Tests unitaires et d'intégration
+        run: uv run pytest tests/unit tests/integration -v

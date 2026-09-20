@@ -6,7 +6,12 @@ name: CI — Acceptance (sur tag)
 on:
   push:
     tags:
-      - "**"
+      # Format décidé : YYYY-MM-DD-<sha7>. Filtre resserré pour qu'un tag
+      # d'une autre nature (doc, release) ne déclenche pas d'appels LLM et
+      # d'embeddings réels payants. Actions ne supporte que les globs, pas
+      # les expressions régulières : le préfixe date suffit à écarter les
+      # tags d'une autre nature.
+      - "20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*"
 
 jobs:
   acceptance:
