@@ -44,6 +44,12 @@ Format d'entrée, une ligne par réalisation :
   du cœur Kanboard (fragile aux mises à jour) pour un graphe redondant
   avec les analytics déjà disponibles (répartition, CFD, lead/cycle
   time, temps estimé vs réel) — abandonné, colonne laissée en `Done`.
+- **Module observabilité OpenTelemetry (tâche #19 A2)** — exporteur JSONL
+  local + mode OTLP configurable via `OTEL_EXPORTER`. Implémentation :
+  `app/observability/tracing.py` avec JSONLSpanExporter, setup_tracing(),
+  get_tracer(), current_trace_id(). Tests dans `tests/unit/test_tracing.py`.
+  Dépendances opentelemetry-sdk et opentelemetry-exporter-otlp-proto-http
+  ajoutées — voir `app/observability/`.
 
 ## 2026-09-19 — Claude Code
 
