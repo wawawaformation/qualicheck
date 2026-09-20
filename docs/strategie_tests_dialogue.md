@@ -26,7 +26,7 @@ Pourquoi c'est important pour David : sa mémoire de travail humaine est limité
 
 | # | Temps | État |
 |---|---|---|
-| 1 | David définit | **en attente** (David écrit dans le chat) |
+| 1 | David définit | **unitaire reçu** ; intégration en attente |
 | 2 | Claude définit | pas commencé, volontairement |
 | 3 | Mise en commun | à faire |
 | 4 | Schéma de David | à faire |
@@ -36,11 +36,23 @@ Kanboard : carte #45 « En cours » depuis le 2026-09-20 15h37, estimée 7,5 h. 
 
 ## Définitions de David (mot pour mot)
 
-_À remplir dès qu'il les écrit._
+### Test unitaire (2026-09-20, 15h47)
+
+> un test unitaire.  test qu'un petit bout : un fichier, une classe par exemple. comme en se trouve peut-etre au milieu d'un tout, on peu utiliser des mocks ou des fixtures (je ne sais pas vraiment la différence)
+
+### Test d'intégration
+
+_En attente._
 
 ## Définitions de Claude
 
 _À écrire seulement après celles de David._
+
+## Glossaire (précisions données à David, à valider ensemble)
+
+- **Mock** : un faux objet qui remplace une dépendance du code testé, pour l'isoler. Exemple du projet : `patch("app.agent_us2.tools.httpx.get")` remplace l'appel réseau ; on peut aussi vérifier comment il a été appelé.
+- **Fixture** : la préparation réutilisable du décor d'un test (données, configuration, objets), fournie par pytest avec `@pytest.fixture`. Exemples du projet : `env_api` (pose l'URL de l'API), `llm` (remplace le modèle).
+- Ce ne sont pas deux alternatives : une fixture est un **mécanisme de préparation** et peut contenir des mocks. Un mock est un faux objet, une fixture est ce qui prépare le test.
 
 ## Accords, écarts, manques
 
@@ -65,3 +77,4 @@ Ce que le dépôt contient aujourd'hui, pour situer la discussion :
 ## Journal du dialogue
 
 - 2026-09-20 15h37 : David lance l'atelier (« d'abord moi, puis toi, puis ensemble ») ; Claude ouvre la carte #45, lance le chrono et crée ce document.
+- 2026-09-20 15h47 : David définit le test unitaire (voir plus haut, mot pour mot) et demande la différence entre mock et fixture ; Claude répond (glossaire) sans donner sa propre définition du test unitaire.
