@@ -11,6 +11,34 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **A4 : fiche et scénarios Gherkin écrits** (carte Kanboard #26, passée
+  « En cours » le 2026-09-20 à 13h38) — décisions actées avec David : un
+  outil `lire_regle` à part, règle complète sans troncature, 404 « Règle N
+  inconnue » remontée à l'agent comme résultat avec son code (`statut: 404`,
+  même hors HTTP, comme vocabulaire commun), et les pannes comme un 5xx
+  (statut de l'API transmis tel quel ; 503 quand le service ne répond pas),
+  plus aucune exception vers l'agent. Deux usages retenus : numéro cité par l'utilisateur, ou règle
+  vue tronquée dans une recherche que l'agent veut lire en entier. Pour que
+  ce second usage soit possible, la recherche devra signaler les solutions
+  qu'elle coupe (indicateur `solution_tronquee` par règle) : petite
+  modification de l'outil d'A1, décidée avec David. Neuf scénarios — voir
+  `conception/3_autre_us/us2_question_libre/increments/A_agent_nu/A4_lecture_regle_par_numero.md`.
+  Schéma `A4_lecture_regle_par_numero.drawio` (+ `.png`) produit à partir de
+  la structure d'A2, puis refondu à la demande de David : le LLM est visible
+  et choisit parmi ses outils, regroupés dans un container vertical « Outils
+  de l'agent » ; les deux chemins vers `lire_regle` (numéro cité, ou règle
+  vue tronquée dont le résultat revient au LLM), les issues 200 / 404 / 5xx
+  et le cas « aucune réponse », avec légende de couleurs. Pas encore de code.
+
+- **Reliquat A2 « valider l'export OTLP vers Langfuse » clos, sans
+  nouveau test** — la validation réelle existait déjà (entrée « Validation
+  réelle de l'export OTLP vers Langfuse (sous-tâche #23) » plus bas) ; seul
+  `TODO.md` était resté périmé (case non cochée, consigne sur le port 8000
+  au lieu de 8882). Revérifié par lecture de l'API Langfuse v2 : la trace
+  `3bbed7a031660bc208006959659e7354` contient bien 8 observations (racine
+  `repondre`, 4 `appel_llm`, 3 `appel_outil`). Item condensé dans
+  `TODO.md`.
+
 - **Carte Kanboard #47 créée** — « CD staging : prendre en compte le
   service api-business (agent US2) », swimlane Epic Dev, colonne « En
   attente », difficulté élevée (score 5), estimée 6 h, marquée en rouge.
