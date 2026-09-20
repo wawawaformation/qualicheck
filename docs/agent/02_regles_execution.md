@@ -33,7 +33,15 @@ d'étape, ne pas implémenter avant la fin de la séquence :
    après.
 10. Implémenter seulement une fois les 9 points précédents faits.
 
-Fin de séquence : une fois la carte terminée, ajouter un commentaire de
+Début de séquence : dès le premier acte concret sur une carte, la passer en
+colonne **En cours** (`column_id: 3`), renseigner sa **date de début** et
+**lancer le chrono** (chrono d'une sous-tâche ; s'il n'y en a pas, en créer une
+ou renseigner `time_spent` sur la carte). Le temps réel de chaque carte nourrit
+la mesure du projet (écart estimé/réel) : sans lui, l'écart n'est pas mesurable.
+Ne pas attendre que l'utilisateur le demande.
+
+Fin de séquence : arrêter le chrono et vérifier que `time_spent` est renseigné,
+puis, une fois la carte terminée, ajouter un commentaire de
 clôture puis la déplacer en colonne **Done** (`column_id: 4`) et la
 **laisser active** — ne jamais la fermer (`closeTask`), sinon elle disparaît
 du board.

@@ -11,6 +11,24 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **A4 : un 4xx de l'API des règles est journalisé en `INFO`, plus en
+  `WARNING`** — relevé pendant la vérification avec le vrai modèle : « Règle
+  9999 inconnue » (404) alertait l'exploitant comme une panne. Désormais
+  `WARNING` pour un 5xx, l'absence de réponse et une réponse illisible, `INFO`
+  pour un 4xx. Test écrit d'abord (2 rouges), puis
+  `app/agent_us2/tools.py` : 50 tests `agent_us2`, 274 unitaires, `ruff` propre.
+  Fiche A4 mise à jour.
+
+- **Chrono Kanboard oublié sur A4 : temps reconstruit, règle rendue explicite** —
+  la carte #26 n'avait aucune sous-tâche et son chrono n'a pas été lancé ; David
+  l'a relevé (« il ne faut jamais l'oublier, surtout que je ne l'ai pas
+  demandé »). `time_spent` reconstruit à 0,98 h (démarrage 13h38 -> dernier
+  commit 14h37), signalé comme tel dans un commentaire de la carte (c'est du
+  temps écoulé, pas un chrono). La règle « lancer le chrono au démarrage,
+  l'arrêter et vérifier `time_spent` à la fin, sans attendre qu'on le demande »
+  est ajoutée dans `docs/agent/02_regles_execution.md` (début et fin de
+  séquence) pour que tous les outils agentiques la suivent.
+
 - **A4 : nom d'outil inventé géré, et vérification avec le vrai modèle** —
   un nom d'outil inventé par le LLM ne lève plus de `KeyError` : l'agent reçoit
   `{"statut": 404, "erreur": "Outil inconnu : ..."}` et le span s'appelle

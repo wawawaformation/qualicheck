@@ -258,3 +258,18 @@ class TestReponseIllisibleEtJournalisation:
             r.name == "app.agent_us2.tools" and r.levelno == logging.WARNING
             for r in caplog.records
         )
+
+    @pytest.mark.parametrize("statut", [404, 422])
+    def test_une_erreur_4xx_est_journalisee_en_info_pas_en_avertissement(
+        self, env_api, caplog, statut
+    ):
+        """Casse si un 404 (règle inconnue : résultat normal) pollue le journal de
+        l'exploitant comme une panne ; seuls 5xx et absence de réponse alertent."""
+        corps = {"detail": "Règle 999 inconnue"}
+        with caplog.at_level(logging.INFO, logger="app.agent_us2.tools"):
+            with patch("app.agent_us2.tools.httpx.get", return_value=_reponse(statut, corps)):
+                lire_regle.invoke({"numero": 999})
+
+        enregistrements = [r for r in caplog.records if r.name == "app.agent_us2.tools"]
+        assert any(r.levelno == logging.INFO for r in enregistrements)
+        assert not any(r.levelno >= logging.WARNING for r in enregistrements)

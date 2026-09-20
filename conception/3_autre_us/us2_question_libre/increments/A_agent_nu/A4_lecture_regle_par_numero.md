@@ -71,7 +71,8 @@ deux outils.
   span la verrait comme un succès) : quand un outil renvoie un statut d'erreur,
   le span porte `outil.statut` ; il passe en erreur seulement pour un 5xx (une
   panne), pas pour un 404 (une règle inconnue est un résultat normal). L'outil
-  journalise aussi un avertissement. À valider.
+  journalise aussi : `WARNING` pour une panne (5xx, aucune réponse, réponse
+  illisible), simple `INFO` pour un 4xx (bruit inutile pour l'exploitant).
 - **Un 200 dont le corps n'est pas du JSON** (proxy, page d'erreur) est une
   mauvaise réponse d'un service amont : l'outil renvoie 502, jamais une
   exception. À valider.

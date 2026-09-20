@@ -64,7 +64,10 @@ def _appeler_api(chemin: str, params: dict | None = None) -> tuple[object, dict 
             detail = None
         if not isinstance(detail, str) or not detail:
             detail = f"Erreur HTTP {statut}"
-        logger.warning("API des règles : statut %s sur %s", statut, chemin)
+        # Un 4xx (ex. règle inconnue) est un résultat normal : INFO. Seule une
+        # panne (5xx) alerte l'exploitant.
+        niveau = logging.WARNING if statut >= 500 else logging.INFO
+        logger.log(niveau, "API des règles : statut %s sur %s", statut, chemin)
         return None, {"statut": statut, "erreur": detail}
     except httpx.TransportError:
         # Délai dépassé ou connexion impossible : l'API ne répond pas.
