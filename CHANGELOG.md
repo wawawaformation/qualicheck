@@ -11,6 +11,18 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Document de suivi de l'atelier de la carte #45** — `docs/strategie_tests_dialogue.md`,
+  tenu au fur et à mesure (demande de David : les échanges doivent survivre à la
+  session) : méthode, état d'avancement, sections pour les définitions de David puis de
+  Claude, constats factuels utiles. Pointeur ajouté dans `docs/agent/04_contexte_actif.md`.
+
+- **Carte Kanboard #45 démarrée (stratégie de tests)** — colonne « En cours »,
+  date de début 2026-09-20 15h37, 3 sous-tâches, chrono lancé sur la première
+  (« Définir test unitaire et test d'intégration »). Méthode décidée par David :
+  il définit d'abord unitaire et intégration, puis Claude, puis mise en commun ;
+  ensuite David montre un schéma, puis on avise (CI, mocks, mesures, collection
+  Bruno). Claude ne propose pas sa définition avant celle de David.
+
 - **`scripts/creer_cle_api_regles.py` renommé `create_api_regles_key.py`** — le nom
   de fichier était en français, contre la règle « code en anglais, commentaires en
   français » (remarque de David). `api_regles` est conservé : c'est le nom du service

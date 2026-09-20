@@ -26,6 +26,12 @@ Objectif: donner un contexte fiable et peu couteux en tokens.
 - Pipeline: `scripts/ingestion.py` + `app/ingestion/`
 - Config des roles/modeles: `app/ingestion/config.yml` (enrichissement, embedding), `app/retrieval/config.yml` (decomposition, jugement, guardrail, rag_acceptance)
 
+## Chantier en cours
+
+- Carte #45, strategie de tests : atelier de definitions avec David, suivi pas a pas dans
+  `docs/strategie_tests_dialogue.md` (a lire en premier pour reprendre). Ne pas
+  proposer de definition avant celle de David.
+
 ## Ce qu'il ne faut pas charger par defaut
 
 - `docs/superpowers/**` (historique de plans)
