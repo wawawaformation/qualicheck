@@ -25,12 +25,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # suite et bruyamment — en cours de requête, get_tracer() dégrade
     # silencieusement plutôt que de casser la réponse.
     setup_tracing(service_name="qualicheck-api-business")
-    logger.info("Agent US2 (question libre) démarré")
+    logger.info("API business (question libre) démarrée")
     yield
 
 
 app = FastAPI(
-    title="QualiCheck — Agent US2 (question libre)",
+    title="QualiCheck — API business",
     version="0.1.0",
     lifespan=lifespan,
 )

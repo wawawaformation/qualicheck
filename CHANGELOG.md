@@ -11,6 +11,12 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — OpenCode
 
+- **Titre Swagger de l'API business corrigé** — `app/agent_us2/main.py`
+  affichait « QualiCheck — Agent US2 (question libre) », remplacé par
+  « QualiCheck — API business » (cet étage est l'API partagée US1/US2).
+  Contrat `conception/3_autre_us/us2_question_libre/increments/A_agent_nu/openapi.json`
+  aligné sur le même titre.
+
 - **API business (agent US2) exposée sur le port 8882** — ajout d'un bloc
   `api_business.port: 8882` dans `app/agent_us2/config.yml`, d'une cible
   `make api-business` (uvicorn `app.agent_us2.main:app`), et d'un service
