@@ -32,6 +32,15 @@ Format d'entrée, une ligne par réalisation :
   (4 tâches TDD : module d'observabilité OTel, instrumentation de la
   boucle agent, instrumentation du retrieval, exposition de `trace_id`
   dans l'API). Aucun code applicatif encore écrit.
+- **A2 : test d'intégration réel avec traçage** — voir
+  `tests/integration/agent_us2/test_repondre.py` (nouveau test
+  `test_repondre_avec_tracing_reel`). Le seul test qui fait un vrai appel
+  HTTP à l'API des règles (pas un mock) vérifie maintenant qu'un vrai
+  appel d'outil produit un span `appel_outil` réel et que `trace_id`
+  couvre bien toute la requête — les tests unitaires d'A2 (Tâches 1 à 3)
+  mockaient LLM et outil, donc ne prouvaient que le mécanisme
+  d'émission, pas le comportement sur un vrai appel. Exécuté pour de
+  vrai (API des règles démarrée) : 2/2 passés.
 - **A2 Task 4 : `trace_id` exposé dans l'API** — voir
   `app/agent_us2/schemas.py`, `app/agent_us2/api.py`. `QuestionReponse`
   porte désormais `trace_id: str | None`, alimenté par
