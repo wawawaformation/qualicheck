@@ -873,15 +873,13 @@ Repérés en construisant l'index `jury/README.md`.
     déploie certainement pas sans token d'identification ».
   - À cadrer avec David avant tout déclenchement, dans tous les cas.
 
-- [ ] **Décider du script `scripts/clear_opquast_tables.py` et du module mort
-  `app/ingestion/dirty_retriever.py`** — reliquat de la carte #44 — `D`
-  - `make clear` a été retiré le 2026-09-20 (un seul appel effaçait les 245 règles
-    enrichies sur `POSTGRES_DB`, sans confirmation). Le script reste appelable à
-    la main : le supprimer (`ingestion.py` utilise déjà la même fonction avec
-    confirmation) ou le sortir de `scripts/`. Mettre ensuite à jour
-    `docs/schemas/points_entree_cli_reel.drawio`, qui le montre encore.
-  - `app/ingestion/dirty_retriever.py` n'est plus utilisé par rien depuis la
-    suppression du script du même nom (code mort, à supprimer si tu le confirmes).
+- [ ] **Décider du module mort `app/ingestion/dirty_retriever.py`** — reliquat de
+  la carte #44 — `D`
+  - N'est plus utilisé par rien depuis la suppression du script du même nom (code
+    mort). Signalé, **pas supprimé** : à ne retirer que sur ta décision.
+  - Le script `scripts/clear_opquast_tables.py` est décidé : il reste, avec une
+    confirmation `[y/N]` (14 tests, 2026-09-20). Le schéma
+    `docs/schemas/points_entree_cli_reel.drawio` est mis à jour en conséquence.
   - Détail : `docs/scripts_reorganisation.md`.
 
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`

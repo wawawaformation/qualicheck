@@ -16,7 +16,7 @@
           <mxGeometry height="55" width="440" x="280" y="32" as="geometry" />
         </mxCell>
 
-        <mxCell id="s2" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="scripts/clear_opquast_tables.py — aucune option CLI" vertex="1">
+        <mxCell id="s2" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontStyle=1;fontSize=11;html=0;" value="scripts/clear_opquast_tables.py — aucune option CLI, confirmation [y/N] avant le TRUNCATE" vertex="1">
           <mxGeometry height="110" width="1000" x="40" y="155" as="geometry" />
         </mxCell>
         <mxCell id="s2box" parent="s2" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontStyle=1;html=0;" value="TRUNCATE tables Opquast (CASCADE)&#xa;theme, objectif, phase, tag, regle + associations&#xa;(même fonction appelée en interne par ingestion.py si confirmation [n])" vertex="1">

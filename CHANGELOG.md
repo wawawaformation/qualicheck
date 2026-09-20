@@ -11,6 +11,17 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **`clear_opquast_tables.py` gardé, avec une confirmation `[y/N]` (suite de la
+  carte #44)** — décision de David : ne pas le supprimer. Le script annonce le nombre
+  de règles et **la base visée**, et n'agit que sur un `y` (Entrée, « oui » ou une
+  entrée fermée refusent ; même convention que `ingestion.py`). Tests écrits
+  d'abord (13 rouges), 14 tests dans `tests/unit/scripts/` : aucun n'exécute de
+  vidage réel (base et vidage remplacés) ; 245 règles vérifiées intactes après.
+  291 tests unitaires, `ruff` propre. Docs mises à jour (`scripts/CLAUDE.md`,
+  `docs/scripts_reorganisation.md`, schéma des points d'entrée, `TODO.md`). Rien
+  supprimé dans cette étape ; le module mort `app/ingestion/dirty_retriever.py`
+  reste signalé, non supprimé.
+
 - **Carte Kanboard #44 : `scripts/` rangé (20 scripts -> 7 points d'entrée)** —
   décisions de David : piste 1 (`scripts/` reste à plat et ne garde que les points
   d'entrée). 9 scripts déplacés avec `git mv` : 4 vérifications d'acceptance vers

@@ -14,7 +14,7 @@ Carte Kanboard #44 · 2026-09-20 · décisions de David.
 | Vérifications d'acceptance (appels réels) | `check_api_regles_acceptance`, `check_api_regles_dense_acceptance`, `check_rag_acceptance`, `rag_dense_acceptance` | **déplacées** vers `tests/acceptance/` |
 | Campagnes de mesure | `mesure_scores_refus`, `mesure_variantes_chunks`, `mesure_combinaisons_chunks`, `mesure_multi_vecteurs_chunks`, `mesure_guardrail_perimetre` | **déplacées** vers `tests/mesures/` |
 | Périmés | `ingestion_test`, `storage_smoke`, `dirty_retriever` | **supprimés** (l'historique reste dans Git) |
-| Destructif | `clear_opquast_tables` | cible `make clear` **retirée** ; sort de `scripts/` ou est supprimé : décision en attente |
+| Destructif | `clear_opquast_tables` | cible `make clear` **retirée** ; le script **reste**, avec une **confirmation** `[y/N]` ajoutée (décision de David) |
 
 ## Arborescence cible (piste 1, retenue)
 
@@ -49,8 +49,10 @@ Un seul appel effaçait les 245 règles enrichies, sans confirmation, sur `POSTG
 
 Avant et après : 277 tests unitaires, 2 tests d'intégration `agent_us2`, `ruff` sur `app tests scripts`. Chacun des 9 scripts se charge sans exécution et retrouve sa racine, ses jeux de données et son dossier de rapports. Les 9 cibles `make` affichent le bon chemin (`make -n`).
 
+## Le script `clear_opquast_tables.py` : gardé, avec une confirmation
+
+Décision de David : ne pas le supprimer, mais lui ajouter une confirmation. Il annonce désormais « Cela va supprimer les N règle(s) de la base « X ». Confirmer ? [y/N] » (le nom de la base est là pour qu'on voie qu'on vise la vraie base de dev) et n'agit que sur un `y`. Entrée, « oui », ou une entrée standard fermée (pipe, cron) refusent. Même convention que `scripts/ingestion.py`. Couvert par 14 tests (`tests/unit/scripts/`), qui remplacent la base : aucun n'exécute de vidage réel.
+
 ## Reste à décider
 
-- `scripts/clear_opquast_tables.py` : le supprimer (la fonction reste utilisée par `ingestion.py`, avec confirmation) ou le garder sans cible.
-- `app/ingestion/dirty_retriever.py` : ne sert plus qu'à un script supprimé, donc du code mort (à signaler, pas supprimé ici).
-- Le schéma `docs/schemas/points_entree_cli_reel.drawio` montre encore `clear_opquast_tables.py` : à mettre à jour selon la décision ci-dessus.
+- `app/ingestion/dirty_retriever.py` : ne sert plus qu'à un script supprimé, donc du code mort (signalé, **non supprimé**).
