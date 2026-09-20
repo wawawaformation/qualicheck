@@ -887,4 +887,22 @@ Repérés en construisant l'index `jury/README.md`.
     revue, dont une revue finale de branche). Ce point est la seule
     chose qui reste à vérifier en conditions réelles, pas une nouvelle
     tâche de conception.
+- [ ] **Renommer les secrets Gitea Actions de staging** (`FASTAPI_API_KEY*`
+  → `API_REGLES_TOKEN_*`) — soulevé le 2026-09-20 — `D`
+  - Le renommage des variables d'environnement API
+    (`FASTAPI_*` → `API_REGLES_URL_*`/`API_REGLES_TOKEN_*`, cf.
+    `CHANGELOG.md` 2026-09-20) a été appliqué au code, aux tests, au
+    workflow `.gitea/workflows/cd-staging.yml` et à la doc. Mais les
+    secrets eux-mêmes vivent côté Gitea (hors dépôt) : ils portent encore
+    les anciens noms `FASTAPI_API_KEY*`. Tant qu'ils ne sont pas renommés
+    (`tea actions secrets delete` + `tea actions secrets create`), le
+    déploiement staging écrira un `.env` sans `API_REGLES_TOKEN_*` et
+    `api-regles` refusera de démarrer (`RuntimeError`).
+  - À faire dans l'interface Gitea (repo `david/qualicheck`, Settings →
+    Actions → Secrets) ou via `tea actions secrets create
+    API_REGLES_TOKEN_DEV <jeton>` (idem pour `_ELIE`/`_DAVID`/`_FORMATEUR`),
+    en reprenant les valeurs actuelles des `FASTAPI_API_KEY*`.
+  - Vérifier ensuite : un push sur `staging` (ou un rerun de
+    `cd-staging.yml`) démarre `api-regles` sans erreur d'auth.
+
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`
