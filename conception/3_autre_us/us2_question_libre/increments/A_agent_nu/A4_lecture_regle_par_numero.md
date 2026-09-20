@@ -51,7 +51,30 @@ deux outils.
   panne serait classée `aucune_regle_pertinente`, ce qui est faux. Règle
   retenue (à valider) : `service_indisponible` seulement si un outil a renvoyé
   un 5xx **et** qu'aucune règle n'est citée ; si une nouvelle tentative a
-  réussi et que des règles sont citées, la réponse reste `repondu`.
+  réussi et que des règles sont citées, la réponse reste `repondu`. **Où vit
+  cette règle** (décision de David) : dans la boucle, qui expose un indicateur
+  de panne dans son résultat (`ResultatAgent.panne_outil`, vrai dès qu'un outil
+  a renvoyé un 5xx) ; l'API se contente de le traduire en statut.
+- **Une règle lue compte comme règle citée.** La boucle construit
+  `regles_citees` à partir des résultats d'outils, et ne connaît aujourd'hui
+  que le format de la recherche (`resultats`). Sans changement, une règle lue
+  par `lire_regle` ne serait pas comptée et la réponse serait classée
+  `aucune_regle_pertinente` alors qu'elle s'appuie sur la règle 116.
+- **Le span d'un appel d'outil porte le nom de l'outil** :
+  `questions_libres.appel_outil.rechercher_regles` /
+  `questions_libres.appel_outil.lire_regle` (choix de David : sinon deux outils
+  donnent des spans indiscernables dans Langfuse). Le nom vient de l'outil
+  demandé par le LLM, pas d'une liste écrite en dur ; le préfixe
+  `questions_libres.appel_outil` reste commun pour filtrer. L'attribut `outil`
+  est conservé.
+- **Une panne n'est plus invisible** (elle ne lève plus d'exception, donc le
+  span la verrait comme un succès) : quand un outil renvoie un statut d'erreur,
+  le span porte `outil.statut` ; il passe en erreur seulement pour un 5xx (une
+  panne), pas pour un 404 (une règle inconnue est un résultat normal). L'outil
+  journalise aussi un avertissement. À valider.
+- **Un 200 dont le corps n'est pas du JSON** (proxy, page d'erreur) est une
+  mauvaise réponse d'un service amont : l'outil renvoie 502, jamais une
+  exception. À valider.
 - Aucune modification de l'API des règles : la route existe et est en accès
   libre, sans jeton.
 
@@ -138,12 +161,18 @@ Fonctionnalité : Lecture d'une règle par son numéro
   Scénario : La lecture d'une règle est tracée comme tout appel d'outil
     Étant donné une question qui cite le numéro de règle 116
     Quand l'agent appelle l'outil de lecture par numéro
-    Alors une trace est émise pour cet appel, avec le nom de l'outil `lire_regle`
+    Alors une trace est émise pour cet appel, nommée `questions_libres.appel_outil.lire_regle`
     Et elle contient la durée et le résultat (succès ou erreur)
+
+  Scénario : Une règle lue par son numéro compte comme règle citée
+    Étant donné que l'agent a lu la règle 116 avec l'outil de lecture par numéro
+    Quand il répond à l'utilisateur
+    Alors la règle 116 figure dans les règles citées de la réponse
+    Et le statut de la réponse est `repondu`, pas `aucune_regle_pertinente`
 ```
 
-Les scénarios 3 à 10 sont déterministes (tests unitaires des outils et de la
-boucle, API simulée). Les scénarios 1, 2 et 11 dépendent du choix du modèle :
+Les scénarios 3 à 10 et 13 sont déterministes (tests unitaires des outils et
+de la boucle, API simulée). Les scénarios 1, 2 et 11 dépendent du choix du modèle :
 ils se vérifient par un test d'intégration réel et alimentent la mesure de la
 carte. Le scénario 12 protège la trace d'A2 quand la boucle passe à deux
 outils.

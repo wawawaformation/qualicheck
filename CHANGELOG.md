@@ -11,6 +11,91 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **A4 : nom d'outil inventé géré, et vérification avec le vrai modèle** —
+  un nom d'outil inventé par le LLM ne lève plus de `KeyError` : l'agent reçoit
+  `{"statut": 404, "erreur": "Outil inconnu : ..."}` et le span s'appelle
+  `questions_libres.appel_outil.inconnu` (le nom demandé reste en attribut,
+  pour ne pas faire proliférer les noms de spans). Test écrit d'abord (2 rouges
+  sur `KeyError`), puis corrigé : 48 tests `agent_us2`, 272 unitaires, `ruff`
+  propre. Vérification avec le vrai modèle (gpt-5.4-mini, API des règles
+  réelle, traces locales `tmp/verif_a4.jsonl`) : « Que dit la règle 116 ? » ->
+  `lire_regle` ; « Cherche les règles sur les images, puis donne-moi le détail
+  de la première » -> `rechercher_regles` puis `lire_regle` (2e chemin) ;
+  « Que dit la règle 9999 ? » -> `lire_regle`, 404 (`outil.statut=404`, span
+  **pas** en erreur), l'agent dit que la règle est inconnue sans rien inventer.
+  À noter pour la mesure : sur « Comment traiter les images décoratives ? » le
+  modèle enchaîne 6 recherches par mots-clés en 5 tours (des requêtes longues ne
+  renvoient rien) — comportement de la recherche par mots-clés, que la
+  recherche sémantique d'A3 vise justement. L'avertissement journalisé sur un
+  404 est du bruit pour l'exploitant (une règle inconnue n'est pas une panne).
+
+- **A4 : boucle, traçage, API et outils au vert** — implémenté par un sous-agent
+  Sonnet sur les 20 tests rouges, puis vérifié : `ruff` propre, 46 tests
+  `agent_us2` (dont l'intégration réelle contre l'API des règles), 270 tests
+  unitaires. `app/agent_us2/loop.py` : table `OUTILS` (nom -> outil) qui remplace
+  le câblage en dur, span `questions_libres.appel_outil.<nom de l'outil>`,
+  `outil.statut` sur le span et span en erreur pour un 5xx seulement,
+  `ResultatAgent.panne_outil`, règle lue comptée comme citée
+  (`_noter_regles_citees`), prompt système complété. `app/agent_us2/api.py` :
+  `service_indisponible` seulement si panne **et** aucune règle citée ;
+  `schemas.py` : nouvelle valeur de `StatutReponse` (miroir de `openapi.json`
+  0.3.0). `tools.py` : un 200 illisible renvoie 502, chaque panne est journalisée
+  en avertissement. Deux lignes trop longues de mes tests reformatées pour
+  `ruff`. **Trou connu, non couvert** : un nom d'outil inventé par le LLM lève
+  un `KeyError` (donc un 503 « Agent indisponible » sur `POST /questions`) au
+  lieu d'un résultat d'erreur lisible par l'agent. Reste aussi la vérification
+  avec le vrai modèle (choix de l'outil) et la fermeture de la carte #26.
+
+- **A4 : tests rouges de la boucle, du traçage, de l'API et des trous des
+  outils (20 échecs, tous pour la bonne raison)** — `test_loop.py` (6 tests
+  avec les vrais outils : deux outils proposés, aiguillage par nom, règle lue
+  comptée comme citée, `panne_outil` sur un 5xx, pas sur un 404, panne rattrapée
+  toujours signalée), `test_loop_tracing.py` (nom du span par outil, span en
+  erreur sur un 5xx avec `outil.statut`, pas sur un 404), `test_api.py`
+  (`service_indisponible` seulement si panne **et** aucune règle citée),
+  `test_tools.py` (200 illisible -> 502, panne journalisée en avertissement).
+  Choix de conception fixés par ces tests, à valider : `loop.OUTILS` (table
+  nom -> outil, remplace le câblage en dur), `ResultatAgent.panne_outil`,
+  `outil.statut`. Trois tests existants adaptés (`patch.dict(loop.OUTILS, ...)`
+  au lieu de `patch("...loop.rechercher_regles")`, nom de span par outil).
+  **Le test d'intégration `test_repondre_avec_tracing_reel` était déjà en échec
+  avant ce travail** (il attendait le span `appel_outil` alors que le renommage
+  du 2026-09-20 l'avait passé à `questions_libres.appel_outil`) : corrigé pour le
+  nouveau nom.
+
+- **A4 : deux décisions actées sur la boucle** — (1) la règle « panne d'outil »
+  vit dans la boucle : `ResultatAgent.panne_outil`, l'API la traduit en
+  `service_indisponible` (choix de David) ; (2) une règle lue par `lire_regle`
+  doit compter comme règle citée, sinon `POST /questions` la classerait
+  `aucune_regle_pertinente` (constat en lisant `loop.py` : `regles_citees` ne
+  connaît que le format `resultats` de la recherche). Scénario 13 ajouté à la
+  fiche.
+
+- **A4 : outils `lire_regle` et `rechercher_regles` alignés, tests au vert** —
+  `app/agent_us2/tools.py` (implémenté par un sous-agent Sonnet sur les 15
+  tests rouges, vérifié ensuite : 17 tests des outils, 254 tests unitaires,
+  `ruff` propre). Nouveau helper `_appeler_api` : aucune exception ne remonte,
+  toute panne devient `{"statut", "erreur"}` (statut de l'API transmis, 503
+  si l'API ne répond pas, message de repli « Erreur HTTP N » quand `detail`
+  n'est pas un texte, ex. un 422 de validation FastAPI). La recherche porte
+  `solution_tronquee`. `lire_regle` n'est pas encore branché dans
+  `app/agent_us2/loop.py` : ses tests s'écrivent d'abord.
+
+- **A4 : tests unitaires des outils écrits, rouge vérifié (pas encore de
+  code)** — `tests/unit/agent_us2/test_tools.py` : 14 nouveaux tests (classe
+  `TestLireRegle` : règle complète sans troncature, route du numéro, 404
+  « Règle N inconnue », statut d'erreur transmis tel quel, panne sans corps
+  JSON, service sans réponse ; classe
+  `TestRechercherReglesResilienceEtTroncature` : marqueur `solution_tronquee`
+  à la frontière de 300, panne 5xx et absence de réponse sans exception) et 1
+  test existant mis à jour (le champ `solution_tronquee` entre dans le contrat
+  de la recherche). Doubles fidèles à la réalité : vraies `httpx.Response`
+  (donc `raise_for_status()` réel) et vraies exceptions `httpx`. Résultat :
+  15 échecs, tous pour la raison attendue (`lire_regle` absent, marqueur
+  absent, `HTTPStatusError`/`ReadTimeout` qui fuient), les 2 anciens tests
+  inchangés restent verts. Restent à écrire avant leur code : la boucle
+  (deux outils, trace `lire_regle`) et le statut `service_indisponible`.
+
 - **A4 : fiche et scénarios Gherkin écrits** (carte Kanboard #26, passée
   « En cours » le 2026-09-20 à 13h38) — décisions actées avec David : un
   outil `lire_regle` à part, règle complète sans troncature, 404 « Règle N

@@ -120,7 +120,7 @@ def test_repondre_avec_tracing_reel(mock_llm_class, mock_get_tracer):
 
     spans = exporter.get_finished_spans()
     noms = [s.name for s in spans]
-    assert "appel_outil" in noms
+    assert "questions_libres.appel_outil.rechercher_regles" in noms
 
     assert resultat.trace_id is not None
     for span in spans:

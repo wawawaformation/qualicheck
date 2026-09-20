@@ -18,10 +18,11 @@ from dataclasses import dataclass
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_openai import ChatOpenAI
+from opentelemetry.trace import Status, StatusCode
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.agent_us2.config import load_config
-from app.agent_us2.tools import rechercher_regles
+from app.agent_us2.tools import lire_regle, rechercher_regles
 from app.observability.tracing import (
     current_trace_id,
     get_tracer,
@@ -33,9 +34,17 @@ SYSTEM_PROMPT = (
     "Tu es un assistant qui répond à des questions de qualité web en "
     "t'appuyant uniquement sur les règles Opquast. Utilise l'outil "
     "rechercher_regles pour trouver les règles pertinentes avant de "
-    "répondre. Cite le numéro de chaque règle que tu utilises dans ta "
-    "réponse."
+    "répondre. Utilise l'outil lire_regle quand l'utilisateur cite un "
+    "numéro de règle, ou pour lire en entier une règle dont la recherche a "
+    "indiqué solution_tronquee. Cite le numéro de chaque règle que tu "
+    "utilises dans ta réponse."
 )
+
+# Table d'aiguillage nom -> outil : l'appel d'un outil la consulte à chaque fois.
+OUTILS = {
+    rechercher_regles.name: rechercher_regles,
+    lire_regle.name: lire_regle,
+}
 
 
 @dataclass
@@ -58,6 +67,9 @@ class ResultatAgent:
     tokens_sortie: int
     cout_euros_estime: float
     trace_id: str | None
+    # Vrai dès qu'un outil a renvoyé un statut >= 500 pendant la question,
+    # même si un appel suivant a réussi (c'est l'API qui décide du statut final).
+    panne_outil: bool = False
 
 
 def _construire_llm(config_llm: dict) -> ChatOpenAI:
@@ -93,7 +105,7 @@ def repondre(question: str) -> ResultatAgent:
     max_tours = config["agent_a1"]["max_tours_securite"]
     tracer = get_tracer()
 
-    llm = _construire_llm(config_llm).bind_tools([rechercher_regles])
+    llm = _construire_llm(config_llm).bind_tools(list(OUTILS.values()))
     messages: list = [SystemMessage(SYSTEM_PROMPT), HumanMessage(question)]
 
     with tracer.start_as_current_span("questions_libres"):
@@ -101,6 +113,7 @@ def repondre(question: str) -> ResultatAgent:
         debut = time.monotonic()
         tokens_entree = tokens_sortie = 0
         regles_citees: dict[int, str] = {}
+        panne_outil = False
         ai_message: AIMessage | None = None
 
         for tour in range(1, max_tours + 1):
@@ -121,18 +134,39 @@ def repondre(question: str) -> ResultatAgent:
                 break
 
             for appel in ai_message.tool_calls:
+                outil = OUTILS.get(appel["name"])
+                # Un nom inventé par le LLM ne devient pas un nom de span (ils
+                # proliféreraient dans Langfuse) : il reste visible en attribut.
+                nom_span = appel["name"] if outil else "inconnu"
                 with tracer.start_as_current_span(
-                    "questions_libres.appel_outil",
-                    attributes={"outil": "rechercher_regles"},
+                    f"questions_libres.appel_outil.{nom_span}",
+                    attributes={"outil": appel["name"]},
                 ) as span:
-                    resultat_texte = rechercher_regles.invoke(appel["args"])
+                    if outil is None:
+                        # Même contrat que les outils : un résultat lisible par
+                        # l'agent, pas une exception.
+                        resultat_texte = json.dumps(
+                            {"statut": 404, "erreur": f"Outil inconnu : {appel['name']}"},
+                            ensure_ascii=False,
+                        )
+                    else:
+                        resultat_texte = outil.invoke(appel["args"])
                     set_tool_span_io(span, appel["args"], resultat_texte)
+                    try:
+                        resultat = json.loads(resultat_texte)
+                    except (json.JSONDecodeError, TypeError):
+                        resultat = None
+                    # Un résultat d'erreur est un dict avec un "statut" entier.
+                    # Seul un 5xx est une panne ; un 404 (règle inconnue) est
+                    # un résultat normal.
+                    if isinstance(resultat, dict) and isinstance(resultat.get("statut"), int):
+                        span.set_attribute("outil.statut", resultat["statut"])
+                        if resultat["statut"] >= 500:
+                            message = str(resultat.get("erreur", ""))
+                            span.set_status(Status(StatusCode.ERROR, message))
+                            panne_outil = True
                 messages.append(ToolMessage(content=resultat_texte, tool_call_id=appel["id"]))
-                try:
-                    for r in json.loads(resultat_texte)["resultats"]:
-                        regles_citees[r["numero"]] = r["intitule"]
-                except (json.JSONDecodeError, KeyError):
-                    pass
+                _noter_regles_citees(resultat, regles_citees)
         else:
             return ResultatAgent(
                 reponse=(
@@ -146,6 +180,7 @@ def repondre(question: str) -> ResultatAgent:
                 tokens_sortie=tokens_sortie,
                 cout_euros_estime=_estimer_cout_euros(config_llm, tokens_entree, tokens_sortie),
                 trace_id=trace_id,
+                panne_outil=panne_outil,
             )
 
         return ResultatAgent(
@@ -157,6 +192,7 @@ def repondre(question: str) -> ResultatAgent:
             tokens_sortie=tokens_sortie,
             cout_euros_estime=_estimer_cout_euros(config_llm, tokens_entree, tokens_sortie),
             trace_id=trace_id,
+            panne_outil=panne_outil,
         )
 
 
@@ -165,3 +201,18 @@ def _trier_regles_citees(regles_citees: dict[int, str]) -> list[dict]:
         {"numero": numero, "intitule": regles_citees[numero]}
         for numero in sorted(regles_citees)
     ]
+
+
+def _noter_regles_citees(resultat: object, regles_citees: dict[int, str]) -> None:
+    """Ajoute les règles d'un résultat d'outil : liste "resultats" (recherche)
+    ou règle seule (lire_regle). Un résultat d'erreur ou illisible ne cite rien."""
+    if not isinstance(resultat, dict):
+        return
+    try:
+        if "resultats" in resultat:
+            for r in resultat["resultats"]:
+                regles_citees[r["numero"]] = r["intitule"]
+        else:
+            regles_citees[resultat["numero"]] = resultat["intitule"]
+    except KeyError:
+        pass

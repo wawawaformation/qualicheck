@@ -32,9 +32,14 @@ def poser_question(requete: QuestionRequete) -> QuestionReponse:
             detail="Agent indisponible",
         ) from e
 
-    statut = (
-        StatutReponse.repondu if resultat.regles_citees else StatutReponse.aucune_regle_pertinente
-    )
+    # Une panne d'outil ne déclasse pas une réponse sourcée : elle ne compte
+    # que si aucune règle n'a pu être citée (sinon on dirait « rien ne correspond »).
+    if resultat.regles_citees:
+        statut = StatutReponse.repondu
+    elif resultat.panne_outil:
+        statut = StatutReponse.service_indisponible
+    else:
+        statut = StatutReponse.aucune_regle_pertinente
 
     return QuestionReponse(
         statut=statut,

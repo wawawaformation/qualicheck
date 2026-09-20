@@ -17,7 +17,7 @@ from app.agent_us2.main import app
 client = TestClient(app)
 
 
-def _resultat(regles_citees: list[dict], reponse: str = "Réponse.") -> ResultatAgent:
+def _resultat(regles_citees: list[dict], reponse: str = "Réponse.", **extra) -> ResultatAgent:
     return ResultatAgent(
         reponse=reponse,
         regles_citees=regles_citees,
@@ -27,6 +27,7 @@ def _resultat(regles_citees: list[dict], reponse: str = "Réponse.") -> Resultat
         tokens_sortie=10,
         cout_euros_estime=0.0000075,
         trace_id=None,
+        **extra,
     )
 
 
@@ -57,6 +58,32 @@ class TestPoserQuestion:
 
         assert reponse.status_code == 200
         assert reponse.json()["statut"] == "aucune_regle_pertinente"
+
+    @patch("app.agent_us2.api.repondre")
+    def test_statut_service_indisponible_quand_un_outil_est_en_panne_sans_regle_citee(
+        self, mock_repondre
+    ):
+        """Casse si une panne de l'API des règles est classée « rien ne correspond »."""
+        mock_repondre.return_value = _resultat(
+            [], reponse="Service indisponible.", panne_outil=True
+        )
+
+        reponse = client.post("/questions", json={"question": "Comment traiter les images ?"})
+
+        assert reponse.status_code == 200
+        assert reponse.json()["statut"] == "service_indisponible"
+
+    @patch("app.agent_us2.api.repondre")
+    def test_statut_repondu_quand_une_panne_a_ete_rattrapee(self, mock_repondre):
+        """Casse si une panne survenue puis rattrapée déclasse une vraie réponse sourcée."""
+        mock_repondre.return_value = _resultat(
+            [{"numero": 116, "intitule": "Images décoratives"}], panne_outil=True
+        )
+
+        reponse = client.post("/questions", json={"question": "Comment traiter les images ?"})
+
+        assert reponse.status_code == 200
+        assert reponse.json()["statut"] == "repondu"
 
     @patch("app.agent_us2.api.repondre")
     def test_503_quand_lagent_est_indisponible(self, mock_repondre):
