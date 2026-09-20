@@ -232,6 +232,22 @@ def test_is_acceptable_false_when_sans_reponse_sous_le_seuil():
     assert is_acceptable(taux_par_famille, seuil=0.8) is False
 
 
+def test_is_acceptable_familles_exclues_ignore_une_famille_sans_mecanisme():
+    """familles_exclues écarte une famille du verdict : le retrieval seul
+    (check_rag_acceptance.py, sans guardrail) ne peut pas refuser, donc
+    sans_reponse y est mesurée mais ne doit pas faire échouer l'acceptance.
+    Une autre famille sous le seuil doit, elle, toujours faire échouer."""
+    taux_par_famille = {
+        "vocabulaire_source_opquast": {"taux": 1.0, "reussis": 4, "total": 4, "partiels": 0},
+        "sans_reponse": {"taux": 0.0, "reussis": 0, "total": 2, "partiels": 0},
+    }
+
+    assert is_acceptable(taux_par_famille, seuil=0.9, familles_exclues={"sans_reponse"}) is True
+
+    taux_par_famille["vocabulaire_source_opquast"]["taux"] = 0.5
+    assert is_acceptable(taux_par_famille, seuil=0.9, familles_exclues={"sans_reponse"}) is False
+
+
 def test_is_acceptable_seuil_par_famille_assouplit_une_seule_famille():
     """seuils_par_famille abaisse le plancher d'une famille précise
     (ex. vocabulaire_objectif, instabilité structurelle mesurée du

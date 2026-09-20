@@ -134,7 +134,9 @@ def main() -> None:
         sys.exit(1)
 
     seuils_par_famille = config.get("taux_reussite_minimum_par_famille", {})
-    if not is_acceptable(taux_par_famille, seuil, seuils_par_famille):
+    if not is_acceptable(
+        taux_par_famille, seuil, seuils_par_famille, familles_exclues={FAMILLE_HORS_SEUIL}
+    ):
         logger.error("check_rag_acceptance : au moins une famille sous le seuil minimum")
         sys.exit(1)
 

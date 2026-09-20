@@ -504,6 +504,7 @@ def is_acceptable(
     taux_par_famille: dict[str, dict],
     seuil: float,
     seuils_par_famille: dict[str, float] | None = None,
+    familles_exclues: set[str] | None = None,
 ) -> bool:
     """Le jeu est acceptable si chaque famille atteint son seuil.
 
@@ -520,9 +521,17 @@ def is_acceptable(
     carte Kanboard #20, sans lien avec le guardrail ni avec le contenu du
     prompt de jugement — confirmé par A/B) — les autres familles gardent
     le seuil garde-fou général.
+
+    familles_exclues écarte des familles du verdict : le retrieval seul
+    (check_rag_acceptance.py, sans guardrail) ne peut pas refuser, donc
+    "sans_reponse" y est mesurée pour information mais ne doit pas faire
+    échouer l'acceptance.
     """
     seuils_par_famille = seuils_par_famille or {}
+    familles_exclues = familles_exclues or set()
     for famille, stats in taux_par_famille.items():
+        if famille in familles_exclues:
+            continue
         if stats["taux"] < seuils_par_famille.get(famille, seuil):
             return False
     return True

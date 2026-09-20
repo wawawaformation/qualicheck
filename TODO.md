@@ -516,6 +516,18 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
 
 ## Décisions en attente
 
+- [ ] **Carte #45 — reste à faire après la journée du 2026-09-20** :
+  1. Revalider `ci-acceptance.yml` par un **nouveau tag** (le run 68 a échoué
+     sur `sans_reponse`, corrigé mais pas encore rejoué).
+  2. Ouvrir la PR `feature/revue-pr-llm` vers `dev` pour tester `ci-review.yml`
+     (vérifier d'abord le secret `REVIEW_API_TOKEN` dans Gitea).
+  3. Arbitrer le **doublon probable `ci-feature` / `ci-dev`** (mêmes tests sur
+     le même code à chaque push puis à chaque merge) — David : « ça fait
+     beaucoup de tests juste pour dev ».
+  4. Défauts mineurs de la relecture de `review_pr.py` non traités : voir
+     `tmp/sdd/task-8-report.md` (local, non versionné) — log final annonçant
+     `verdict : ok` sur échec, troncature absente du commentaire d'échec.
+
 - [ ] **Séparer `jury/` (et notamment `veille/`) du dépôt QualiCheck —
   question soulevée le 2026-08-25** : responsabilités mélangées dans un même
   dépôt — le **produit** (code QualiCheck), la **veille** (pratique
@@ -700,6 +712,13 @@ Légende : `[ ]` à faire · `[x]` fait · **Qui** : `D` = David, `A` = assistan
   nature du contenu, pas de l'existence d'un fichier jumeau — `A` (2026-07-23)
 - [ ] Ajouter **Langfuse** au `CLAUDE.md` quand US1/US2 seront conçus — `D`
   - Décidé : monitorage sur US1/US2, pas sur l'ingestion
+- [ ] **Refaire proprement le schéma du pipeline CI/CD** (demandé par David le
+  2026-09-20) — le flux de `conception/4_ci_cd/strategie_tests_et_gates.md`
+  n'existe qu'en bloc de texte ASCII (feature -> CI feature -> tag ->
+  acceptance -> PR + revue LLM -> merge `dev` -> gate -> staging -> prod).
+  À refaire en draw.io (skill `schemas-drawio`), avec export PNG/SVG, en
+  distinguant ce qui est fait de ce qui reste à faire et les déclencheurs de
+  chaque workflow (push, tag, `pull_request`)
 
 ## Veille (C6)
 

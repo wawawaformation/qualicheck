@@ -11,6 +11,20 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Acceptance sur tag : `sans_reponse` n'échoue plus le retrieval seul (carte
+  #45)** — premier vrai run de `ci-acceptance.yml` (tag `2026-09-20-fb62e53`,
+  run Gitea 68) : le workflow démarre bien (glob `20[0-9][0-9]-…` validé) mais
+  `check_rag_acceptance.py` échoue, `sans_reponse` à 0/20 comparée au seuil de
+  90 % alors que toutes les autres familles sont à 95-100 %. Cause : le script
+  déclarait `FAMILLE_HORS_SEUIL` pour le seul libellé du log, tandis que
+  `is_acceptable` inclut `sans_reponse` depuis le guardrail (2026-09-13) — juste
+  pour `api_regles`, faux pour le retrieval seul qui ne peut pas refuser.
+  Correction : paramètre optionnel `familles_exclues` sur `is_acceptable`
+  (défaut inchangé, `api_regles` non touchée), passé par `check_rag_acceptance.py`.
+  Test écrit d'abord (rouge, `TypeError`), puis vert ; 303 unitaires, `ruff`
+  propre ; rejeu des taux du run 68 : refus avant, acceptation après. Coût du
+  run échoué : ~0,008 €. À revalider par un nouveau tag.
+
 - **Collection Bruno extraite de la carte #45 vers la carte #50** — décision de
   David : le versionnement de la collection `qualicheck` n'est pas fait ce jour.
   Carte #50 « Versionner la collection Bruno qualicheck » créée (En attente,
