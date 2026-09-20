@@ -29,7 +29,6 @@ from app.observability.tracing import (
     set_tool_span_io,
 )
 
-
 SYSTEM_PROMPT = (
     "Tu es un assistant qui répond à des questions de qualité web en "
     "t'appuyant uniquement sur les règles Opquast. Utilise l'outil "

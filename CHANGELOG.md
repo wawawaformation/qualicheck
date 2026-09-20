@@ -11,6 +11,15 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — OpenCode
 
+- **A2 Suite d'enrichissement des spans US2** — renommage des spans
+  `repondre`/`appel_llm`/`appel_outil` en `questions_libres`,
+  `questions_libres.appel_llm` et `questions_libres.appel_outil` ; ajout
+  de `llm.provider`, `llm.model` et `llm.temperature` sur les spans LLM ;
+  ajout de `outil.input` / `outil.output` (tronqués à 4000 caractères)
+  sur les spans outil. Mise à jour de `app/agent_us2/config.yml` et des
+  tests de traçage — voir
+  `docs/superpowers/specs/2026-09-20-renommage-et-enrichissement-spans-us2-design.md`.
+
 - **A2 Tâche d'enrichissement des spans LLM (input/output)** — ajout de
   `set_llm_span_io()` dans `app/observability/tracing.py` et appel dans
   `app/agent_us2/loop.py`. Les spans `appel_llm` portent désormais
