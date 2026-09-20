@@ -267,3 +267,37 @@ def test_set_llm_span_io_attributs_config_llm():
     assert span.attributes["llm.provider"] == "azure"
     assert span.attributes["llm.model"] == "gpt-5.4-mini"
     assert span.attributes["llm.temperature"] == 0
+
+
+def test_set_tool_span_io_serialise_input_output():
+    """Sérialisation des arguments et du résultat d'un outil."""
+    provider = TracerProvider(resource=Resource.create({"service.name": "test"}))
+    tracer = provider.get_tracer("test")
+
+    with tracer.start_as_current_span("appel_outil") as span:
+        tracing.set_tool_span_io(
+            span,
+            tool_input={"mots_cles": "prix TTC"},
+            tool_output='{"resultats": [{"numero": 56}]}',
+        )
+
+    assert span.attributes["outil.input_truncated"] is False
+    assert span.attributes["outil.output_truncated"] is False
+    assert json.loads(span.attributes["outil.input"]) == {"mots_cles": "prix TTC"}
+    assert json.loads(span.attributes["outil.output"]) == {"resultats": [{"numero": 56}]}
+
+
+def test_set_tool_span_io_tronque_output():
+    """La sortie outil dépassant max_len est tronquée."""
+    provider = TracerProvider(resource=Resource.create({"service.name": "test"}))
+    tracer = provider.get_tracer("test")
+
+    long_output = "x" * 5000
+
+    with tracer.start_as_current_span("appel_outil") as span:
+        tracing.set_tool_span_io(span, tool_input={}, tool_output=long_output, max_len=100)
+
+    assert span.attributes["outil.output_truncated"] is True
+    assert "[... tronqué ...]" in span.attributes["outil.output"]
+    assert len(span.attributes["outil.output"]) <= 100
+    assert span.attributes["outil.input_truncated"] is False

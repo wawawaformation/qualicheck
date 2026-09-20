@@ -307,6 +307,31 @@ def set_llm_span_io(
         span.set_attribute("llm.temperature", config_llm.get("temperature", 0))
 
 
+def set_tool_span_io(
+    span: trace.Span,
+    tool_input: dict[str, Any],
+    tool_output: str,
+    max_len: int = 4000,
+) -> None:
+    """Attache input/output outil au span courant, tronqué si nécessaire.
+
+    - `outil.input` : JSON compact des arguments de l'outil.
+    - `outil.output` : texte JSON retourné par l'outil.
+    - `outil.input_truncated` / `outil.output_truncated` : booléens.
+    """
+    input_json = json.dumps(
+        tool_input, ensure_ascii=False, separators=(",", ":"), default=_json_default
+    )
+    input_truncated_json, input_truncated = _truncate_text(input_json, max_len)
+
+    output_truncated_json, output_truncated = _truncate_text(tool_output, max_len)
+
+    span.set_attribute("outil.input", input_truncated_json)
+    span.set_attribute("outil.input_truncated", input_truncated)
+    span.set_attribute("outil.output", output_truncated_json)
+    span.set_attribute("outil.output_truncated", output_truncated)
+
+
 def current_trace_id() -> str | None:
     """Le trace_id du span courant, ou None hors de tout span (decision 4)."""
     ctx = trace.get_current_span().get_span_context()
