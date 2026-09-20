@@ -17,11 +17,22 @@ Format d'entrée, une ligne par réalisation :
   inconnue » remontée à l'agent comme résultat avec son code (`statut: 404`,
   même hors HTTP, comme vocabulaire commun), et les pannes comme un 5xx
   (statut de l'API transmis tel quel ; 503 quand le service ne répond pas),
-  plus aucune exception vers l'agent. Deux usages retenus : numéro cité par l'utilisateur, ou règle
+  plus aucune exception vers l'agent. **La recherche `rechercher_regles` est
+  alignée sur le même contrat** (décision de David : « il faut vraiment que
+  notre produit soit résilient ») : le `raise_for_status()` d'A1 disparaît,
+  le statut d'erreur de l'API est transmis à l'agent, 503 si aucune réponse.
+  Schéma mis à jour (case rouge de la recherche). **Conséquence sur le
+  contrat** : une panne de l'API des règles ne fait plus lever d'exception
+  dans l'agent, donc plus de HTTP 503 sur `POST /questions` ; elle aurait été
+  classée `aucune_regle_pertinente` à tort. Décision de David : nouveau statut
+  `service_indisponible` (HTTP 200), `openapi.json` passé en version 0.3.0
+  (ajout additif, entrée A4 dans `x-historique`). Le miroir
+  `app/agent_us2/schemas.py` sera mis à jour avec le code, tests d'abord. Deux usages retenus : numéro cité par l'utilisateur, ou règle
   vue tronquée dans une recherche que l'agent veut lire en entier. Pour que
   ce second usage soit possible, la recherche devra signaler les solutions
   qu'elle coupe (indicateur `solution_tronquee` par règle) : petite
-  modification de l'outil d'A1, décidée avec David. Neuf scénarios — voir
+  modification de l'outil d'A1, décidée avec David. Douze scénarios (dont deux pour la recherche alignée et un au niveau de
+  l'API) — voir
   `conception/3_autre_us/us2_question_libre/increments/A_agent_nu/A4_lecture_regle_par_numero.md`.
   Schéma `A4_lecture_regle_par_numero.drawio` (+ `.png`) produit à partir de
   la structure d'A2, puis refondu à la demande de David : le LLM est visible

@@ -3,7 +3,7 @@
   "info": {
     "title": "QualiCheck — API business",
     "description": "Contrat vivant, enrichi increment par increment (voir conception/3_autre_us/us2_question_libre/increments/increments.md) — jamais réécrit d'un bloc. Miroir de app/agent_us2/schemas.py une fois ce module implémenté (même discipline que app/api_regles/config.yml, champ version : bumpée à chaque tâche qui change un contrat d'endpoint).",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "paths": {
     "/questions": {
@@ -21,7 +21,7 @@
         },
         "responses": {
           "200": {
-            "description": "Réponse renvoyée dans tous les cas (repondu, aucune_regle_pertinente ou hors_perimetre) : un refus est une réponse normale à une requête bien formée, pas une erreur du client — même parti pris que l'API des règles, qui renvoie une liste vide plutôt qu'une erreur.",
+            "description": "Réponse renvoyée dans tous les cas (repondu, aucune_regle_pertinente, hors_perimetre ou service_indisponible) : un refus est une réponse normale à une requête bien formée, pas une erreur du client — même parti pris que l'API des règles, qui renvoie une liste vide plutôt qu'une erreur.",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/QuestionReponse" },
@@ -43,7 +43,7 @@
             }
           },
           "503": {
-            "description": "LLM injoignable ou en échec persistant après les 3 tentatives avec backoff (règle non négociable du projet, voir CLAUDE.md) — même parti pris que POST /regles/dense (app/api_regles/regles.py), qui renvoie 503 dans le même cas plutôt que de laisser fuiter l'exception LLM.",
+            "description": "LLM injoignable ou en échec persistant après les 3 tentatives avec backoff (règle non négociable du projet, voir CLAUDE.md) — même parti pris que POST /regles/dense (app/api_regles/regles.py), qui renvoie 503 dans le même cas plutôt que de laisser fuiter l'exception LLM. Une panne de l'API des règles ne donne en revanche pas de 503 : l'agent la reçoit comme un résultat d'outil (statut 5xx) et la réponse porte le statut service_indisponible (increment A4).",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ErreurHTTP" },
@@ -69,8 +69,8 @@
       },
       "StatutReponse": {
         "type": "string",
-        "enum": ["repondu", "aucune_regle_pertinente", "hors_perimetre"],
-        "description": "repondu : réponse trouvée et argumentée. aucune_regle_pertinente : question dans le sujet, rien ne correspond. hors_perimetre : question hors du domaine Opquast. Les trois renvoient HTTP 200."
+        "enum": ["repondu", "aucune_regle_pertinente", "hors_perimetre", "service_indisponible"],
+        "description": "repondu : réponse trouvée et argumentée. aucune_regle_pertinente : question dans le sujet, rien ne correspond. hors_perimetre : question hors du domaine Opquast. service_indisponible : question dans le sujet, mais un service dont l'agent dépend (l'API des règles) était en panne — la réponse n'est pas fiable et ne doit pas être lue comme « rien ne correspond ». Les quatre renvoient HTTP 200."
       },
       "RegleCitee": {
         "type": "object",
@@ -139,6 +139,10 @@
     {
       "increment": "A2",
       "evolution": "Ajout additif de trace_id (nullable) dans QuestionReponse — version 0.2.0"
+    },
+    {
+      "increment": "A4",
+      "evolution": "Ajout additif de la valeur service_indisponible à StatutReponse : une panne de l'API des règles est signalée par un statut, pas par un HTTP 503 — version 0.3.0"
     }
   ],
   "x-rupture_prevue": {

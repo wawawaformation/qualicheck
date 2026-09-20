@@ -29,6 +29,11 @@ deux outils.
 - **Le service ne répond pas** (délai dépassé, connexion impossible) : aucune
   réponse HTTP n'existe, l'outil renvoie de lui-même `{"statut": 503, ...}`
   (service indisponible).
+- **Même contrat pour `rechercher_regles`** (décision de David : « il faut
+  vraiment que notre produit soit résilient ») : plus d'exception, le statut
+  d'erreur de l'API est transmis à l'agent, 503 si aucune réponse. Cela
+  modifie l'outil d'A1 (le `raise_for_status()` disparaît), au même titre que
+  le marqueur `solution_tronquee`.
 - **Deux usages** : l'utilisateur cite un numéro, **ou** l'agent lui-même veut
   lire en entier une règle qu'une recherche lui a montrée tronquée (la
   recherche coupe la solution à 300 caractères). Le second usage est la vraie
@@ -39,6 +44,14 @@ deux outils.
   ressemble à une règle complète et l'agent n'a aucune raison de la lire en
   entier. C'est une petite modification de l'outil d'A1, imposée par A4.
   Le prompt système et la description des outils citent les deux outils.
+- **Une panne d'outil n'est pas « rien ne correspond »** : quand l'agent
+  a reçu un statut 5xx d'un outil et ne cite aucune règle, la réponse de
+  `POST /questions` porte le nouveau statut `service_indisponible`, en HTTP
+  200 (contrat `openapi.json`, version 0.3.0, ajout additif). Sans lui, la
+  panne serait classée `aucune_regle_pertinente`, ce qui est faux. Règle
+  retenue (à valider) : `service_indisponible` seulement si un outil a renvoyé
+  un 5xx **et** qu'aucune règle n'est citée ; si une nouvelle tentative a
+  réussi et que des règles sont citées, la réponse reste `repondu`.
 - Aucune modification de l'API des règles : la route existe et est en accès
   libre, sans jeton.
 
@@ -95,6 +108,26 @@ Fonctionnalité : Lecture d'une règle par son numéro
     Alors il renvoie à l'agent le statut 503
     Et l'agent n'affirme pas que la règle 116 n'existe pas
 
+  Scénario : La recherche remonte une panne comme un 5xx
+    Étant donné que l'API des règles répond par une erreur serveur 503
+    Quand l'agent lance une recherche par mots-clés
+    Alors l'outil de recherche renvoie à l'agent le statut 503 et le message
+      d'erreur
+    Et l'agent n'affirme pas qu'aucune règle ne correspond
+
+  Scénario : La recherche ne reçoit aucune réponse
+    Étant donné que l'API des règles ne répond pas dans le délai imparti
+    Quand l'agent lance une recherche par mots-clés
+    Alors l'outil de recherche renvoie à l'agent le statut 503
+    Et l'agent n'affirme pas qu'aucune règle ne correspond
+
+  Scénario : Une panne d'outil n'est pas présentée comme « rien ne correspond »
+    Étant donné que l'API des règles répond par une erreur serveur 503
+    Et qu'aucune règle n'a pu être citée
+    Quand l'utilisateur pose une question dans le sujet
+    Alors la réponse HTTP est un 200
+    Et son statut est `service_indisponible`, pas `aucune_regle_pertinente`
+
   Scénario : Une question sans numéro commence par une recherche par mots-clés
     Étant donné une question qui ne cite aucun numéro de règle
     Quand l'utilisateur demande « Comment traiter les images décoratives ? »
@@ -109,10 +142,11 @@ Fonctionnalité : Lecture d'une règle par son numéro
     Et elle contient la durée et le résultat (succès ou erreur)
 ```
 
-Les scénarios 3 à 7 sont déterministes (tests unitaires des outils, API
-simulée). Les scénarios 1, 2 et 8 dépendent du choix du modèle : ils se
-vérifient par un test d'intégration réel et alimentent la mesure de la carte.
-Le scénario 9 protège la trace d'A2 quand la boucle passe à deux outils.
+Les scénarios 3 à 10 sont déterministes (tests unitaires des outils et de la
+boucle, API simulée). Les scénarios 1, 2 et 11 dépendent du choix du modèle :
+ils se vérifient par un test d'intégration réel et alimentent la mesure de la
+carte. Le scénario 12 protège la trace d'A2 quand la boucle passe à deux
+outils.
 
 ## Schémas
 
