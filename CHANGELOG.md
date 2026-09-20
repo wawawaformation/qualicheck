@@ -11,6 +11,15 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Collection Bruno rattachée à la carte #45 (stratégie de tests)** — décision de
+  David : versionner la collection `qualicheck` (aujourd'hui hors dépôt) comme
+  niveau de preuve « HTTP de bout en bout ». Carte #45 : périmètre et critère de
+  clôture ajoutés, temps prévu 6 h -> 7,5 h (+1,5 h), 0,15 h de temps passé
+  (reconstruit, non mesuré) sur la complétion de la collection. Préalables notés :
+  jetons en clair à remplacer par des variables (deux requêtes de l'API des
+  règles), déplacement plutôt que copie, environnements `local` / `staging`. Rien
+  n'est encore versionné.
+
 - **Question vide rejetée en 422 avant tout appel LLM (carte Kanboard #48)** —
   défaut relevé plus bas (`{"question": ""}` répondait 200 et appelait le LLM
   malgré le contrat). Test écrit d'abord (3 rouges : chaîne vide, espaces,
