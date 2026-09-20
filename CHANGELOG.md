@@ -11,6 +11,15 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Miroirs GitHub de `ci-feature`/`ci-dev` corrigés : `POSTGRES_HOST: localhost`** —
+  premier push de la branche feature sur GitHub : `ci-feature` échoue avec
+  `could not translate host name "postgres"`. Sur Gitea le job tourne dans un
+  conteneur et joint le service par son nom ; sur GitHub il tourne sur la VM du
+  runner et le service n'est joignable que par `localhost` (port déjà publié).
+  Le miroir avait repris la valeur de Gitea avec un commentaire erroné.
+  Corrigé dans `.github/workflows/ci-feature.yml` et `ci-dev.yml` (même défaut,
+  pas encore déclenché). Workflows Gitea inchangés.
+
 - **Carte #45 clôturée (Done, laissée active), suite dans la carte #51** —
   décision de David : la stratégie de tests, l'acceptance sur tag et la revue de
   PR par LLM sont considérées faites (3,53 h passées, chrono arrêté, commentaire

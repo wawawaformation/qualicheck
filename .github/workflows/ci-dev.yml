@@ -33,7 +33,9 @@ jobs:
       POSTGRES_TEST_DB: ${{ secrets.POSTGRES_DB }}
       POSTGRES_DB_AUDIT: qualicheck_audit
       POSTGRES_TEST_DB_AUDIT: qualicheck_audit
-      POSTGRES_HOST: postgres
+      # Job sur la VM du runner GitHub : le service est publié sur localhost
+      # (le nom `postgres` ne marche que sur Gitea, job en conteneur).
+      POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
 
     steps:

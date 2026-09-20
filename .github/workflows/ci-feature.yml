@@ -40,9 +40,10 @@ jobs:
       # éphémère : littéral plutôt qu'un secret supplémentaire à gérer.
       POSTGRES_DB_AUDIT: qualicheck_audit
       POSTGRES_TEST_DB_AUDIT: qualicheck_audit
-      # Un service voisin est joignable par son nom de service, pas par
-      # localhost, que le job tourne en VM (GitHub) ou en conteneur (Gitea).
-      POSTGRES_HOST: postgres
+      # Sur GitHub le job tourne sur la VM du runner (pas dans un conteneur) :
+      # le service Postgres est publié sur localhost via `ports`. Le nom
+      # `postgres` ne marche que sur Gitea, où le job est dans un conteneur.
+      POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
 
     steps:
