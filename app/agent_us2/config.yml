@@ -25,6 +25,11 @@ api_regles:
 # conception/annexes/F_choix_llm.md. Benchmark precis specifique a l'agent
 # reporte a une fois les outils reels d'A1 en place.
 llm:
+  # Provider et modele logique utilises par l'agent. Les variables .env
+  # pointent vers le deploiement reel (Azure) ; config.yml reste la source
+  # de verite metier pour l'observabilite (spans LLM).
+  provider: azure
+  model: gpt-5.4-mini
   env_var_endpoint: AZURE_AI_ENDPOINT
   env_var_api_key: AZURE_AI_API_KEY
   env_var_deployment: AZURE_MODEL_GPT_MINI

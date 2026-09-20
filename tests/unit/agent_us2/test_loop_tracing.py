@@ -30,6 +30,8 @@ def test_repondre_emits_one_span_per_llm_call_and_tool_call():
     with (
         patch("app.agent_us2.loop.load_config", return_value={
             "llm": {
+                "provider": "azure",
+                "model": "gpt-5.4-mini",
                 "env_var_endpoint": "AZURE_AI_ENDPOINT",
                 "env_var_api_key": "AZURE_AI_API_KEY",
                 "env_var_deployment": "AZURE_MODEL_GPT_MINI",
@@ -53,11 +55,21 @@ def test_repondre_emits_one_span_per_llm_call_and_tool_call():
 
     spans = exporter.get_finished_spans()
     noms = [s.name for s in spans]
-    assert noms.count("appel_llm") == 2
-    assert noms.count("appel_outil") == 1
+    assert noms.count("questions_libres.appel_llm") == 2
+    assert noms.count("questions_libres.appel_outil") == 1
+    assert any(n == "questions_libres" for n in noms)
 
-    span_outil = next(s for s in spans if s.name == "appel_outil")
+    span_outil = next(s for s in spans if s.name == "questions_libres.appel_outil")
     assert span_outil.attributes["outil"] == "rechercher_regles"
+    assert "outil.input" in span_outil.attributes
+    assert "outil.output" in span_outil.attributes
+
+    span_llm = next(s for s in spans if s.name == "questions_libres.appel_llm")
+    assert span_llm.attributes["llm.provider"] == "azure"
+    assert span_llm.attributes["llm.model"] == "gpt-5.4-mini"
+    assert span_llm.attributes["llm.temperature"] == 0
+    assert "llm.input" in span_llm.attributes
+    assert "llm.output" in span_llm.attributes
 
     assert resultat.trace_id is not None
     for span in spans:

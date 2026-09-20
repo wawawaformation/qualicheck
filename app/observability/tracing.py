@@ -271,6 +271,7 @@ def set_llm_span_io(
     span: trace.Span,
     messages: Sequence[BaseMessage],
     ai_message: AIMessage,
+    config_llm: dict[str, Any] | None = None,
     max_len: int = 4000,
 ) -> None:
     """Attache input/output LLM au span courant, tronqué si nécessaire.
@@ -280,6 +281,8 @@ def set_llm_span_io(
     - `llm.output` : JSON compact de la réponse AI (role, content,
       tool_calls).
     - `llm.input_truncated` / `llm.output_truncated` : booléens.
+    - `llm.provider` / `llm.model` / `llm.temperature` : config du modèle
+      si `config_llm` est fourni.
     """
     input_data = [_serialize_message(m) for m in messages]
     input_json = json.dumps(
@@ -297,6 +300,11 @@ def set_llm_span_io(
     span.set_attribute("llm.input_truncated", input_truncated)
     span.set_attribute("llm.output", output_truncated_json)
     span.set_attribute("llm.output_truncated", output_truncated)
+
+    if config_llm:
+        span.set_attribute("llm.provider", config_llm.get("provider", "unknown"))
+        span.set_attribute("llm.model", config_llm.get("model", "unknown"))
+        span.set_attribute("llm.temperature", config_llm.get("temperature", 0))
 
 
 def current_trace_id() -> str | None:

@@ -250,3 +250,20 @@ def test_set_llm_span_io_gere_content_vide():
     output = json.loads(span.attributes["llm.output"])
     assert output["content"] == ""
     assert output["tool_calls"] == [{"name": "rechercher_regles", "args": {"query": "test"}}]
+
+
+def test_set_llm_span_io_attributs_config_llm():
+    """Les attributs provider/model/temperature sont enregistrés si fournis."""
+    provider = TracerProvider(resource=Resource.create({"service.name": "test"}))
+    tracer = provider.get_tracer("test")
+
+    ai_msg = AIMessage(content="Réponse.")
+    messages = [HumanMessage("question")]
+    config_llm = {"provider": "azure", "model": "gpt-5.4-mini", "temperature": 0}
+
+    with tracer.start_as_current_span("appel_llm") as span:
+        tracing.set_llm_span_io(span, messages, ai_msg, config_llm=config_llm)
+
+    assert span.attributes["llm.provider"] == "azure"
+    assert span.attributes["llm.model"] == "gpt-5.4-mini"
+    assert span.attributes["llm.temperature"] == 0
