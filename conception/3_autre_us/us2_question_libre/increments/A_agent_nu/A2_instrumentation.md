@@ -15,8 +15,8 @@ Tâche technique — pas de bénéficiaire côté utilisateur (voir `increments.
    SDK Langfuse directement) → export OTLP → Langfuse Cloud. Faiblement
    couplé exprès : changer de backend plus tard ne touche que la config
    de l'exporteur, pas le code instrumenté. Un exporteur local en
-   **JSONL** (un span par ligne, `logs/traces_agent_us2.jsonl`, même
-   convention que `logs/agent_us2.log`) reste
+   **JSONL** (un span par ligne, `logs/traces.jsonl` — fichier commun aux
+   deux services qui émettent des spans, l'agent et l'API des règles) reste
    disponible en option (variable d'env) pour vérifier sans dépendre du
    réseau ni d'un compte Langfuse (critère C20 : "opérationnel au moins
    en local suffit") — même structure de données que ce qui part vers
@@ -38,7 +38,7 @@ Tâche technique — pas de bénéficiaire côté utilisateur (voir `increments.
 
 - [ ] Ajouter le SDK OpenTelemetry au projet, configuration de
   l'exporteur OTLP (Langfuse Cloud) + exporteur local JSONL
-  (`logs/traces_agent_us2.jsonl`) (bascule par variable d'env, voir
+  (`logs/traces.jsonl`) (bascule par variable d'env, voir
   convention `app/*/config.yml` + `.env`).
 - [ ] Instrumenter `app/agent_us2/loop.py` : un span par appel LLM, un
   span par appel d'outil.

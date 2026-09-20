@@ -97,9 +97,8 @@
             "items": { "$ref": "#/components/schemas/RegleCitee" }
           },
           "trace_id": {
-            "type": "string",
-            "nullable": true,
-            "description": "Identifiant de trace OpenTelemetry (increment A2). Permet de retrouver le detail de la reponse dans Langfuse ou dans logs/traces_agent_us2.jsonl selon l'exporteur configure."
+            "type": ["string", "null"],
+            "description": "Identifiant de trace OpenTelemetry (increment A2). Permet de retrouver le detail de la reponse dans Langfuse ou dans logs/traces.jsonl selon l'exporteur configure."
           }
         }
       },
@@ -136,6 +135,10 @@
     {
       "increment": "A1b",
       "evolution": "Contrat initial : POST /questions, statut/reponse/regles_citees"
+    },
+    {
+      "increment": "A2",
+      "evolution": "Ajout additif de trace_id (nullable) dans QuestionReponse — version 0.2.0"
     }
   ],
   "x-rupture_prevue": {

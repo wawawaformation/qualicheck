@@ -35,9 +35,11 @@ tranche cette décision, et trois autres, avant tout code.
   ne pas se lier au choix.
 
 - **Exporteur local JSONL en complément**, pas seulement pour le
-  développement hors-ligne : `logs/traces_agent_us2.jsonl`, même
+  développement hors-ligne : `logs/traces.jsonl`, même
   convention que les `.log` déjà existants du projet
-  (`logs/agent_us2.log`, `logs/api_regles.log`). Bascule par variable
+  (`logs/agent_us2.log`, `logs/api_regles.log`) — nom volontairement
+  neutre, les deux services y écrivent, chaque span portant son
+  `service_name`. Bascule par variable
   d'environnement `OTEL_EXPORTER` (`otlp` ou `jsonl`, défaut `jsonl`).
   Répond au critère C20 ("opérationnel au moins en local suffit") sans
   dépendre d'un compte Langfuse pour développer ou tester.
@@ -61,30 +63,57 @@ tranche cette décision, et trois autres, avant tout code.
 ## Architecture
 
 ```text
-POST /questions
-      │
-      ▼
-Boucle agent (A1, voir A1_boucle_et_premier_outil.drawio)
-appels LLM + appels d'outils (agent_us2, retrieval)
-      │  a chaque appel
-      ▼
-Span OpenTelemetry (duree, cout, nom de l'etape, resultat)
-      │
-      ▼
-   OTEL_EXPORTER ?
-      │
-   ┌──┴───────────────┐
-   │otlp               │jsonl
-   ▼                   ▼
-Langfuse Cloud    logs/traces_agent_us2.jsonl
-(service externe)      (local)
+service qualicheck-agent-us2          service qualicheck-api-regles
+POST /questions                       POST /regles/dense
+      │                                     │
+      ▼                                     ▼
+span racine "repondre"                span racine "chercher_regles_dense"
+ ├─ span "appel_llm" (par tour)        ├─ span "appel_llm_guardrail"
+ └─ span "appel_outil" ───── HTTP ───► ├─ span "appel_llm_decomposition"
+    (duree, resultat)     (pas de      ├─ span "recherche_dense"
+                        traceparent)   └─ span "appel_llm_jugement"
+      │                                     │
+      └──────────── trace A ────────┐       └─── trace B (distincte)
+                                    ▼
+                             OTEL_EXPORTER ?
+                                    │
+                            ┌───────┴────────┐
+                            │otlp            │jsonl
+                            ▼                ▼
+                     Langfuse Cloud    logs/traces.jsonl
+                     (service externe)      (local)
 
-Reponse HTTP { ..., trace_id } ─── permet de retrouver la trace
-                                    ci-dessus, quel que soit l'exporteur
+Reponse HTTP { ..., trace_id } ─── permet de retrouver la trace A,
+                                    quel que soit l'exporteur
 ```
 
 Détail complet et rendu visuel : `A2_instrumentation.drawio` (schéma
 validé, voir pièce jointe carte #24).
+
+## Deux services, deux traces (et pas une)
+
+QualiCheck fait tourner **deux applications FastAPI distinctes** :
+l'agent US2 (`app/agent_us2/`) et l'API des règles
+(`app/api_regles/`, port 8880). L'agent n'atteint le retrieval
+(`app/retrieval/` : garde-fou, décomposition, jugement, recherche dense)
+que par un appel HTTP à `POST /regles/dense` — jamais en direct.
+
+Conséquence assumée à ce stade : une question produit **deux traces
+séparées**, une par service. Le `trace_id` renvoyé au client couvre la
+trace de l'agent (`repondre` et ses enfants) ; les spans du retrieval
+appartiennent à la trace de l'API des règles
+(`chercher_regles_dense` et ses enfants) et ne partagent donc **pas** ce
+`trace_id`. Chaque service se nomme dans ses spans
+(`service.name` = `qualicheck-agent-us2` ou `qualicheck-api-regles`),
+ce qui rend les deux traces rapprochables à la main.
+
+La **propagation inter-services** (en-tête W3C `traceparent` émis par
+l'outil de l'agent, lu par l'API des règles, pour n'obtenir qu'une seule
+trace de bout en bout) est **volontairement hors périmètre de cet
+increment** : elle demande d'instrumenter le client HTTP de l'agent et
+d'ajouter un extracteur de contexte côté API des règles, pour un gain de
+confort qui ne conditionne aucun critère d'A2. À rouvrir si le besoin de
+corréler devient réel.
 
 ## Ce que cette spec ne couvre pas
 

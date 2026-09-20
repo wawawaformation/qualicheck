@@ -803,4 +803,29 @@ Repérés en construisant l'index `jury/README.md`.
   retenu : corriger nécessiterait de patcher le cœur Kanboard (fragile
   aux mises à jour) pour un graphe redondant avec les analytics déjà en
   place (répartition, CFD, lead/cycle time, temps estimé vs réel).
+- [x] **Distinguer dev/preprod/prod/tests dans les traces OpenTelemetry
+  et Langfuse** (soulevé le 2026-09-20 pendant A2) — `D` — clos
+  2026-09-20 pendant la passe de corrections A2. Nom retenu par David :
+  **`APP_ENV`** (et pas `ENVIRONMENT`), défaut `dev` quand la variable
+  n'est pas posée. Posé comme attribut OTel standard
+  `deployment.environment.name` sur la `Resource`
+  (`app/observability/tracing.py::_build_resource()`), documenté dans
+  `.env.example`. Les tests sont forcés à `APP_ENV=test` par une fixture
+  autouse de portée session dans `tests/conftest.py`, qui force aussi
+  `OTEL_EXPORTER=jsonl` et redirige `OTEL_JSONL_PATH` hors du dépôt.
+  Trace de la décision conservée ci-dessous.
+  - Le projet n'avait pas de variable d'environnement générique
+    (`APP_ENV`/`ENVIRONMENT`) — les environnements se distinguaient
+    par quelle URL/secret est chargé (ex. `FASTAPI_URL_PROD`
+    vs défaut localhost). Décision : introduire `APP_ENV`.
+  - Piste technique : attribut OTel standard
+    `deployment.environment.name` posé sur la `Resource` dans
+    `app/observability/tracing.py::setup_tracing()`, alimenté par cette
+    variable — Langfuse segmente nativement les traces par cet
+    attribut.
+  - Les tests devaient être tagués distinctement (`APP_ENV=test` forcé
+    par une fixture `conftest.py` autouse), pour ne jamais apparaître
+    comme du trafic dev/staging/prod par accident — fait.
+  - `staging`/`prod` positionneraient la variable dans leurs secrets
+    respectifs, même logique que `FASTAPI_URL_PROD` aujourd'hui.
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`

@@ -9,52 +9,155 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-20 — OpenCode
+
+- **Carte Kanboard #45 créée** — « Arbitrer la politique de tests réels par
+  branche », dans `En attente` / swimlane `Epic Dev`, priorité haute,
+  complexité élevée et durée estimée à 6 h. Le chantier couvre l'inventaire,
+  la mesure, l'arbitrage et l'application de la politique de vérification —
+  voir `https://kanban.david-legrand.fr/task/45`.
+
+- **Carte Kanboard #44 créée** — « Réorganiser le dossier scripts/ », dans
+  `En attente` / swimlane `Epic Dev`, priorité haute, complexité moyenne et
+  durée estimée à 4 h. Le périmètre commence par l'inventaire et la
+  classification des scripts, avant toute décision d'arborescence — voir
+  `https://kanban.david-legrand.fr/task/44`.
+
 ## 2026-09-20 — Claude Code
 
 - **Démarrage carte #24 (A2 — Instrumentation)** — voir
   `conception/3_autre_us/us2_question_libre/increments/A_agent_nu/A2_instrumentation.md`.
   Décisions actées : granularité par appel LLM/outil (agent + retrieval),
   traces OpenTelemetry exportées en OTLP vers Langfuse Cloud (faiblement
-  couplé, exporteur JSONL local en option —
-  `logs/traces_agent_us2.jsonl`), texte brut autorisé en traces tant
-  qu'il n'y a pas d'utilisateur réel (C2 anonymisera en temps voulu),
-  `trace_id` exposé dans la réponse API. Cinq sous-tâches créées sur la
-  carte Kanboard (#19-#23). Schéma `A2_instrumentation.drawio` produit et
-  contrôlé visuellement ; fiche `.md` et visuel joints en pièce jointe
-  sur la carte #24.
-- **Procédure carte enrichie** — voir `docs/agent/02_regles_execution.md` :
-  une fois la fiche `.md` et le visuel produits, les joindre en pièce
-  jointe sur la carte Kanboard correspondante.
+  couplé, exporteur JSONL local en option — `logs/traces.jsonl`), texte
+  brut autorisé en traces tant qu'il n'y a pas d'utilisateur réel (C2
+  anonymisera en temps voulu), `trace_id` exposé dans la réponse API.
+  Cinq sous-tâches créées sur la carte Kanboard (#19-#23). Schéma
+  `A2_instrumentation.drawio` produit et contrôlé visuellement ; fiche
+  `.md` et visuel joints en pièce jointe sur la carte #24.
 - **Spec et plan d'implémentation A2** — voir
   `docs/superpowers/specs/2026-09-20-a2-instrumentation-design.md`
   (contexte, décisions, architecture) et
   `docs/superpowers/plans/2026-09-20-a2-instrumentation-implementation.md`
   (4 tâches TDD : module d'observabilité OTel, instrumentation de la
   boucle agent, instrumentation du retrieval, exposition de `trace_id`
-  dans l'API). Aucun code applicatif encore écrit.
+  dans l'API). Étape de conception : le code des 4 tâches est décrit
+  ci-dessous, il a été écrit ensuite.
+- **A2 Tâche 1 : module d'observabilité OpenTelemetry (sous-tâche #19)** —
+  exporteur JSONL local + mode OTLP configurable via `OTEL_EXPORTER`.
+  Implémentation : `app/observability/tracing.py` (`JSONLSpanExporter`,
+  `setup_tracing()`, `get_tracer()`, `current_trace_id()`). Tests dans
+  `tests/unit/observability/test_tracing.py`. Dépendances
+  `opentelemetry-sdk` et `opentelemetry-exporter-otlp-proto-http`
+  ajoutées — voir `app/observability/`.
+- **A2 Tâche 1b : contrat de configuration OTLP changé** — voir
+  `app/observability/tracing.py` (`_langfuse_otlp_config()`, commit
+  `e3602ef`). Les variables OpenTelemetry génériques
+  (`OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_HEADERS`) ne sont
+  **plus lues** : la configuration OTLP est désormais dérivée du trio
+  `LANGFUSE_PUBLIC_KEY` / `LANGFUSE_SECRET_KEY` / `LANGFUSE_BASE_URL`
+  (endpoint construit + en-tête `Authorization: Basic` encodé), avec
+  `ValueError` si l'une manque. Changement de contrat de configuration,
+  pas un simple refactor : un environnement qui posait les variables
+  génériques doit être migré. `_parse_headers()` supprimée.
+- **A2 Tâche 2 : instrumentation de la boucle agent (sous-tâche #20)** —
+  voir `app/agent_us2/loop.py`. Un span OpenTelemetry `appel_llm` par
+  appel LLM, un span `appel_outil` par appel d'outil, le tout enveloppé
+  dans un span racine `repondre` (correction après revue : sans lui,
+  chaque appel formait sa propre trace, `trace_id` ne pouvait pas
+  « retrouver la trace complète »). `ResultatAgent.trace_id` ajouté,
+  capturé une fois à l'entrée du span racine.
+- **A2 Tâche 3 : instrumentation du retrieval (sous-tâche #21)** — un
+  span par appel LLM (`appel_llm_decomposition`, `appel_llm_jugement`,
+  `appel_llm_guardrail`, attributs `tokens_entree`/`tokens_sortie`) dans
+  `DecompositionClient`, `JugementClient`, `GuardrailClient`, et un span
+  `recherche_dense` par sous-question autour de `query_top_n_numeros`
+  dans `app/retrieval/retrieval.py` (attributs `sous_question`, `top_n`,
+  `nb_resultats`). Retry `tenacity` inchangé (le span entoure l'appel
+  retenté, il ne le remplace pas). Tests dans
+  `tests/unit/retrieval/test_retrieval_tracing.py` (span émis vérifié
+  via un exporteur OTel en mémoire).
+  - **Changement de comportement non annoncé au départ** : pour nommer
+    la sous-question dans le span, la boucle de `retrieve()` est passée
+    de `for vector in vectors` à
+    `zip(sous_questions, vectors, strict=True)`. Conséquence : un
+    désalignement entre le nombre de sous-questions et le nombre de
+    vecteurs lève maintenant une `ValueError` là où l'ancien code
+    itérait silencieusement sur le plus court. Garde-fou souhaitable,
+    mais c'est bien un changement de comportement.
+- **A2 Tâche 4 : `trace_id` exposé dans l'API (sous-tâche #22)** — voir
+  `app/agent_us2/schemas.py`, `app/agent_us2/api.py`. `QuestionReponse`
+  porte désormais `trace_id: str | None`, alimenté par
+  `ResultatAgent.trace_id` (Tâche 2) — permet de retrouver la trace
+  complète d'une requête dans Langfuse ou dans `logs/traces.jsonl`.
+  Contrat `openapi.json` mis à jour et bumpé en `0.2.0`. Dernière tâche
+  du plan A2 — les 4 tâches sont closes.
 - **A2 : test d'intégration réel avec traçage** — voir
   `tests/integration/agent_us2/test_repondre.py` (nouveau test
   `test_repondre_avec_tracing_reel`). Le seul test qui fait un vrai appel
-  HTTP à l'API des règles (pas un mock) vérifie maintenant qu'un vrai
-  appel d'outil produit un span `appel_outil` réel et que `trace_id`
-  couvre bien toute la requête — les tests unitaires d'A2 (Tâches 1 à 3)
-  mockaient LLM et outil, donc ne prouvaient que le mécanisme
-  d'émission, pas le comportement sur un vrai appel. Exécuté pour de
-  vrai (API des règles démarrée) : 2/2 passés.
-- **A2 Task 4 : `trace_id` exposé dans l'API** — voir
-  `app/agent_us2/schemas.py`, `app/agent_us2/api.py`. `QuestionReponse`
-  porte désormais `trace_id: str | None`, alimenté par
-  `ResultatAgent.trace_id` (Task 2) — permet de retrouver la trace
-  complète d'une requête dans Langfuse ou dans
-  `logs/traces_agent_us2.jsonl`. Contrat `openapi.json` mis à jour et
-  bumpé en `0.2.0`. Dernière tâche du plan A2 — les 4 tâches sont closes.
-- **A2 Task 2 : instrumentation de la boucle agent** — voir
-  `app/agent_us2/loop.py`. Un span OpenTelemetry `appel_llm` par appel
-  LLM, un span `appel_outil` par appel d'outil, le tout enveloppé dans un
-  span racine `repondre` (correction après revue : sans lui, chaque appel
-  formait sa propre trace, `trace_id` ne pouvait pas "retrouver la trace
-  complète"). `ResultatAgent.trace_id` ajouté, capturé une fois à l'entrée
-  du span racine.
+  HTTP à l'API des règles (pas un mock) vérifie qu'un vrai appel d'outil
+  produit un span `appel_outil` réel et que `trace_id` couvre bien toute
+  la requête — les tests unitaires d'A2 (Tâches 1 à 3) mockaient LLM et
+  outil, donc ne prouvaient que le mécanisme d'émission, pas le
+  comportement sur un vrai appel. Exécuté pour de vrai (API des règles
+  démarrée) : 2/2 passés.
+- **A2 : passe de corrections après revue de branche** — 16 défauts
+  relevés par la revue finale, corrigés en une passe.
+  - *CI* : `ruff check` repassé au vert (E501 dans
+    `app/observability/tracing.py`, I001 dans les tests de traçage).
+  - *Endpoint Langfuse corrigé* : `/api/public/otel` →
+    `/api/public/otel/v1/traces`. `OTLPSpanExporter(endpoint=...)` prend
+    la valeur telle quelle, il n'ajoute `/v1/traces` que pour la variable
+    générique — jamais vérifié en réel (compte Langfuse encore à créer).
+  - *L'observabilité ne casse plus l'endpoint métier* : `get_tracer()` ne
+    lève plus jamais (warning + tracer dégradé), et `setup_tracing()` est
+    appelé explicitement au démarrage des deux services
+    (`app/agent_us2/main.py`, `app/api_regles/main.py`) pour échouer tôt
+    et bruyamment sur une config invalide.
+  - *Deux services, deux noms* : `setup_tracing(service_name=...)` —
+    `qualicheck-agent-us2` et `qualicheck-api-regles`. Les spans de l'API
+    des règles ne se déclarent plus émis par l'agent.
+  - *Spans du retrieval regroupés* : span racine `chercher_regles_dense`
+    dans `app/api_regles/regles.py`. Une requête `POST /regles/dense`
+    produisait jusque-là quatre traces orphelines (mesuré : sur 224
+    traces du fichier local, aucune ne contenait plus d'un span de
+    retrieval). Aucun changement de comportement métier. La propagation
+    inter-services (`traceparent` W3C entre l'agent et l'API des règles)
+    reste hors périmètre — documentée comme telle dans la spec.
+  - *Export JSONL complété* : `parent_span_id`, `start_time`, `end_time`,
+    `service_name` et le message de statut s'ajoutent aux champs
+    existants — sans eux le fichier local était un sac de spans plat,
+    sans hiérarchie ni ordre.
+  - *Fichier de traces renommé* : `logs/traces_agent_us2.jsonl` →
+    `logs/traces.jsonl`, les deux services y écrivant désormais.
+  - *`APP_ENV` introduit* (décision de David) : posé comme attribut OTel
+    standard `deployment.environment.name` sur la `Resource`, défaut
+    `dev` — voir `TODO.md` (section Divers, item clos).
+  - *`.env.example` complété* : `APP_ENV`, `OTEL_EXPORTER`,
+    `OTEL_JSONL_PATH` et le trio `LANGFUSE_*` (requis en mode `otlp`
+    uniquement) y sont enfin documentés.
+  - *Hygiène des tests* : fixture autouse de portée session dans
+    `tests/conftest.py` — `APP_ENV=test`, `OTEL_EXPORTER=jsonl` et
+    `OTEL_JSONL_PATH` hors dépôt. La suite unitaire écrivait jusque-là de
+    vrais spans dans le fichier de traces du dépôt (y compris en CI) et
+    installait un `TracerProvider` global écrivant sur disque pour le
+    reste de la session.
+  - *Tests rangés selon la convention du projet* : `test_tracing.py` →
+    `tests/unit/observability/`, `test_loop_tracing.py` →
+    `tests/unit/agent_us2/`, `test_retrieval_tracing.py` →
+    `tests/unit/retrieval/`, et `test_api_trace_id.py` déplacé de
+    `tests/integration/` vers `tests/unit/agent_us2/` (il mocke
+    entièrement `repondre`, ce n'est pas un test d'intégration).
+  - *Contrat `openapi.json`* : `"nullable": true` (mot-clé OpenAPI 3.0,
+    supprimé en 3.1) remplacé par `"type": ["string", "null"]` ; entrée
+    `A2` ajoutée à `x-historique`, resté au seul `A1b` malgré le bump en
+    `0.2.0`.
+  - *Documentation* : la spec de design décrit maintenant explicitement
+    la réalité à deux services et deux traces, schéma d'architecture
+    corrigé en conséquence.
+- **Procédure carte enrichie** — voir `docs/agent/02_regles_execution.md` :
+  une fois la fiche `.md` et le visuel produits, les joindre en pièce
+  jointe sur la carte Kanboard correspondante.
 - **Investigation graphe Kanboard `CompletedComplexity` vide** — abandon
   retenu, voir `TODO.md` (section Divers). Le README du plugin laissait
   penser à un problème de nom de colonne (`Terminé` vs `Done` attendu) ;
@@ -67,22 +170,6 @@ Format d'entrée, une ligne par réalisation :
   du cœur Kanboard (fragile aux mises à jour) pour un graphe redondant
   avec les analytics déjà disponibles (répartition, CFD, lead/cycle
   time, temps estimé vs réel) — abandonné, colonne laissée en `Done`.
-- **Module observabilité OpenTelemetry (tâche #19 A2)** — exporteur JSONL
-  local + mode OTLP configurable via `OTEL_EXPORTER`. Implémentation :
-  `app/observability/tracing.py` avec JSONLSpanExporter, setup_tracing(),
-  get_tracer(), current_trace_id(). Tests dans `tests/unit/test_tracing.py`.
-  Dépendances opentelemetry-sdk et opentelemetry-exporter-otlp-proto-http
-  ajoutées — voir `app/observability/`.
-- **Instrumentation du retrieval (tâche #21 A2)** — un span par appel LLM
-  (`appel_llm_decomposition`, `appel_llm_jugement`, `appel_llm_guardrail`,
-  attributs `tokens_entree`/`tokens_sortie`) dans `DecompositionClient`,
-  `JugementClient`, `GuardrailClient`, et un span `recherche_dense` par
-  sous-question autour de `query_top_n_numeros` dans
-  `app/retrieval/retrieval.py` (attributs `sous_question`, `top_n`,
-  `nb_resultats`). Retry `tenacity` inchangé (le span entoure l'appel
-  retenté, il ne le remplace pas). Tests dans
-  `tests/unit/test_retrieval_tracing.py` (span émis vérifié via un
-  exporteur OTel en mémoire).
 
 ## 2026-09-19 — Claude Code
 
