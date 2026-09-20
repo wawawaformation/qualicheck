@@ -30,8 +30,7 @@ Format d'entrée, une ligne par réalisation :
   Correction : paramètre optionnel `familles_exclues` sur `is_acceptable`
   (défaut inchangé, `api_regles` non touchée), passé par `check_rag_acceptance.py`.
   Test écrit d'abord (rouge, `TypeError`), puis vert ; 303 unitaires, `ruff`
-  propre ; rejeu des taux du run 68 : refus avant, acceptation après. Coût du
-  run échoué : ~0,008 €. À revalider par un nouveau tag.
+  propre ; rejeu des taux du run 68 : refus avant, acceptation après. Coût estimé de `check_rag_acceptance.py` dans ce run : ~0,008 €. À revalider par un nouveau tag.
 
 - **Collection Bruno extraite de la carte #45 vers la carte #50** — décision de
   David : le versionnement de la collection `qualicheck` n'est pas fait ce jour.
