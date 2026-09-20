@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.ingestion.embedding import EmbeddingClient
 from app.ingestion.rag_acceptance import query_top_n_numeros
+from app.observability.tracing import get_tracer
 from app.retrieval.decomposition import DecompositionClient
 
 
@@ -28,13 +29,19 @@ def retrieve(
     pas celui de la première apparition. Pas de plafond après fusion : la
     taille du résultat varie selon le nombre de sous-questions.
     """
+    tracer = get_tracer()
     sous_questions = decomposition_client.decomposer(question)
     vectors = embedding_client.embed_batch(sous_questions)
 
     ordre: list[int] = []
     meilleurs_scores: dict[int, float] = {}
-    for vector in vectors:
-        for numero, score in query_top_n_numeros(session, vector, top_n):
+    for sous_question, vector in zip(sous_questions, vectors, strict=True):
+        with tracer.start_as_current_span(
+            "recherche_dense", attributes={"sous_question": sous_question, "top_n": top_n}
+        ) as span:
+            resultats = query_top_n_numeros(session, vector, top_n)
+            span.set_attribute("nb_resultats", len(resultats))
+        for numero, score in resultats:
             if numero not in meilleurs_scores:
                 ordre.append(numero)
                 meilleurs_scores[numero] = score

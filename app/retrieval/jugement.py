@@ -13,6 +13,7 @@ from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from tenacity import retry, stop_after_attempt, wait_exponential
 
+from app.observability.tracing import get_tracer
 from app.retrieval.config import load_config
 
 logger = logging.getLogger(__name__)
@@ -61,15 +62,19 @@ class JugementClient:
         reraise=True,
     )
     def _appeler_llm(self, question: str, candidats: list[tuple[int, str]]) -> list[int]:
-        prompt = self._construire_prompt(question, candidats)
-        response = self.llm.invoke(prompt)
-        parsed = self.parser.parse(response.content)
+        tracer = get_tracer()
+        with tracer.start_as_current_span("appel_llm_jugement") as span:
+            prompt = self._construire_prompt(question, candidats)
+            response = self.llm.invoke(prompt)
+            parsed = self.parser.parse(response.content)
 
-        usage = response.usage_metadata or {}
-        self.input_tokens += usage.get("input_tokens", 0)
-        self.output_tokens += usage.get("output_tokens", 0)
+            usage = response.usage_metadata or {}
+            span.set_attribute("tokens_entree", usage.get("input_tokens", 0))
+            span.set_attribute("tokens_sortie", usage.get("output_tokens", 0))
+            self.input_tokens += usage.get("input_tokens", 0)
+            self.output_tokens += usage.get("output_tokens", 0)
 
-        return parsed["numeros_pertinents"]
+            return parsed["numeros_pertinents"]
 
     def juger(self, question: str, candidats: list[tuple[int, str]]) -> list[int]:
         """Juge lesquels des candidats répondent vraiment à la question.
