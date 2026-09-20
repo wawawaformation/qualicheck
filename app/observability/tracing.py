@@ -6,6 +6,7 @@ SDK Langfuse directement, exporteur OTLP (Langfuse Cloud) ou JSONL local
 selon OTEL_EXPORTER.
 """
 
+import base64
 import json
 import os
 from collections.abc import Sequence
@@ -55,14 +56,32 @@ def _span_to_dict(span: ReadableSpan) -> dict:
     }
 
 
-def _parse_headers(raw: str) -> dict:
-    """Parse le format standard OTEL_EXPORTER_OTLP_HEADERS : 'cle1=val1,cle2=val2'."""
-    headers = {}
-    for part in raw.split(","):
-        if "=" in part:
-            k, v = part.split("=", 1)
-            headers[k.strip()] = v.strip()
-    return headers
+def _langfuse_otlp_config() -> tuple[str, dict[str, str]]:
+    """Dérive la config OTLP depuis les env vars Langfuse.
+
+    Lit LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY et LANGFUSE_BASE_URL, et
+    retourne (endpoint, headers) pour OTLPSpanExporter.
+    Lève ValueError si une env var manque.
+    """
+    public_key = os.getenv("LANGFUSE_PUBLIC_KEY", "").strip()
+    secret_key = os.getenv("LANGFUSE_SECRET_KEY", "").strip()
+    base_url = os.getenv("LANGFUSE_BASE_URL", "").strip()
+
+    if not public_key or not secret_key or not base_url:
+        raise ValueError(
+            "OTEL_EXPORTER=otlp nécessite LANGFUSE_PUBLIC_KEY, "
+            "LANGFUSE_SECRET_KEY et LANGFUSE_BASE_URL dans .env"
+        )
+
+    endpoint = base_url.rstrip("/") + "/api/public/otel"
+
+    # Encode public_key:secret_key en base64 pour l'authentification Basic
+    credentials = f"{public_key}:{secret_key}"
+    encoded_credentials = base64.b64encode(credentials.encode()).decode()
+
+    headers = {"Authorization": f"Basic {encoded_credentials}"}
+
+    return endpoint, headers
 
 
 _provider: TracerProvider | None = None
@@ -71,8 +90,8 @@ _provider: TracerProvider | None = None
 def setup_tracing() -> TracerProvider:
     """Initialise le TracerProvider une seule fois par process.
 
-    OTEL_EXPORTER=otlp -> export vers Langfuse Cloud (OTEL_EXPORTER_OTLP_ENDPOINT,
-    OTEL_EXPORTER_OTLP_HEADERS pour l'authentification Langfuse).
+    OTEL_EXPORTER=otlp -> export vers Langfuse Cloud (LANGFUSE_PUBLIC_KEY,
+    LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL pour l'authentification Langfuse).
     OTEL_EXPORTER=jsonl (defaut) -> fichier local (OTEL_JSONL_PATH,
     defaut logs/traces_agent_us2.jsonl).
     """
@@ -85,10 +104,8 @@ def setup_tracing() -> TracerProvider:
 
     mode = os.getenv("OTEL_EXPORTER", "jsonl")
     if mode == "otlp":
-        exporter = OTLPSpanExporter(
-            endpoint=os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT"),
-            headers=_parse_headers(os.getenv("OTEL_EXPORTER_OTLP_HEADERS", "")),
-        )
+        endpoint, headers = _langfuse_otlp_config()
+        exporter = OTLPSpanExporter(endpoint=endpoint, headers=headers)
         provider.add_span_processor(BatchSpanProcessor(exporter))
     elif mode == "jsonl":
         path = os.getenv("OTEL_JSONL_PATH", "logs/traces_agent_us2.jsonl")
