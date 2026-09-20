@@ -32,6 +32,13 @@ Format d'entrée, une ligne par réalisation :
   (4 tâches TDD : module d'observabilité OTel, instrumentation de la
   boucle agent, instrumentation du retrieval, exposition de `trace_id`
   dans l'API). Aucun code applicatif encore écrit.
+- **A2 Task 2 : instrumentation de la boucle agent** — voir
+  `app/agent_us2/loop.py`. Un span OpenTelemetry `appel_llm` par appel
+  LLM, un span `appel_outil` par appel d'outil, le tout enveloppé dans un
+  span racine `repondre` (correction après revue : sans lui, chaque appel
+  formait sa propre trace, `trace_id` ne pouvait pas "retrouver la trace
+  complète"). `ResultatAgent.trace_id` ajouté, capturé une fois à l'entrée
+  du span racine.
 - **Investigation graphe Kanboard `CompletedComplexity` vide** — abandon
   retenu, voir `TODO.md` (section Divers). Le README du plugin laissait
   penser à un problème de nom de colonne (`Terminé` vs `Done` attendu) ;
