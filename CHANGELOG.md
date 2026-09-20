@@ -19,6 +19,9 @@ Format d'entrée, une ligne par réalisation :
   indicateurs `llm.input_truncated` / `llm.output_truncated`. Tests dans
   `tests/unit/observability/test_tracing.py` — voir
   `docs/superpowers/specs/2026-09-20-enrichir-span-llm-input-output-design.md`.
+  Validation locale : lancement de `scripts/agent_cli.py` avec
+  `OTEL_EXPORTER=jsonl`, les attributs `llm.input` / `llm.output` sont
+  bien présents dans `logs/traces.jsonl`.
 
 - **Validation réelle de l'export OTLP vers Langfuse (sous-tâche #23)** —
   lancement de `scripts/agent_cli.py` avec `OTEL_EXPORTER=otlp` sur la
