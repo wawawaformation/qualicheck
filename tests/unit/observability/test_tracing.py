@@ -250,6 +250,9 @@ def test_set_llm_span_io_gere_content_vide():
     output = json.loads(span.attributes["llm.output"])
     assert output["content"] == ""
     assert output["tool_calls"] == [{"name": "rechercher_regles", "args": {"query": "test"}}]
+    # Attributs generiques reconnus par Langfuse pour la preview input/output.
+    assert span.attributes["input"] == span.attributes["llm.input"]
+    assert span.attributes["output"] == span.attributes["llm.output"]
 
 
 def test_set_llm_span_io_attributs_config_llm():
@@ -267,6 +270,8 @@ def test_set_llm_span_io_attributs_config_llm():
     assert span.attributes["llm.provider"] == "azure"
     assert span.attributes["llm.model"] == "gpt-5.4-mini"
     assert span.attributes["llm.temperature"] == 0
+    assert span.attributes["input"] == span.attributes["llm.input"]
+    assert span.attributes["output"] == span.attributes["llm.output"]
 
 
 def test_set_tool_span_io_serialise_input_output():
@@ -285,6 +290,8 @@ def test_set_tool_span_io_serialise_input_output():
     assert span.attributes["outil.output_truncated"] is False
     assert json.loads(span.attributes["outil.input"]) == {"mots_cles": "prix TTC"}
     assert json.loads(span.attributes["outil.output"]) == {"resultats": [{"numero": 56}]}
+    assert span.attributes["input"] == span.attributes["outil.input"]
+    assert span.attributes["output"] == span.attributes["outil.output"]
 
 
 def test_set_tool_span_io_tronque_output():
@@ -301,3 +308,5 @@ def test_set_tool_span_io_tronque_output():
     assert "[... tronqué ...]" in span.attributes["outil.output"]
     assert len(span.attributes["outil.output"]) <= 100
     assert span.attributes["outil.input_truncated"] is False
+    assert span.attributes["input"] == span.attributes["outil.input"]
+    assert span.attributes["output"] == span.attributes["outil.output"]

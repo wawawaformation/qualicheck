@@ -301,6 +301,10 @@ def set_llm_span_io(
     span.set_attribute("llm.output", output_truncated_json)
     span.set_attribute("llm.output_truncated", output_truncated)
 
+    # Attributs generiques reconnus par Langfuse pour la preview input/output.
+    span.set_attribute("input", input_truncated_json)
+    span.set_attribute("output", output_truncated_json)
+
     if config_llm:
         span.set_attribute("llm.provider", config_llm.get("provider", "unknown"))
         span.set_attribute("llm.model", config_llm.get("model", "unknown"))
@@ -330,6 +334,10 @@ def set_tool_span_io(
     span.set_attribute("outil.input_truncated", input_truncated)
     span.set_attribute("outil.output", output_truncated_json)
     span.set_attribute("outil.output_truncated", output_truncated)
+
+    # Attributs generiques reconnus par Langfuse pour la preview input/output.
+    span.set_attribute("input", input_truncated_json)
+    span.set_attribute("output", output_truncated_json)
 
 
 def current_trace_id() -> str | None:
