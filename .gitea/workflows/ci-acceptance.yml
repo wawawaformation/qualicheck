@@ -1,0 +1,92 @@
+name: CI — Acceptance (sur tag)
+
+# Déclenché par le push d'un tag (YYYY-MM-DD-<sha7>), pas par un push de
+# branche : découple le coût réel (appels LLM/embeddings) du rythme des
+# merges. Voir conception/4_ci_cd/strategie_tests_et_gates.md.
+on:
+  push:
+    tags:
+      - "**"
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_TEST_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      AZURE_AI_ENDPOINT: ${{ secrets.AZURE_AI_ENDPOINT }}
+      AZURE_AI_API_KEY: ${{ secrets.AZURE_AI_API_KEY }}
+      AZURE_MODEL_TEXT_EMBEDDING_SMALL: ${{ secrets.AZURE_MODEL_TEXT_EMBEDDING_SMALL }}
+      AZURE_MODEL_GPT_MINI: ${{ secrets.AZURE_MODEL_GPT_MINI }}
+      API_REGLES_TOKEN_DEV: ${{ secrets.API_REGLES_TOKEN_DEV }}
+      API_REGLES_TOKEN_ELIE: ${{ secrets.API_REGLES_TOKEN_ELIE }}
+      API_REGLES_TOKEN_DAVID: ${{ secrets.API_REGLES_TOKEN_DAVID }}
+      API_REGLES_TOKEN_FORMATEUR: ${{ secrets.API_REGLES_TOKEN_FORMATEUR }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installer uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Installer les dépendances
+        run: uv sync
+
+      - name: Installer le client psql
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends postgresql-client
+
+      - name: Appliquer les migrations du référentiel
+        run: uv run python scripts/migration.py
+
+      # Fixture commitée (tests/fixtures/referentiel_embedde.sql), pas les
+      # dumps de backups/ (gitignorés) : évite de refaire les 245 appels LLM
+      # d'ingestion/embedding à chaque tag (règle projet : pas de
+      # ré-ingestion complète non nécessaire).
+      - name: Importer le référentiel déjà ingéré et embeddé (fixture CI)
+        run: |
+          PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" \
+            -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 \
+            -f tests/fixtures/referentiel_embedde.sql
+
+      - name: Démarrer l'API données en arrière-plan
+        run: |
+          nohup uv run uvicorn app.api_regles.main:app --port 8880 > api-regles.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8880/health && exit 0
+            sleep 1
+          done
+          echo "L'API données n'a pas démarré à temps :"
+          cat api-regles.log
+          exit 1
+
+      - name: Acceptance — retrieval RAG (check_rag_acceptance.py)
+        run: uv run python tests/acceptance/check_rag_acceptance.py
+
+      - name: Acceptance — API données (make api-regles-acceptance)
+        run: make api-regles-acceptance
+
+      - name: Acceptance — API données via /regles/dense (make api-regles-dense-acceptance)
+        run: make api-regles-dense-acceptance

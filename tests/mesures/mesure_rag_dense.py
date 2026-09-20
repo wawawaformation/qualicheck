@@ -4,12 +4,16 @@ Rejoue tests/acceptance/rag_acceptance.jsonl une seule fois par question
 (une seule décomposition, un seul appel API embeddings pour ses
 sous-questions, une seule requête pgvector par sous-question à LIMIT 15),
 puis tronque localement chaque sous-question pour chaque top_n de TOP_NS
-avant de fusionner. Produit un rapport Markdown horodaté dans docs/eval/.
+avant de fusionner. Produit un rapport Markdown horodaté dans docs/eval/ :
+c'est une mesure pour décision (pas de verdict pass/fail), pas un test
+d'acceptance — voir docs/glossaire_tests.md.
 
 Passe par app.retrieval (décomposition + union), comme l'instrument de
 mesure officiel (tests/acceptance/check_rag_acceptance.py) depuis le 2026-09-09 —
 seule différence : compare plusieurs top_n en un run au lieu d'un seul.
-Voir docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md et
+Anciennement tests/acceptance/rag_dense_acceptance.py, déplacé et renommé
+le 2026-09-20 (carte Kanboard #45) pour refléter sa nature réelle. Voir
+docs/superpowers/specs/2026-09-09-rag-dense-acceptance-design.md et
 docs/superpowers/specs/2026-09-09-retrieval-decomposition-multi-sujets-design.md.
 """
 
@@ -121,7 +125,7 @@ def build_report(
     section_echecs = "\n".join(lignes_echecs) if lignes_echecs else "Aucun."
 
     return (
-        f"# Mesure recall — rag_dense_acceptance ({horodatage.strftime('%Y-%m-%d %H:%M')})\n\n"
+        f"# Mesure recall — mesure_rag_dense ({horodatage.strftime('%Y-%m-%d %H:%M')})\n\n"
         f"## Taux de réussite par famille × top_n\n\n{tableau}\n\n"
         f"## Cas PARTIEL/FAIL persistants à top_n=15\n\n"
         f"(famille `{FAMILLE_HORS_SEUIL}` exclue : toujours FAIL par construction, "
@@ -136,8 +140,8 @@ def main() -> None:
     engine = get_engine()
     top_n_max = max(TOP_NS)
 
-    logger.info("=== rag_dense_acceptance : démarrage ===")
-    progress_logger.info("=== rag_dense_acceptance : démarrage ===")
+    logger.info("=== mesure_rag_dense : démarrage ===")
+    progress_logger.info("=== mesure_rag_dense : démarrage ===")
 
     cases = load_cases(CASES_PATH)
     embedding_client = EmbeddingClient()
@@ -157,7 +161,7 @@ def main() -> None:
                 evaluation = evaluate_case(case, numeros_par_top_n[n])
                 resultats_par_top_n[n].append(evaluation)
                 progress_logger.info(
-                    f"rag_dense_acceptance — « {case['question']} » "
+                    f"mesure_rag_dense — « {case['question']} » "
                     f"[{case['famille']}] top_n={n} — {evaluation['verdict']}"
                 )
 
@@ -178,7 +182,7 @@ def main() -> None:
     )
     cost = embedding_cost + decomposition_cost
     progress_logger.info(
-        f"rag_dense_acceptance — tokens embedding : {embedding_client.total_tokens}, "
+        f"mesure_rag_dense — tokens embedding : {embedding_client.total_tokens}, "
         f"tokens décomposition : {decomposition_client.input_tokens}+"
         f"{decomposition_client.output_tokens}, coût estimé : {cost:.4f} €"
     )
@@ -186,11 +190,11 @@ def main() -> None:
     horodatage = datetime.now()
     rapport = build_report(taux_par_top_n, resultats_par_top_n[top_n_max], horodatage)
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    report_path = REPORT_DIR / f"rag_dense_acceptance_{horodatage.strftime('%Y-%m-%d_%H%M%S')}.md"
+    report_path = REPORT_DIR / f"mesure_rag_dense_{horodatage.strftime('%Y-%m-%d_%H%M%S')}.md"
     report_path.write_text(rapport, encoding="utf-8")
 
-    logger.info(f"=== rag_dense_acceptance : rapport écrit dans {report_path} ===")
-    progress_logger.info(f"=== rag_dense_acceptance : rapport écrit dans {report_path} ===")
+    logger.info(f"=== mesure_rag_dense : rapport écrit dans {report_path} ===")
+    progress_logger.info(f"=== mesure_rag_dense : rapport écrit dans {report_path} ===")
 
 
 if __name__ == "__main__":

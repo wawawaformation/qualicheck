@@ -4,8 +4,10 @@ Recalcule l'embedding réel de chaque question du jeu de cas
 (tests/acceptance/rag_acceptance.jsonl), interroge pgvector (similarité
 cosinus) et vérifie, par famille de cas, que les règles attendues figurent
 dans le top_n déclaré dans app/retrieval/config.yml (section
-rag_acceptance). Coût réel à chaque exécution (appel Azure embeddings),
-volontairement hors CI — lancé à la demande via `make rag-acceptance`.
+rag_acceptance). Coût réel à chaque exécution (appel Azure embeddings) :
+lancé à la demande via `make rag-acceptance`, et automatiquement en CI sur
+tag (`.gitea/workflows/ci-acceptance.yml`) — pas à chaque push, pour
+limiter ce coût récurrent. Voir conception/4_ci_cd/strategie_tests_et_gates.md.
 """
 
 import logging

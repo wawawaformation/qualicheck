@@ -6,9 +6,11 @@ duplication) : vérifie que le contrat HTTP bout-en-bout produit le même
 résultat que l'appel direct à retrieve() (tests/acceptance/check_rag_acceptance.py).
 
 Coût réel à chaque exécution (décomposition LLM + embedding pour chaque
-cas) — volontairement hors CI, jamais ajouté au jeu automatique
-tests/acceptance/api_regles_acceptance.jsonl (rejoué par cd-staging.yml à
-chaque déploiement). Lancé à la demande via `make api-regles-dense-acceptance`.
+cas) — jamais ajouté au jeu automatique tests/acceptance/api_regles_acceptance.jsonl
+(rejoué par cd-staging.yml à chaque déploiement, lui gratuit). Lancé à la
+demande via `make api-regles-dense-acceptance`, et automatiquement en CI
+sur tag (`.gitea/workflows/ci-acceptance.yml`) — pas à chaque push, pour
+limiter ce coût récurrent. Voir conception/4_ci_cd/strategie_tests_et_gates.md.
 """
 
 import logging

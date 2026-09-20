@@ -41,6 +41,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0 nécessaire pour que git describe voie les tags —
+          # actions/checkout ne les récupère pas en clone superficiel
+          fetch-depth: 0
+
+      # Garde-fou : aucune version ne doit atteindre staging sans être passée
+      # par le tag qui déclenche les vrais tests d'acceptance (ci-acceptance.yml).
+      # Voir conception/4_ci_cd/strategie_tests_et_gates.md.
+      - name: Vérifier que le commit déployé est tagué
+        run: git describe --tags --exact-match ${{ github.sha }}
 
       - name: Installer uv
         uses: astral-sh/setup-uv@v5

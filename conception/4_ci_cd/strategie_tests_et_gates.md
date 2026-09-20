@@ -26,19 +26,55 @@ un nouveau test sans redemander.
 
 ```
 branche feature
-  -> CI (lint + tests unitaires/intégration, LLM mocké)      [déjà réel, ci-dev.yml]
+  -> CI feature (lint + tests unitaires/intégration, LLM mocké)  [ci-feature.yml, à faire]
   -> CI verte (gate)
+  -> tag manuel (YYYY-MM-DD-<sha7>) quand la branche est prête   [nouveau, cf. « Tag »]
+  -> Acceptance (vrais tests, appels LLM réels)                   [déclenché par le push du tag,
+                                                                    workflow séparé, à faire]
   -> revue de code (PR, auto-revue)
   -> merge sur dev
-  -> Acceptance (Gherkin réel, appels LLM réels)              [dossier tests/acceptance/ existe déjà,
-                                                                mais pas encore branché comme étape
-                                                                systématique post-merge dev — à faire]
   -> gate à seuil (déclenché à la promotion dev -> staging, PAS à chaque push)
-  -> déploiement staging (build+push 2 images + manifest)     [aujourd'hui : 1 seule image poussée,
-                                                                pas de manifest — écart, voir plus bas]
+  -> déploiement staging (build+push 2 images + manifest)        [aujourd'hui : 1 seule image poussée,
+                                                                    pas de manifest — écart, voir plus bas]
   -> recette / UAT sur staging (vérification humaine)
   -> prod (observabilité Langfuse, trafic réel)
 ```
+
+## Tag comme précondition de promotion (décision, 2026-09-20)
+
+**Décision** : aucune version ne peut être promue plus loin dans la chaîne
+(dev -> staging -> prod) sans avoir été **taguée** au préalable sur sa
+branche feature. Le tag est ce qui déclenche les vrais tests d'acceptance
+(coûteux), pas le merge — ça découple le coût du rythme des merges et donne
+un retour rapide dès qu'une branche est taguée, avant même le merge sur
+`dev`.
+
+- **Création du tag** : manuelle (`git tag` + push), décidée par David
+  quand une branche feature est prête. Pas d'automatisation pour l'instant
+  (YAGNI — pas de volume de contributeurs qui le justifie).
+- **Format** : `YYYY-MM-DD-<sha7>` (ex. `2026-09-20-a1b2c3d`). Simple et
+  traçable, sans présumer d'un schéma de versionnage sémantique formel —
+  cohérent avec la décision déjà prise plus bas de ne pas utiliser de
+  version sémantique (`v1.2.3`) tant qu'aucun processus de release formel
+  n'existe.
+- **Déclencheur des vrais tests d'acceptance** : le push du tag lui-même
+  (`on: push: tags: '**'`), workflow séparé de `ci-feature.yml`/`ci-dev.yml`.
+  Prépare un Postgres éphémère, ingère et embedde réellement le référentiel
+  (coût réel accepté), puis rejoue les tests d'acceptance qui en sont
+  vraiment (`check_rag_acceptance.py`, `check_api_regles_acceptance.py`,
+  `check_api_regles_dense_acceptance.py`) — pas `mesure_rag_dense.py`, qui
+  reste une mesure, pas une acceptance (cf. plus bas).
+- **Garde-fou avant déploiement staging** : `cd-staging.yml` doit vérifier
+  que le SHA déployé correspond à un tag existant avant de construire/pousser
+  les images — refuser sinon. Non implémenté à ce jour.
+- **Données du Postgres éphémère** : `ci-acceptance.yml` importe
+  `tests/fixtures/referentiel_embedde.sql` (référentiel déjà ingéré/embeddé,
+  commité) plutôt que de relancer `make ingestion`/`make embed-rules` à
+  chaque tag (245 appels LLM réels sinon, contraire à la règle projet
+  "éviter les ré-ingestions complètes non nécessaires"). Ce fixture est
+  **statique** : à régénérer manuellement (voir `tests/fixtures/README.md`)
+  quand le référentiel change vraiment, sinon les tests d'acceptance
+  tournent sur des données périmées.
 
 ## Répartition mock / réel par étage (décision)
 
@@ -50,10 +86,10 @@ branche feature
 - **`tests/acceptance/`** : LLM réel, coûte de l'argent — c'est là que le
   Gherkin est rejoué pour de vrai.
 - **`tests/mesures/`** : pas de verdict, produit des métriques pour décider
-  (ex. `mesure_scores_refus.py`). **Incohérence repérée, non corrigée** :
-  `tests/acceptance/rag_dense_acceptance.py` a en réalité le profil d'une
-  mesure (compare des `top_n`, produit un rapport Markdown, pas de
-  pass/fail) — mal nommé/mal rangé, à corriger une autre fois si demandé.
+  (ex. `mesure_scores_refus.py`). **Incohérence corrigée le 2026-09-20** :
+  `tests/acceptance/rag_dense_acceptance.py` avait en réalité le profil
+  d'une mesure (compare des `top_n`, produit un rapport Markdown, pas de
+  pass/fail) — déplacé et renommé en `tests/mesures/mesure_rag_dense.py`.
 
 ## Gate à seuil sur `dev -> staging`
 

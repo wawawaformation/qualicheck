@@ -1,4 +1,4 @@
-.PHONY: up up-db up-staging down migration downgrade migration-test ingestion export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance rag-dense-acceptance mesure-scores-refus mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks mesure-guardrail-perimetre api-regles api-regles-acceptance api-regles-dense-acceptance api-business regles-api-client-install regles-api-client regles-api-client-test
+.PHONY: up up-db up-staging down migration downgrade migration-test ingestion export_sql import_sql test test-unit test-integration test-migration psql enrich-again embed-rules rag-acceptance mesure-scores-refus mesure-rag-dense mesure-variantes-chunks mesure-combinaisons-chunks mesure-multi-vecteurs-chunks mesure-guardrail-perimetre api-regles api-regles-acceptance api-regles-dense-acceptance api-business regles-api-client-install regles-api-client regles-api-client-test
 
 # ============================================================
 # Docker
@@ -104,13 +104,10 @@ embed-rules:
 	$(MAKE) export_sql
 
 ## Rejoue le jeu d'acceptance RAG (tests/acceptance/rag_acceptance.jsonl) :
-## appel réel à l'API embeddings, coût réel, volontairement hors CI
+## appel réel à l'API embeddings, coût réel — hors CI sur push, mais rejoué
+## automatiquement en CI sur tag (ci-acceptance.yml)
 rag-acceptance:
 	uv run python tests/acceptance/check_rag_acceptance.py
-
-## Compare le recall du RAG sur plusieurs top_n (3/5/10/15), rapport Markdown
-rag-dense-acceptance:
-	uv run python tests/acceptance/rag_dense_acceptance.py
 
 ## Mesure les scores (top-1, écart top-1/top-15) : sans_reponse vs cas PASS,
 ## pour trancher si un seuil relatif est calibrable (Temps 1 du chantier refus)
@@ -136,6 +133,12 @@ mesure-multi-vecteurs-chunks:
 ## Opquast SANS voir de candidats retrieval (hypothese guardrail agent)
 mesure-guardrail-perimetre:
 	uv run python tests/mesures/mesure_guardrail_perimetre.py
+
+## Compare le recall du RAG sur plusieurs top_n (3/5/10/15), rapport Markdown —
+## aide à décider quel top_n déclarer dans app/retrieval/config.yml, pas un
+## verdict pass/fail (voir docs/glossaire_tests.md)
+mesure-rag-dense:
+	uv run python tests/mesures/mesure_rag_dense.py
 
 # ============================================================
 # API données
@@ -169,8 +172,9 @@ api-regles-acceptance:
 
 ## Rejoue le jeu d'acceptance RAG (99 cas, tests/acceptance/rag_acceptance.jsonl)
 ## via POST /regles/dense en HTTP reel — necessite make api-regles demarre
-## dans un autre terminal. Cout reel (LLM + embedding) a chaque execution,
-## volontairement hors CI, comme make rag-acceptance.
+## dans un autre terminal. Cout reel (LLM + embedding) a chaque execution —
+## hors CI sur push, mais rejoue automatiquement en CI sur tag
+## (ci-acceptance.yml), comme rag-acceptance.
 api-regles-dense-acceptance:
 	uv run python tests/acceptance/check_api_regles_dense_acceptance.py
 

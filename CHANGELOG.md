@@ -11,6 +11,22 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Implémentation carte #45 (CI/CD LLMOps, suite de l'atelier)** —
+  `tests/acceptance/rag_dense_acceptance.py` déplacé/renommé
+  `tests/mesures/mesure_rag_dense.py` (incohérence corrigée, cible Makefile
+  `mesure-rag-dense`). Nouvelle décision : le tag (`YYYY-MM-DD-<sha7>`, manuel)
+  devient la précondition de promotion et le déclencheur des vrais tests
+  d'acceptance — `.gitea/workflows/ci-feature.yml` créé (lint + unit +
+  intégration mockée sur toute branche hors `main`/`staging`/`dev`),
+  `ci-dev.yml` restreint au seul push sur `dev`, `ci-acceptance.yml` créé
+  (déclenché par push de tag : Postgres éphémère, import du fixture
+  `tests/fixtures/referentiel_embedde.sql` — référentiel déjà ingéré/embeddé,
+  évite de refaire les 245 appels LLM d'ingestion à chaque tag — puis
+  `check_rag_acceptance.py`, `make api-regles-acceptance`,
+  `make api-regles-dense-acceptance`). `cd-staging.yml` refuse désormais de
+  déployer un commit non tagué (`git describe --tags --exact-match`). Détail
+  des décisions : `conception/4_ci_cd/strategie_tests_et_gates.md`.
+
 - **Atelier carte #45 conclu (volet CI/CD LLMOps)** — vocabulaire fixé
   ensemble (unitaire, intégration boîte noire/réel, bout en bout, acceptance,
   mesure, métrique, recette/UAT), schéma de David confronté au dépôt réel et
