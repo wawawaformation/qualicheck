@@ -12,7 +12,9 @@ import logging
 import os
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
+from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.sdk.resources import Resource
@@ -176,6 +178,87 @@ def get_tracer() -> trace.Tracer:
     except Exception as e:
         logger.warning("Traçage désactivé — configuration invalide (%s)", e)
     return trace.get_tracer(SERVICE_NAME_DEFAUT)
+
+
+def _serialize_message(msg: BaseMessage) -> dict[str, Any]:
+    """Convertit un message LangChain en dict sérialisable.
+
+    Les AIMessage de l'historique portent leurs tool_calls et prennent le
+    role `assistant` pour la lisibilité dans Langfuse.
+    """
+    if isinstance(msg, AIMessage):
+        return _serialize_ai_message(msg)
+
+    serialized: dict[str, Any] = {
+        "role": msg.type,
+        "content": msg.content or "",
+    }
+    if isinstance(msg, ToolMessage):
+        serialized["tool_call_id"] = msg.tool_call_id
+    return serialized
+
+
+def _serialize_ai_message(msg: AIMessage) -> dict[str, Any]:
+    """Convertit la réponse AI en dict sérialisable."""
+    output: dict[str, Any] = {
+        "role": "assistant",
+        "content": msg.content or "",
+    }
+    if msg.tool_calls:
+        output["tool_calls"] = [
+            {"name": tc.get("name"), "args": tc.get("args")}
+            for tc in msg.tool_calls
+        ]
+    return output
+
+
+def _truncate_text(text: str, max_len: int) -> tuple[str, bool]:
+    """Tronque `text` au milieu en conservant le début et la fin.
+
+    Retourne (texte_tronque, a_ete_tronque). Le marqueur central est
+    `[... tronqué ...]` (22 caractères). Si max_len est inférieur à la
+    longueur du marqueur + 2 caractères de contexte, on tronque brutalement
+    à droite.
+    """
+    if len(text) <= max_len:
+        return text, False
+
+    marker = "[... tronqué ...]"
+    if max_len <= len(marker) + 2:
+        return text[:max_len], True
+
+    keep = max_len - len(marker)
+    head = keep // 2
+    tail = keep - head
+    return text[:head] + marker + text[-tail:], True
+
+
+def set_llm_span_io(
+    span: trace.Span,
+    messages: Sequence[BaseMessage],
+    ai_message: AIMessage,
+    max_len: int = 4000,
+) -> None:
+    """Attache input/output LLM au span courant, tronqué si nécessaire.
+
+    - `llm.input` : JSON compact de la liste des messages (role, content,
+      tool_call_id pour ToolMessage).
+    - `llm.output` : JSON compact de la réponse AI (role, content,
+      tool_calls).
+    - `llm.input_truncated` / `llm.output_truncated` : booléens.
+    """
+    input_data = [_serialize_message(m) for m in messages]
+    input_json = json.dumps(input_data, ensure_ascii=False, separators=(",", ":"))
+    input_truncated_json, input_truncated = _truncate_text(input_json, max_len)
+
+    output_data = _serialize_ai_message(ai_message)
+    output_json = json.dumps(output_data, ensure_ascii=False, separators=(",", ":"))
+    output_truncated_json, output_truncated = _truncate_text(output_json, max_len)
+
+    span.set_attribute("llm.input", input_truncated_json)
+    span.set_attribute("llm.input_truncated", input_truncated)
+    span.set_attribute("llm.output", output_truncated_json)
+    span.set_attribute("llm.output_truncated", output_truncated)
 
 
 def current_trace_id() -> str | None:

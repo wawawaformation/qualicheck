@@ -2,6 +2,7 @@ import base64
 import json
 
 import pytest
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
@@ -166,3 +167,80 @@ def test_get_tracer_ne_leve_jamais_sur_config_invalide(monkeypatch):
     # Tracer dégradé (provider par défaut) : on peut ouvrir un span sans erreur.
     with tracer.start_as_current_span("test"):
         pass
+
+
+def test_set_llm_span_io_serialise_messages():
+    """Sérialisation complète des messages en input et de la réponse AI."""
+    provider = TracerProvider(resource=Resource.create({"service.name": "test"}))
+    tracer = provider.get_tracer("test")
+
+    ai_msg = AIMessage(
+        content="Je vais chercher les règles.",
+        tool_calls=[{"id": "call_1", "name": "rechercher_regles", "args": {"query": "accessibilite"}}],
+    )
+    messages = [
+        SystemMessage("Tu es un assistant qualité web."),
+        HumanMessage("Quelle est la première règle Opquast ?"),
+        ai_msg,
+        ToolMessage(content='{"resultats": []}', tool_call_id="call_1"),
+    ]
+
+    with tracer.start_as_current_span("appel_llm") as span:
+        tracing.set_llm_span_io(span, messages, ai_msg)
+
+    assert span.attributes["llm.input_truncated"] is False
+    assert span.attributes["llm.output_truncated"] is False
+
+    parsed_input = json.loads(span.attributes["llm.input"])
+    assert parsed_input[0] == {"role": "system", "content": "Tu es un assistant qualité web."}
+    assert parsed_input[1] == {"role": "human", "content": "Quelle est la première règle Opquast ?"}
+    assert parsed_input[2] == {
+        "role": "assistant",
+        "content": "Je vais chercher les règles.",
+        "tool_calls": [{"name": "rechercher_regles", "args": {"query": "accessibilite"}}],
+    }
+    assert parsed_input[3] == {"role": "tool", "content": '{"resultats": []}', "tool_call_id": "call_1"}
+
+    parsed_output = json.loads(span.attributes["llm.output"])
+    assert parsed_output == {
+        "role": "assistant",
+        "content": "Je vais chercher les règles.",
+        "tool_calls": [{"name": "rechercher_regles", "args": {"query": "accessibilite"}}],
+    }
+
+
+def test_set_llm_span_io_tronque_input():
+    """L'input dépassant max_len est tronqué et le booléen est positionné."""
+    provider = TracerProvider(resource=Resource.create({"service.name": "test"}))
+    tracer = provider.get_tracer("test")
+
+    long_content = "x" * 5000
+    messages = [HumanMessage(long_content)]
+    ai_msg = AIMessage(content="ok")
+
+    with tracer.start_as_current_span("appel_llm") as span:
+        tracing.set_llm_span_io(span, messages, ai_msg, max_len=100)
+
+    assert span.attributes["llm.input_truncated"] is True
+    assert "[... tronqué ...]" in span.attributes["llm.input"]
+    assert len(span.attributes["llm.input"]) <= 100
+    assert span.attributes["llm.output_truncated"] is False
+
+
+def test_set_llm_span_io_gere_content_vide():
+    """Un AIMessage avec content vide et tool_calls est sérialisé proprement."""
+    provider = TracerProvider(resource=Resource.create({"service.name": "test"}))
+    tracer = provider.get_tracer("test")
+
+    ai_msg = AIMessage(
+        content="",
+        tool_calls=[{"id": "call_2", "name": "rechercher_regles", "args": {"query": "test"}}],
+    )
+    messages = [HumanMessage("question")]
+
+    with tracer.start_as_current_span("appel_llm") as span:
+        tracing.set_llm_span_io(span, messages, ai_msg)
+
+    output = json.loads(span.attributes["llm.output"])
+    assert output["content"] == ""
+    assert output["tool_calls"] == [{"name": "rechercher_regles", "args": {"query": "test"}}]
