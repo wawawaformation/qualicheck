@@ -13,6 +13,7 @@ from fastapi import FastAPI
 
 from app.agent_us2 import api
 from app.logging_config import setup_logging
+from app.observability.tracing import setup_tracing
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,10 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     setup_logging(log_file="logs/agent_us2.log")
+    # Au démarrage, une config de traçage invalide doit échouer tout de
+    # suite et bruyamment — en cours de requête, get_tracer() dégrade
+    # silencieusement plutôt que de casser la réponse.
+    setup_tracing(service_name="qualicheck-agent-us2")
     logger.info("Agent US2 (question libre) démarré")
     yield
 

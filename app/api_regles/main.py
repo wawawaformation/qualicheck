@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from app.api_regles import config, regles
 from app.db import get_session_referentiel
 from app.logging_config import setup_logging
+from app.observability.tracing import setup_tracing
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     serait vide et le PATCH ouvert à tous.
     """
     setup_logging(log_file="logs/api_regles.log")
+    # Nom de service propre à cette API : sans lui, ses spans se
+    # déclareraient émis par l'agent US2. Au démarrage, une config de
+    # traçage invalide doit échouer tout de suite (échec bruyant).
+    setup_tracing(service_name="qualicheck-api-regles")
     clients = config.clients_tokens()
     logger.info("API démarrée — clients déclarés : %s", list(clients.keys()))
     yield

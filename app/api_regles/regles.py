@@ -31,6 +31,7 @@ from app.models.referentiel import (
     Tag,
     Theme,
 )
+from app.observability.tracing import get_tracer
 from app.retrieval.config import load_config
 from app.retrieval.decomposition import DecompositionClient
 from app.retrieval.guardrail import GuardrailClient
@@ -280,61 +281,66 @@ def chercher_regles_dense(
     similarité (1 - distance cosinus) reste renvoyé pour chaque règle
     citée, à titre informatif — ce n'est plus le critère de pertinence.
     """
-    logger.info("Recherche dense par %s : « %s »", client_nom, requete.question)
+    # Un seul span racine pour toute la requête : sans lui, le guardrail,
+    # la décomposition, le jugement et la recherche dense formaient chacun
+    # leur propre trace — quatre traces orphelines pour une seule requête.
+    tracer = get_tracer()
+    with tracer.start_as_current_span("chercher_regles_dense"):
+        logger.info("Recherche dense par %s : « %s »", client_nom, requete.question)
 
-    try:
-        guardrail_client = GuardrailClient()
-        dans_le_perimetre = guardrail_client.est_dans_le_perimetre(requete.question)
-    except Exception as e:
-        logger.warning("Recherche dense — échec du guardrail (%s), fail-open", e)
-        dans_le_perimetre = True
+        try:
+            guardrail_client = GuardrailClient()
+            dans_le_perimetre = guardrail_client.est_dans_le_perimetre(requete.question)
+        except Exception as e:
+            logger.warning("Recherche dense — échec du guardrail (%s), fail-open", e)
+            dans_le_perimetre = True
 
-    if not dans_le_perimetre:
-        logger.info(
-            "Recherche dense par %s — question hors périmètre (guardrail), refus direct",
-            client_nom,
+        if not dans_le_perimetre:
+            logger.info(
+                "Recherche dense par %s — question hors périmètre (guardrail), refus direct",
+                client_nom,
+            )
+            return []
+
+        top_n = load_config()["rag_acceptance"]["top_n"]
+
+        try:
+            decomposition_client = DecompositionClient()
+            embedding_client = EmbeddingClient()
+            resultat = retrieve(
+                session=session,
+                question=requete.question,
+                top_n=top_n,
+                decomposition_client=decomposition_client,
+                embedding_client=embedding_client,
+            )
+        except Exception as e:
+            logger.error("Recherche dense — échec (%s)", e)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Recherche sémantique indisponible",
+            ) from e
+
+        numeros = [numero for numero, _ in resultat]
+        scores = dict(resultat)
+
+        requete_orm = session.query(Regle, Theme.theme).filter(
+            Theme.id == Regle.theme_id, Regle.numero.in_(numeros)
         )
-        return []
+        regles = _charger_regles(session, requete_orm)
 
-    top_n = load_config()["rag_acceptance"]["top_n"]
+        # Réordonne selon l'ordre de pertinence de retrieve() — la requête SQL
+        # IN (...) ne garantit aucun ordre.
+        position = {numero: i for i, numero in enumerate(numeros)}
+        regles_triees = sorted(regles, key=lambda r: position[r.numero])
 
-    try:
-        decomposition_client = DecompositionClient()
-        embedding_client = EmbeddingClient()
-        resultat = retrieve(
-            session=session,
-            question=requete.question,
-            top_n=top_n,
-            decomposition_client=decomposition_client,
-            embedding_client=embedding_client,
-        )
-    except Exception as e:
-        logger.error("Recherche dense — échec (%s)", e)
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Recherche sémantique indisponible",
-        ) from e
+        # Jugement LLM de pertinence — filtre le pool brut retourné par
+        # retrieve() avant citation. Ne lève jamais (fail-open interne à
+        # JugementClient) : jamais de 503 provoqué ici. Voir
+        # docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md.
+        jugement_client = JugementClient()
+        candidats = [(r.numero, build_chunk_text(r)) for r in regles_triees]
+        numeros_pertinents = set(jugement_client.juger(requete.question, candidats))
+        regles_retenues = [r for r in regles_triees if r.numero in numeros_pertinents]
 
-    numeros = [numero for numero, _ in resultat]
-    scores = dict(resultat)
-
-    requete_orm = session.query(Regle, Theme.theme).filter(
-        Theme.id == Regle.theme_id, Regle.numero.in_(numeros)
-    )
-    regles = _charger_regles(session, requete_orm)
-
-    # Réordonne selon l'ordre de pertinence de retrieve() — la requête SQL
-    # IN (...) ne garantit aucun ordre.
-    position = {numero: i for i, numero in enumerate(numeros)}
-    regles_triees = sorted(regles, key=lambda r: position[r.numero])
-
-    # Jugement LLM de pertinence — filtre le pool brut retourné par
-    # retrieve() avant citation. Ne lève jamais (fail-open interne à
-    # JugementClient) : jamais de 503 provoqué ici. Voir
-    # docs/superpowers/specs/2026-09-11-retrieval-refus-temps2-design.md.
-    jugement_client = JugementClient()
-    candidats = [(r.numero, build_chunk_text(r)) for r in regles_triees]
-    numeros_pertinents = set(jugement_client.juger(requete.question, candidats))
-    regles_retenues = [r for r in regles_triees if r.numero in numeros_pertinents]
-
-    return [RegleAvecScore(regle=r, score=scores[r.numero]) for r in regles_retenues]
+        return [RegleAvecScore(regle=r, score=scores[r.numero]) for r in regles_retenues]
