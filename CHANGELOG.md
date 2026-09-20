@@ -32,6 +32,13 @@ Format d'entrée, une ligne par réalisation :
   (4 tâches TDD : module d'observabilité OTel, instrumentation de la
   boucle agent, instrumentation du retrieval, exposition de `trace_id`
   dans l'API). Aucun code applicatif encore écrit.
+- **A2 Task 4 : `trace_id` exposé dans l'API** — voir
+  `app/agent_us2/schemas.py`, `app/agent_us2/api.py`. `QuestionReponse`
+  porte désormais `trace_id: str | None`, alimenté par
+  `ResultatAgent.trace_id` (Task 2) — permet de retrouver la trace
+  complète d'une requête dans Langfuse ou dans
+  `logs/traces_agent_us2.jsonl`. Contrat `openapi.json` mis à jour et
+  bumpé en `0.2.0`. Dernière tâche du plan A2 — les 4 tâches sont closes.
 - **A2 Task 2 : instrumentation de la boucle agent** — voir
   `app/agent_us2/loop.py`. Un span OpenTelemetry `appel_llm` par appel
   LLM, un span `appel_outil` par appel d'outil, le tout enveloppé dans un
