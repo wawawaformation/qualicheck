@@ -19,6 +19,10 @@ from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from app.agent_us2.loop import repondre
 
@@ -77,3 +81,47 @@ def test_repondre_avec_vrai_appel_api_regles(mock_llm_class):
         isinstance(r["numero"], int) and isinstance(r["intitule"], str)
         for r in resultat.regles_citees
     )
+
+
+@patch("app.agent_us2.loop.get_tracer")
+@patch("app.agent_us2.loop.ChatOpenAI")
+def test_repondre_avec_tracing_reel(mock_llm_class, mock_get_tracer):
+    """
+    Le vrai appel outil (httpx vers l'API des règles, pas un mock) passe
+    bien par le wrapper de tracing : un span "appel_outil" est émis pour
+    cet appel réel, et tous les spans de la requête partagent le même
+    trace_id, retrouvé dans resultat.trace_id — même invariant que
+    tests/unit/test_loop_tracing.py, mais exercé ici sur un vrai
+    aller-retour réseau plutôt qu'un outil mocké.
+    """
+    exporter = InMemorySpanExporter()
+    provider = TracerProvider(resource=Resource.create({"service.name": "test"}))
+    provider.add_span_processor(SimpleSpanProcessor(exporter))
+    mock_get_tracer.return_value = provider.get_tracer("test")
+
+    mock_llm_instance = MagicMock()
+    mock_llm_class.return_value = mock_llm_instance
+    mock_llm_instance.bind_tools.return_value = mock_llm_instance
+    mock_llm_instance.invoke.side_effect = [
+        _ai_message(
+            "",
+            tool_calls=[
+                {
+                    "name": "rechercher_regles",
+                    "args": {"mots_cles": "texte alternatif"},
+                    "id": "call_1",
+                }
+            ],
+        ),
+        _ai_message("Réponse basée sur les règles trouvées.", tool_calls=[]),
+    ]
+
+    resultat = repondre("Faut-il un texte alternatif sur les images ?")
+
+    spans = exporter.get_finished_spans()
+    noms = [s.name for s in spans]
+    assert "appel_outil" in noms
+
+    assert resultat.trace_id is not None
+    for span in spans:
+        assert format(span.context.trace_id, "032x") == resultat.trace_id
