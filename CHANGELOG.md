@@ -50,6 +50,16 @@ Format d'entrée, une ligne par réalisation :
   get_tracer(), current_trace_id(). Tests dans `tests/unit/test_tracing.py`.
   Dépendances opentelemetry-sdk et opentelemetry-exporter-otlp-proto-http
   ajoutées — voir `app/observability/`.
+- **Instrumentation du retrieval (tâche #21 A2)** — un span par appel LLM
+  (`appel_llm_decomposition`, `appel_llm_jugement`, `appel_llm_guardrail`,
+  attributs `tokens_entree`/`tokens_sortie`) dans `DecompositionClient`,
+  `JugementClient`, `GuardrailClient`, et un span `recherche_dense` par
+  sous-question autour de `query_top_n_numeros` dans
+  `app/retrieval/retrieval.py` (attributs `sous_question`, `top_n`,
+  `nb_resultats`). Retry `tenacity` inchangé (le span entoure l'appel
+  retenté, il ne le remplace pas). Tests dans
+  `tests/unit/test_retrieval_tracing.py` (span émis vérifié via un
+  exporteur OTel en mémoire).
 
 ## 2026-09-19 — Claude Code
 
