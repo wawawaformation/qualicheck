@@ -790,4 +790,17 @@ Repérés en construisant l'index `jury/README.md`.
 
 ## Divers
 
+- [x] **Vérifier l'activation des 2 plugins Kanboard installés le
+  2026-09-19** (`AzimuthSkin`, `CompletedComplexity`) — `D` — clos
+  2026-09-20 : `AzimuthSkin` actif (confirmé visuellement, style des
+  cartes). `CompletedComplexity` chargé (onglet visible) mais graphe
+  vide en permanence — cause réelle trouvée dans le cœur de Kanboard
+  (`ProjectDailyColumnStatsModel::getScoreByColumns()`), pas dans le nom
+  de colonne : le calcul exclut en dur les tâches fermées
+  (`is_active = OPEN`), donc toute carte close ne compte plus jamais
+  dans le score, quelle que soit sa colonne. Pas d'option de config
+  équivalente à `cfd_include_closed_tasks` pour ce calcul. Abandon
+  retenu : corriger nécessiterait de patcher le cœur Kanboard (fragile
+  aux mises à jour) pour un graphe redondant avec les analytics déjà en
+  place (répartition, CFD, lead/cycle time, temps estimé vs réel).
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`

@@ -9,6 +9,21 @@ Format d'entrée, une ligne par réalisation :
 - [Ce qui a été fait] — voir [fichier(s) concerné(s)]
 ```
 
+## 2026-09-20 — Claude Code
+
+- **Investigation graphe Kanboard `CompletedComplexity` vide** — abandon
+  retenu, voir `TODO.md` (section Divers). Le README du plugin laissait
+  penser à un problème de nom de colonne (`Terminé` vs `Done` attendu) ;
+  la colonne a été renommée en `Done` via l'API Kanboard mais sans
+  effet. Lecture du code source a montré la vraie cause dans le cœur de
+  Kanboard : `ProjectDailyColumnStatsModel::getScoreByColumns()` exclut
+  en dur les tâches fermées (`is_active = OPEN`) du calcul de score par
+  colonne, contrairement au comptage utilisé par le CFD qui respecte
+  l'option `cfd_include_closed_tasks`. Corriger nécessiterait un patch
+  du cœur Kanboard (fragile aux mises à jour) pour un graphe redondant
+  avec les analytics déjà disponibles (répartition, CFD, lead/cycle
+  time, temps estimé vs réel) — abandonné, colonne laissée en `Done`.
+
 ## 2026-09-19 — Claude Code
 
 - **Schéma d'architecture de l'agent US2** — voir
@@ -126,6 +141,21 @@ Format d'entrée, une ligne par réalisation :
     dur dans `config.yml` (versionné, identique par environnement) —
     corrigé après relecture : l'URL vivait d'abord dans `config.yml`, qui
     ne porte maintenant que le nom de la variable à lire dans `.env`.
+- **Nettoyage Kanboard : chrono mal éteint sur la carte #3 « Déploiement
+  regles_API »** — ses 7 sous-tâches affichaient chacune exactement
+  271,95 h de `time_spent` (donc 1903,65 h cumulées sur la carte),
+  identiques à l'écart calendaire entre le démarrage du 2026-08-30 10:18
+  et une reprise du sujet le 2026-09-10 : un chrono démarré sur les 7
+  sous-tâches à la fois et jamais arrêté avant 11 jours. Reconstruction
+  du temps réel à partir des horodatages de commits (`git log`, deux
+  sessions : ~0,5 h le 2026-08-29 soir, ~3,3 h le 2026-08-30 matin) ->
+  ~3,8 h au total, réparti par sous-tâche. Le travail étant réellement
+  terminé et documenté (entrée `2026-08-30 — Part 58` ci-dessous), la
+  carte et ses sous-tâches ont aussi été closes. Limite d'API constatée :
+  `updateTask` n'accepte pas de rétro-dater `date_completed` (champ
+  piloté uniquement par `closeTask`/`openTask`) — la date de clôture
+  Kanboard reflète donc la date du nettoyage (2026-09-19), pas la date
+  réelle de fin de travail.
 
 ## 2026-09-18 — Claude Code
 
