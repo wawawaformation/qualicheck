@@ -1,14 +1,11 @@
 from unittest.mock import MagicMock, patch
 
-from dotenv import load_dotenv
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from app.retrieval.decomposition import DecompositionClient
-
-load_dotenv()
 
 
 def _setup_test_tracer():
@@ -18,8 +15,12 @@ def _setup_test_tracer():
     return provider, exporter
 
 
-def test_decomposer_emits_one_span_per_llm_call():
+@patch("app.retrieval.decomposition.ChatOpenAI")
+def test_decomposer_emits_one_span_per_llm_call(mock_llm_class):
     provider, exporter = _setup_test_tracer()
+
+    mock_llm_instance = MagicMock()
+    mock_llm_class.return_value = mock_llm_instance
 
     with (
         patch("app.retrieval.decomposition.load_config", return_value={
@@ -29,11 +30,11 @@ def test_decomposer_emits_one_span_per_llm_call():
         patch.object(DecompositionClient, "_charger_prompt", return_value="prompt"),
     ):
         client = DecompositionClient()
-        client.llm = MagicMock()
         reponse = MagicMock()
         reponse.content = '{"sous_questions": ["une question"]}'
         reponse.usage_metadata = {"input_tokens": 5, "output_tokens": 3}
-        client.llm.invoke.return_value = reponse
+        mock_llm_instance.invoke.return_value = reponse
+        client.llm = mock_llm_instance
 
         client.decomposer("une question de test")
 
