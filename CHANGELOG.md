@@ -11,6 +11,31 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Question vide rejetée en 422 avant tout appel LLM (carte Kanboard #48)** —
+  défaut relevé plus bas (`{"question": ""}` répondait 200 et appelait le LLM
+  malgré le contrat). Test écrit d'abord (3 rouges : chaîne vide, espaces,
+  retours à la ligne), puis `QuestionRequete` : `min_length=1` et
+  `str_strip_whitespace` (une question d'espaces est vide) dans
+  `app/agent_us2/schemas.py`. `openapi.json` passé en 0.3.1 (`minLength: 1`,
+  entrée `x-historique` « correctif »). 53 tests `agent_us2`, 277 unitaires,
+  `ruff` propre. Requête Bruno « question vide (422) » ajoutée. Chrono lancé
+  avant de commencer, cette fois.
+
+- **Collection Bruno `qualicheck_data` complétée (hors dépôt, `~/Documents/bruno/`)**
+  — 7 requêtes ajoutées pour l'API business (agent US2), en local uniquement
+  (`http://localhost:8882`, pour l'instant) : `docs`, `contrat openapi`, et
+  `POST /questions` en 5 variantes (règle citée par son numéro, recherche par
+  mots-clés, recherche puis lecture, règle inconnue, question absente -> 422).
+  Aucune requête existante modifiée. Pas de `/health` ni de `/version` côté API
+  business (404), contrairement à l'API des règles : à prévoir avec la carte #47.
+  **Défaut relevé (antérieur à A4, non corrigé)** : `POST /questions` avec
+  `{"question": ""}` répond 200 et appelle le LLM, alors que le contrat
+  (`openapi.json`) promet un 422 « avant tout appel LLM » pour une question
+  vide ; `QuestionRequete.question` n'a pas de `min_length` et aucun test ne
+  couvre ce cas (seul « question absente » est testé). La vérification à la main
+  de ce cas a elle-même déclenché un appel LLM réel sur le conteneur 8882 (coût
+  négligeable).
+
 - **A4 : un 4xx de l'API des règles est journalisé en `INFO`, plus en
   `WARNING`** — relevé pendant la vérification avec le vrai modèle : « Règle
   9999 inconnue » (404) alertait l'exploitant comme une panne. Désormais

@@ -6,7 +6,7 @@ contrat vivant enrichi increment par increment.
 
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class StatutReponse(str, Enum):
@@ -26,7 +26,11 @@ class StatutReponse(str, Enum):
 
 
 class QuestionRequete(BaseModel):
-    question: str = Field(..., description="Question libre en langage naturel")
+    # Espaces retirés avant validation : une question d'espaces est vide. Le 422
+    # doit partir avant tout appel LLM (contrat openapi.json), un appel coûte.
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    question: str = Field(..., min_length=1, description="Question libre en langage naturel")
 
 
 class RegleCitee(BaseModel):

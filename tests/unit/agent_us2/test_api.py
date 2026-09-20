@@ -9,6 +9,7 @@ conception/3_autre_us/us2_question_libre/increments/A_agent_nu/openapi.json.
 
 from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.agent_us2.loop import ResultatAgent
@@ -98,3 +99,13 @@ class TestPoserQuestion:
         reponse = client.post("/questions", json={})
 
         assert reponse.status_code == 422
+
+    @pytest.mark.parametrize("question", ["", "   ", "\n\t "])
+    @patch("app.agent_us2.api.repondre")
+    def test_422_quand_la_question_est_vide_sans_appeler_lagent(self, mock_repondre, question):
+        """Casse si une question vide (ou d'espaces) atteint l'agent : elle coûterait un appel
+        LLM pour rien, et le contrat promet un 422 avant tout appel."""
+        reponse = client.post("/questions", json={"question": question})
+
+        assert reponse.status_code == 422
+        mock_repondre.assert_not_called()
