@@ -22,6 +22,8 @@ qu'elle compte pour une décision.
 | Variables d'environnement/secrets réels | `.env` (non versionné) | `.env.example` documente les clés attendues, pas les valeurs réelles |
 | Configuration de l'API données (port, origines CORS, titre, version du contrat) | `app/api_regles/config.yml` | — |
 | Jetons Bearer des écritures de l'API données (un par client nommé) | `app/api_regles/config.yml` (section `clients`) + `.env` (une variable par client) | — |
+| Configuration de l'API business (port 8882, `POST /questions`) | `app/agent_us2/config.yml` (section `api_business`) | l'API business est le futur étage partagé US1/US2 (`conception/3_autre_us/en_commun.md`) — les routes `/questions/...` existent, `/audits/...` viendra avec US1 |
+| URL/port des APIs selon l'environnement (dev/preprod) | `.env` (`API_REGLES_URL_DEV`, `API_REGLES_URL_PREPROD`, `API_BUSINESS_URL_DEV`, `API_BUSINESS_URL_PREPROD`) | `API_BUSINESS_URL_DEV` = `http://localhost:8882` ; l'agent US2 lit l'URL des règles via `API_REGLES_URL_DEV` (nom déclaré dans `app/agent_us2/config.yml`) |
 
 ## Spécifications principales
 

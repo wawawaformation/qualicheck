@@ -20,5 +20,7 @@ Point d'entrée pour les commandes courantes — s'enrichit au fur et à mesure 
 | `make test-integration` | Lance uniquement `tests/integration` — nécessite `make migration-test` pour les tests destructeurs |
 | `make test-migration` | Lance uniquement `tests/migration` — nécessite les migrations appliquées |
 | `make psql` | Ouvre une session `psql` interactive dans le conteneur Postgres |
+| `make api-regles` | Démarre l'API données en dev (`app/api_regles`, port lu dans `app/api_regles/config.yml`, 8880) |
+| `make api-business` | Démarre l'API business en dev (`app/agent_us2`, `POST /questions`, port lu dans `app/agent_us2/config.yml`, 8882) |
 
 À jour ici pour référence rapide, mais le `Makefile` lui-même reste la source de vérité — le relire directement en cas de doute plutôt que de se fier uniquement à ce tableau.
