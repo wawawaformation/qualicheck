@@ -18,13 +18,13 @@ def _un_seul_client(monkeypatch):
     """Isole CLIENTS : ces tests ne doivent pas dépendre du nombre réel de
     clients déclarés dans la config ni du contenu réel de .env."""
     monkeypatch.setattr(
-        config, "CLIENTS", [{"nom": "dev", "env_var_token": "FASTAPI_API_KEY"}]
+        config, "CLIENTS", [{"nom": "dev", "env_var_token": "API_REGLES_TOKEN_DEV"}]
     )
 
 
 def test_token_valide_renvoie_le_nom_du_client(monkeypatch):
     _un_seul_client(monkeypatch)
-    monkeypatch.setenv("FASTAPI_API_KEY", JETON)
+    monkeypatch.setenv("API_REGLES_TOKEN_DEV", JETON)
 
     assert require_bearer(_identifiants(JETON)) == "dev"
 
@@ -35,12 +35,12 @@ def test_plusieurs_clients_sont_distingues(monkeypatch):
         config,
         "CLIENTS",
         [
-            {"nom": "dev", "env_var_token": "FASTAPI_API_KEY"},
-            {"nom": "elie-sloim", "env_var_token": "FASTAPI_API_KEY_ELIE"},
+            {"nom": "dev", "env_var_token": "API_REGLES_TOKEN_DEV"},
+            {"nom": "elie-sloim", "env_var_token": "API_REGLES_TOKEN_ELIE"},
         ],
     )
-    monkeypatch.setenv("FASTAPI_API_KEY", "jeton-dev")
-    monkeypatch.setenv("FASTAPI_API_KEY_ELIE", "jeton-elie")
+    monkeypatch.setenv("API_REGLES_TOKEN_DEV", "jeton-dev")
+    monkeypatch.setenv("API_REGLES_TOKEN_ELIE", "jeton-elie")
 
     assert require_bearer(_identifiants("jeton-dev")) == "dev"
     assert require_bearer(_identifiants("jeton-elie")) == "elie-sloim"
@@ -48,7 +48,7 @@ def test_plusieurs_clients_sont_distingues(monkeypatch):
 
 def test_token_faux_leve_401(monkeypatch):
     _un_seul_client(monkeypatch)
-    monkeypatch.setenv("FASTAPI_API_KEY", JETON)
+    monkeypatch.setenv("API_REGLES_TOKEN_DEV", JETON)
 
     with pytest.raises(HTTPException) as erreur:
         require_bearer(_identifiants("mauvais-jeton"))
@@ -59,7 +59,7 @@ def test_token_faux_leve_401(monkeypatch):
 def test_header_absent_leve_401_et_non_403(monkeypatch):
     """401 = aucune identité fournie. HTTPBearer renverrait 403 par défaut."""
     _un_seul_client(monkeypatch)
-    monkeypatch.setenv("FASTAPI_API_KEY", JETON)
+    monkeypatch.setenv("API_REGLES_TOKEN_DEV", JETON)
 
     with pytest.raises(HTTPException) as erreur:
         require_bearer(None)
@@ -69,7 +69,7 @@ def test_header_absent_leve_401_et_non_403(monkeypatch):
 
 def test_secret_absent_empeche_toute_ecriture(monkeypatch):
     _un_seul_client(monkeypatch)
-    monkeypatch.setenv("FASTAPI_API_KEY", "")
+    monkeypatch.setenv("API_REGLES_TOKEN_DEV", "")
 
-    with pytest.raises(RuntimeError, match="FASTAPI_API_KEY"):
+    with pytest.raises(RuntimeError, match="API_REGLES_TOKEN_DEV"):
         require_bearer(_identifiants(JETON))

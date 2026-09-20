@@ -2,7 +2,7 @@
 Tests unitaires pour app/agent_us2/tools.py
 
 Outil recherche_regles — appel HTTP mocké, aucun réseau réel. L'URL de
-l'API des règles vient de .env (API_REGLES_URL, nom déclaré dans
+l'API des règles vient de .env (API_REGLES_URL_DEV, nom déclaré dans
 app/agent_us2/config.yml), pas d'une valeur figée en config ni d'un
 import de app.api_regles.config — l'URL diffère par environnement
 (dev/staging/prod), .env est le bon endroit, pas un fichier versionné.
@@ -15,7 +15,7 @@ from app.agent_us2.tools import rechercher_regles
 
 
 def _config_stub() -> dict:
-    return {"api_regles": {"env_var_url": "API_REGLES_URL"}}
+    return {"api_regles": {"env_var_url": "API_REGLES_URL_DEV"}}
 
 
 class TestRechercherRegles:
@@ -53,11 +53,11 @@ class TestRechercherRegles:
         assert resultat["total_trouve"] == 15
         assert len(resultat["resultats"]) == 10
 
-    @patch.dict("os.environ", {"API_REGLES_URL": "http://localhost:9999"})
+    @patch.dict("os.environ", {"API_REGLES_URL_DEV": "http://localhost:9999"})
     @patch("app.agent_us2.tools.httpx.get")
     @patch("app.agent_us2.tools.load_config")
     def test_appelle_lurl_lue_depuis_env(self, mock_load_config, mock_get):
-        """L'URL vient de .env (API_REGLES_URL) — diffère par environnement."""
+        """L.URL vient de .env (API_REGLES_URL_DEV) — diffère par environnement."""
         mock_load_config.return_value = _config_stub()
         mock_reponse = MagicMock()
         mock_reponse.json.return_value = []

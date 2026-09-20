@@ -5,10 +5,10 @@ api_regles:
   # Nom de la variable d'environnement portant l'URL de l'API des regles
   # (GET /regles?q=, acces libre, sans jeton - voir increments.md), pas la
   # valeur elle-meme : l'URL differe par environnement (dev/staging/prod,
-  # meme role que FASTAPI_URL_PROD dans .env), un fichier versionne ne
+  # meme role que API_REGLES_URL_PREPROD dans .env), un fichier versionne ne
   # convient pas ici. Agent = client HTTP comme un autre, pas un import
   # interne de app/api_regles/config.py.
-  env_var_url: API_REGLES_URL
+  env_var_url: API_REGLES_URL_DEV
 
 # LLM d'A1a (2026-09-19). Azure retenu pour l'instant : credits ecole
 # (budget partage), pas de depense personnelle contrairement a Ollama Cloud

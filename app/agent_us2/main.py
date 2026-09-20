@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # Au démarrage, une config de traçage invalide doit échouer tout de
     # suite et bruyamment — en cours de requête, get_tracer() dégrade
     # silencieusement plutôt que de casser la réponse.
-    setup_tracing(service_name="qualicheck-agent-us2")
+    setup_tracing(service_name="qualicheck-api-business")
     logger.info("Agent US2 (question libre) démarré")
     yield
 

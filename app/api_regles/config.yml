@@ -40,13 +40,13 @@ validation:
 # Voir docs/jury/decisions/2026-07-28-cle-valeur-multi-clients-api-regles.md
 clients:
   - nom: dev
-    env_var_token: FASTAPI_API_KEY
+    env_var_token: API_REGLES_TOKEN_DEV
   - nom: elie-sloim
-    env_var_token: FASTAPI_API_KEY_ELIE
+    env_var_token: API_REGLES_TOKEN_ELIE
   - nom: david-legrand
-    env_var_token: FASTAPI_API_KEY_DAVID
+    env_var_token: API_REGLES_TOKEN_DAVID
   - nom: formateur
-    env_var_token: FASTAPI_API_KEY_FORMATEUR
+    env_var_token: API_REGLES_TOKEN_FORMATEUR
 
 licence:
   # Le référentiel Opquast est diffusé sous CC BY-SA 4.0 : attribution et

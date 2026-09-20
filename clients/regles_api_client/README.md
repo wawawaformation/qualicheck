@@ -16,17 +16,18 @@ npm install
 
 ## Configuration
 
-Aucun `.env` : l'URL de `app/api_regles` est une valeur unique dans
-`src/apiServer.js`, à modifier à la main selon l'environnement (`npm run
-dev` en local contre `http://localhost:8880`, URL de préprod avant un
-`npm run build` de déploiement).
+L'URL de `app/api_regles` vient de l'environnement de build Vite
+(`src/apiServer.js` lit `VITE_API_REGLES_URL_DEV` / `VITE_API_REGLES_URL_PREPROD`).
+Copier `.env.example` en `.env` (ou `.env.local`) et ajuster la valeur selon
+l'environnement : `http://localhost:8880/` en local, l'URL de préprod avant
+un `npm run build` de déploiement.
 
 Aucun secret dans ce fichier : la clé API se saisit dans l'application
 (écran « Clé API ») et reste stockée dans le `localStorage` du navigateur.
 
 ## Lancement
 
-1. Vérifier que `src/apiServer.js` pointe vers l'API voulue.
+1. Vérifier que `.env` (ou `.env.local`) pointe vers l'API voulue.
 2. Démarrer l'API données dans un autre terminal, à la racine du projet :
    `make api-regles`
 3. Démarrer ce client : `npm run dev`

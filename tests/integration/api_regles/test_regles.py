@@ -51,10 +51,10 @@ def client(session, monkeypatch):
     # Les 3 autres clients déclarés dans config.yml doivent aussi avoir leur
     # jeton renseigné : clients_tokens() lève RuntimeError si un seul manque,
     # y compris en CI où aucun .env réel n'est présent.
-    monkeypatch.setenv("FASTAPI_API_KEY", JETON)
-    monkeypatch.setenv("FASTAPI_API_KEY_ELIE", "jeton-elie-test")
-    monkeypatch.setenv("FASTAPI_API_KEY_DAVID", "jeton-david-test")
-    monkeypatch.setenv("FASTAPI_API_KEY_FORMATEUR", "jeton-formateur-test")
+    monkeypatch.setenv("API_REGLES_TOKEN_DEV", JETON)
+    monkeypatch.setenv("API_REGLES_TOKEN_ELIE", "jeton-elie-test")
+    monkeypatch.setenv("API_REGLES_TOKEN_DAVID", "jeton-david-test")
+    monkeypatch.setenv("API_REGLES_TOKEN_FORMATEUR", "jeton-formateur-test")
     app.dependency_overrides[get_session_referentiel] = lambda: session
     yield TestClient(app)
     app.dependency_overrides.clear()

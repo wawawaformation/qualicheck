@@ -46,10 +46,10 @@ secrets suivants :
 | `POSTGRES_USER` | dédié à staging (`qualicheck_staging`) |
 | `POSTGRES_PASSWORD` | dédié à staging (généré aléatoirement) |
 | `POSTGRES_DB` | dédié à staging (`qualicheck_staging`) |
-| `FASTAPI_API_KEY` | valeur de `FASTAPI_API_KEY` dans `.env` local |
-| `FASTAPI_API_KEY_ELIE` | valeur de `FASTAPI_API_KEY_ELIE` dans `.env` local |
-| `FASTAPI_API_KEY_DAVID` | valeur de `FASTAPI_API_KEY_DAVID` dans `.env` local |
-| `FASTAPI_API_KEY_FORMATEUR` | valeur de `FASTAPI_API_KEY_FORMATEUR` dans `.env` local |
+| `API_REGLES_TOKEN_DEV` | valeur de `API_REGLES_TOKEN_DEV` dans `.env` local |
+| `API_REGLES_TOKEN_ELIE` | valeur de `API_REGLES_TOKEN_ELIE` dans `.env` local |
+| `API_REGLES_TOKEN_DAVID` | valeur de `API_REGLES_TOKEN_DAVID` dans `.env` local |
+| `API_REGLES_TOKEN_FORMATEUR` | valeur de `API_REGLES_TOKEN_FORMATEUR` dans `.env` local |
 
 Les 4 jetons Bearer sont copiés tels quels depuis le `.env` local (générés
 le 2026-07-28, jamais distribués) — pas besoin d'en générer de nouveaux pour

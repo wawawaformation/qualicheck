@@ -17,7 +17,7 @@ def _un_seul_client(monkeypatch):
     """Isole CLIENTS : ces tests ne doivent pas dépendre du nombre réel de
     clients déclarés dans la config ni du contenu réel de .env."""
     monkeypatch.setattr(
-        config, "CLIENTS", [{"nom": "dev", "env_var_token": "FASTAPI_API_KEY"}]
+        config, "CLIENTS", [{"nom": "dev", "env_var_token": "API_REGLES_TOKEN_DEV"}]
     )
 
 
@@ -112,7 +112,7 @@ def test_evaluate_case_patch_echoue_quand_le_code_differe():
 def test_evaluate_case_patch_avec_jeton_dun_client_nomme(monkeypatch):
     """jeton: <nom_client> ajoute le Bearer réel de ce client précis."""
     _un_seul_client(monkeypatch)
-    monkeypatch.setenv("FASTAPI_API_KEY", "jeton-de-test")
+    monkeypatch.setenv("API_REGLES_TOKEN_DEV", "jeton-de-test")
     entetes_recues = {}
 
     def repondre(requete: httpx.Request) -> httpx.Response:

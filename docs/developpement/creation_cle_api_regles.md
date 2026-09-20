@@ -14,7 +14,7 @@ transitoire en attendant mieux.
 environnements déclarent les mêmes clients.
 
 **Raccourci** — automatise les étapes 1 à 5 (génère le jeton, modifie les 4
-fichiers, crée le secret GitHub) :
+fichiers, crée le secret Gitea Actions) :
 
 ```bash
 uv run python scripts/creer_cle_api_regles.py <nom-client>
@@ -26,10 +26,10 @@ problème ou pour comprendre ce que fait le script.
 
 ## 1. Choisir un nom de client et sa variable d'environnement
 
-- Nom de client (`nom` dans le manifeste) : identifie la personne, en
+- Nom de client (`nom` dans la config) : identifie la personne, en
   kebab-case (ex. `jean-dupont`).
-- Variable d'environnement associée : `FASTAPI_API_KEY_<NOM_EN_MAJUSCULES>`
-  (ex. `FASTAPI_API_KEY_JEAN_DUPONT`) — même convention que les clients
+- Variable d'environnement associée : `API_REGLES_TOKEN_<NOM_EN_MAJUSCULES>`
+  (ex. `API_REGLES_TOKEN_JEAN_DUPONT`) — même convention que les clients
   existants (`dev`, `elie-sloim`, `david-legrand`, `formateur`).
 
 ## 2. Générer un jeton fort
@@ -41,17 +41,17 @@ python3 -c "import secrets; print(secrets.token_urlsafe(32))"
 Un jeton par client, jamais réutilisé, jamais loggé (voir
 `app/api_regles/auth.py`).
 
-## 3. Déclarer le client dans le manifeste
+## 3. Déclarer le client dans la config
 
-Ajouter une entrée dans `clients:` de `app/api_regles/manifest.yml` :
+Ajouter une entrée dans `clients:` de `app/api_regles/config.yml` :
 
 ```yaml
 clients:
   - nom: dev
-    env_var_token: FASTAPI_API_KEY
+    env_var_token: API_REGLES_TOKEN_DEV
   # ...
   - nom: jean-dupont
-    env_var_token: FASTAPI_API_KEY_JEAN_DUPONT
+    env_var_token: API_REGLES_TOKEN_JEAN_DUPONT
 ```
 
 Ce fichier est commun à dev et staging (versionné) — une seule modification.
@@ -61,7 +61,7 @@ Ce fichier est commun à dev et staging (versionné) — une seule modification.
 1. Documenter la variable dans `.env.example` (valeur vide, avec commentaire) :
 
    ```
-   FASTAPI_API_KEY_JEAN_DUPONT=  # secret : token Bearer du client "jean-dupont"
+   API_REGLES_TOKEN_JEAN_DUPONT=  # secret : token Bearer du client "jean-dupont"
    ```
 
 2. Ajouter la vraie valeur (générée à l'étape 2) dans `.env` local (non
@@ -71,33 +71,33 @@ Ce fichier est commun à dev et staging (versionné) — une seule modification.
    - via Docker (`make up`) : `docker compose restart api-regles`.
 
 `config.clients_tokens()` lève `RuntimeError` au démarrage si une variable
-déclarée dans le manifeste est absente de l'environnement — un oubli est
+déclarée dans la config est absente de l'environnement — un oubli est
 donc bloquant immédiatement, pas silencieux.
 
 ## 5. Staging
 
 Deux endroits à modifier, tous deux nécessaires :
 
-1. **Secret GitHub** : Settings → Environments → `staging` → New environment
-   secret. Nom `FASTAPI_API_KEY_JEAN_DUPONT`, valeur = le jeton généré à
-   l'étape 2 (le même que dans le `.env` local, ou un jeton différent si ce
-   client ne doit pas avoir accès aux deux environnements).
-2. **Workflow de déploiement** : `.github/workflows/cd-staging.yml` écrit le
+1. **Secret Gitea Actions** : `tea actions secrets create
+   API_REGLES_TOKEN_JEAN_DUPONT <jeton>` (le même jeton que dans le `.env`
+   local, ou un jeton différent si ce client ne doit pas avoir accès aux deux
+   environnements).
+2. **Workflow de déploiement** : `.gitea/workflows/cd-staging.yml` écrit le
    `.env` du serveur à partir des secrets — il énumère les variables
    explicitement, une ligne par client. Ajouter :
 
    ```yaml
-   FASTAPI_API_KEY_JEAN_DUPONT=${{ secrets.FASTAPI_API_KEY_JEAN_DUPONT }}
+   API_REGLES_TOKEN_JEAN_DUPONT=${{ secrets.API_REGLES_TOKEN_JEAN_DUPONT }}
    ```
 
    dans l'étape « Écrire `.env` depuis les secrets de l'environnement
-   staging », à la suite des lignes `FASTAPI_API_KEY_*` existantes.
+   staging », à la suite des lignes `API_REGLES_TOKEN_*` existantes.
 
 3. Committer ce changement de workflow, merger jusqu'à `staging` (le push
    sur cette branche déclenche `cd-staging.yml`, qui redémarre l'API avec le
    nouveau `.env`).
 
-Sans l'étape 2 (modification du workflow), le secret existerait côté GitHub
+Sans l'étape 2 (modification du workflow), le secret existerait côté Gitea
 mais ne serait jamais écrit dans le `.env` du serveur — le client resterait
 non authentifiable en staging malgré un secret déclaré.
 
@@ -122,6 +122,7 @@ sur une règle non revue — ne modifie rien si elle l'est déjà).
 
 ## Révoquer un client
 
-Opération symétrique : retirer l'entrée dans `manifest.yml`, la ligne dans
+Opération symétrique : retirer l'entrée dans `config.yml`, la ligne dans
 `cd-staging.yml`, la variable dans `.env`/`.env.example`, et supprimer le
-secret GitHub correspondant. Le jeton révoqué renvoie alors `401` partout.
+secret Gitea Actions correspondant (`tea actions secrets delete <var>`).
+Le jeton révoqué renvoie alors `401` partout.

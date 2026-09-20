@@ -11,6 +11,22 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — OpenCode
 
+- **Renommage et nettoyage des variables d'environnement API** — le
+  préfixe générique `FASTAPI_*` est remplacé par des noms explicites par
+  service : `API_REGLES_URL_DEV` / `API_REGLES_URL_PREPROD` et
+  `API_REGLES_TOKEN_DEV`/`_ELIE`/`_DAVID`/`_FORMATEUR` (ex.
+  `FASTAPI_API_KEY*`). Variables `API_BUSINESS_URL_DEV` (port 8882) et
+  `API_BUSINESS_URL_PREPROD` réservées pour la future `api_business`
+  (partagée US1/US2, `conception/3_autre_us/en_commun.md`), authentification
+  reportée aux cartes suivantes. `app/agent_us2/main.py` renomme le
+  `service_name` de traçage en `qualicheck-api-business`. Le client Vue.js
+  lit désormais l'URL depuis l'environnement Vite (`VITE_API_REGLES_URL_*`)
+  au lieu d'une valeur en dur dans `apiServer.js`. Suppression du workflow
+  obsolète `archive_github/.github/workflows/cd-staging.yml` (le staging
+  Gitea est la référence). Tests et `scripts/creer_cle_api_regles.py`
+  adaptés au nouveau préfixe `API_REGLES_TOKEN_` — voir
+  `docs/superpowers/plans/2026-09-20-renommage-variables-env-api-implementation.md`.
+
 - **A2 Suite d'enrichissement des spans US2** — renommage des spans
   `repondre`/`appel_llm`/`appel_outil` en `questions_libres`,
   `questions_libres.appel_llm` et `questions_libres.appel_outil` ; ajout
