@@ -176,7 +176,9 @@ def test_set_llm_span_io_serialise_messages():
 
     ai_msg = AIMessage(
         content="Je vais chercher les règles.",
-        tool_calls=[{"id": "call_1", "name": "rechercher_regles", "args": {"query": "accessibilite"}}],
+        tool_calls=[
+            {"id": "call_1", "name": "rechercher_regles", "args": {"query": "accessibilite"}}
+        ],
     )
     messages = [
         SystemMessage("Tu es un assistant qualité web."),
@@ -199,7 +201,11 @@ def test_set_llm_span_io_serialise_messages():
         "content": "Je vais chercher les règles.",
         "tool_calls": [{"name": "rechercher_regles", "args": {"query": "accessibilite"}}],
     }
-    assert parsed_input[3] == {"role": "tool", "content": '{"resultats": []}', "tool_call_id": "call_1"}
+    assert parsed_input[3] == {
+        "role": "tool",
+        "content": '{"resultats": []}',
+        "tool_call_id": "call_1",
+    }
 
     parsed_output = json.loads(span.attributes["llm.output"])
     assert parsed_output == {

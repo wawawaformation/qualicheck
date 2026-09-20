@@ -11,6 +11,27 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — OpenCode
 
+- **A2 Tâche d'enrichissement des spans LLM (input/output)** — ajout de
+  `set_llm_span_io()` dans `app/observability/tracing.py` et appel dans
+  `app/agent_us2/loop.py`. Les spans `appel_llm` portent désormais
+  `llm.input` et `llm.output` (JSON structuré des messages et de la
+  réponse AI, y compris les `tool_calls`), tronqués à 4000 caractères avec
+  indicateurs `llm.input_truncated` / `llm.output_truncated`. Tests dans
+  `tests/unit/observability/test_tracing.py` — voir
+  `docs/superpowers/specs/2026-09-20-enrichir-span-llm-input-output-design.md`.
+
+- **Validation réelle de l'export OTLP vers Langfuse (sous-tâche #23)** —
+  lancement de `scripts/agent_cli.py` avec `OTEL_EXPORTER=otlp` sur la
+  question « Quelle est la première règle Opquast ? ». La trace
+  `3bbed7a031660bc208006959659e7354` est arrivée dans le projet Langfuse
+  Cloud `cmu9fgnyk18wtad0gyci89hqo` via l'endpoint `/v1/traces`, avec la
+  structure attendue : span racine `repondre`, enfants `appel_llm` et
+  `appel_outil`. Vérification effectuée via l'API v2
+  `GET /api/public/v2/observations` ; l'API legacy `/api/public/traces`
+  est indisponible pour les organisations créées après le 16 septembre
+  2026. Aucune modification de code ni de configuration n'a été persistée —
+  voir `tmp/validation_otlp_agent_cli.log`.
+
 - **Carte Kanboard #45 créée** — « Arbitrer la politique de tests réels par
   branche », dans `En attente` / swimlane `Epic Dev`, priorité haute,
   complexité élevée et durée estimée à 6 h. Le chantier couvre l'inventaire,
