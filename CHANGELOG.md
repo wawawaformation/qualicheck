@@ -11,6 +11,21 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Atelier carte #45 conclu (volet CI/CD LLMOps)** — vocabulaire fixé
+  ensemble (unitaire, intégration boîte noire/réel, bout en bout, acceptance,
+  mesure, métrique, recette/UAT), schéma de David confronté au dépôt réel et
+  corrigé, gate à seuil décidé (déclenché à la promotion `dev -> staging`, pas
+  à chaque push, appuyé sur le protocole retrieval déjà conclu), écart
+  identifié sur les images Docker (`api-business` non construite/poussée en
+  CD, contrairement à `api-regles`) et sur `rag_dense_acceptance.py` (mesure
+  mal rangée en acceptance) — aucun des deux corrigé, juste consignés.
+  Sorties : `docs/glossaire_tests.md` (glossaire propre, pour le jury),
+  `conception/4_ci_cd/strategie_tests_et_gates.md` (décisions détaillées),
+  `conception/4_ci_cd/ci_cd_llmops.drawio`/`.png` (schéma cible). Carte
+  Kanboard **#49** créée (priorité basse, hors périmètre) pour la détection
+  de dérive des métriques dans le temps, évoquée mais pas traitée ici.
+  Journal complet du dialogue : `docs/strategie_tests_dialogue.md`.
+
 - **Document de suivi de l'atelier de la carte #45** — `docs/strategie_tests_dialogue.md`,
   tenu au fur et à mesure (demande de David : les échanges doivent survivre à la
   session) : méthode, état d'avancement, sections pour les définitions de David puis de

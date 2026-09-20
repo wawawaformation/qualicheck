@@ -1,0 +1,145 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="CI/CD LLMOps — carte #45" id="ci-cd-llmops">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Notes flottantes (annotations, pas dans le flux) -->
+        <mxCell id="note_revue" value="Idée non actée : revue automatisée&#10;additionnelle via Claude Code&#10;GitHub Action (backend Azure AI&#10;Foundry, payé par la formation)." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="40" width="260" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note_langfuse" value="Observabilité Langfuse aussi&#10;souhaitée sur les traces générées&#10;pendant l'Acceptance d'une PR&#10;(pas seulement en prod) — nécessite&#10;OTEL_EXPORTER=otlp + APP_ENV&#10;distinct en CI. Pas encore implémenté." style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#ffe6cc;strokeColor=#d79b00;align=left;" vertex="1" parent="1">
+          <mxGeometry x="400" y="40" width="280" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Pool -->
+        <mxCell id="pool" value="CI/CD LLMOps QualiCheck — atelier stratégie de tests (carte #45)" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;startSize=30;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="1400" height="630" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane_feature" value="Branche feature / PR" style="swimlane;horizontal=1;whiteSpace=wrap;html=1;startSize=30;fillColor=#f5f5f5;" vertex="1" parent="pool">
+          <mxGeometry x="0" y="30" width="340" height="600" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane_dev" value="dev" style="swimlane;horizontal=1;whiteSpace=wrap;html=1;startSize=30;fillColor=#dae8fc;" vertex="1" parent="pool">
+          <mxGeometry x="340" y="30" width="340" height="600" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane_staging" value="staging" style="swimlane;horizontal=1;whiteSpace=wrap;html=1;startSize=30;fillColor=#e1d5e7;" vertex="1" parent="pool">
+          <mxGeometry x="680" y="30" width="420" height="600" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lane_prod" value="prod" style="swimlane;horizontal=1;whiteSpace=wrap;html=1;startSize=30;fillColor=#d5e8d4;" vertex="1" parent="pool">
+          <mxGeometry x="1100" y="30" width="300" height="600" as="geometry" />
+        </mxCell>
+
+        <!-- Lane feature -->
+        <mxCell id="n_start" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="lane_feature">
+          <mxGeometry x="155" y="20" width="30" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_push" value="Push sur branche&#10;feature" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane_feature">
+          <mxGeometry x="90" y="70" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_ci" value="CI automatique&#10;(lint + unit/intégration,&#10;LLM mocké)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;" vertex="1" parent="lane_feature">
+          <mxGeometry x="80" y="150" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_ci_ok" value="CI verte ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane_feature">
+          <mxGeometry x="90" y="250" width="160" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_revue" value="Revue de code (PR)&#10;(relecture du diff,&#10;auto-revue seule)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane_feature">
+          <mxGeometry x="80" y="370" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_revue_ok" value="Changements&#10;demandés ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane_feature">
+          <mxGeometry x="90" y="460" width="160" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Lane dev -->
+        <mxCell id="n_merge" value="Merge sur dev" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane_dev">
+          <mxGeometry x="80" y="20" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_acceptance" value="Acceptance&#10;(Gherkin réel, appels&#10;LLM réels) — tests/acceptance/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="lane_dev">
+          <mxGeometry x="70" y="100" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_promo" value="Promotion&#10;dev -&gt; staging ?&#10;(occasionnel,&#10;pas à chaque push)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane_dev">
+          <mxGeometry x="80" y="220" width="180" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_gate" value="Gate à seuil&#10;(ex. recall@5 ≥&#10;plancher mesuré&#10;sur preuve)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane_dev">
+          <mxGeometry x="80" y="370" width="180" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Lane staging -->
+        <mxCell id="n_deploy" value="Déploiement staging&#10;build+push 2 images&#10;(api-regles, api-business)&#10;:{sha} / :staging-latest&#10;+ manifest (sha, date, tags,&#10;modèles LLM/embedding,&#10;migration, résultat gate)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;" vertex="1" parent="lane_staging">
+          <mxGeometry x="95" y="20" width="230" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_recette" value="Recette / UAT&#10;(vérification humaine,&#10;ex. Élie Sloïm)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="lane_staging">
+          <mxGeometry x="105" y="210" width="210" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_recette_ok" value="Recette&#10;validée ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane_staging">
+          <mxGeometry x="125" y="310" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Lane prod -->
+        <mxCell id="n_prod" value="Prod&#10;(observabilité Langfuse,&#10;trafic réel)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;" vertex="1" parent="lane_prod">
+          <mxGeometry x="55" y="20" width="190" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n_end" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="lane_prod">
+          <mxGeometry x="135" y="120" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="n_endc" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="lane_prod">
+          <mxGeometry x="142" y="127" width="16" height="16" as="geometry" />
+        </mxCell>
+
+        <!-- Edges : flux principal -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_start" target="n_push"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_push" target="n_ci"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_ci" target="n_ci_ok"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e4" value="non" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_ci_ok" target="n_push"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="105" y="545" /><mxPoint x="105" y="335" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e5" value="oui" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_ci_ok" target="n_revue"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_revue" target="n_revue_ok"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e7" value="oui" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_revue_ok" target="n_push"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="95" y="755" /><mxPoint x="95" y="355" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e8" value="non" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_revue_ok" target="n_merge"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="430" y="800" /><mxPoint x="430" y="295" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_merge" target="n_acceptance"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_acceptance" target="n_promo"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e11" value="non (reste sur dev)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_promo" target="n_merge"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="410" y="525" /><mxPoint x="410" y="305" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e12" value="oui" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_promo" target="n_gate"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e13" value="non (corriger)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.9;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_gate" target="n_acceptance"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="390" y="675" /><mxPoint x="390" y="431" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e14" value="oui" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_gate" target="n_deploy"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_deploy" target="n_recette"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_recette" target="n_recette_ok"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <mxCell id="e17" value="non (corriger)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="n_recette_ok" target="n_merge"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="930" y="815" /><mxPoint x="550" y="815" /></Array></mxGeometry></mxCell>
+
+        <mxCell id="e18" value="oui" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_recette_ok" target="n_prod"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;html=1;" edge="1" parent="1" source="n_prod" target="n_end"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+        <!-- Edges : annotations (notes) -->
+        <mxCell id="e_note_revue" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=none;strokeColor=#d79b00;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="note_revue" target="n_revue"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="345" y="95" /><mxPoint x="345" y="650" /></Array></mxGeometry></mxCell>
+        <mxCell id="e_note_langfuse" style="edgeStyle=orthogonalEdgeStyle;html=1;dashed=1;endArrow=none;strokeColor=#d79b00;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="note_langfuse" target="n_acceptance"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="670" y="105" /><mxPoint x="670" y="395" /></Array></mxGeometry></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
