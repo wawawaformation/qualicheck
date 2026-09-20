@@ -828,4 +828,63 @@ Repérés en construisant l'index `jury/README.md`.
     comme du trafic dev/staging/prod par accident — fait.
   - `staging`/`prod` positionneraient la variable dans leurs secrets
     respectifs, même logique que `FASTAPI_URL_PROD` aujourd'hui.
+- [ ] **Valider pour de vrai l'export OTLP vers Langfuse Cloud (A2)** —
+  soulevé le 2026-09-20, à faire par un autre agent (opencode + deepseek)
+  — `A`
+  - **Contexte** : increment A2 (instrumentation OpenTelemetry de
+    l'agent US2 et de l'API des règles) entièrement implémenté, testé et
+    revu (voir `CHANGELOG.md`, section `2026-09-20`, entrées A2 —
+    plusieurs tâches + une passe de correction finale). Tout fonctionne
+    et est vérifié **en mode `OTEL_EXPORTER=jsonl`** (défaut, fichier
+    local `logs/traces.jsonl`). Le mode `OTEL_EXPORTER=otlp` (envoi vers
+    Langfuse Cloud) n'a en revanche **jamais tourné pour de vrai** — sa
+    seule vérification est une revue de code.
+  - **Ce qui a été corrigé sans jamais être exécuté** : l'URL construite
+    par `_langfuse_otlp_config()` dans `app/observability/tracing.py`
+    était fausse (manquait le suffixe `/v1/traces` attendu par
+    `OTLPSpanExporter` — il ne l'ajoute automatiquement que si l'endpoint
+    vient de la variable générique `OTEL_EXPORTER_OTLP_ENDPOINT`, pas de
+    notre construction). Corrigé le 2026-09-20 :
+    `endpoint = base_url.rstrip("/") + "/api/public/otel/v1/traces"`.
+    Le test unitaire correspondant (`tests/unit/observability/test_tracing.py`)
+    a été mis à jour pour figer cette valeur — mais un test unitaire ne
+    prouve pas qu'un vrai serveur Langfuse accepte cette URL et cette
+    authentification.
+  - **Bonne nouvelle** : les clés `LANGFUSE_PUBLIC_KEY`,
+    `LANGFUSE_SECRET_KEY`, `LANGFUSE_BASE_URL` sont déjà présentes et
+    réelles dans `.env` (posées par David le 2026-09-20) — donc la
+    sous-tâche Kanboard #23 ("créer le compte/projet Langfuse Cloud")
+    est de fait déjà faite, même si la spec et certains rapports la
+    décrivent encore comme une étape manuelle ouverte. Pas besoin de
+    créer de compte, juste de lancer le test.
+  - **À faire concrètement** :
+    1. Démarrer l'agent US2 avec `OTEL_EXPORTER=otlp` (variable d'env,
+       voir `.env.example` pour la liste complète des variables
+       attendues) : `OTEL_EXPORTER=otlp uv run uvicorn app.agent_us2.main:app`.
+       Le démarrage doit réussir (si `LANGFUSE_*` manque, `setup_tracing()`
+       lève une erreur et le serveur ne démarre pas — comportement
+       voulu, voir le fix "fail-fast" du 2026-09-20).
+    2. Envoyer une vraie question : `curl -X POST localhost:8000/questions
+       -H "Content-Type: application/json" -d '{"question": "Est-ce que
+       le site doit indiquer le prix TTC ?"}'`.
+    3. Récupérer le `trace_id` dans la réponse JSON.
+    4. Ouvrir l'interface Langfuse Cloud (URL = `LANGFUSE_BASE_URL` dans
+       `.env`) et vérifier que la trace apparaît, sous ce `trace_id`,
+       avec la bonne arborescence (span racine `repondre`, spans enfants
+       `appel_llm`/`appel_outil`).
+    5. Si ça échoue (404, 401, format d'en-tête refusé...), corriger
+       `_langfuse_otlp_config()` dans `app/observability/tracing.py` en
+       conséquence, mettre à jour le test unitaire qui fige l'URL/le
+       format d'en-tête, et documenter ce qui a été corrigé dans
+       `CHANGELOG.md` (voir le format utilisé pour les entrées A2 comme
+       modèle).
+    6. Une fois validé (ou corrigé et revalidé), cocher cette case et
+       fermer la sous-tâche Kanboard #23 (carte #24, sous-tâches
+       consultables via l'API Kanboard — voir mémoire projet
+       "Accès Kanboard" pour les identifiants) avec un statut "terminé".
+  - **Attention** : ne pas repartir de zéro sur toute la conception —
+    l'increment A2 est fini et revu en profondeur (plusieurs cycles de
+    revue, dont une revue finale de branche). Ce point est la seule
+    chose qui reste à vérifier en conditions réelles, pas une nouvelle
+    tâche de conception.
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`
