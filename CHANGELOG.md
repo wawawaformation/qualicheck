@@ -11,6 +11,47 @@ Format d'entrée, une ligne par réalisation :
 
 ## 2026-09-20 — Claude Code
 
+- **Carte Kanboard #47 créée** — « CD staging : prendre en compte le
+  service api-business (agent US2) », swimlane Epic Dev, colonne « En
+  attente », difficulté élevée (score 5), estimée 6 h, marquée en rouge.
+  Née du constat suivant : le workflow `cd-staging.yml` a été écrit pour
+  le seul service `api-regles`, mais `make up-staging`
+  (`docker compose up -d`, sans filtre) démarrerait aussi `api-business`
+  — sans image au registre (donc build sur l'hôte de staging), hors du
+  réseau `cloudnet` (donc injoignable par Caddy) mais publié sur
+  `0.0.0.0:8882`, sans `APP_ENV=staging`, et sans health check ni test
+  d'acceptance qui ferait échouer le déploiement. La carte est liée « est
+  bloquée par » la marche **C4** (carte #32, authentification de
+  l'utilisateur) : `POST /questions` n'a aucune garde aujourd'hui, et
+  aucun déploiement n'aura lieu sans jeton d'identification. Aucune carte
+  d'authentification n'a été créée — C4 existait déjà.
+  Première dépendance native de Kanboard réellement utilisée, tracée
+  dans `jury/avancees_competences/C16.md` (avec la raison d'écarter un
+  Gantt : aucune carte n'a de date d'échéance).
+
+- **Secrets Gitea Actions de staging renommés (carte Kanboard #46, créée
+  puis passée en Done le 2026-09-20)** — les 4 secrets
+  `API_REGLES_TOKEN_DEV`/`_ELIE`/`_DAVID`/`_FORMATEUR` sont posés côté
+  Gitea (repo `david/qualicheck`), ce qui aligne les secrets sur le
+  renommage `FASTAPI_*` → `API_REGLES_*` déjà appliqué au code, au
+  workflow `.gitea/workflows/cd-staging.yml` et à la doc. Contrôle fait
+  avant la pose : les 4 jetons du `.env` local sont ceux acceptés par
+  l'API de staging (`PATCH /regles/999999` → 422 avec chacun des 4, 401
+  avec un jeton bidon ; aucune écriture, ce numéro n'existe pas) — un
+  secret Gitea ne se relisant pas, c'est la seule preuve possible que les
+  valeurs reprises sont les bonnes.
+- **Anciens secrets Gitea `FASTAPI_API_KEY*` supprimés** (les 4 :
+  `FASTAPI_API_KEY`, `_ELIE`, `_DAVID`, `_FORMATEUR`) — côté Gitea il ne
+  reste plus que les nouveaux noms (16 secrets, dont les 4
+  `API_REGLES_TOKEN_*`). Contrôle fait avant suppression : ni
+  `.gitea/workflows/` ni `app/api_regles/config.yml` ne référencent plus
+  ces noms ; les occurrences subsistantes dans `docs/` et `conception/`
+  sont de la documentation historique, pas de la configuration vivante.
+  Le renommage `FASTAPI_*` → `API_REGLES_*` est donc complet, du code aux
+  secrets. Reliquat unique suivi dans `TODO.md` : la vérification du
+  déploiement staging en conditions réelles, volontairement non lancée à
+  ce stade.
+
 - **Cartes Kanboard A1 (#23) et A2 (#24) rouvertes, A2 déplacée en Done** —
   les deux cartes avaient été fermées en fin d'incrément et avaient donc
   disparu du board (Kanboard n'affiche que les tâches ouvertes) ; A2 était

@@ -887,22 +887,37 @@ Repérés en construisant l'index `jury/README.md`.
     revue, dont une revue finale de branche). Ce point est la seule
     chose qui reste à vérifier en conditions réelles, pas une nouvelle
     tâche de conception.
-- [ ] **Renommer les secrets Gitea Actions de staging** (`FASTAPI_API_KEY*`
-  → `API_REGLES_TOKEN_*`) — soulevé le 2026-09-20 — `D`
-  - Le renommage des variables d'environnement API
-    (`FASTAPI_*` → `API_REGLES_URL_*`/`API_REGLES_TOKEN_*`, cf.
-    `CHANGELOG.md` 2026-09-20) a été appliqué au code, aux tests, au
-    workflow `.gitea/workflows/cd-staging.yml` et à la doc. Mais les
-    secrets eux-mêmes vivent côté Gitea (hors dépôt) : ils portent encore
-    les anciens noms `FASTAPI_API_KEY*`. Tant qu'ils ne sont pas renommés
-    (`tea actions secrets delete` + `tea actions secrets create`), le
-    déploiement staging écrira un `.env` sans `API_REGLES_TOKEN_*` et
-    `api-regles` refusera de démarrer (`RuntimeError`).
-  - À faire dans l'interface Gitea (repo `david/qualicheck`, Settings →
-    Actions → Secrets) ou via `tea actions secrets create
-    API_REGLES_TOKEN_DEV <jeton>` (idem pour `_ELIE`/`_DAVID`/`_FORMATEUR`),
-    en reprenant les valeurs actuelles des `FASTAPI_API_KEY*`.
-  - Vérifier ensuite : un push sur `staging` (ou un rerun de
-    `cd-staging.yml`) démarre `api-regles` sans erreur d'auth.
+- [x] **Renommer les secrets Gitea Actions de staging** (`FASTAPI_API_KEY*`
+  → `API_REGLES_TOKEN_*`) — soulevé le 2026-09-20 — `D` — clos
+  2026-09-20 (carte Kanboard #46) : les 4 secrets `API_REGLES_TOKEN_DEV`/
+  `_ELIE`/`_DAVID`/`_FORMATEUR` sont posés côté Gitea. Vérifié avant pose
+  que les 4 jetons du `.env` local sont ceux acceptés par l'API de staging
+  (route protégée, 422 avec chacun, 401 avec un jeton bidon — aucune
+  écriture). Un secret Gitea ne se relisant pas, c'est la seule preuve
+  possible que les valeurs reprises sont les bonnes.
+- [x] **Supprimer les anciens secrets Gitea `FASTAPI_API_KEY*`** (4 :
+  `FASTAPI_API_KEY`, `_ELIE`, `_DAVID`, `_FORMATEUR`) — reliquat de la
+  carte #46 — `D` — clos 2026-09-20 : supprimés par David
+  (`tea actions secrets delete`), vérifié ensuite qu'aucun `FASTAPI_*` ne
+  subsiste côté Gitea (16 secrets restants, dont les 4
+  `API_REGLES_TOKEN_*`). Contrôlé avant suppression : plus aucune
+  référence vivante à ces noms (workflows et `app/api_regles/config.yml`
+  ne connaissent que les nouveaux) — les occurrences restantes dans
+  `docs/` et `conception/` sont de la documentation historique. Les
+  valeurs restent récupérables depuis le `.env` local si besoin.
+- [ ] **Vérifier le déploiement staging avec les nouveaux noms de
+  secrets** — reliquat de la carte #46 — `D`
+  - Un rerun de `cd-staging.yml` (ou un push sur `staging`) doit écrire un
+    `.env` complet et démarrer `api-regles` sans `RuntimeError` d'auth.
+  - Pas encore fait, et **bloqué** : le CD staging a été écrit pour le
+    seul service `api-regles`, alors que `make up-staging`
+    (`docker compose up -d`, sans filtre) démarrerait aussi
+    `api-business`, qui n'a ni image au registre, ni entrée dans
+    l'override de l'hôte, ni garde d'authentification. Analyse complète
+    et suite du travail : carte Kanboard **#47** (« CD staging : prendre
+    en compte le service api-business »), elle-même bloquée par la marche
+    **C4** (carte #32, authentification de l'utilisateur) — « on ne
+    déploie certainement pas sans token d'identification ».
+  - À cadrer avec David avant tout déclenchement, dans tous les cas.
 
 - [x] **Pousser la branche `feature`** — poussée (2026-07-26) — `D`
