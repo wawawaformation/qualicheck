@@ -49,7 +49,7 @@ def test_repondre_emits_one_span_per_llm_call_and_tool_call():
         mock_construire_llm.return_value = mock_llm
         mock_outil.invoke.return_value = '{"resultats": [{"numero": 42, "intitule": "Test"}]}'
 
-        loop.repondre("Question de test")
+        resultat = loop.repondre("Question de test")
 
     spans = exporter.get_finished_spans()
     noms = [s.name for s in spans]
@@ -58,3 +58,7 @@ def test_repondre_emits_one_span_per_llm_call_and_tool_call():
 
     span_outil = next(s for s in spans if s.name == "appel_outil")
     assert span_outil.attributes["outil"] == "rechercher_regles"
+
+    assert resultat.trace_id is not None
+    for span in spans:
+        assert format(span.context.trace_id, "032x") == resultat.trace_id
