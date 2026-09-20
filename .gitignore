@@ -9,6 +9,7 @@ __pycache__/
 
 # Logs d'exécution des scripts
 logs/*.log
+logs/*.jsonl
 
 # Éditeurs
 .idea/
